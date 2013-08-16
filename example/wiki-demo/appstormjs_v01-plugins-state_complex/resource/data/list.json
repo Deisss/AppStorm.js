@@ -1,0 +1,16 @@
+{
+	"userlist" : [
+		{
+			"id" : 1,
+			"login" : "roger.rock"
+		},
+		{
+			"id" : 6,
+			"login" : "charles.neil"
+		},
+		{
+			"id" : 20,
+			"login" : "richard.anderson"
+		}
+	]
+}

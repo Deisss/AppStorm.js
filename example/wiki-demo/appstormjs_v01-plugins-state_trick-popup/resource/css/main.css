@@ -1,0 +1,30 @@
+#root img{
+    left: 50%;
+    margin-left: -300px;
+    position: absolute;
+    top: 30px;
+}
+#root .content{
+	left:50%;
+	margin-left: -300px;
+	width:600px;
+    position: absolute;
+	top:170px;
+}
+#root .content div{
+	margin-top:20px;
+	text-align:center;
+}
+
+a{
+	color:white;
+	cursor:pointer;
+	display:inline-block;
+	padding:5px 10px;
+	background:#92c0ea;
+	border-radius:5px;
+	text-decoration:none;
+}
+a:hover{
+	text-decoration:underline;
+}

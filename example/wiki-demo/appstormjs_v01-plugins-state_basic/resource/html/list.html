@@ -1,0 +1,20 @@
+<div id="list">
+	<h2>User List</h2>
+
+	<p>
+		I'm the children "list" I just display user list, <b>click on one of them to see hashtag change, and user state loading.</b>
+	</p>
+
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>Login</th>
+		</tr>
+		{{#userlist}}
+			<tr>
+				<td><a href="#user-{{id}}">{{id}}</a></td>
+				<td><a href="#user-{{id}}">{{login}}</a></td>
+			</tr>
+		{{/userlist}}
+	</table>
+</div>

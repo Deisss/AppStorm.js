@@ -1,0 +1,55 @@
+#root-new-email {
+	position:fixed;
+	bottom:20px;
+	right:20px;
+	z-index:200;
+	/* hack IE6 */
+	_position:absolute;
+	_bottom:20px;
+}
+
+#root-new-email div {
+	display:inline-block;
+	width:250px;
+	max-width:250px;
+	color:white;
+	margin-right:5px;
+	padding:3px 0px;
+	border:1px solid #4892a7;
+	background-color:#78BBCE;
+	border-radius:5px 5px 0px 0px;
+	/* hack IE6-7 */
+	*float:right;
+}
+
+#root-new-email div form {
+	margin-top:5px;
+}
+
+#root-new-email div textarea {
+	min-height:220px;
+	min-width:250px;
+	max-width:250px;
+	border:0px none;
+	border-bottom: 1px solid #DDD;
+	/* hack IE6-7 */
+	*height:220px;
+	*width:250px;
+}
+
+#root-new-email div input[type=text] {
+	min-width:250px;
+	max-width:250px;
+	border:0px none;
+	border-bottom: 1px solid #DDD;
+}
+
+#root-new-email div input[type=submit] {
+	margin-top:5px;
+	border:0px none;
+	background-color:white;
+	float:right;
+	margin-right:5px;
+	padding:3px 10px;
+	cursor:pointer;
+}

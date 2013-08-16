@@ -1,0 +1,22 @@
+<ul>
+	{{#todolist}}
+		<li id="todo-{{id}}">
+			<div>
+				<a id="todo-content-{{id}}" class="todo">{{todo}}</a>
+
+				<a onclick="todoRemove({{id}});">
+					<img src="resource/img/icon/trash.png" alt="Delete" />
+				</a>
+				<a onclick="todoModifyShow({{id}});">
+					<img src="resource/img/icon/settings.png" alt="Modify" />
+				</a>
+				<div class="clear"></div>
+			</div>
+		</li>
+	{{/todolist}}
+	{{^todolist}}
+		<li>
+			<a class="no-todo" data-tr="no-todo">No item to show</a>
+		</li>
+	{{/todolist}}
+</ul>

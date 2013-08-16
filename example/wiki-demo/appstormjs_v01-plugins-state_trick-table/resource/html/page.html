@@ -1,0 +1,23 @@
+<div id="root">
+	<img class="logo" src="../../../logo/appstormjs.png" alt="logo AppStorm.JS" />
+
+	<div class="content">
+		<p>
+			This example show how to manipulate <b>a.state</b> to create a true table system<br />
+			<br />
+			Here, you are in the page.html (root container), we provide a simple input tag to perform filter. Below start the table rendering children (result).
+		</p>
+
+		<!-- Handle item per page -->
+		<form onsubmit="return false;">
+			<select id="nbItemPerPage" onchange="handleItemPerPage(this);">
+				<option value="5">5</option>
+				<option value="10" selected="selected">10</option>
+				<option value="20">20</option>
+			</select>
+			<input type="text" id="filter" placeholder="Search..." onkeyup="handleFilter(this);" />
+		</form>
+
+		<div id="sub-container"></div>
+	</div>
+</div>

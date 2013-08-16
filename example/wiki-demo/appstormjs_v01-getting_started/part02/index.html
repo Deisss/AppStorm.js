@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta http-equiv="Content-Language" content="en" />
+        <!-- Run IE in current version (not compatibility) mode -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+ 
+        <link href="resource/css/appstorm/ria.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div id="page-container"></div>
+ 
+		<!-- Script -->
+
+        <!-- AppStorm.JS -->
+		<script id="a-core" src="../../../../appstorm/appstorm-mustache.min.js"></script>
+        <script>
+            a.environment.set("debug", true);
+            a.environment.set("verbose", "log");
+        </script>
+
+		<!-- Application script -->
+		<script src="resource/js/loader.js"></script>
+		<script src="resource/js/boot.js"></script>
+    </body>
+</html>

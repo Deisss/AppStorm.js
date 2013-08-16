@@ -1,0 +1,28 @@
+/* resource/css/notlogged.css */
+
+/* We suppose logo is 400px large */
+#notlogged img {
+	left:50%;
+	margin-left:-300px;
+	position:absolute;
+	top:50px;
+}
+
+#notlogged #notlogged-content div {
+	margin-top:5px;
+}
+
+#notlogged-content {
+	height:120px;
+	margin-top:-60px;
+	top:50%;
+	position:absolute;
+	left:50%;
+	margin-left:-250px;
+	width:500px;
+}
+
+#notlogged label {
+	display:inline-block;
+	width:200px;
+}

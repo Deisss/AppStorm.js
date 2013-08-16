@@ -1,0 +1,41 @@
+.clear{clear:both;height:0px;overflow:hidden}
+
+#todo{width:960px;margin:0 auto}
+#todo .logo{margin:50px 180px}
+#todo .todolist-wrapper{margin-top:40px}
+#todo form{text-align:center}
+#todo #filter-todo{float:right;width:200px;padding-right:30px;background:url("../img/icon/search.png") no-repeat right center}
+
+#menu-lang{position:absolute;right:10px;top:10px;width:150px}
+#menu-lang a{cursor:pointer;display:block;padding:5px;border:1px solid #CCC;font-size:0.9em}
+#menu-lang img{vertical-align:middle}
+#menu-lang li{list-style:none}
+#menu-lang li > ul{display:none}
+#menu-lang li:hover > a{background-color:#78BBCE;color:white}
+#menu-lang li:hover > ul{display:block}
+
+#todo input{border:1px solid #CCCCCC;padding:5px}
+#todo input[type="text"]{margin-left:5px}
+#todo input[type="submit"]{-moz-appearance:none;background:none repeat scroll 0 0 #78BBCE;border:0 none;color:white;cursor:pointer;font-weight:bold;margin-top:20px;padding:5px 20px}
+
+#todo ul{border-top:1px solid #CCC;margin-top:10px}
+#todo li .todo{float:left;display:inline}
+#todo li img{float:right;display:inline;margin-right:5px;cursor:pointer}
+#todo li img{float:right;display:inline;margin-right:5px;cursor:pointer}
+#todo li{list-style:none;border:1px solid #CCC;border-top:0px none;padding:10px}
+#todo li input[type="text"]{padding:3px 5px;width:830px;margin-left:0px}
+#todo .no-todo{color:#666}
+
+#todo input[type="checkbox"]{margin-right:15px}
+
+@media screen and (max-width: 960px) {
+	#menu-lang{display:none}
+	#todo{width:100%}
+	#todo .logo{margin:0px}
+	#todo li input[type="text"]{width:50%}
+	#todo .disclaimer{display:none}
+}
+
+@media screen and (max-width: 600px) {
+	#todo .logo{width:100%}
+}

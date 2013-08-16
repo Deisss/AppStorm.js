@@ -1,0 +1,11 @@
+{
+	"unittest-state1" : {
+		"hello" : "nope",
+		"second" : "nope2"
+	},
+
+	"unittest-state2" : {
+		"hello" : "word",
+		"second" : "hy"
+	}
+}

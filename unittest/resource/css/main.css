@@ -1,0 +1,7 @@
+#logo-container{padding:30px 20px;text-align:center;}
+
+/* Remap qunit */
+#qunit-header{display:none}
+#qunit-banner.qunit-pass{background:#2B81AF;height:2px}
+
+#qunit-tests li{min-width:95%}

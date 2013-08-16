@@ -1,0 +1,18 @@
+<div style="display:none">
+	<ul id="multidata-userlist-result">
+		{{#userList}}
+			<li id="multidata-userlist{{id}}-result">{{name}}</li>
+		{{/userList}}
+	</ul>
+	<ul id="multidata-projectlist-result">
+		{{#projectList}}
+			<li id="multidata-projectlist{{id}}-result">{{title}}</li>
+		{{/projectList}}
+	</ul>
+
+	<div id="multidata-myself-result">
+		<a id="multidata-myself-id-result">{{myself.id}}</a>
+		<pre id="multidata-myself-firstname-result">{{myself.firstname}}</pre>
+		<span id="multidata-myself-lastname-result">{{myself.lastname}}</span>
+	</div>
+</div>

@@ -1,0 +1,67 @@
+#root img{
+    left: 50%;
+    margin-left: -300px;
+    position: absolute;
+    top: 30px;
+}
+#root .content{
+	left:50%;
+	margin-left: -300px;
+	width:600px;
+    position: absolute;
+	top:170px
+}
+a{
+	color:#444;
+	text-decoration:none;
+}
+a:hover{
+	text-decoration:underline;
+}
+h2{color:#2b7de1}
+
+/*
+ * TAB HEADER
+*/
+ul.menu-inline li {
+	margin:0;
+	display:inline;
+	list-style:none;
+}
+
+ul.menu-tab {
+	padding:10px 0;
+}
+
+ul.menu-tab li {
+	padding:10px 0px;
+	border:1px solid white;
+	border-bottom:1px solid #CCC;
+}
+ul.menu-tab li.selected {
+	border:1px solid #CCC;
+	border-bottom:1px solid white;
+	/* Hack IE7 */
+	*background:white;
+}
+ul.menu-tab li a {
+	display:inline-block;
+	padding:0px 20px;
+	cursor:pointer;
+}
+
+/*
+ * TAB CONTENT
+*/
+.content-tab {
+	border-top:1px solid #CCC;
+	padding:10px;
+}
+
+.content-tab .tab {
+	display:none;
+}
+
+.content-tab .selected {
+	display:block;
+}

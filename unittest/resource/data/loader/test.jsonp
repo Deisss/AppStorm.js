@@ -1,0 +1,4 @@
+/**
+ * Dummy jsonp file to test loading jsonp files
+*/
+unittest_load_jsonp({"result":"ok"});

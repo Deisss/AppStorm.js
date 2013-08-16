@@ -1,0 +1,17 @@
+<div id="root">
+	<img class="logo" src="../../../logo/appstormjs.png" alt="logo AppStorm.JS" />
+
+	<div class="content">
+		<p>
+			This example show how to manipulate <b>a.state</b> to create a filter on a list<br />
+			<br />
+			Here, you are in the page.html (root container), we provide a simple input tag to perform filter. Below start one of the main children.
+		</p>
+
+		<form onsubmit="return false;">
+			<input type="text" id="filter" placeholder="Search..." onkeyup="handleFilter(this);" />
+		</form>
+
+		<div id="sub-container"></div>
+	</div>
+</div>

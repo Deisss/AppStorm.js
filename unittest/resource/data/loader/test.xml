@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sec>
+	<to>me</to>
+	<from>you</from>
+	<heading>Title</heading>
+	<bodyt>Content</bodyt>
+</sec>

@@ -1,0 +1,8 @@
+<div class="content">
+	<!-- We escape the { because in other case, Mustache.JS will convert it and eliminate it... -->
+	<button class="new" onclick="a.state.loadById('new-email', 'mail-\{\{type : [a-zA-Z0-9]+\}\}-\{\{page : \\d+\}\}');">Write a new email</button>
+	<ul class="menu">
+		<li><a href="#mail-inbox-1">Inbox</a></li>
+		<li><a class="active">Trash</a></li>
+	</ul>
+</div>

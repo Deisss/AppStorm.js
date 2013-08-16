@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://localhost:8082/servlet/org.netbeans.modules.javafx.project.JnlpDownloadServlet/D%3A/programmation/Java/JavaFXStorage/dist/" href="JavaFXStorage_browser.jnlp">
+    <information>
+        <title>JavaFXStorage</title>
+        <vendor>Charles</vendor>
+        <homepage href="http://localhost:8082/servlet/org.netbeans.modules.javafx.project.JnlpDownloadServlet/D%3A/programmation/Java/JavaFXStorage/dist/"/>
+        <description>JavaFXStorage</description>
+        <icon kind="splash" href="http://dl.javafx.com/1.3/splash.png"/>
+        <offline-allowed/>
+    </information>
+    <resources>
+        <j2se version="1.5+"/>
+        <extension name="JavaFX Runtime" href="http://dl.javafx.com/1.3/javafx-rt.jnlp"/>
+        <jar href="JavaFXStorage.jar" main="true" size="4609"/>
+    </resources>
+    <applet-desc name="JavaFXStorage" main-class="com.sun.javafx.runtime.adapter.Applet" progress-class="com.javafx.progressbar.ProgressManager" width="1" height="1">
+        <param name="MainJavaFXScript" value="javafxstorage.Main"/>
+    </applet-desc>
+    <update check="always"/>
+</jnlp>

@@ -1,0 +1,4 @@
+
+Appel depuis JS (avoir le .js d'oracle pour ca) :
+var t = document.getElementById("javafxstorage");
+t.Packages.javafxstorage.localStorage.getDatabase();
