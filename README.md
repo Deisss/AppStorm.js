@@ -18,10 +18,10 @@ Resources
 ---------
 
 Here is the resource where you can found documentation, example, ...:
-  * [http://appstormjs.com](website)
-  * [http://appstormjs.com/wiki](wiki)
-  * [http://appstormjs.com/git/example/mail](mail client example)
-  * [http://appstormjs.com/git/example/todo](todolist client example)
+  * [website](http://appstormjs.com)
+  * [wiki](http://appstormjs.com/wiki)
+  * [mail client example](http://appstormjs.com/git/example/mail)
+  * [todolist client example](http://appstormjs.com/git/example/todo)
 
 
 Licence & credits
@@ -29,4 +29,4 @@ Licence & credits
 
 AppStorm.JS is licenced under MIT Licence.
 
-You can found full credits for everything used for making AppStorm.JS [http://appstormjs.com/wiki/doku.php?id=credits](on our wiki).
+You can found full credits for everything used for making AppStorm.JS [on our wiki](http://appstormjs.com/wiki/doku.php?id=credits).
