@@ -1,0 +1,80 @@
+	@Override
+	@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.WRAPPER_OBJECT)
+	@JsonSubTypes({
+		@Type(value=Group.class, name="Group"),
+		@Type(value=Password.class, name="Password")
+	})
+	public List<AbstractGroupPassword> getChildren() {
+		if(this.children == null) {
+			this.children = new ArrayList<AbstractGroupPassword>();
+		}
+		return this.children;
+	}
+
+	@Override
+	public void setChildren(List<AbstractGroupPassword> children) {
+		if(children != null) {
+			this.children = children;
+		}
+	}
+
+	@Override
+	public void addChildren(AbstractGroupPassword child) {
+		if(this.children == null) {
+			this.children = new ArrayList<AbstractGroupPassword>();
+		}
+		this.children.add(child);
+	}
+
+	@Override
+	public boolean deleteChildren(AbstractGroupPassword child, boolean recursive) {
+		AbstractGroupPassword rem = null;
+		//We search for an item to delete
+		for(AbstractGroupPassword tmp : this.getChildren()) {
+			if(tmp.equals(child)) {
+				rem = tmp;
+				break;
+			}
+		}
+
+		//Item has been found
+		if(rem != null) {
+			this.getChildren().remove(rem);
+			return true;
+
+		//Item has not been found, search first children to delete
+		} else if(recursive) {
+			for(AbstractGroupPassword tmp : this.getChildren()) {
+				if(IChildren.class.isInstance(tmp)) {
+					@SuppressWarnings("unchecked")
+					IChildren<AbstractGroupPassword> converted = (IChildren<AbstractGroupPassword>) child;
+					boolean ret = converted.deleteChildren(child, recursive);
+					if(ret == true) {
+						return true;
+					}
+				}
+			}
+		}
+
+		//Nothing found we exit
+		return false;
+	}
+
+	@Override
+	public <U extends AbstractGroupPassword> List<U> searchChildren(Class<U> type, boolean recursive) {
+		ArrayList<U> ret = new ArrayList<U>();
+
+		for(AbstractGroupPassword child : this.getChildren()) {
+			if(type.isInstance(child)) {
+				ret.add(type.cast(child));
+			}
+
+			if(recursive && IChildren.class.isInstance(child)) {
+				@SuppressWarnings("unchecked")
+				IChildren<AbstractGroupPassword> converted = (IChildren<AbstractGroupPassword>) child;
+				ret.addAll(converted.searchChildren(type, recursive));
+			}
+		}
+
+		return ret;
+	}

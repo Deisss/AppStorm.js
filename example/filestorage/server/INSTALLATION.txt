@@ -1,0 +1,31 @@
+To use this example:
+
+=== PYTHON ===
+If python is not installed (note: tested with python 2.7):
+	= WINDOWS =
+	Download and install: http://www.python.org/download/
+
+	= UBUNTU/DEBIAN =
+	run "apt-get install python"
+
+	= CENTOS/FEDORA/RPM... =
+	run "yum install python"
+
+
+
+=== PIP ===
+Pip is a package manager for python:
+	= ALL OS =
+	Download tarball here: https://pypi.python.org/pypi/pip#downloads
+	extract tarball
+	go into the folder where setup.py is located
+	run "python setup.py install"
+
+
+
+=== BOTTLE ===
+Bottle is a tiny framework for creating REST app in python.
+
+To install it:
+	= ALL OS =
+	pip install bottle

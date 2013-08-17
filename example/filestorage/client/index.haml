@@ -1,0 +1,13 @@
+!!! 5
+%html
+	%head
+		%title= "File manager"
+	%body
+		%h1= "Hello"
+
+		%form{ :action => "/file/post", :method => "POST", :enctype => "multipart/form-data" }
+			%label= "Select a file"
+			%input{ :type => "file", :name => "upload", :required => true }
+			%input{ :type => "submit", :value => "Send" }
+
+		%script{ :src => "/resource/test.js" }
