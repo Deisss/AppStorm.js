@@ -1,0 +1,18 @@
+List of server url allowed:
+
+
+/: get the index html file
+
+/resource/<filename>: get a static resource. See %client%/resource folder
+==> special case for *appstorm* wich goes to appstorm folder
+
+/file/list: get file stored
+
+/file/info/<filename>: retrieve basic info (create, modified, checksum, ...)
+/file/delete/<filename>: try to delete a file stored
+
+/file/upload: add a file to storage
+/file/download/<filename>: retrieve stored file
+
+
+This allow to create a pretty simple, AND UNSECURE, file server.

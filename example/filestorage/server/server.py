@@ -7,8 +7,8 @@
 # -------------------------------
 #
 
-from bottle import get, post, run, template, request, response, static_file
-import os, time
+from bottle import get, post, delete, run, template, request, abort, response, static_file
+import os, time, md5
 
 serverPathStorage = "./storage"
 if not os.path.isdir(serverPathStorage):
@@ -29,7 +29,6 @@ def index():
 
 
 @get("/resource/<filename:path>")
-@get("/static/<filename:path>")
 def static(filename):
   """ Server static files """
   if "appstorm" in filename.lower():
@@ -48,35 +47,56 @@ def staticAppStormJS(filename):
 # -------------------------------
 #
 @get("/file/list")
-def getFileList():
+def listFile():
   """ Searching files in storage folder and retrieve their name """
   fileList = [ f for f in os.listdir(serverPathStorage) if os.path.isfile(os.path.join(serverPathStorage, f)) ]
   return fileList
 
 
 @get("/file/info/<filename:path>")
-def getFile(filename):
+def infoFile(filename):
   """ Get a specific file metadata """
   # Protect from accessing outside directory
   if ("/" in filename) or ("\\" in filename):
-    return "{}"
+    abort(400, "You can access file outside storage folder")
 
   # Check file exist and is readable
   fpath = os.path.join(serverPathStorage, filename)
   try:
     open(fpath, "r").close()
   except IOError:
-    return {"error" : "Unable to read file"}
+    abort(404, "File not Found")
 
   # Retrieve data
+  m = md5.new()
+  with open(fpath) as file:
+    m.update(file.read())
+
   return {
     "name"     : filename,
+    "checksum" : m.hexdigest(),
     "created"  : time.ctime(os.path.getctime(fpath)),
     "modified" : time.ctime(os.path.getmtime(fpath))
   }
 
 
-@post("/file/post")
+@delete("/file/delete/<filename:path>")
+def deleteFile(filename):
+  """ Delete an existing file """
+  # Protect from accessing outside directory
+  if ("/" in filename) or ("\\" in filename):
+    abort(400, "You can access file outside storage folder")
+
+  # Check file exist and is readable
+  fpath = os.path.join(serverPathStorage, filename)
+  if not os.path.isfile(fpath):
+    abort(404, "File not found")
+  os.remove(fpath)
+  return {"success" : "OK"}
+
+
+
+@post("/file/upload")
 def uploadFile():
   """ Upload a file and store it """
   upload = request.files.get("upload")
@@ -85,7 +105,7 @@ def uploadFile():
   name, ext = os.path.splitext(upload.filename)
   if ext not in (".png", ".jpg", ".jpeg", ".pdf", ".txt", ".zip"):
     print "File extension: %s" % ext
-    return {"error" : "File extension not allowed"}
+    abort(400, "File extension not allowed")
 
   # Save file into disk
   fpath = os.path.join(serverPathStorage, upload.filename)
@@ -93,7 +113,7 @@ def uploadFile():
     with open(fpath, 'w') as file:
 	  file.write(upload.file.read())
     return {"success" : "OK"}
-  return {"error" : "File already exist"}
+  abort(409, "File already exist")
 
 
 @get("/file/download/<filename:path>")
@@ -101,7 +121,7 @@ def downloadFile(filename):
   """ Download an existing file """
   # Protect from accessing outside directory
   if ("/" in filename) or ("\\" in filename):
-    return "{}"
+    abort(400, "You can access file outside storage folder")
 
   # Downloading file
   return static_file(filename, root=serverPathStorage, download=filename)

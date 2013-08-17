@@ -2,22 +2,32 @@ To use this example:
 
 === PYTHON ===
 If python is not installed (note: tested with python 2.7):
-	= WINDOWS =
+	### WINDOWS ###
 	Download and install: http://www.python.org/download/
 
-	= UBUNTU/DEBIAN =
-	run "apt-get install python"
+	### UBUNTU/DEBIAN ###
+	run "apt-get install python python-setuptools python-pip"
+	=> jump to BOTTLE section directly
 
-	= CENTOS/FEDORA/RPM... =
-	run "yum install python"
+	### CENTOS/FEDORA/RPM... ###
+	run "yum install python python-setuptools python-pip"
+	=> jump to BOTTLE directly
 
+
+=== SETUPTOOLS ===
+Setup tools is a setup utility for Python:
+	### WINDOWS ###
+	download here: https://pypi.python.org/pypi/setuptools/0.9.8#installing-and-using-setuptools
+	extract archive
+	go into the folder where setup.py is located
+	run "python setup.py install"
 
 
 === PIP ===
 Pip is a package manager for python:
-	= ALL OS =
-	Download tarball here: https://pypi.python.org/pypi/pip#downloads
-	extract tarball
+	### WINDOWS ###
+	Download here: https://pypi.python.org/pypi/pip#downloads
+	extract archive
 	go into the folder where setup.py is located
 	run "python setup.py install"
 
@@ -27,5 +37,5 @@ Pip is a package manager for python:
 Bottle is a tiny framework for creating REST app in python.
 
 To install it:
-	= ALL OS =
+	### ALL OS ###
 	pip install bottle
