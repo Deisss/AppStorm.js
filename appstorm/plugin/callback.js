@@ -50,6 +50,7 @@ a.callback = {};
  * @class synchronizer
  * @namespace a.callback
  * @constructor
+ * @async
 */
 a.callback.synchronizer = function() {
 	"use strict";
@@ -314,6 +315,7 @@ a.callback.synchronizer = function() {
  * @class chainer
  * @namespace a.callback
  * @constructor
+ * @async
 */
 a.callback.chainer = function() {
 	"use strict";

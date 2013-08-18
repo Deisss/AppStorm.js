@@ -489,6 +489,7 @@ a.state = (function() {
 		 * Register a state
 		 *
 		 * @method add
+		 * @async
 		 *
 		 * @param ctrl {Object} A state (see create function from a.state) to register
 		 * @param callback {Function | null} A callback to call after add, ONLY if loadOnStartup is defined
@@ -659,10 +660,11 @@ a.state = (function() {
 		 * From a given id, load a state without modify hashtag, and allow controller to stay alive on specific hashtag given
 		 *
 		 * @method loadById
+		 * @async
 		 *
 		 * @param id {String | Integer} The controller id to load
 		 * @param hashtagList {Array | null} The hastag to let it stay alive
-		 * @param callback {Function | null} callback function after unloading ends
+		 * @param callback {Function | null} callback function after loading ends
 		*/
 		loadById : function(id, hashtagList, callback) {
 			// We search for id chain
@@ -711,6 +713,7 @@ a.state = (function() {
 		 * NOTE : only item created with loadById can be deleted using this function
 		 *
 		 * @method unloadById
+		 * @async
 		 *
 		 * @param id {String | Integer} The controller to unload
 		 * @param callback {Function | null} callback function after unloading ends
@@ -740,9 +743,10 @@ a.state = (function() {
 		 * Ask to reload an id, and all children
 		 *
 		 * @method forceReloadById
+		 * @async
 		 *
 		 * @param id {String | Integer} The id to force reload
-		 * @param callback {Function | null} callback function after unloading ends
+		 * @param callback {Function | null} callback function after unloading and loading ends
 		*/
 		forceReloadById : function(id, callback) {
 			var cb = (a.isFunction(callback)) ? callback : function() {};
@@ -836,7 +840,6 @@ a.state = (function() {
 		__currentGeneratedId : function() {
 			return __req;
 		},
-		
 
 		/**
 		 * Allow to manage parameter object, to add custom function & co
@@ -1106,6 +1109,7 @@ a.state.helper.tree = {
  * @class chainer
  * @namespace a.state.helper
  * @constructor
+ * @async
  *
  * @param type {String} Can be "unload", or "load"
  * @param path {Array} The path to add or delete
@@ -1271,6 +1275,7 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	 *
 	 * @method __generateLoader
 	 * @private
+	 * @async
 	 *
 	 * @param state {Object} The state object with all needed data inside to perform scan
 	 * @param callback {Function} The function to call when load is finished
@@ -1403,6 +1408,7 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	 *
 	 * @method __startState
 	 * @private
+	 * @async
 	 *
 	 * @param state {Object} A state to start
 	 * @param clb {Function} The callback to apply on success (or fail)
@@ -1462,6 +1468,7 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	 *
 	 * @method __startLevel
 	 * @private
+	 * @async
 	 *
 	 * @param stateList {Array} A list of state to delete
 	 * @param clb {Function} The callback to apply on success (or fail)

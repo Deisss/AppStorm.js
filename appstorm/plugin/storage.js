@@ -792,6 +792,7 @@ a.storage.type.flash = (function() {
 	 *
 	 * @method __startFlash
 	 * @private
+	 * @async
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -866,6 +867,7 @@ a.storage.type.flash = (function() {
 		 * Note: automatically done by system you don't need to...
 		 *
 		 * @method start
+		 * @async
 		 *
 		 * @param callback {Function} The function to call in case of success
 		*/
@@ -951,6 +953,7 @@ a.storage.type.silverlight = (function() {
 	 *
 	 * @method __startSilverlight
 	 * @private
+	 * @async
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -1022,6 +1025,7 @@ a.storage.type.silverlight = (function() {
 		 * Note: automatically done by system you don't need to...
 		 *
 		 * @method start
+		 * @async
 		 *
 		 * @param callback {Function} The function to call in case of success
 		*/
@@ -1108,6 +1112,7 @@ a.storage.type.javafx = (function() {
 	 *
 	 * @method __startJavaFX
 	 * @private
+	 * @async
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -1168,6 +1173,7 @@ a.storage.type.javafx = (function() {
 		 * Note: automatically done by system you don't need to...
 		 *
 		 * @method start
+		 * @async
 		 *
 		 * @param callback {Function} The function to call in case of success
 		*/
@@ -1285,6 +1291,7 @@ a.storage.external = (function() {
 	 *
 	 * @method __startCallback
 	 * @private
+	 * @async
 	 *
 	 * @param type {Object} The object to use for external
 	 * @param callback {Function | null} The function to launch if a store has been found
@@ -1307,6 +1314,7 @@ a.storage.external = (function() {
 		 * Start the external tool, try to find an available store
 		 *
 		 * @method start
+		 * @async
 		 *
 		 * @param callback {Function | null} The function to launch if a store has been found
 		*/

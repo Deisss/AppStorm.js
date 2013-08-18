@@ -51,8 +51,6 @@
 window.appstorm = window.a = (function() {
 	"use strict";
 
-	var me = document.getElementById("a-core");
-
 	/**
 	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core">here</a>
 	 *
@@ -216,6 +214,7 @@ window.appstorm = window.a = (function() {
 	};
 
 	// Detecting base url of AppStorm.JS
+	var me = document.getElementById("a-core");
 	if(me && typeof(me.src) !== "undefined") {
 		obj.url = me.src.replace(new RegExp("/[^/]*$"), "/");
 	}
@@ -692,6 +691,7 @@ a.eventEmitter = (function() {
  * @class message
  * @static
  * @requires eventEmitter
+ * @uses eventEmitter
  * @namespace a
 */
 // Setting main event loop (general one where everybody can access it from everywhere)
@@ -815,6 +815,7 @@ a.environment = (function() {
  * @class ajax
  * @namespace a
  * @constructor
+ * @async
  *
  * @param options {Object} An option map to change the behaviour of component
  * @param success {Function} The success function called in case of async
@@ -1043,6 +1044,7 @@ a.timer = (function() {
 		 * Register a function into timer tick
 		 *
 		 * @method add
+		 * @async
 		 *
 		 * @param fct {Function} The function to bind
 		 * @param scope {Object | null} The scope to bind to function
@@ -1070,6 +1072,7 @@ a.timer = (function() {
 		 * Register a function for a single timer shot
 		 *
 		 * @method once
+		 * @async
 		 *
 		 * @param fct {Function} The function to bind
 		 * @param scope {Object | null} The scope to bind to function
@@ -1157,6 +1160,7 @@ a.loader = (function() {
 	 *
 	 * @method __checkCache
 	 * @private
+	 * @async
 	 *
 	 * @param uri {String} The path to access data
 	 * @param callback {Function | null} The callback to apply after loader
@@ -1203,6 +1207,7 @@ a.loader = (function() {
 	 *
 	 * @method __appendToHeader
 	 * @private
+	 * @async
 	 *
 	 * @param el {DOM} A createElement type result
 	 * @param options {Object} HTML Options to add to link appended
@@ -1274,6 +1279,7 @@ a.loader = (function() {
 	 *
 	 * @method __ajaxLoader
 	 * @private
+	 * @async
 	 *
 	 * @param uri {String} The data path
 	 * @param callback {Function | null} The callback to apply in case of success
@@ -1328,6 +1334,7 @@ a.loader = (function() {
 		 * Javascript loader
 		 *
 		 * @method js
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1345,6 +1352,7 @@ a.loader = (function() {
 		 * JSONP loader
 		 *
 		 * @method jsonp
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1364,6 +1372,7 @@ a.loader = (function() {
 		 * JSON loader
 		 *
 		 * @method json
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1389,6 +1398,7 @@ a.loader = (function() {
 		 * XML loader
 		 *
 		 * @method xml
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1414,6 +1424,7 @@ a.loader = (function() {
 		 * CSS loader
 		 *
 		 * @method css
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1438,6 +1449,7 @@ a.loader = (function() {
 		 * NOTE : only valid XHTML is accepted !
 		 *
 		 * @method html
+		 * @async
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1471,6 +1483,7 @@ a.loader = (function() {
 		 * JavaFX loader
 		 *
 		 * @method javafx
+		 * @async
 		 *
 		 * @param uri {String} The path for given jar files to load
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1519,6 +1532,7 @@ a.loader = (function() {
 		 * Flash loader
 		 *
 		 * @method flash
+		 * @async
 		 *
 		 * @param uri {String} The path for given swf files to load
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1551,6 +1565,7 @@ a.loader = (function() {
 		 * Silverlight loader
 		 *
 		 * @method silverlight
+		 * @async
 		 *
 		 * @param uri {String} The path for given xap files to load
 		 * @param callback {Function | null} The callback to call after loading success (NOTE : silverlight is not able to fire load event, so it's not true here...)

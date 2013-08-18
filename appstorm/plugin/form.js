@@ -378,12 +378,11 @@ a.form = (function() {
 		 * @return {Object} An object with error (boolean), errorList (Array), and contentList (Array)
 		*/
 		validateAndGet : function(dom) {
-			var obj = {};
-			obj.errorList = this.validate(dom);
-			obj.error = (obj.errorList.length > 0) ? true : false;
-			obj.contentList = this.get(dom);
-
-			return obj;
+			return {
+				errorList   : this.validate(dom),
+				error       : (obj.errorList.length > 0) ? true : false,
+				contentList : this.get(dom)
+			};
 		}
 	};
 

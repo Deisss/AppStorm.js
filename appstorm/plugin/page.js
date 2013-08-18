@@ -70,6 +70,7 @@ a.page.template = {
 	 * Use cache or retrieve a specific template from network
 	 *
 	 * @method get
+	 * @async
 	 *
 	 * @param uri {String} The path to get the template, or an id if the template already listed in html
 	 * @param data {Object} The data to apply to template
@@ -101,6 +102,7 @@ a.page.template = {
 		 *
 		 * @method callCallback
 		 * @private
+		 * @async
 		 *
 		 * @param clb {Function} The callback function to call
 		 * @param h {String} The hash representing the unique id of template
@@ -202,6 +204,7 @@ a.page.template = {
 	 * Empty a dom element
 	 *
 	 * @method remove
+	 * @async
 	 *
 	 * @param el {DOMElement} The element to remove everything inside
 	 * @param callback {Function | null} The function to raise when job is done
@@ -219,6 +222,7 @@ a.page.template = {
 	 * Append to the given element (given a DOM element here not a jquery one)
 	 *
 	 * @method append
+	 * @async
 	 *
 	 * @param el {DOMElement} Any dom element to append to
 	 * @param content {String} The html content (in string) to replace
@@ -243,6 +247,7 @@ a.page.template = {
 	 * Same as append, just replace instead of append to element
 	 *
 	 * @method replace
+	 * @async
 	 *
 	 * @param el {DOMElement} Any dom element to append to
 	 * @param content {String} The html content (in string) to replace
@@ -327,6 +332,7 @@ a.page.event = (function() {
 	 *
 	 * @method __attachDOMEvent
 	 * @private
+	 * @async
 	 *
 	 * @param event {String} The event name
 	 * @param callback {Function} The callback to attach
@@ -477,7 +483,7 @@ a.page.event = (function() {
 		window.onhashchange = __checkHash;
 	} else {
 		//Starting manual function check, if there is no event to attach
-		setInterval(__checkHash, 50);
+		a.timer.add(__checkHash, null, 50);
 	}
 
 	
@@ -500,7 +506,7 @@ a.page.event = (function() {
 	// Which is not true.
 	__attachDOMEvent("load", function() {
 		// We start hibernate system
-		setInterval(__checkHibernate, __hibernateDelay);
+		a.timer.add(__checkHibernate, null, __hibernateDelay);
 	});
 
 	return obj;
