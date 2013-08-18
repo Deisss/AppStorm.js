@@ -54,11 +54,11 @@
 								data.todolist.splice(i, 1);
 							}
 						}
-						data.filter = filter.value;
+						data.filter = val;
 					}
 
 					// We simply reverse order to make it "last inserted first view"
-					if(data.todolist instanceof Array) {
+					if(a.isArray(data.todolist)) {
 						data.todolist.reverse();
 					}
 				}
@@ -86,22 +86,22 @@
 
 				// Even if it's ugly, we can still manually create the element to replace with
 				load : function(content) {
-					var id      = a.storage.memory.getItem("current-todo-modify-show"),
-						element = document.getElementById("todo-" + id);
+					var id = a.storage.memory.getItem("current-todo-modify-show"),
+						el = document.getElementById("todo-" + id);
 
 					// We can clear the id
 					a.storage.memory.removeItem("current-todo-modify-show");
 
 					// We store previous content, in case of cancel
-					a.storage.memory.setItem("todo-" + id, element.innerHTML);
-					a.page.template.replace(element, content);
+					a.storage.memory.setItem("todo-" + id, el.innerHTML);
+					a.page.template.replace(el, content);
 				},
 
 				// Rollback changes
 				preUnload : function(result) {
-					var id      = a.storage.memory.getItem("current-todo-modify-show"),
-						element = document.getElementById("todo-" + id);
-					a.page.template.replace(element, a.storage.memory.getItem("todo-" + id));
+					var id = a.storage.memory.getItem("current-todo-modify-show"),
+						el = document.getElementById("todo-" + id);
+					a.page.template.replace(el, a.storage.memory.getItem("todo-" + id));
 					result.done();
 				}
 			}
