@@ -54,6 +54,8 @@ window.appstorm = window.a = (function() {
 	var me = document.getElementById("a-core");
 
 	/**
+	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core">here</a>
+	 *
 	 * @class a
 	 * @static
 	*/
@@ -225,6 +227,8 @@ window.appstorm = window.a = (function() {
 /**
  * wrapper for system console, allowing to use console even if there is not console support on given browser.
  * Also, it does provide a trace utility in case of bug/check
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:console">here</a>
  *
  * @class console
  * @static
@@ -399,6 +403,8 @@ a.parser = {
 	/**
 	 * Basic JSON handler wich prevent from "no data" or "wrong data" input, with a log message to check
 	 *
+	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
+	 *
 	 * @class json
 	 * @static
 	 * @namespace a.parser
@@ -441,6 +447,8 @@ a.parser = {
 
 	/**
 	 * Basic XML handler wich prevent from "no data" or "wrong data" input, with a log message to check
+	 *
+	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
 	 *
 	 * @class xml
 	 * @static
@@ -512,6 +520,8 @@ a.parser = {
 
 /**
  * Simple hash change checker to allow creating multi-page system
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
  *
  * @class eventEmitter
  * @constructor
@@ -677,6 +687,8 @@ a.eventEmitter = (function() {
 /**
  * The bus system to exchange message globally between all application object
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
+ *
  * @class message
  * @static
  * @requires eventEmitter
@@ -698,6 +710,8 @@ a.message.setName = function(){};
 
 /**
  * Main environment data store, allow to generally define some main rules for project
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:environment">here</a>
  *
  * @class environment
  * @static
@@ -794,11 +808,13 @@ a.environment = (function() {
 
 
 /**
+ * Ajax object to call server
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:ajax">here</a>
+ *
  * @class ajax
  * @namespace a
  * @constructor
- *
- * Ajax object to call server
  *
  * @param options {Object} An option map to change the behaviour of component
  * @param success {Function} The success function called in case of async
@@ -962,6 +978,8 @@ a.ajax.prototype.send = function() {
 /**
  * Timer is a class to get access to a tick timer
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:timer">here</a>
+ *
  * @class timer
  * @static
  * @namespace a
@@ -1117,6 +1135,8 @@ a.timer = (function() {
 
 /**
  * Dynamic loader for many files type
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:loader">here</a>
  *
  * @class loader
  * @static

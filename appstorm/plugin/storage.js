@@ -32,6 +32,8 @@
 /**
  * Storage capacities, allow to manage many storage to get quick access to everything
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class storage
  * @static
  * @namespace a
@@ -113,6 +115,8 @@ a.storage = {
 
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class cookie
  * @static
@@ -226,6 +230,8 @@ a.storage.type.cookie = (function() {
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class cookie
  * @static
  * @namespace a.storage
@@ -238,6 +244,8 @@ a.storage.cookie = a.storage.type.cookie;
 
 /**
  * LocalStorage HTML5 support
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class localStorage
  * @static
@@ -338,6 +346,8 @@ a.storage.type.localStorage = (function() {
 
 /**
  * globalStorage HTML5 support (old)
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class globalStorage
  * @static
@@ -443,6 +453,8 @@ a.storage.type.globalStorage = (function() {
 /**
  * memory object (so if page close, everything is lost)
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class memory
  * @static
  * @namespace a.storage.type
@@ -523,6 +535,8 @@ a.storage.type.memory = (function() {
 /**
  * Memory store functionnality, manipulate memory storage class with a simplified interface
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class memory
  * @static
  * @namespace a.storage
@@ -535,6 +549,8 @@ a.storage.memory = a.storage.type.memory;
 
 /**
  * sessionStorage HTML5 support
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class sessionStorage
  * @static
@@ -637,6 +653,8 @@ a.storage.type.sessionStorage = (function() {
 
 /**
  * userData IE support (old)
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class userData
  * @static
@@ -755,6 +773,8 @@ a.storage.type.userData = (function() {
 
 /**
  * flash external storage
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class flash
  * @static
@@ -913,6 +933,8 @@ a.storage.type.flash = (function() {
 /**
  * silverlight external storage
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class silverlight
  * @static
  * @namespace a.storage.type
@@ -1068,6 +1090,8 @@ a.storage.type.silverlight = (function() {
 /**
  * javafx external storage
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class javafx
  * @static
  * @namespace a.storage.type
@@ -1219,6 +1243,8 @@ a.storage.type.javafx = (function() {
 /**
  * Select the best temp storage available
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ *
  * @class temporary
  * @static
  * @namespace a.storage
@@ -1244,6 +1270,8 @@ a.storage.temporary = (function() {
 // EXTERNAL STORE SEARCH
 /**
  * Select the best external storage available
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class external
  * @static
@@ -1321,6 +1349,8 @@ a.storage.external = (function() {
 // PERSISTENT STORE SEARCH
 /**
  * Select the best long term storage available
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class persistent
  * @static

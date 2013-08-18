@@ -73,6 +73,8 @@
 /**
  * Managing state threw this interface
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
+ *
  * @class state
  * @static
  * @namespace a
@@ -840,6 +842,8 @@ a.state = (function() {
 		 * Allow to manage parameter object, to add custom function & co
 		 * (like memory, temporary into variable)
 		 *
+		 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
+		 *
 		 * @class type
 		 * @static
 		 * @namespace a.state
@@ -847,6 +851,8 @@ a.state = (function() {
 		type : {
 			/**
 			 * Add a custom type to existing parameter system
+			 *
+			 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
 			 *
 			 * @method add
 			 *
@@ -884,13 +890,6 @@ a.state = (function() {
 			}
 		},
 
-		/**
-		 * Helper for tree controller
-		 *
-		 * @class helper
-		 * @static
-		 * @namespace a.state
-		*/
 		helper : {
 			tree:{},
 			chainer:{},
@@ -908,6 +907,8 @@ a.state = (function() {
 
 /**
  * Tree manipulation used by state
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
  *
  * @class tree
  * @static
@@ -1099,6 +1100,8 @@ a.state.helper.tree = {
 
 /**
  * Release a chain (full unload, or full load)
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
  *
  * @class chainer
  * @namespace a.state.helper
@@ -1509,6 +1512,8 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 /**
  * Allow parameter inside string system, it is used for many things : parameters inside data url, inside options, inside hashtag...
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
  *
  * @class parameter
  * @static

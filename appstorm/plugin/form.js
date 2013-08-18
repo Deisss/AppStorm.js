@@ -26,6 +26,8 @@
 /**
  * Manipulate HTML form by with a simple system
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:form">here</a>
+ *
  * @class form
  * @static
  * @namespace a

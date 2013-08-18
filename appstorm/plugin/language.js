@@ -30,6 +30,8 @@
  * Translation support for international site
  * The system allow to set on HTML tag data-tr for translate, and data-tr1, 2, 3... for variable to apply to translate
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:language">here</a>
+ *
  * @class language
  * @static
  * @namespace a

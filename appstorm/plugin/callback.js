@@ -45,6 +45,8 @@ a.callback = {};
 /**
  * Load many functions at same time, when they all finish raise the final callback
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
+ *
  * @class synchronizer
  * @namespace a.callback
  * @constructor
@@ -306,6 +308,8 @@ a.callback.synchronizer = function() {
 
 /**
  * Load many functions one by one, when last one finish raise the final callback
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
  *
  * @class chainer
  * @namespace a.callback

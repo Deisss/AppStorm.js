@@ -51,6 +51,8 @@ a.page = {};
 /**
  * Create a simple but powerfull template system
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
+ *
  * @class template
  * @static
  * @namespace a.page
@@ -261,6 +263,8 @@ a.page.template = {
  * onHibernate is a custom event when system seems to come back from hibernate mode
  * onHash is a custom event when page hash change
  *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
+ *
  * @class event
  * @static
  * @namespace a.page
@@ -410,6 +414,8 @@ a.page.event = (function() {
 	// see : http://simplapi.wordpress.com/2012/08/20/checking-an-url-hash-change-in-javascript/
 	/**
 	 * Manipulate page hash
+	 *
+	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
 	 *
 	 * @class hash
 	 * @static
