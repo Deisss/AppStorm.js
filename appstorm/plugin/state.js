@@ -909,6 +909,7 @@ a.state = (function() {
 
 
 /**
+ * INTERNAL USE
  * Tree manipulation used by state
  *
  * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
@@ -1102,7 +1103,8 @@ a.state.helper.tree = {
 
 
 /**
- * Release a chain (full unload, or full load)
+ * INTERNAL USE
+ * Release a chain (full state unload, or full state load)
  *
  * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>
  *
@@ -1518,6 +1520,7 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 
 /**
+ * INTERNAL USE
  * Allow parameter inside string system, it is used for many things : parameters inside data url, inside options, inside hashtag...
  *
  * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:state">here</a>

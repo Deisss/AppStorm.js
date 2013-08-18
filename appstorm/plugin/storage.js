@@ -101,13 +101,7 @@ a.storage = {
 		}
 	},
 
-	/**
-	 * Access to individual storage
-	 *
-	 * @class type
-	 * @static
-	 * @namespace a.storage
-	*/
+	// Access to individual storage
 	type:{}
 };
 

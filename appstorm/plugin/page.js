@@ -36,13 +36,8 @@
 		event : Catch here basic windows event : onload, onunload, onresize, onhibernate, onhash
 
 ************************************************************************ */
-/**
- * Main plugin structure
- *
- * @class page
- * @static
- * @namespace a
-*/
+
+// Provide basic page event/template management structure
 a.page = {};
 
 
@@ -273,6 +268,8 @@ a.page.template = {
  * @class event
  * @static
  * @namespace a.page
+ *
+ * @event a.page.event.hibernate when page have a too large waiting elapse time between two timer tick
 */
 a.page.event = (function() {
 	"use strict";

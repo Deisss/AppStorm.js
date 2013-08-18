@@ -391,13 +391,7 @@ a.console = (function() {
 
 
 
-/**
- * provide parsing functionality for using json, xml, html...
- *
- * @class parser
- * @static
- * @namespace a
-*/
+// provide parsing functionality for using json, xml, html...
 a.parser = {
 	/**
 	 * Basic JSON handler wich prevent from "no data" or "wrong data" input, with a log message to check

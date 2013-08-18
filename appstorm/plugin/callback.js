@@ -33,13 +33,7 @@
 
 ************************************************************************ */
 
-/**
- * Simple synchronizer/chainer for Array of functions
- *
- * @class callback
- * @static
- * @namespace a
-*/
+//Simple synchronizer/chainer for Array of functions
 a.callback = {};
 
 /**
