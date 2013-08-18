@@ -37,10 +37,11 @@
 
 ************************************************************************ */
 /**
- * @class page
- * @extends a
- *
  * Main plugin structure
+ *
+ * @class page
+ * @static
+ * @namespace a
 */
 a.page = {};
 
@@ -48,17 +49,25 @@ a.page = {};
 
 
 /**
- * @class template
- * @extends a.page
- *
  * Create a simple but powerfull template system
+ *
+ * @class template
+ * @static
+ * @namespace a.page
 */
 a.page.template = {
-	// Store template already loaded into system
+	/**
+	 * Store cached template
+	 * @property __tmpl
+	 * @type Object
+	 * @default {}
+	*/
 	__tmpl : {},
 
 	/**
 	 * Use cache or retrieve a specific template from network
+	 *
+	 * @method get
 	 *
 	 * @param uri {String} The path to get the template, or an id if the template already listed in html
 	 * @param data {Object} The data to apply to template
@@ -87,6 +96,9 @@ a.page.template = {
 
 		/**
 		 * Parse the content with data from client, then call callback with result
+		 *
+		 * @method callCallback
+		 * @private
 		 *
 		 * @param clb {Function} The callback function to call
 		 * @param h {String} The hash representing the unique id of template
@@ -158,8 +170,10 @@ a.page.template = {
 	/**
 	 * Convert an html to a dom content
 	 *
+	 * @method htmlToDom
+	 *
 	 * @param html {String} The string to parse
-	 * @returns {Array} The result content
+	 * @return {Array} The result content
 	*/
 	htmlToDom : function(html) {
 		/*
@@ -185,6 +199,8 @@ a.page.template = {
 	/**
 	 * Empty a dom element
 	 *
+	 * @method remove
+	 *
 	 * @param el {DOMElement} The element to remove everything inside
 	 * @param callback {Function | null} The function to raise when job is done
 	*/
@@ -199,6 +215,8 @@ a.page.template = {
 
 	/**
 	 * Append to the given element (given a DOM element here not a jquery one)
+	 *
+	 * @method append
 	 *
 	 * @param el {DOMElement} Any dom element to append to
 	 * @param content {String} The html content (in string) to replace
@@ -222,6 +240,8 @@ a.page.template = {
 	/**
 	 * Same as append, just replace instead of append to element
 	 *
+	 * @method replace
+	 *
 	 * @param el {DOMElement} Any dom element to append to
 	 * @param content {String} The html content (in string) to replace
 	 * @param callback {Function} The callback to apply when template finish loading
@@ -237,12 +257,13 @@ a.page.template = {
 
 
 /**
- * @class event
- * @extends a.page
- *
  * Catch here basic windows event : onload, onunload, onresize, onhibernate, onhash
  * onHibernate is a custom event when system seems to come back from hibernate mode
  * onHash is a custom event when page hash change
+ *
+ * @class event
+ * @static
+ * @namespace a.page
 */
 a.page.event = (function() {
 	"use strict";
@@ -264,9 +285,12 @@ a.page.event = (function() {
 	/**
 	 * Create the callback from the given event name
 	 *
+	 * @method __getPageEventCallback
+	 * @private
+	 *
 	 * @param event {String} The event name
 	 * @param data {Object | null} The data attached to event
-	 * @returns {Function} A ready to use callback
+	 * @return {Function} A ready to use callback
 	*/
 	function __getPageEventCallback(event, data) {
 		if(!a.isObject(data)) {
@@ -279,6 +303,9 @@ a.page.event = (function() {
 
 	/**
 	 * Check the system is hibernating or not
+	 *
+	 * @method __checkHibernate
+	 * @private
 	*/
 	function __checkHibernate() {
 		var current = (new Date()).getTime();
@@ -293,6 +320,9 @@ a.page.event = (function() {
 
 	/**
 	 * Attach a callback to a DOM event
+	 *
+	 * @method __attachDOMEvent
+	 * @private
 	 *
 	 * @param event {String} The event name
 	 * @param callback {Function} The callback to attach
@@ -319,7 +349,10 @@ a.page.event = (function() {
 	/**
 	 * Retrieve the current system hash
 	 *
-	 * @returns {String | null} The hash, or null if nothing is set
+	 * @method __getHash
+	 * @private
+	 *
+	 * @return {String | null} The hash, or null if nothing is set
 	 */
 	function __getHash() {
 		return (window.location.hash) ? window.location.hash.substring(1) : null;
@@ -328,6 +361,9 @@ a.page.event = (function() {
 
 	/**
 	 * Store the latest event appearing into a store
+	 *
+	 * @method __addHash
+	 * @private
 	 *
 	  @param hash {String} The new hash incoming
 	*/
@@ -346,6 +382,10 @@ a.page.event = (function() {
 
 	/**
 	 * Check for existing hash, call the callback if there is any change
+	 *
+	 * @method __checkHash
+	 * @private
+	 *
 	 * @param noCallback {Boolean} Indicate if the system should call the callback or not
 	 */
 	function __checkHash(noCallback) {
@@ -368,11 +408,20 @@ a.page.event = (function() {
 
 	// Get hash data threw this specific object type
 	// see : http://simplapi.wordpress.com/2012/08/20/checking-an-url-hash-change-in-javascript/
+	/**
+	 * Manipulate page hash
+	 *
+	 * @class hash
+	 * @static
+	 * @namespace a.page.event
+	*/
 	obj.hash = {
 		/**
 		 * Retrieve the current system hash
 		 *
-		 * @returns {String | null} The hash, or null if nothing is set
+		 * @method getHash
+		 *
+		 * @return {String | null} The hash, or null if nothing is set
 		 */
 		getHash : function() {
 			return __getHash();
@@ -381,7 +430,9 @@ a.page.event = (function() {
 		/**
 		 * Get the previous page hash (can be null)
 		 *
-		 * @returns {String | null} The hash, or null if nothing is set
+		 * @method getPreviousHash
+		 *
+		 * @return {String | null} The hash, or null if nothing is set
 		*/
 		getPreviousHash : function() {
 			return __previousHash;
@@ -389,6 +440,8 @@ a.page.event = (function() {
 
 		/**
 		 * Force the system to set a specific hash
+		 *
+		 * @method setPreviousHash
 		 *
 		 * @param value {String} The hash to set
 		 */
@@ -400,7 +453,9 @@ a.page.event = (function() {
 		/**
 		 * Get list of existing previous hash used into system
 		 *
-		 * @returns {Array} An array with all hash done since beginning
+		 * @method trace
+		 *
+		 * @return {Array} An array with all hash done since beginning
 		*/
 		trace : function() {
 			return __registredHash;

@@ -34,18 +34,20 @@
 ************************************************************************ */
 
 /**
- * @class callback
- * @extends a
- *
  * Simple synchronizer/chainer for Array of functions
+ *
+ * @class callback
+ * @static
+ * @namespace a
 */
 a.callback = {};
 
 /**
- * @class synchronizer
- * @extends a.callback
- *
  * Load many functions at same time, when they all finish raise the final callback
+ *
+ * @class synchronizer
+ * @namespace a.callback
+ * @constructor
 */
 a.callback.synchronizer = function() {
 	"use strict";
@@ -66,6 +68,9 @@ a.callback.synchronizer = function() {
 	/**
 	 * The main function when all scripts synchronize this function will raise success method
 	 * Note : you can pass any arguments in any way, they will be sended to success function
+	 *
+	 * @method __done
+	 * @private
 	*/
 	function __done() {
 		__max--;
@@ -84,6 +89,9 @@ a.callback.synchronizer = function() {
 	/**
 	 * Register any error into the system, it will stop final success execution in this case
 	 * Note : you can pass any arguments in any way, they will be sended to error function
+	 *
+	 * @method __error
+	 * @private
 	*/
 	function __error() {
 		if(__start === true) {
@@ -98,6 +106,9 @@ a.callback.synchronizer = function() {
 	/**
 	 * Add data to store
 	 *
+	 * @method __setData
+	 * @private
+	 *
 	 * @param key {String} The key to set
 	 * @param value {Object} The content to store for given object
 	*/
@@ -107,6 +118,9 @@ a.callback.synchronizer = function() {
 
 	/**
 	 * Replace the store with given data
+	 *
+	 * @method __setFullData
+	 * @private
 	 *
 	 * @param data {Object} The store to set
 	*/
@@ -119,6 +133,9 @@ a.callback.synchronizer = function() {
 	/**
 	 * Retrieve data from store
 	 *
+	 * @method __getData
+	 * @private
+	 *
 	 * @return {Object | null} The value stored, or null if it's not set
 	*/
 	function __getData(key) {
@@ -128,6 +145,9 @@ a.callback.synchronizer = function() {
 	/**
 	 * Retrieve full store
 	 *
+	 * @method __getFullData
+	 * @private
+	 *
 	 * @return {Object} The current store
 	*/
 	function __getFullData() {
@@ -136,6 +156,8 @@ a.callback.synchronizer = function() {
 
 	/**
 	 * Register success function to apply when all jobs are done
+	 *
+	 * @method setSuccess
 	 *
 	 * @param success {Function} The success function to use in case of good result from all callbacks
 	*/
@@ -148,6 +170,8 @@ a.callback.synchronizer = function() {
 	/**
 	 * Register fail function to apply when all jobs are done
 	 *
+	 * @method setFail
+	 *
 	 * @param fail {Function} The fail function to use in case of bad result from one or more callback
 	*/
 	obj.prototype.setFail = function(fail) {
@@ -158,6 +182,8 @@ a.callback.synchronizer = function() {
 
 	/**
 	 * Add a callback to existing list of callback to start
+	 *
+	 * @method addCallback
 	 *
 	 * @param arguments {Array} Every arguments passed is taken as callback to add, so each arguments should be a function (you can also pass one array argument directly)
 	*/
@@ -196,6 +222,8 @@ a.callback.synchronizer = function() {
 	/**
 	 * Remove a function to existing list of functions to start
 	 *
+	 * @method removeCallback
+	 *
 	 * @param callback {Function} One of the function to not synchronize anymore
 	*/
 	obj.prototype.removeCallback = function(callback) {
@@ -213,6 +241,8 @@ a.callback.synchronizer = function() {
 
 	/**
 	 * Start the synchronizer system
+	 *
+	 * @method start
 	 *
 	 * @param timeout {Integer | null} If specified (and > 0), the system will fail if this timeout (in ms) is raised...
 	 * @param args {Object | null} Any arguments you would like to send to all callbacks
@@ -257,6 +287,8 @@ a.callback.synchronizer = function() {
 	/**
 	 * Check if the synchronizer is running or not
 	 *
+	 * @method isRunning
+	 *
 	 * @return {Boolean} True the system is running, false the system is not running
 	*/
 	obj.prototype.isRunning = function() {
@@ -273,10 +305,11 @@ a.callback.synchronizer = function() {
 
 
 /**
- * @class chainer
- * @extends a.callback
- *
  * Load many functions one by one, when last one finish raise the final callback
+ *
+ * @class chainer
+ * @namespace a.callback
+ * @constructor
 */
 a.callback.chainer = function() {
 	"use strict";
@@ -296,6 +329,9 @@ a.callback.chainer = function() {
 	/**
 	 * Handle a callback success.
 	 * Note : you can pass any arguments in any way, they will be sended to success function or next function
+	 *
+	 * @method __done
+	 * @private
 	*/
 	function __done() {
 		if(__waiting.length == 0) {
@@ -310,6 +346,9 @@ a.callback.chainer = function() {
 	/**
 	 * Handle a callback error
 	 * Note : you can pass any arguments in any way, they will be sended to error function
+	 *
+	 * @method __error
+	 * @private
 	*/
 	function __error() {
 		__waiting = [];
@@ -320,6 +359,9 @@ a.callback.chainer = function() {
 	/**
 	 * Add data to store
 	 *
+	 * @method __setData
+	 * @private
+	 *
 	 * @param key {String} The key to set
 	 * @param value {Object} The content to store for given object
 	*/
@@ -329,6 +371,9 @@ a.callback.chainer = function() {
 
 	/**
 	 * Replace the store with given data
+	 *
+	 * @method __setFullData
+	 * @private
 	 *
 	 * @param data {Object} The store to set
 	*/
@@ -341,6 +386,9 @@ a.callback.chainer = function() {
 	/**
 	 * Retrieve data from store
 	 *
+	 * @method __getData
+	 * @private
+	 *
 	 * @return {Object | null} The value stored, or null if it's not set
 	*/
 	function __getData(key) {
@@ -350,6 +398,9 @@ a.callback.chainer = function() {
 	/**
 	 * Retrieve full store
 	 *
+	 * @method __getFullData
+	 * @private
+	 *
 	 * @return {Object} The current store
 	*/
 	function __getFullData() {
@@ -358,6 +409,8 @@ a.callback.chainer = function() {
 
 	/**
 	 * Register success function to apply when all jobs are done
+	 *
+	 * @method setSuccess
 	 *
 	 * @param success {Function} The success function to use in case of good result from all callbacks
 	*/
@@ -370,6 +423,8 @@ a.callback.chainer = function() {
 	/**
 	 * Register fail function to apply when all jobs are done
 	 *
+	 * @method setFail
+	 *
 	 * @param fail {Function} The fail function to use in case of bad result from one or more callback
 	*/
 	obj.prototype.setFail = function(fail) {
@@ -380,6 +435,8 @@ a.callback.chainer = function() {
 
 	/**
 	 * Add a callback to existing list of callback to start
+	 *
+	 * @method addCallback
 	 *
 	 * @param arguments {Array} Every arguments passed is taken as callback to add, so each arguments should be a function (you can also pass one array argument directly)
 	*/
@@ -408,6 +465,8 @@ a.callback.chainer = function() {
 	/**
 	 * Remove a function to existing list of functions to start
 	 *
+	 * @method removeCallback
+	 *
 	 * @param callback {Function} One of the function to not synchronize anymore
 	*/
 	obj.prototype.removeCallback = function(callback) {
@@ -431,6 +490,8 @@ a.callback.chainer = function() {
 	/**
 	 * Start the chainer
 	 * Note : every arguments passed to this function will be sended to first callback functions.
+	 *
+	 * @method start
 	 *
 	 * @param args {Object | null} any data to set for other callback
 	*/
@@ -469,6 +530,8 @@ a.callback.chainer = function() {
 
 	/**
 	 * Check if the chainer is running or not
+	 *
+	 * @method isRunning
 	 *
 	 * @return {Boolean} True the system is running, false the system is not running
 	*/

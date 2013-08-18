@@ -26,10 +26,13 @@
 
 ************************************************************************ */
 
-/** @namespace language */
 /**
  * Translation support for international site
  * The system allow to set on HTML tag data-tr for translate, and data-tr1, 2, 3... for variable to apply to translate
+ *
+ * @class language
+ * @static
+ * @namespace a
 */
 a.language = (function() {
 	"use strict";
@@ -51,9 +54,12 @@ a.language = (function() {
 	/**
 	 * Get a specific hash, raw one
 	 *
+	 * @method __getRawTranslate
+	 * @private
+	 *
 	 * @param lang {String} The language we want to retrieve hash from
 	 * @param hash {String} The hash we want to retrieve
-	 * @returns {String | null} Null if there is a problem (no hash found), the hash translated if everything went fine
+	 * @return {String | null} Null if there is a problem (no hash found), the hash translated if everything went fine
 	*/
 	function __getRawTranslate(lang, hash) {
 		// Searching for good language set
@@ -74,8 +80,11 @@ a.language = (function() {
 	/**
 	 * Convert a variable for regex util replace
 	 *
+	 * @method __convertVariable
+	 * @private
+	 *
 	 * @param variable {String} The content "hash" which will be translated
-	 * @returns {String} The ready to use regex version
+	 * @return {String} The ready to use regex version
 	*/
 	function __convertVariable(variable) {
 		// Convert to string in any case before anything else
@@ -94,8 +103,11 @@ a.language = (function() {
 	/**
 	 * Extract from a string the list of variables
 	 *
+	 * @method __extractVariableList
+	 * @private
+	 *
 	 * @param cmd {String} The command to get
-	 * @returns {Array} The splitted variable list
+	 * @return {Array} The splitted variable list
 	*/
 	function __extractVariableList(cmd) {
 		return cmd.match(/\{\{[a-z0-9\-_]+\}\}/gi) || [];
@@ -104,9 +116,12 @@ a.language = (function() {
 	/**
 	 * Get a specific translation from it's hash
 	 *
+	 * @method __getTranslate
+	 * @private
+	 *
 	 * @param hash {String} The hash to retrieve
 	 * @param variables {Array | null} A list of variables to pass to system
-	 * @returns {String} The translated string, or same string as input (+ language identifier) if nothing is found
+	 * @return {String} The translated string, or same string as input (+ language identifier) if nothing is found
 	*/
 	function __getTranslate(hash, variables) {
 		var tr = __getRawTranslate(__language, hash);
@@ -161,9 +176,12 @@ a.language = (function() {
 	/**
 	 * Get the translate tag from an HTML element
 	 *
+	 * @method __getAttr
+	 * @private
+	 *
 	 * @param el {DOMElement} An element to get hash from
 	 * @param attr {String | null} The attribute to search for that element (default : see __attr)
-	 * @returns {String | null} The hash tag associated (if found)
+	 * @return {String | null} The hash tag associated (if found)
 	*/
 	function __getAttr(el, attr) {
 		if(!a.isString(attr)) {
@@ -179,6 +197,9 @@ a.language = (function() {
 
 	/**
 	 * Translate all possible content from a given root element (or document if element is not defined)
+	 *
+	 * @method __applyTranslate
+	 * @private
 	 *
 	 * @param el {DOMElement} A root element to start searching translate element from it
 	*/
@@ -319,12 +340,13 @@ a.language = (function() {
 		}
 	}
 
-	/** @lends language */
 	return {
 		/**
 		 * Get the current stored language
 		 *
-		 * @returns {String} The current language, like "en", "en-en"
+		 * @method getCurrent
+		 *
+		 * @return {String} The current language, like "en", "en-en"
 		*/
 		getCurrent : function() {
 			return __language;
@@ -332,6 +354,8 @@ a.language = (function() {
 
 		/**
 		 * Set the language as current language
+		 *
+		 * @method setCurrent
 		 *
 		 * @param lang {String} The language to set
 		 * @param update {Boolean} The system should not call a new translate update
@@ -374,7 +398,9 @@ a.language = (function() {
 		/**
 		 * Get the allowed languages
 		 *
-		 * @returns {Array} The list of available language setted by user
+		 * @method getAllowed
+		 *
+		 * @return {Array} The list of available language setted by user
 		*/
 		getAllowed : function() {
 			return __allowed;
@@ -382,6 +408,8 @@ a.language = (function() {
 
 		/**
 		 * Set a list of allowed languages
+		 *
+		 * @method setAllowed
 		 *
 		 * @param allow {Array | String} The new list of languages
 		*/
@@ -413,9 +441,11 @@ a.language = (function() {
 		/**
 		 * Get a specific translation from it's hash
 		 *
+		 * @method getSingleTranslation
+		 *
 		 * @param hash {String} The hash to retrieve
 		 * @param variables {Array | null} A list of variables to pass to system
-		 * @returns {String} The translated string, or same string as input (+ language identifier) if nothing is found
+		 * @return {String} The translated string, or same string as input (+ language identifier) if nothing is found
 		*/
 		getSingleTranslation : function(hash, variables) {
 			return __getTranslate(hash, variables);
@@ -423,6 +453,8 @@ a.language = (function() {
 
 		/**
 		 * Add a translation into available translation
+		 *
+		 * @method addSingleTranslation
 		 *
 		 * @param lang {String} The language to use
 		 * @param hash {String} The hashtag to define
@@ -444,6 +476,8 @@ a.language = (function() {
 		/**
 		 * Append to existing dict a full list of translate
 		 *
+		 * @method addTranslation
+		 *
 		 * @param lang {String} The language to use for this translate
 		 * @param dict {Object} A dictionnary to append to existing/new language
 		 * @param update {Boolean} The system should not call a new translate update
@@ -464,8 +498,10 @@ a.language = (function() {
 		/**
 		 * Get the current dict, if lang is specified, only for the given language
 		 *
+		 * @method getTranslation
+		 *
 		 * @param lang {String | null} The lang to get
-		 * @returns {Object | null} The corresponding dictionnary (null if you ask a language not setted in dictionnary)
+		 * @return {Object | null} The corresponding dictionnary (null if you ask a language not setted in dictionnary)
 		*/
 		getTranslation : function(lang) {
 			return (a.isString(lang)) ? __dict[lang] : __dict;
@@ -473,6 +509,8 @@ a.language = (function() {
 
 		/**
 		 * Translate the content of an element, or translate the full page if element is not set
+		 *
+		 * @method translate
 		 *
 		 * @param element {DOMElement} The element to start translate from
 		 * @param update {Boolean | null} Indicate if the system should perform translate (should never been used except internally)
@@ -486,6 +524,8 @@ a.language = (function() {
 		/**
 		 * Add a variable to global variable store
 		 *
+		 * @method addVariable
+		 *
 		 * @param key {String} The value key
 		 * @param value {Object} The linked value to apply
 		*/
@@ -497,6 +537,8 @@ a.language = (function() {
 		/**
 		 * Get a variable stored in global variable store
 		 *
+		 * @method getVariable
+		 *
 		 * @param key {String} The key to get
 		*/
 		getVariable : function(key) {
@@ -505,6 +547,8 @@ a.language = (function() {
 
 		/**
 		 * Remove a variable from global variable store
+		 *
+		 * @method removeVariable
 		 *
 		 * @param key {String} The key to remove from global variable list
 		*/
@@ -515,6 +559,8 @@ a.language = (function() {
 
 		/**
 		 * Clear the dictionnary
+		 *
+		 * @method clear
 		*/
 		clear : function() {
 			__dict = {};

@@ -30,14 +30,18 @@
 
 ************************************************************************ */
 /**
- * @class storage
- * @extends a
- *
  * Storage capacities, allow to manage many storage to get quick access to everything
+ *
+ * @class storage
+ * @static
+ * @namespace a
 */
 a.storage = {
 	/**
 	 * Debug on console the get item action
+	 *
+	 * @method __printGetItem
+	 * @private
 	 *
 	 * @param element {String} The element (like cookie, localStorage, ...)
 	 * @param key {String} The key to debug
@@ -52,6 +56,9 @@ a.storage = {
 	/**
 	 * Debug on console the get item error action
 	 *
+	 * @method __printGetErrorItem
+	 * @private
+	 *
 	 * @param element {String} The element (like cookie, localStorage, ...)
 	 * @param key {String} The key to debug
 	*/
@@ -63,6 +70,9 @@ a.storage = {
 
 	/**
 	 * Debug on console the set item action
+	 *
+	 * @method __printSetItem
+	 * @private
 	 *
 	 * @param element {String} The element (like cookie, localStorage, ...)
 	 * @param key {String} The key to debug
@@ -77,6 +87,9 @@ a.storage = {
 	/**
 	 * Debug on console the remove item action
 	 *
+	 * @method __printRemoveItem
+	 * @private
+	 *
 	 * @param element {String} The element (like cookie, localStorage, ...)
 	 * @param key {String} The key to debug
 	*/
@@ -87,10 +100,11 @@ a.storage = {
 	},
 
 	/**
-	 * @class type
-	 * @extends a.storage
-	 *
 	 * Access to individual storage
+	 *
+	 * @class type
+	 * @static
+	 * @namespace a.storage
 	*/
 	type:{}
 };
@@ -98,10 +112,11 @@ a.storage = {
 
 
 /**
- * @class cookie
- * @extends a.storage.type
- *
  * Cookie functionnality, manipulate cookie with a simplified interface
+ *
+ * @class cookie
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.cookie = (function() {
 	"use strict";
@@ -111,10 +126,23 @@ a.storage.type.cookie = (function() {
 
 	// Define an object, but create some usefull data inside like "isEnabled" data which indicate support or not of cookies
 	var obj = {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default false
+		*/
 		support : false,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default cookie
+		 * @final
+		*/
 		engine  : "cookie",
 		/**
 		 * Set a new cookie, or delete a cookie using a too old expires
+		 *
+		 * @method setItem
 		 *
 		 * @param name {String} The key to use
 		 * @param value {Mixed} The value to store
@@ -134,8 +162,10 @@ a.storage.type.cookie = (function() {
 		/**
 		 * Get the stored cookie, return null if something went wrong
 		 *
+		 * @method getItem
+		 *
 		 * @param name {String} The cookie name stored
-		 * @returns {Mixed} Any data stored inside cookie
+		 * @return {Mixed} Any data stored inside cookie
 		*/
 		getItem : function(name) {
 			if (document.cookie.length > 0) {
@@ -157,6 +187,8 @@ a.storage.type.cookie = (function() {
 
 		/**
 		 * Remove a previously stored cookie
+		 *
+		 * @method removeItem
 		 *
 		 * @param name {String} The cookie name to delete
 		*/
@@ -192,10 +224,11 @@ a.storage.type.cookie = (function() {
 
 
 /**
- * @class cookie
- * @extends a.storage
- *
  * Cookie functionnality, manipulate cookie with a simplified interface
+ *
+ * @class cookie
+ * @static
+ * @namespace a.storage
 */
 a.storage.cookie = a.storage.type.cookie;
 
@@ -204,10 +237,11 @@ a.storage.cookie = a.storage.type.cookie;
 
 
 /**
- * @class localStorage
- * @extends a.storage.type
- *
  * LocalStorage HTML5 support
+ *
+ * @class localStorage
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.localStorage = (function() {
 	"use strict";
@@ -229,8 +263,27 @@ a.storage.type.localStorage = (function() {
 	}
 
 	return {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default false
+		*/
 		support : __support,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default localStorage
+		 * @final
+		*/
 		engine  : __ls,
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			if(__support) {
 				var item = window.localStorage.getItem(key);
@@ -244,6 +297,14 @@ a.storage.type.localStorage = (function() {
 			}
 			return null;
 		},
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			if(__support) {
 				a.storage.__printSetItem("localStorage", key, value);
@@ -254,6 +315,13 @@ a.storage.type.localStorage = (function() {
 				});
 			}
 		},
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			if(__support) {
 				a.storage.__printRemoveItem("localStorage", key);
@@ -269,10 +337,11 @@ a.storage.type.localStorage = (function() {
 
 
 /**
- * @class globalStorage
- * @extends a.storage.type
- *
  * globalStorage HTML5 support (old)
+ *
+ * @class globalStorage
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.globalStorage = (function() {
 	"use strict";
@@ -292,8 +361,27 @@ a.storage.type.globalStorage = (function() {
 	}
 
 	return {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default false
+		*/
 		support : __support,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default globalStorage
+		 * @final
+		*/
 		engine  : "globalStorage",
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			if(__support) {
 				var item = window.globalStorage[__hostname].getItem(key);
@@ -313,6 +401,14 @@ a.storage.type.globalStorage = (function() {
 			}
 			return null;
 		},
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			if(__support) {
 				a.storage.__printSetItem("globalStorage", key, value);
@@ -323,6 +419,13 @@ a.storage.type.globalStorage = (function() {
 				});
 			}
 		},
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			if(__support) {
 				a.storage.__printRemoveItem("globalStorage", key);
@@ -338,10 +441,11 @@ a.storage.type.globalStorage = (function() {
 
 
 /**
- * @class memory
- * @extends a.storage.type
- *
  * memory object (so if page close, everything is lost)
+ *
+ * @class memory
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.memory = (function() {
 	"use strict";
@@ -349,8 +453,27 @@ a.storage.type.memory = (function() {
 	var __data = {};
 
 	return {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default true
+		*/
 		support : true,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default memory
+		 * @final
+		*/
 		engine  : "memory",
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			var value = __data[key];
 			if(!a.isNull(value)) {
@@ -361,6 +484,14 @@ a.storage.type.memory = (function() {
 			a.storage.__printGetErrorItem("memory", key);
 			return null;
 		},
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			__data[key] = value;
 			a.storage.__printSetItem("memory", key, value);
@@ -369,6 +500,13 @@ a.storage.type.memory = (function() {
 				value : value
 			});
 		},
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			a.storage.__printRemoveItem("memory", key);
 			if(!a.isNull(__data[key])) {
@@ -383,10 +521,11 @@ a.storage.type.memory = (function() {
 
 
 /**
- * @class memory
- * @extends a.storage
- *
  * Memory store functionnality, manipulate memory storage class with a simplified interface
+ *
+ * @class memory
+ * @static
+ * @namespace a.storage
 */
 a.storage.memory = a.storage.type.memory;
 
@@ -395,10 +534,11 @@ a.storage.memory = a.storage.type.memory;
 
 
 /**
- * @class sessionStorage
- * @extends a.storage.type
- *
  * sessionStorage HTML5 support
+ *
+ * @class sessionStorage
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.sessionStorage = (function() {
 	"use strict";
@@ -421,8 +561,27 @@ a.storage.type.sessionStorage = (function() {
 	}
 
 	return {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default false
+		*/
 		support : __support,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default sessionStorage
+		 * @final
+		*/
 		engine  : __ss,
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			if(__support) {
 				var item = window.sessionStorage.getItem(key);
@@ -436,6 +595,14 @@ a.storage.type.sessionStorage = (function() {
 			}
 			return null;
 		},
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			if(__support) {
 				a.storage.__printSetItem("sessionStorage", key, value);
@@ -446,6 +613,13 @@ a.storage.type.sessionStorage = (function() {
 				});
 			}
 		},
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			if(__support) {
 				a.storage.__printRemoveItem("sessionStorage", key);
@@ -462,10 +636,11 @@ a.storage.type.sessionStorage = (function() {
 
 
 /**
- * @class userData
- * @extends a.storage.type
- *
  * userData IE support (old)
+ *
+ * @class userData
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.userData = (function() {
 	"use strict";
@@ -504,8 +679,27 @@ a.storage.type.userData = (function() {
 	}
 
 	return {
+		/**
+		 * @property support
+		 * @type Boolean
+		 * @default false
+		*/
 		support : __support,
+		/**
+		 * @property engine
+		 * @type String
+		 * @default userData
+		 * @final
+		*/
 		engine  : "userData",
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			if(__support) {
 				var value = a.parser.json.parse(db.getAttribute(key));
@@ -518,6 +712,14 @@ a.storage.type.userData = (function() {
 			}
 			return null;
 		},
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			if(__support) {
 				a.storage.__printSetItem("userData", key, value);
@@ -529,6 +731,13 @@ a.storage.type.userData = (function() {
 				});
 			}
 		},
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			if(__support) {
 				a.storage.__printRemoveItem("userData", key);
@@ -545,10 +754,11 @@ a.storage.type.userData = (function() {
 
 
 /**
- * @class flash
- * @extends a.storage.type
- *
  * flash external storage
+ *
+ * @class flash
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.flash = (function() {
 	"use strict";
@@ -558,7 +768,10 @@ a.storage.type.flash = (function() {
 		__id      = "flashstorage";
 
 	/**
-	 * Start flash and check availablility
+	 * Start flash and check availability
+	 *
+	 * @method __startFlash
+	 * @private
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -603,14 +816,51 @@ a.storage.type.flash = (function() {
 	};
 
 	return {
+		/**
+		 * Get the support state of flash.
+		 * Note: it may arrive little bit after using start function...
+		 *
+		 * @method support
+		 *
+		 * @return {Boolean} True if support is active, false in other cases
+		*/
 		support : function() {return __support;},
+		/**
+		 * Get the ready state of flash object
+		 *
+		 * @method ready
+		 *
+		 * @return {Boolean} True if it's ready, false in other cases
+		*/
 		ready : function() {return __ready;},
+		/**
+		 * @property engine
+		 * @type String
+		 * @default flash
+		 * @final
+		*/
 		engine : "flash",
 
+		/**
+		 * Start (include and prepare) flash object
+		 * Note: automatically done by system you don't need to...
+		 *
+		 * @method start
+		 *
+		 * @param callback {Function} The function to call in case of success
+		*/
 		start : function(callback) {
 			__startFlash(callback);
 		},
 
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -622,8 +872,17 @@ a.storage.type.flash = (function() {
 				a.storage.__printGetItem("flash", key, item);
 				return item;
 			}
+			return null;
 		},
 
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			this.start();
 			if(__support === true) {
@@ -632,6 +891,13 @@ a.storage.type.flash = (function() {
 			}
 		},
 
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -645,10 +911,11 @@ a.storage.type.flash = (function() {
 
 
 /**
- * @class silverlight
- * @extends a.storage.type
- *
  * silverlight external storage
+ *
+ * @class silverlight
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.silverlight = (function() {
 	"use strict";
@@ -658,7 +925,10 @@ a.storage.type.silverlight = (function() {
 		__id      = "silverlightstorage";
 
 	/**
-	 * Start silverlight and check availablility
+	 * Start silverlight and check availability
+	 *
+	 * @method __startSilverlight
+	 * @private
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -700,14 +970,51 @@ a.storage.type.silverlight = (function() {
 	};
 
 	return {
+		/**
+		 * Get the support state of silverlight.
+		 * Note: it may arrive little bit after using start function...
+		 *
+		 * @method support
+		 *
+		 * @return {Boolean} True if support is active, false in other cases
+		*/
 		support : function() {return __support;},
+		/**
+		 * Get the ready state of silverlight object
+		 *
+		 * @method ready
+		 *
+		 * @return {Boolean} True if it's ready, false in other cases
+		*/
 		ready : function() {return __ready;},
+		/**
+		 * @property engine
+		 * @type String
+		 * @default silverlight
+		 * @final
+		*/
 		engine : "silverlight",
 
+		/**
+		 * Start (include and prepare) silverlight object
+		 * Note: automatically done by system you don't need to...
+		 *
+		 * @method start
+		 *
+		 * @param callback {Function} The function to call in case of success
+		*/
 		start : function(callback) {
 			__startSilverlight(callback);
 		},
 
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -720,8 +1027,17 @@ a.storage.type.silverlight = (function() {
 				a.storage.__printGetItem("silverlight", key, value);
 				return value;
 			}
+			return null;
 		},
 
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			this.start();
 			if(__support === true) {
@@ -730,6 +1046,13 @@ a.storage.type.silverlight = (function() {
 			}
 		},
 
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -743,10 +1066,11 @@ a.storage.type.silverlight = (function() {
 
 
 /**
- * @class javafx
- * @extends a.storage.type
- *
  * javafx external storage
+ *
+ * @class javafx
+ * @static
+ * @namespace a.storage.type
 */
 a.storage.type.javafx = (function() {
 	"use strict";
@@ -756,7 +1080,10 @@ a.storage.type.javafx = (function() {
 		__id      = "javafxstorage";
 
 	/**
-	 * Start javaFX and check availablility
+	 * Start javaFX and check availability
+	 *
+	 * @method __startJavaFX
+	 * @private
 	 *
 	 * @param callback {Function | null} The callback function to call after loading
 	*/
@@ -784,17 +1111,54 @@ a.storage.type.javafx = (function() {
 		} else if(__support === true && a.isFunction(callback)) {
 			callback(__support);
 		}
-	}
+	};
 
 	return {
+		/**
+		 * Get the support state of javafx.
+		 * Note: it may arrive little bit after using start function...
+		 *
+		 * @method support
+		 *
+		 * @return {Boolean} True if support is active, false in other cases
+		*/
 		support : function() {return __support;},
+		/**
+		 * Get the ready state of javafx object
+		 *
+		 * @method ready
+		 *
+		 * @return {Boolean} True if it's ready, false in other cases
+		*/
 		ready : function() {return __ready;},
+		/**
+		 * @property engine
+		 * @type String
+		 * @default javafx
+		 * @final
+		*/
 		engine : "javafx",
 
+		/**
+		 * Start (include and prepare) javafx object
+		 * Note: automatically done by system you don't need to...
+		 *
+		 * @method start
+		 *
+		 * @param callback {Function} The function to call in case of success
+		*/
 		start : function(callback) {
 			__startJavaFX(callback);
 		},
 
+		/**
+		 * Get the stored key
+		 *
+		 * @method getItem
+		 *
+		 * @param key {String} The key to retrieve
+		 * @return {Mixed | null} The value in case of success, null if not found
+		*/
 		getItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -807,8 +1171,17 @@ a.storage.type.javafx = (function() {
 				a.storage.__printGetItem("javafx", key, value);
 				return value;
 			}
+			return null;
 		},
 
+		/**
+		 * Store a new key/value pair
+		 *
+		 * @method setItem
+		 *
+		 * @param key {String} The key to set
+		 * @param value {Mixed} The data to add
+		*/
 		setItem : function(key, value) {
 			this.start();
 			if(__support === true) {
@@ -817,6 +1190,13 @@ a.storage.type.javafx = (function() {
 			}
 		},
 
+		/**
+		 * Remove a given key from store
+		 *
+		 * @method removeItem
+		 *
+		 * @param key {String} The key to remove
+		*/
 		removeItem : function(key) {
 			this.start();
 			if(__support === true) {
@@ -837,10 +1217,11 @@ a.storage.type.javafx = (function() {
 ************************* */
 // TEMPORARY STORE SEARCH
 /**
- * @class temporary
- * @extends a.storage
- *
  * Select the best temp storage available
+ *
+ * @class temporary
+ * @static
+ * @namespace a.storage
 */
 a.storage.temporary = (function() {
 	"use strict";
@@ -862,16 +1243,20 @@ a.storage.temporary = (function() {
 
 // EXTERNAL STORE SEARCH
 /**
- * @class external
- * @extends a.storage
- *
  * Select the best external storage available
+ *
+ * @class external
+ * @static
+ * @namespace a.storage
 */
 a.storage.external = (function() {
 	var __started = false;
 
 	/**
 	 * Start the callback function if possible
+	 *
+	 * @method __startCallback
+	 * @private
 	 *
 	 * @param type {Object} The object to use for external
 	 * @param callback {Function | null} The function to launch if a store has been found
@@ -892,6 +1277,8 @@ a.storage.external = (function() {
 	return {
 		/**
 		 * Start the external tool, try to find an available store
+		 *
+		 * @method start
 		 *
 		 * @param callback {Function | null} The function to launch if a store has been found
 		*/
@@ -933,10 +1320,11 @@ a.storage.external = (function() {
 
 // PERSISTENT STORE SEARCH
 /**
- * @class persistent
- * @extends a.storage
- *
  * Select the best long term storage available
+ *
+ * @class persistent
+ * @static
+ * @namespace a.storage
 */
 a.storage.persistent = (function() {
 	"use strict";

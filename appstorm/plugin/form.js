@@ -23,9 +23,12 @@
 
 ************************************************************************ */
 
-/** @namespace form */
 /**
  * Manipulate HTML form by with a simple system
+ *
+ * @class form
+ * @static
+ * @namespace a
 */
 a.form = (function() {
 	"use strict";
@@ -40,9 +43,12 @@ a.form = (function() {
 	/**
 	 * Get the attribute from it's name
 	 *
+	 * @method __attr
+	 * @private
+	 *
 	 * @param el {DOMElement} An element to get hash from
 	 * @param attr {String | null} The attribute to search for that element (default : see __attr)
-	 * @returns {String | null} The hash tag associated (if found)
+	 * @return {String | null} The hash tag associated (if found)
 	*/
 	function __attr(el, attr) {
 		return (!a.isNull(el.getAttribute)) ? el.getAttribute(attr) : null;
@@ -51,8 +57,11 @@ a.form = (function() {
 	/**
 	 * Convert an HTMLCollection to array
 	 *
+	 * @method __htmlCollectionToArray
+	 * @private
+	 *
 	 * @param el {HTMLCollection} The collection to convert
-	 * @returns {Array} An array version
+	 * @return {Array} An array version
 	*/
 	function __htmlCollectionToArray(el) {
 		var ret = [],
@@ -66,8 +75,11 @@ a.form = (function() {
 	/**
 	 * Get the field key from given input
 	 *
+	 * @method __getFieldKey
+	 * @private
+	 *
 	 * @param e {DOMElement} The element o search value inside
-	 * @returns {String} The value found
+	 * @return {String} The value found
 	*/
 	function __getFieldKey(e) {
 		var name  = __attr(e, "name");
@@ -87,8 +99,11 @@ a.form = (function() {
 	/**
 	 * Get the field value for given input
 	 *
+	 * @method __getFieldValue
+	 * @private
+	 *
 	 * @param e {DOMElement} The element to search value inside
-	 * @returns {String} The value found
+	 * @return {String} The value found
 	*/
 	function __getFieldValue(e){
 		var type    = __attr(e, "type"),
@@ -104,8 +119,11 @@ a.form = (function() {
 	/**
 	 * From a given dom, get the list of elements inside
 	 *
+	 * @method __getFieldList
+	 * @private
+	 *
 	 * @param dom {DOMElement} The dom element to search inside
-	 * @returns {Array} The element list inside DOM
+	 * @return {Array} The element list inside DOM
 	*/
 	function __getFieldList(dom) {
 		var inputList     = dom.getElementsByTagName("input"),
@@ -134,11 +152,14 @@ a.form = (function() {
 	/**
 	 * Raise an error on input
 	 *
+	 * @method __validateError
+	 * @private
+	 *
 	 * @param el {DOMElement} The element where comes from error
 	 * @param id {String} The element id/name/class
 	 * @param name {String | null} The name (like min, pattern, ...) which is not valid, can be null
 	 * @param value {String | null} The current input value (can be used as parameter
-	 * @returns {Object} A validate object with everything inside if possible
+	 * @return {Object} A validate object with everything inside if possible
 	*/
 	function __validateError(el, id, name, value) {
 		// First : we need to get error element and translate if possible
@@ -172,18 +193,23 @@ a.form = (function() {
 		};
 	};
 
-	/** @lends form */
 	return {
 		/**
 		 * Allow to skip HTML5 form-novalidate tag or not (boolean)
+		 *
+		 * @property skipNoValidate
+		 * @type Boolean
+		 * @default false
 		*/
 		skipNoValidate : false,
 
 		/**
 		 * Get the list of element stored into given form
 		 *
+		 * @method get
+		 *
 		 * @param dom {DOMElement} The dom element to search inside (basically it should be document.getElementById("myFormId"))
-		 * @returns {Object} The list of input tags existing
+		 * @return {Object} The list of input tags existing
 		*/
 		get : function(dom) {
 			var inputList  = __getFieldList(dom),
@@ -219,12 +245,14 @@ a.form = (function() {
 
 		/**
 		 * Validate a form
-		 * TODO : multiple tester (email, file) is not supported
-		 * TODO : date field (date, datetime, datetime-local, month, time, week) are not supported
-		 * TODO : tel/file field are not supported
+		 * Note : multiple tester (email, file) is not supported
+		 * Note : date field (date, datetime, datetime-local, month, time, week) are not supported
+		 * Note : tel/file field are not supported
+		 *
+		 * @method validate
 		 *
 		 * @param dom {DOMElement} The dom element to search inside (basically it should be document.getElementById("myFormId"))
-		 * @returns {Array} An array with all errors listed inside, an empty array if there is no error to show
+		 * @return {Array} An array with all errors listed inside, an empty array if there is no error to show
 		*/
 		validate : function(dom) {
 			// On form tag, the "novalidate" allow to not validate a form
@@ -342,8 +370,10 @@ a.form = (function() {
 		/**
 		 * Validate and get the form content
 		 *
+		 * @method validateAndGet
+		 *
 		 * @param dom {DOMElement} The dom element to search inside (basically it should be document.getElementById("myFormId"))
-		 * @returns {Object} An object with error (boolean), errorList (Array), and contentList (Array)
+		 * @return {Object} An object with error (boolean), errorList (Array), and contentList (Array)
 		*/
 		validateAndGet : function(dom) {
 			var obj = {};

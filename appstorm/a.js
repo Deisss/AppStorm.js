@@ -41,28 +41,38 @@
 		synchronizer : load many async function, and wait for final one to start final callback
 
 ************************************************************************ */
-/** @namespace a */
+
+
 /**
  * Main AppStorm.JS object (define only the main objects here)
+ *
+ * @module a
 */
 window.appstorm = window.a = (function() {
 	"use strict";
 
 	var me = document.getElementById("a-core");
 
-	/** @lends a */
+	/**
+	 * @class a
+	 * @static
+	*/
 	var obj = {
 		/**
 		 * The core url (for vendor loading)
+		 *
+		 * @property url
+		 * @type String
 		*/
 		url : "",
 
 		/**
 		 * The value exist in given object/array
 		 *
+		 * @method contains
+		 *
 		 * @param obj {Array | Object} A collection to search in
 		 * @value {Mixed} The value to search
-		 *
 		*/
 		contains : function(obj, value) {
 			if(obj instanceof Array) {
@@ -83,8 +93,10 @@ window.appstorm = window.a = (function() {
 		 * FROM : http://www.xenoveritas.org/blog/xeno/the-correct-way-to-clone-javascript-arrays
 		 * Credits to them ! Little bug corrected :p
 		 *
+		 * @method clone
+		 *
 		 * @param obj {Object} A state object
-		 * @returns {Object} A new state object
+		 * @return {Object} A new state object
 		*/
 		clone : function(obj) {
 			if (a.isObject(obj)) {
@@ -119,8 +131,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Check a variable is a number
 		 *
+		 * @method isNumber
+		 *
 		 * @param o {Mixed} The variable to check
-		 * @returns {Boolean} True if it's a number, false in other cases
+		 * @return {Boolean} True if it's a number, false in other cases
 		*/
 		isNumber : function(n) {
 			return !isNaN(parseFloat(n)) && isFinite(n);
@@ -129,8 +143,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Check a variable is an object
 		 *
+		 * @method isObject
+		 *
 		 * @param o {Mixed} The variable to check
-		 * @returns {Boolean} True if it's an object, false in other cases
+		 * @return {Boolean} True if it's an object, false in other cases
 		*/
 		isObject : function(o) {
 			return (typeof(o) === "object" && o !== null);
@@ -139,8 +155,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Check a variable is a string
 		 *
+		 * @method isString
+		 *
 		 * @param s {Mixed} The variable to check
-		 * @returns {Boolean} True if it's a string, false in other cases
+		 * @return {Boolean} True if it's a string, false in other cases
 		*/
 		isString : function(s) {
 			return (typeof(s) === "string");
@@ -149,8 +167,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Check a variable is a function
 		 *
+		 * @method isFunction
+		 *
 		 * @param s {Mixed} The variable to check
-		 * @returns {Boolean} True if it's a function, false in other cases
+		 * @return {Boolean} True if it's a function, false in other cases
 		*/
 		isFunction : function(f) {
 			return (typeof(f) === "function");
@@ -159,8 +179,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Test a variable is undefined or null
 		 *
+		 * @method isNull
+		 *
 		 * @param u {Mixed} The variable to check
-		 * @returns {Boolean} True if it's a undefined variable, false in other cases
+		 * @return {Boolean} True if it's a undefined variable, false in other cases
 		*/
 		isNull : function(u) {
 			return (typeof(u) === "undefined" || u === null);
@@ -169,8 +191,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Test a variable is a boolean
 		 *
+		 * @method isBoolean
+		 *
 		 * @param u {Mixed} The variable to check
-		 * @returns {Boolean} True if it's a boolean, false in other cases
+		 * @return {Boolean} True if it's a boolean, false in other cases
 		*/
 		isBoolean : function(b) {
 			return (typeof(b) === "boolean");
@@ -179,8 +203,10 @@ window.appstorm = window.a = (function() {
 		/**
 		 * Test a variable is an array
 		 *
+		 * @method isArray
+		 *
 		 * @param ar {Mixed} The variable to check
-		 * @returns {Boolean} True if it's an array, false in other cases
+		 * @return {Boolean} True if it's an array, false in other cases
 		*/
 		isArray : function(ar) {
 			return (ar instanceof Array);
@@ -196,9 +222,13 @@ window.appstorm = window.a = (function() {
 }());
 
 
-/** @namespace console */
 /**
- * Binder for console system, allowing to temp data if needed (no console available at that time).
+ * wrapper for system console, allowing to use console even if there is not console support on given browser.
+ * Also, it does provide a trace utility in case of bug/check
+ *
+ * @class console
+ * @static
+ * @namespace a
 */
 a.console = (function() {
 	"use strict";
@@ -208,6 +238,9 @@ a.console = (function() {
 
 	/**
 	 * Output to console any given value. If console is not ready, the content will be stored into object, the list function allow to access stored content in this case
+	 *
+	 * @method __out
+	 * @private
 	 *
 	 * @param type {String} The type, like "log", "warn", "info", "error", ...
 	 * @param value {Mixed} The value to output
@@ -285,10 +318,11 @@ a.console = (function() {
 		}
 	};
 
-	/** @lends console */
 	return {
 		/**
 		 * Log data
+		 *
+		 * @method log
 		 *
 		 * @param value {Mixed} The value to log on debug
 		 * @param level {Integer | null} Indicate the message priority level, can be null
@@ -299,6 +333,8 @@ a.console = (function() {
 		/**
 		 * Warning data
 		 *
+		 * @method warn
+		 *
 		 * @param value {Mixed} The value to warning on debug
 		 * @param level {Integer | null} Indicate the message priority level, can be null
 		 * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
@@ -307,6 +343,8 @@ a.console = (function() {
 
 		/**
 		 * Information data
+		 *
+		 * @method info
 		 *
 		 * @param value {Mixed} The value to inform on debug
 		 * @param level {Integer | null} Indicate the message priority level, can be null
@@ -317,6 +355,8 @@ a.console = (function() {
 		/**
 		 * Error data
 		 *
+		 * @method error
+		 *
 		 * @param value {Mixed} The value to error on debug
 		 * @param level {Integer | null} Indicate the message priority level, can be null
 		 * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
@@ -326,8 +366,10 @@ a.console = (function() {
 		/**
 		 * List all currently stored content
 		 *
+		 * @method trace
+		 *
 		 * @param type {String | null} The string type (can be null)
-		 * @returns The stored data, the object got 4 properties : log, info, warn, error
+		 * @return The stored data, the object got 4 properties : log, info, warn, error
 		*/
 		trace : function(type) {
 			return (a.isString(type) && type in __data) ? __data[type] : __data;
@@ -335,6 +377,8 @@ a.console = (function() {
 
 		/**
 		 * Clear the stored content
+		 *
+		 * @method clear
 		*/
 		clear : function() {
 			__data = {log : [], warn : [], info : [], error : []};
@@ -344,23 +388,29 @@ a.console = (function() {
 
 
 
-/** @namespace parser */
 /**
- * provide parsing functionnality for using json, xml, html...
+ * provide parsing functionality for using json, xml, html...
+ *
+ * @class parser
+ * @static
+ * @namespace a
 */
 a.parser = {
-	/** @namespace parser.json */
 	/**
 	 * Basic JSON handler wich prevent from "no data" or "wrong data" input, with a log message to check
+	 *
+	 * @class json
+	 * @static
+	 * @namespace a.parser
 	*/
 	json : {
 		/**
 		 * Serialize a JSON into a string
 		 *
-		 * @memberof parser.json
+		 * @method stringify
 		 *
 		 * @param value {Mixed} Any data to be converted into String
-		 * @returns {String} A parsed string, or an empty string if the parsing fails
+		 * @return {String} A parsed string, or an empty string if the parsing fails
 		*/
 		stringify : function(value) {
 			try {
@@ -374,10 +424,10 @@ a.parser = {
 		/**
 		 * Deserialize a string into JSON
 		 *
-		 * @memberof parser.json
+		 * @method parse
 		 *
 		 * @param value {String} The value un-stringify
-		 * @returns {Mixed | null} The converted value
+		 * @return {Mixed | null} The converted value
 		*/
 		parse : function(value) {
 			try {
@@ -389,18 +439,21 @@ a.parser = {
 		}
 	},
 
-	/** @namespace parser.xml */
 	/**
 	 * Basic XML handler wich prevent from "no data" or "wrong data" input, with a log message to check
+	 *
+	 * @class xml
+	 * @static
+	 * @namespace a.parser
 	*/
 	xml : {
 		/**
 		 * Serialize a XML into a string
 		 *
-		 * @memberof parser.xml
+		 * @method stringify
 		 *
 		 * @param value {Mixed} Any data to be converted into String
-		 * @returns {String} A parsed string, or an empty string if the parsing fails
+		 * @return {String} A parsed string, or an empty string if the parsing fails
 		*/
 		stringify : function(value) {
 			if(!a.isNull(value) && !a.isNull(value.xml)) {
@@ -420,10 +473,10 @@ a.parser = {
 		/**
 		 * Deserialize a string into XML
 		 *
-		 * @memberof parser.xml
+		 * @method parse
 		 *
 		 * @param value {String} The value un-stringify
-		 * @returns {DOCElement | null} The resulting doc element (null in case of problem)
+		 * @return {DOCElement | null} The resulting doc element (null in case of problem)
 		*/
 		parse : function(value) {
 			if(!a.isNull(window.ActiveXObject)) {
@@ -458,10 +511,11 @@ a.parser = {
 
 
 /**
- * @class eventEmitter
- * @extends a
- *
  * Simple hash change checker to allow creating multi-page system
+ *
+ * @class eventEmitter
+ * @constructor
+ * @namespace a
 */
 a.eventEmitter = (function() {
 	"use strict";
@@ -473,6 +527,9 @@ a.eventEmitter = (function() {
 
 	/**
 	 * Clear the unused (empty) types
+	 *
+	 * @method __clearEventType
+	 * @private
 	 *
 	 * @param type {String} The type associated with current clearing
 	*/
@@ -488,6 +545,8 @@ a.eventEmitter = (function() {
 	/**
 	 * Set the name of event root type, you can specify your own "root name" to identify more easily the event emitter
 	 *
+	 * @method setName
+	 *
 	 * @param name {String} The name to set (default is "a.message")
 	*/
 	obj.prototype.setName = function(name) {
@@ -496,6 +555,8 @@ a.eventEmitter = (function() {
 
 	/**
 	 * Adding a listener to a specific message type
+	 *
+	 * @method addListener
 	 *
 	 * @param type {String} The event name
 	 * @param fn {Function} The function to attach
@@ -520,6 +581,8 @@ a.eventEmitter = (function() {
 
 	/**
 	 * Removing a listener to a specific message type
+	 *
+	 * @method removeListener
 	 *
 	 * @param type {String} The event name
 	 * @param fn {Function} The function to detach
@@ -553,6 +616,8 @@ a.eventEmitter = (function() {
 	/**
 	 * Remove all listeners for a given type
 	 *
+	 * @method removeAllListeners
+	 *
 	 * @param type {String} The event type to remove
 	*/
 	obj.prototype.removeAllListeners = function(type) {
@@ -567,6 +632,8 @@ a.eventEmitter = (function() {
 
 	/**
 	 * Clear all listeners from all event type
+	 *
+	 * @method clear
 	*/
 	obj.prototype.clear = function() {
 		var c = this.__base + ".clear";
@@ -583,6 +650,8 @@ a.eventEmitter = (function() {
 
 	/**
 	 * Call an event, according to it's type
+	 *
+	 * @method dispatch
 	 *
 	 * @param type {String} The event name to dispatch
 	 * @param data {Object} Anything you want to pass threw this event
@@ -606,10 +675,12 @@ a.eventEmitter = (function() {
 }());
 
 /**
- * @class message
- * @extends a
- *
  * The bus system to exchange message globally between all application object
+ *
+ * @class message
+ * @static
+ * @requires eventEmitter
+ * @namespace a
 */
 // Setting main event loop (general one where everybody can access it from everywhere)
 a.message = new a.eventEmitter();
@@ -625,9 +696,12 @@ a.message.setName = function(){};
 
 
 
-/** @namespace environment */
 /**
  * Main environment data store, allow to generally define some main rules for project
+ *
+ * @class environment
+ * @static
+ * @namespace a
 */
 a.environment = (function() {
 	"use strict";
@@ -637,10 +711,11 @@ a.environment = (function() {
 		console : "log"
 	};
 
-	/** @lends environment */
 	return {
 		/**
 		 * Get the stored value, null if nothing is stored
+		 *
+		 * @method get
 		 *
 		 * @param key {String} A value to get
 		*/
@@ -653,6 +728,8 @@ a.environment = (function() {
 
 		/**
 		 * Set the value to store
+		 *
+		 * @method set
 		 *
 		 * @param key {String} The key to store
 		 * @param value {Mixed} Some data to associate
@@ -674,6 +751,8 @@ a.environment = (function() {
 		/**
 		 * Remove a value stored into environment
 		 *
+		 * @method remove
+		 *
 		 * @param key {String} The environment stored key to remove
 		*/
 		remove : function(key) {
@@ -691,6 +770,8 @@ a.environment = (function() {
 
 		/**
 		 * Clear the stored content (all of them)
+		 *
+		 * @method clear
 		*/
 		clear : function() {
 			__data = {
@@ -714,7 +795,8 @@ a.environment = (function() {
 
 /**
  * @class ajax
- * @extends a
+ * @namespace a
+ * @constructor
  *
  * Ajax object to call server
  *
@@ -770,9 +852,11 @@ a.ajax = function(options, success, error) {
 /**
  * Parse the data to return the formated object (if needed)
  *
+ * @method parseResult
+ *
  * @param params {Object} The parameter list from configuration ajax
  * @param http {Object} The xmlHttpRequest started
- * @returns {Object | String} The parsed results
+ * @return {Object | String} The parsed results
 */
 a.ajax.prototype.parseResult = function(params, http) {
 	//We are in non async mode, so the function should reply something
@@ -785,6 +869,8 @@ a.ajax.prototype.parseResult = function(params, http) {
 
 /**
  * Send the ajax request
+ *
+ * @method send
 */
 a.ajax.prototype.send = function() {
 	var method = this.params.method.toUpperCase();
@@ -873,26 +959,22 @@ a.ajax.prototype.send = function() {
 
 
 
-/** @namespace timer */
 /**
  * Timer is a class to get access to a tick timer
+ *
+ * @class timer
+ * @static
+ * @namespace a
 */
 a.timer = (function() {
 	var delay = 50,
 		__data = {};
 
 	/**
-	 * Check a number is a number
-	 *
-	 * @param n {Integer} The number to check
-	 * @returns {Boolean} True if it's a number, false in other cases
-	*/
-	function isNumber(n) {
-		return !isNaN(parseFloat(n)) && isFinite(n);
-	};
-
-	/**
 	 * Proceed timer tick
+	 *
+	 * @method __tick
+	 * @private
 	*/
 	function __tick() {
 		// We dispatch a new tick
@@ -920,7 +1002,10 @@ a.timer = (function() {
 	/**
 	 * Generate a new random
 	 *
-	 * @returns A new integer generated
+	 * @method __generate
+	 * @private
+	 *
+	 * @return A new integer generated
 	*/
 	function __generate() {
 		var rnd = Math.floor(Math.random() * 1000000);
@@ -935,20 +1020,21 @@ a.timer = (function() {
 	// Auto-start timer
 	setInterval(__tick, delay);
 
-	/** @lends timer */
 	return {
 		/**
 		 * Register a function into timer tick
 		 *
+		 * @method add
+		 *
 		 * @param fct {Function} The function to bind
 		 * @param scope {Object | null} The scope to bind to function
 		 * @param timeout {Integer} The timeout when calling function
-		 * @returns {Integer} A generated id used to manipulate ticker access
+		 * @return {Integer} A generated id used to manipulate ticker access
 		*/
 		add : function(fct, scope, timeout) {
 			var id = __generate();
 
-			if(!isNumber(timeout) || timeout <= 0) {
+			if(!a.isNumber(timeout) || timeout <= 0) {
 				timeout = 1000;
 				a.console.error("The timeout has not been setted properly into timer, timeout has been setted to 1000ms", 1);
 			}
@@ -965,10 +1051,12 @@ a.timer = (function() {
 		/**
 		 * Register a function for a single timer shot
 		 *
+		 * @method once
+		 *
 		 * @param fct {Function} The function to bind
 		 * @param scope {Object | null} The scope to bind to function
 		 * @param timeout {Integer} The timeout when calling function
-		 * @returns {Integer} A generated id used to manipulate ticker access
+		 * @return {Integer} A generated id used to manipulate ticker access
 		*/
 		once : function(fct, scope, timeout) {
 			var id = this.add(function() {
@@ -983,7 +1071,9 @@ a.timer = (function() {
 		/**
 		 * Get a function registred into the timer
 		 *
-		 * @returns {Object | null} The object linked to id, or null if nothing is found
+		 * @method get
+		 *
+		 * @return {Object | null} The object linked to id, or null if nothing is found
 		*/
 		get : function(id) {
 			var item = __data[id];
@@ -996,8 +1086,10 @@ a.timer = (function() {
 		/**
 		 * Remove a function registred into the timer
 		 *
+		 * @method remove
+		 *
 		 * @param id {Integer} The id to delete
-		 * @returns {Boolean} The item has been delete or not
+		 * @return {Boolean} The item has been delete or not
 		*/
 		remove : function(id) {
 			var item = __data[id];
@@ -1010,6 +1102,8 @@ a.timer = (function() {
 
 		/**
 		 * Clear the current timer content
+		 *
+		 * @method clear
 		*/
 		clear : function() {
 			__data = {};
@@ -1021,9 +1115,12 @@ a.timer = (function() {
 
 
 
-/** @namespace loader */
 /**
  * Dynamic loader for many files type
+ *
+ * @class loader
+ * @static
+ * @namespace a
 */
 a.loader = (function() {
 	"use strict";
@@ -1038,9 +1135,12 @@ a.loader = (function() {
 	/**
 	 * Check the cache, and launch callback if uri is already listed in cache
 	 *
+	 * @method __checkCache
+	 * @private
+	 *
 	 * @param uri {String} The path to access data
 	 * @param callback {Function | null} The callback to apply after loader
-	 * @returns {Boolean} True if it's already inside cache, and false in other case
+	 * @return {Boolean} True if it's already inside cache, and false in other case
 	*/
 	function __checkCache(uri, callback) {
 		// Search in cache
@@ -1064,6 +1164,9 @@ a.loader = (function() {
 	/**
 	 * Insert into cache if needed the uri
 	 *
+	 * @method __populateCache
+	 * @private
+	 *
 	 * @param uri {String} The path to access data
 	 * @param args {Object} The arguments to check if cache is specified and policy to use
 	*/
@@ -1077,6 +1180,9 @@ a.loader = (function() {
 
 	/**
 	 * Append to header the given tag, used by JS and CSS loader especially
+	 *
+	 * @method __appendToHeader
+	 * @private
 	 *
 	 * @param el {DOM} A createElement type result
 	 * @param options {Object} HTML Options to add to link appended
@@ -1146,6 +1252,9 @@ a.loader = (function() {
 	/**
 	 * load some data threw AJAX
 	 *
+	 * @method __ajaxLoader
+	 * @private
+	 *
 	 * @param uri {String} The data path
 	 * @param callback {Function | null} The callback to apply in case of success
 	 * @param args {Object | null} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
@@ -1194,12 +1303,11 @@ a.loader = (function() {
 		(new a.ajax(options, handlerCallback, er)).send();
 	};
 
-	/** @lends loader */
 	return {
 		/**
 		 * Javascript loader
 		 *
-		 * @instance
+		 * @method js
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1216,7 +1324,7 @@ a.loader = (function() {
 		/**
 		 * JSONP loader
 		 *
-		 * @instance
+		 * @method jsonp
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1235,7 +1343,7 @@ a.loader = (function() {
 		/**
 		 * JSON loader
 		 *
-		 * @instance
+		 * @method json
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1260,7 +1368,7 @@ a.loader = (function() {
 		/**
 		 * XML loader
 		 *
-		 * @instance
+		 * @method xml
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1285,7 +1393,7 @@ a.loader = (function() {
 		/**
 		 * CSS loader
 		 *
-		 * @instance
+		 * @method css
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1309,7 +1417,7 @@ a.loader = (function() {
 		 * HTML loader
 		 * NOTE : only valid XHTML is accepted !
 		 *
-		 * @instance
+		 * @method html
 		 *
 		 * @param uri {String} The path to access content
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1342,7 +1450,7 @@ a.loader = (function() {
 		/**
 		 * JavaFX loader
 		 *
-		 * @instance
+		 * @method javafx
 		 *
 		 * @param uri {String} The path for given jar files to load
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1390,7 +1498,7 @@ a.loader = (function() {
 		/**
 		 * Flash loader
 		 *
-		 * @instance
+		 * @method flash
 		 *
 		 * @param uri {String} The path for given swf files to load
 		 * @param callback {Function | null} The callback to call after loading success
@@ -1422,7 +1530,7 @@ a.loader = (function() {
 		/**
 		 * Silverlight loader
 		 *
-		 * @instance
+		 * @method silverlight
 		 *
 		 * @param uri {String} The path for given xap files to load
 		 * @param callback {Function | null} The callback to call after loading success (NOTE : silverlight is not able to fire load event, so it's not true here...)
@@ -1476,9 +1584,9 @@ a.loader = (function() {
 		/**
 		 * Get the cache trace loaded
 		 *
-		 * @instance
+		 * @method trace
 		 *
-		 * @returns {Array} The cache trace
+		 * @return {Array} The cache trace
 		*/
 		trace : function() {
 			return __cache;

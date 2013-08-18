@@ -23,9 +23,12 @@
 
 ************************************************************************ */
 
-/** @namespace keyboard */
 /**
  * Simple wrapper for Mousetrap to have unified interface with other AppStorm.JS system
+ *
+ * @class keyboard
+ * @static
+ * @namespace a
 */
 a.keyboard = (function(mt) {
 	"use strict";
@@ -44,10 +47,11 @@ a.keyboard = (function(mt) {
 
 	// Create a simple binding between Mousetrap implementation, and AppStorm.JS implementation
 	} else {
-		/** @lends keyboard */
 		return {
 			/**
 			 * Register a function for a given keypress command
+			 *
+			 * @method addListener
 			 *
 			 * @param key {String} The key/keylist to bind
 			 * @param fct {Function} The function to bind
@@ -59,6 +63,8 @@ a.keyboard = (function(mt) {
 			/**
 			 * Remove a binding for a given key
 			 *
+			 * @method removeListener
+			 *
 			 * @param key {String} The key/keylist to unbind
 			*/
 			removeListener : function(key) {
@@ -67,6 +73,8 @@ a.keyboard = (function(mt) {
 			},
 			/**
 			 * Reset all bindings
+			 *
+			 * @method reset
 			*/
 			reset : function() {
 				a.console.log(_k + "reset: clear all keys", 3);
@@ -74,6 +82,8 @@ a.keyboard = (function(mt) {
 			},
 			/**
 			 * Reset all bindings
+			 *
+			 * @method clear
 			*/
 			clear : function() {
 				a.console.log(_k + "clear: clear all keys", 3);

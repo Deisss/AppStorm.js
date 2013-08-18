@@ -71,10 +71,11 @@
 
 
 /**
- * @class state
- * @extends a
- *
  * Managing state threw this interface
+ *
+ * @class state
+ * @static
+ * @namespace a
 */
 a.state = (function() {
 	"use strict";
@@ -96,8 +97,11 @@ a.state = (function() {
 	/**
 	 * Convert anything into an array, used to convert CSS/JS, HTML, ... file listing
 	 *
+	 * @method __arrayConverter
+	 * @private
+	 *
 	 * @param value {Mixed} A value to convert
-	 * @returns {Array} A value converted, or dropped if it was not possible to convert
+	 * @return {Array} A value converted, or dropped if it was not possible to convert
 	*/
 	function __arrayConverter(value) {
 		if(a.isArray(value)) {
@@ -111,7 +115,10 @@ a.state = (function() {
 	/**
 	 * Generate a unique id
 	 *
-	 * @returns {Integer} A unique id, different from previous one
+	 * @method __rnd
+	 * @private
+	 *
+	 * @return {Integer} A unique id, different from previous one
 	*/
 	function __rnd() {
 		// Generating a unique id for loader
@@ -125,9 +132,12 @@ a.state = (function() {
 	/**
 	 * From a given list, keep only item appearing only once
 	 *
+	 * @method __extractUniqueId
+	 * @private
+	 *
 	 * @param list {Array} A list of state to select
 	 * @param tester {Function | null} An extra function to use for adding selection over existing selection
-	 * @returns {Array} The extracted array of unique id
+	 * @return {Array} The extracted array of unique id
 	*/
 	function __extractUniqueId(list, tester) {
 		var path = [],
@@ -156,8 +166,11 @@ a.state = (function() {
 	/**
 	 * From a given list, we search for maximum level (deeper child)
 	 *
+	 * @method __getByLevel
+	 * @private
+	 *
 	 * @param list {Array} The list to find
-	 * @returns {Array} The system sorted by level
+	 * @return {Array} The system sorted by level
 	*/
 	function __getByLevel(list) {
 		var max = 0,
@@ -175,8 +188,11 @@ a.state = (function() {
 	/**
 	 * From a given hash, select items which should be deleted (can't stay on this hash), and parent of course
 	 *
+	 * @method __getExternalDelete
+	 * @private
+	 *
 	 * @param hash {String} The hashtag to search and register as delete
-	 * @returns {Array} An array of id to validate for delete
+	 * @return {Array} An array of id to validate for delete
 	*/
 	function __getExternalDelete(hash) {
 		var hashNew = __getTreeHashTester(hash),
@@ -222,8 +238,11 @@ a.state = (function() {
 	/**
 	 * From a given hash, generate a function which select an item (or not) regarding it's hash code (including template system)
 	 *
+	 * @method __getTreeHashTester
+	 * @private
+	 *
 	 * @param hash {String} Any hashtag to search
-	 * @returns {Function} The function ready to use inside tree helper
+	 * @return {Function} The function ready to use inside tree helper
 	*/
 	function __getTreeHashTester(hash) {
 		return function(item) {
@@ -257,8 +276,11 @@ a.state = (function() {
 	/**
 	 * From a given id, generate a function which select an item (or not) regarding it's id
 	 *
+	 * @method __getTreeIdTester
+	 * @private
+	 *
 	 * @param id {String | Integer | Array} Any id to search
-	 * @returns {Function} The function ready to use inside tree helper
+	 * @return {Function} The function ready to use inside tree helper
 	*/
 	function __getTreeIdTester(id) {
 		return function(item) {
@@ -277,9 +299,12 @@ a.state = (function() {
 	/**
 	 * Allow to select item regarding both hashtag, or exist as id
 	 *
+	 * @method __getTreeHashAndIdTester
+	 * @private
+	 *
 	 * @param hash {String} The hashtag to check
 	 * @param idList {Array} The id list to check
-	 * @returns {Function} The function ready to use inside tree helper
+	 * @return {Function} The function ready to use inside tree helper
 	*/
 	function __getTreeHashAndIdTester(hash, idList) {
 		var f1 = __getTreeIdTester(idList),
@@ -296,8 +321,11 @@ a.state = (function() {
 	/**
 	 * This function try to find children for a given object, it is directly used by system (does not return any function)
 	 *
+	 * @method __getTreeFiller
+	 * @private
+	 *
 	 * @param item {Object} Should be a state
-	 * @returns {Array} An item list, or empty list if nothing if found
+	 * @return {Array} An item list, or empty list if nothing if found
 	*/
 	function __getTreeFiller(item) {
 		return (a.isObject(item) && a.isArray(item.children)) ? item.children : [];
@@ -306,8 +334,11 @@ a.state = (function() {
 	/**
 	 * Filter an element to extract data, it is directly used by system (does not return any function)
 	 *
+	 * @method __getTreeConverterId
+	 * @private
+	 *
 	 * @param item {Object} Should be a state
-	 * @returns {Integer} The id found
+	 * @return {Integer} The id found
 	*/
 	function __getTreeConverterId(item) {
 		return (a.isObject(item)) ? item.id : -1;
@@ -320,6 +351,9 @@ a.state = (function() {
 	*/
 	/**
 	 * Main process function
+	 *
+	 * @method __proceed
+	 * @private
 	 *
 	 * @param data {Object} Object from hash event, contains value (current hash) and old (previous hash)
 	*/
@@ -431,6 +465,8 @@ a.state = (function() {
 	return {
 		/**
 		 * Erase the full state tree stored
+		 *
+		 * @method clear
 		*/
 		clear : function() {
 			__root = [];
@@ -439,7 +475,9 @@ a.state = (function() {
 		/**
 		 * Get a copy of current tree stored into system
 		 *
-		 * @returns {Array} A clone of current stored object
+		 * @method tree
+		 *
+		 * @return {Array} A clone of current stored object
 		*/
 		tree : function() {
 			return a.clone(__root);
@@ -448,9 +486,11 @@ a.state = (function() {
 		/**
 		 * Register a state
 		 *
+		 * @method add
+		 *
 		 * @param ctrl {Object} A state (see create function from a.state) to register
 		 * @param callback {Function | null} A callback to call after add, ONLY if loadOnStartup is defined
-		 * @returns {String | null} The control id setted, or a null value if we could not add state
+		 * @return {String | null} The control id setted, or a null value if we could not add state
 		*/
 		add : function(ctrl, callback) {
 			// Only state type are accepted here
@@ -582,8 +622,10 @@ a.state = (function() {
 		/**
 		 * Get an element regarding it's id
 		 *
+		 * @method getById
+		 *
 		 * @param id {String | Integer} The id to find in list
-		 * @returns {Object | null} The result content
+		 * @return {Object | null} The result content
 		*/
 		getById : function(id) {
 			return a.state.helper.tree.getItem(__root, __getTreeFiller, __getTreeIdTester(id));
@@ -591,6 +633,8 @@ a.state = (function() {
 
 		/**
 		 * Remove an element regarding it's id
+		 *
+		 * @method removeById
 		 *
 		 * @param id {String | Integer} The id to find in list
 		*/
@@ -611,6 +655,8 @@ a.state = (function() {
 
 		/**
 		 * From a given id, load a state without modify hashtag, and allow controller to stay alive on specific hashtag given
+		 *
+		 * @method loadById
 		 *
 		 * @param id {String | Integer} The controller id to load
 		 * @param hashtagList {Array | null} The hastag to let it stay alive
@@ -662,6 +708,8 @@ a.state = (function() {
 		 * From a given id, unload from this id, including all children
 		 * NOTE : only item created with loadById can be deleted using this function
 		 *
+		 * @method unloadById
+		 *
 		 * @param id {String | Integer} The controller to unload
 		 * @param callback {Function | null} callback function after unloading ends
 		*/
@@ -688,6 +736,8 @@ a.state = (function() {
 
 		/**
 		 * Ask to reload an id, and all children
+		 *
+		 * @method forceReloadById
 		 *
 		 * @param id {String | Integer} The id to force reload
 		 * @param callback {Function | null} callback function after unloading ends
@@ -759,8 +809,10 @@ a.state = (function() {
 		/**
 		 * Test a given hash got at least one children using it
 		 *
+		 * @method hashExists
+		 *
 		 * @param hash {String} The hashtag to search
-		 * @returns {Boolean} True the hash is defined and does exist, false in other case
+		 * @return {Boolean} True the hash is defined and does exist, false in other case
 		*/
 		hashExists : function(hash) {
 			if(!a.isString(hash) || hash === "") {
@@ -775,7 +827,9 @@ a.state = (function() {
 		 * INTERNAL USE ONLY
 		 * Get the unique id currently used
 		 *
-		 * @returns {Integer} The current id
+		 * @method __currentGeneratedId
+		 *
+		 * @return {Integer} The current id
 		*/
 		__currentGeneratedId : function() {
 			return __req;
@@ -783,15 +837,18 @@ a.state = (function() {
 		
 
 		/**
-		 * @class type
-		 * @extends a.state
-		 *
 		 * Allow to manage parameter object, to add custom function & co
 		 * (like memory, temporary into variable)
+		 *
+		 * @class type
+		 * @static
+		 * @namespace a.state
 		*/
 		type : {
 			/**
 			 * Add a custom type to existing parameter system
+			 *
+			 * @method add
 			 *
 			 * @param id {String} The id to register (like myHandler, ...)
 			 * @param fct {Function} The function to bind to this hash (null to erase)
@@ -803,8 +860,10 @@ a.state = (function() {
 			/**
 			 * Get a stored custom parameter function
 			 *
+			 * @method get
+			 *
 			 * @param id {String} The corresponding id to search
-			 * @returns {Function | null} The founded function or null if something happens
+			 * @return {Function | null} The founded function or null if something happens
 			*/
 			get : function(id) {
 				if(a.isFunction(__param[id])) {
@@ -816,7 +875,9 @@ a.state = (function() {
 			/**
 			 * Get the full list of parameters types stored by user
 			 *
-			 * @returns {Object} The parameter list
+			 * @method list
+			 *
+			 * @return {Object} The parameter list
 			*/
 			list : function() {
 				return __param;
@@ -824,10 +885,11 @@ a.state = (function() {
 		},
 
 		/**
-		 * @class helper
-		 * @extends a.state
-		 *
 		 * Helper for tree controller
+		 *
+		 * @class helper
+		 * @static
+		 * @namespace a.state
 		*/
 		helper : {
 			tree:{},
@@ -845,10 +907,11 @@ a.state = (function() {
 
 
 /**
- * @class tree
- * @extends a.state.helper
- *
  * Tree manipulation used by state
+ *
+ * @class tree
+ * @static
+ * @namespace a.state.helper
 */
 a.state.helper.tree = {
 	/**
@@ -858,10 +921,12 @@ a.state.helper.tree = {
 	 * Ex converter (must return something, even null) :
 	 * function(item){return item.id;}
 	 *
+	 * @method flat
+	 *
 	 * @param tree {Array} A tree structure to transform
 	 * @param filler {Function} From an item, give back the potential list of children to add...
 	 * @param converter {Function | null} Used to transform every items before they get into array
-	 * @returns {Array} A flatten modified array
+	 * @return {Array} A flatten modified array
 	*/
 	flat : function(tree, filler, converter) {
 		var result = [];
@@ -893,10 +958,12 @@ a.state.helper.tree = {
 	 * Ex : filler (must return an array, so send back empty array in case of problem) :
 	 * function(item){return item.children;}
 	 *
+	 * @method getItem
+	 *
 	 * @param tree {Array} A tree structure to search inside
 	 * @param filler {Function} From an item, give back the potential list of children to search inside...
 	 * @param tester {Function} The function to test if item is the good one or not
-	 * @returns {Object | null} An object selected, or null if no item found
+	 * @return {Object | null} An object selected, or null if no item found
 	*/
 	getItem : function(tree, filler, tester) {
 		if(!a.isArray(tree) || !a.isFunction(tester) || !a.isFunction(filler)) {
@@ -921,10 +988,12 @@ a.state.helper.tree = {
 	 * Check if the given tester found in the given tree
 	 * @see getItem (used internally)
 	 *
+	 * @method isInBranch
+	 *
 	 * @param tree {Array} A tree structure to search inside
 	 * @param filler {Function} From an item, give back the potential list of children to search inside...
 	 * @param tester {Function} The function to test if item is the good one or not
-	 * @returns {Boolean} True if the selected item is in given tree, false in other case
+	 * @return {Boolean} True if the selected item is in given tree, false in other case
 	*/
 	isInBranch : function(tree, filler, tester) {
 		var item = this.getItem(tree, filler, tester);
@@ -939,6 +1008,8 @@ a.state.helper.tree = {
 	 * function(item){if(item.hash === hash || item.hash === "*"){return true;}; return false;}
 	 * Ex : filler (must return an array, so send back empty array in case of problem) :
 	 * function(item){return item.children;}
+	 *
+	 * @method selectBranch
 	 *
 	 * @param tree {Array} A tree structure to select inside
 	 * @param filler {Function} From an item, give back the potential list of children to search inside...
@@ -981,6 +1052,8 @@ a.state.helper.tree = {
 	 *
 	 * If we want level 1, we get array [2, 3] (and 2, 3 contains 4, 5), if we want level 2, we get [4, 5] (nothing inside).
 	 * This function is used to know loading/unloading sequence priority (we must unload 4 before 2, we must load 3 before 5...)
+	 *
+	 * @method selectLevel
 	 *
 	 * @param tree {Array} A tree structure to select inside
 	 * @param filler {Function} From an item, give back the potential list of children to search inside...
@@ -1027,6 +1100,10 @@ a.state.helper.tree = {
 /**
  * Release a chain (full unload, or full load)
  *
+ * @class chainer
+ * @namespace a.state.helper
+ * @constructor
+ *
  * @param type {String} Can be "unload", or "load"
  * @param path {Array} The path to add or delete
  * @param allowed {Array} Array of id allowed into system
@@ -1041,6 +1118,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 	/**
 	 * Handle a chain error
+	 *
+	 * @method __error
+	 * @private
 	 *
 	 * @param resource {String} The uri which fail to load
 	 * @param status {String} The error status (like 404)
@@ -1063,6 +1143,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	 * start level callback function.
 	 * This is used to not have outside scope problem.
 	 *
+	 * @method __generateStartLevelCallback
+	 * @private
+	 *
 	 * @param level {Array} The current level to perform
 	*/
 	function __generateStartLevelCallback(level) {
@@ -1071,6 +1154,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 	/**
 	 * Create a callback function for loader system
+	 *
+	 * @method __generateDefaultLoader
+	 * @private
 	 *
 	 * @param fct {Function} The loader function used
 	 * @param uri {String} The uri to load
@@ -1090,6 +1176,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	/**
 	 * Replace every needed content with data stored
 	 *
+	 * @method __parseOptions
+	 * @private
+	 *
 	 * @param name {String | null} The name to give to data
 	 * @param internal {String} The hash (internal one with param definition)
 	 * @param options {Object} The data parameter for calling ajax request
@@ -1106,11 +1195,14 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	/**
 	 * Specific data loading for data parameter
 	 *
+	 * @method __generateDefaultDataLoader
+	 * @private
+	 *
 	 * @param name {String | null} The name to give to data
 	 * @param data {String} The data url to load
 	 * @param options {Object} The data parameter for calling ajax request
 	 * @param internal {String} The hash (internal one with param definition)
-	 * @returns {Function} The function to use for loading data
+	 * @return {Function} The function to use for loading data
 	*/
 	function __generateDefaultDataLoader(name, data, options, internal) {
 		var opt  = a.clone(options),
@@ -1173,6 +1265,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 	/**
 	 * From a list of url, load every resource
+	 *
+	 * @method __generateLoader
+	 * @private
 	 *
 	 * @param state {Object} The state object with all needed data inside to perform scan
 	 * @param callback {Function} The function to call when load is finished
@@ -1303,6 +1398,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	/**
 	 * Start a state chain (unload, or load chain)
 	 *
+	 * @method __startState
+	 * @private
+	 *
 	 * @param state {Object} A state to start
 	 * @param clb {Function} The callback to apply on success (or fail)
 	*/
@@ -1359,6 +1457,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	/**
 	 * Unload a full state level
 	 *
+	 * @method __startLevel
+	 * @private
+	 *
 	 * @param stateList {Array} A list of state to delete
 	 * @param clb {Function} The callback to apply on success (or fail)
 	*/
@@ -1407,18 +1508,21 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 
 
 /**
- * @class parameter
- * @extends a.state.helper
- *
  * Allow parameter inside string system, it is used for many things : parameters inside data url, inside options, inside hashtag...
+ *
+ * @class parameter
+ * @static
+ * @namespace a.state.helper
 */
 a.state.helper.parameter = {
 	/**
 	 * From a given string, we extract parameter inside
 	 *
+	 * @method extract
+	 *
 	 * @param str {String} The string to extract param from
 	 * @param customReg {RegExp} A new regex to replace current one
-	 * @returns {Array} An array with every element as object key : name (the key name), regex (the linked regex), start (integer) as content
+	 * @return {Array} An array with every element as object key : name (the key name), regex (the linked regex), start (integer) as content
 	*/
 	extract : function(str, customReg) {
 		// Example allowed : " id : [a-fA-F0-9]+ is valid
@@ -1464,10 +1568,12 @@ a.state.helper.parameter = {
 	/**
 	 * Replace a parameter at a specific position
 	 *
+	 * @method replace
+	 *
 	 * @param str {String} The string to use as replacement
 	 * @param param {Object} An extracted parameter from extract function
 	 * @param custom {String | null} A custom string to add to system
-	 * @returns {String} The string replaced with new content
+	 * @return {String} The string replaced with new content
 	*/
 	replace : function(str, param, custom) {
 		custom = (!a.isNull(custom)) ? custom : "(" + param.regex + ")";
@@ -1476,6 +1582,8 @@ a.state.helper.parameter = {
 
 	/**
 	 * Replace inside a given str, the parameters found in internal, by value found in hash
+	 *
+	 * @method extrapolate
 	 *
 	 * @param str {String} The string to replace parameters inside
 	 * @param hash {String} The current system hash
