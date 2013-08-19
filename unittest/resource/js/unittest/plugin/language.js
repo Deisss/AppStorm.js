@@ -348,6 +348,52 @@ test("a.language.translate-working", function() {
 });
 
 
+// In the translate process, a sub element with a parent translated, will not be altered...
+test("a.language.translate-subelement", function() {
+	a.language.clear();
+
+	var id = "unittest-translate-subelement";
+
+	// First we setup environment
+	a.language.addSingleTranslation("en", "subelement", "subelementcontent", false);
+	a.language.addSingleTranslation("fr", "subelement", "translatedsub", false);
+
+	var el = document.createElement("p");
+	el.id = id;
+	el.style.display = "none";
+	el.setAttribute("data-tr", "subelement");
+
+	var text = document.createTextNode("previous-translated");
+	el.appendChild(text);
+
+	var subelement = document.createElement("a");
+	subelement.id = id + "aa";
+	subelement.appendChild(document.createTextNode("not translated"));
+	el.appendChild(subelement);
+
+	document.body.appendChild(el);
+
+	function __extractDirectText(el) {
+		var child = el.childNodes,
+			res = "";
+		for(var i=0, l=child.length; i<l; ++i) {
+			if(child[i].nodeType === 3) {
+				res += child[i].nodeValue;
+			}
+		}
+		return res;
+	};
+
+	a.language.setCurrent("fr");
+	strictEqual(document.getElementById(id + "aa").innerHTML, "not translated", "test sub elements does still exist and are not affected");
+	strictEqual(__extractDirectText(document.getElementById(id)), "translatedsub", "test root element is translated");
+
+	a.language.setCurrent("en");
+	strictEqual(document.getElementById(id + "aa").innerHTML, "not translated", "test sub elements does still exist and are not affected");
+	strictEqual(__extractDirectText(document.getElementById(id)), "subelementcontent", "test root element is translated");
+});
+
+
 // In this test we try to translate with variable included inside dom
 test("a.language.translate-variable", function() {
 	a.language.clear();

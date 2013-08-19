@@ -311,11 +311,33 @@ a.language = (function() {
 
 					// We try using DOM
 					} else if(!a.isNull(node.childNodes)) {
-						// First we remove all children
+						// First we remove all text type children
+						var l   = node.childNodes.length,
+							trn = document.createTextNode(tr),
+							ins = false;
+						while(l--) {
+							var tmpEl = node.childNodes[l];
+							// We remove only text node type
+							if(tmpEl.nodeType === 3) {
+								// We insert of first time we saw that
+								if(!ins) {
+									node.insertBefore(trn, tmpEl);
+									ins = true;
+								}
+								node.removeChild(tmpEl);
+							}
+						}
+						// If nothing was removed, so no translate has been aded, we can add it
+						if(!ins) {
+							node.appendChild(trn);
+						}
+						/*
+						// Old code: remove all children
 						while(node.childNodes.length > 0) {
 							node.removeChild(node.firstChild);
 						}
 						node.appendChild(document.createTextNode(tr));
+						*/
 
 					// Rollback only if needed...
 					} else {
