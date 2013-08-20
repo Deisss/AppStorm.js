@@ -44,6 +44,7 @@ a.language = (function() {
 		// Contains the possible list of translation
 		__allowed = ["en", "fr", "de", "sp"],
 		__dict    = {},
+		__behavior= "leave",
 		__attr    = "data-tr",
 		__custom  = "data-tr-attr",
 		__stored  = "a_language_store_",
@@ -311,33 +312,36 @@ a.language = (function() {
 
 					// We try using DOM
 					} else if(!a.isNull(node.childNodes)) {
-						// First we remove all text type children
 						var l   = node.childNodes.length,
-							trn = document.createTextNode(tr),
-							ins = false;
-						while(l--) {
-							var tmpEl = node.childNodes[l];
-							// We remove only text node type
-							if(tmpEl.nodeType === 3) {
-								// We insert of first time we saw that
-								if(!ins) {
-									node.insertBefore(trn, tmpEl);
-									ins = true;
+							trn = document.createTextNode(tr);
+
+						if(__behavior === "leave") {
+							// First we remove all text type children
+							var ins = false;
+							while(l--) {
+								var tmpEl = node.childNodes[l];
+								// We remove only text node type
+								if(tmpEl.nodeType === 3) {
+									// We insert of first time we saw that
+									if(!ins) {
+										node.insertBefore(trn, tmpEl);
+										ins = true;
+									}
+									node.removeChild(tmpEl);
 								}
-								node.removeChild(tmpEl);
 							}
-						}
-						// If nothing was removed, so no translate has been aded, we can add it
-						if(!ins) {
+							// If nothing was removed, so no translate has been aded, we can add it
+							if(!ins) {
+								node.appendChild(trn);
+							}
+
+						// In erase behavior, we delete everything before placing content
+						} else {
+							while(l--) {
+								node.removeChild(node.firstChild);
+							}
 							node.appendChild(trn);
 						}
-						/*
-						// Old code: remove all children
-						while(node.childNodes.length > 0) {
-							node.removeChild(node.firstChild);
-						}
-						node.appendChild(document.createTextNode(tr));
-						*/
 
 					// Rollback only if needed...
 					} else {
@@ -365,6 +369,26 @@ a.language = (function() {
 	}
 
 	return {
+		/**
+		 * Set the a.language behavior
+		 *
+		 * @param behavior {String} The new behavior to set
+		*/
+		setBehavior : function(behavior) {
+			__behavior = (behavior === "erase") ? "erase" : "leave";
+		},
+
+		/**
+		 * Get or set the a.language behavior
+		 *
+		 * @method getBehavior
+		 *
+		 * @return {String} The system behavior
+		*/
+		getBehavior : function() {
+			return __behavior;
+		},
+
 		/**
 		 * Get the current stored language
 		 *
