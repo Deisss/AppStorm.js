@@ -34,6 +34,38 @@ test("a.ajax.header", function() {
 
 /*
 ---------------------------------
+  ABORT RELATED
+---------------------------------
+*/
+test("a.ajax.abort", function() {
+	stop();
+	expect(1);
+
+
+	// Prevent scope change
+	var se = strictEqual,
+		st = start;
+
+	var ajx = new a.ajax({
+		url : "./resource/data/ajax/abort.php",
+		type : "raw",
+		cache : true
+	}, function(){
+		se(false, true, "The abort has not been used");
+		st();
+	}, function() {
+		se(true, true, "abort works");
+		st();
+	});
+
+	// Starting and waiting reply
+	ajx.send();
+	// Aborting request, and check fail
+	ajx.abort();
+});
+
+/*
+---------------------------------
   TYPE RELATED (JSON, XML, ...)
 ---------------------------------
 */

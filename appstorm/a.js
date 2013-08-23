@@ -879,6 +879,17 @@ a.ajax.prototype.parseResult = function(params, http) {
 };
 
 /**
+ * Manually abort the request
+ *
+ * @method abort
+*/
+a.ajax.prototype.abort = function() {
+	try {
+		this.request.abort();
+	} catch(e) {}
+};
+
+/**
  * Send the ajax request
  *
  * @method send
