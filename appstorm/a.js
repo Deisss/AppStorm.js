@@ -51,6 +51,8 @@
 window.appstorm = window.a = (function() {
 	"use strict";
 
+	var __defaultAjaxOptions = {};
+
 	/**
 	 * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core">here</a>
 	 *
@@ -210,6 +212,31 @@ window.appstorm = window.a = (function() {
 		*/
 		isArray : function(ar) {
 			return (ar instanceof Array);
+		},
+
+		/**
+		 * Define the default ajax options to send on every request.
+		 * At any time, by providing good options, you can override this content on a single ajax request.
+		 *
+		 * @method setDefaultAjaxOptions
+		 *
+		 * @param options {Object} The default options to set
+		*/
+		setDefaultAjaxOptions : function(options) {
+			if(a.isObject(options)) {
+				__defaultAjaxOptions = options;
+			}
+		},
+
+		/**
+		 * Get the default ajax options currently stored (and used by every ajax request)
+		 *
+		 * @method getDefaultAjaxOptions
+		 *
+		 * @return {Object} The default ajax options setted
+		*/
+		getDefaultAjaxOptions : function() {
+			return __defaultAjaxOptions;
 		}
 	};
 
@@ -819,29 +846,39 @@ a.ajax = function(options, success, error) {
 	"use strict";
 
 	this.params = {
-		url    : "",    //Allowed type : any URL
-		method : "GET", //Allowed type : "GET", "POST"
-		type   : "raw", //Allowed type : raw, json, xml
-		async  : true,  //Allowed type : true, false
-		cache  : false, //Allowed type : true, false
-		data   : {},    //Allowed type : any kind of object composed of key => value
-		header : {}     //Allowed type : any kind of object composed of key => value
+		url    : "",    // Allowed type : any URL
+		method : "GET", // Allowed type : "GET", "POST"
+		type   : "raw", // Allowed type : raw, json, xml
+		async  : true,  // Allowed type : true, false
+		cache  : false, // Allowed type : true, false
+		data   : {},    // Allowed type : any kind of object composed of key => value
+		header : {}     // Allowed type : any kind of object composed of key => value
 	};
+
+	var defaultParams = a.getDefaultAjaxOptions();
 
 	// Binding result function
 	this.success = (a.isFunction(success)) ? success : function(){};
 	this.error   = (a.isFunction(error)) ? error : function(){};
 
-	//Populate params with options
+	// Populate params with options
 	for(var p in this.params) {
-		//We check given options are same type
+		// We check given options are same type (from default)
+		if(p in defaultParams && typeof(defaultParams[p]) === typeof(this.params[p])) {
+			this.params[p] = defaultParams[p];
+		}
+		// We check given options are same type (from specific request)
 		if(p in options && typeof(options[p]) === typeof(this.params[p])) {
 			this.params[p] = options[p];
 		}
 	}
 
 	// Handle specific case for data
-	if(a.isString(options.data)) {
+	if(a.isString(defaultParams.data)) {
+		this.params.data = defaultParams.data;
+	}
+	// Correct override (if there is) of defaultParams
+	if(a.isString(options.data) || a.isObject(options.data)) {
 		this.params.data = options.data;
 	}
 

@@ -834,6 +834,7 @@ a.state = (function() {
 		 * Get the unique id currently used
 		 *
 		 * @method __currentGeneratedId
+		 * @private
 		 *
 		 * @return {Integer} The current id
 		*/
