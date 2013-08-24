@@ -66,6 +66,44 @@ test("a.ajax.abort", function() {
 
 /*
 ---------------------------------
+  DEFAULT OPTIONS RELATED
+---------------------------------
+*/
+// Usage of defaultOptions
+test("a.ajax.defaultOptions", function() {
+	stop();
+	expect(2);
+
+	// We setup same request as header one, but with defaultOptions
+	a.setDefaultAjaxOptions({
+		url : "./resource/data/ajax/header.php",
+		type : "raw",
+		cache : true,
+		header : {
+			unittest : "youpi"
+		}
+	});
+
+	// Prevent scope change
+	var se = strictEqual,
+		st = start;
+
+	// Test url
+	strictEqual(a.getDefaultAjaxOptions().url, "./resource/data/ajax/header.php", "Test default options stored");
+
+	var ajx = new a.ajax({}, function(res){
+		se(res, "youpi", "Testing header passed threw request");
+		// Now test is done => clear
+		a.setDefaultAjaxOptions({});
+		st();
+	});
+
+	// Starting and waiting reply
+	ajx.send();
+});
+
+/*
+---------------------------------
   TYPE RELATED (JSON, XML, ...)
 ---------------------------------
 */
