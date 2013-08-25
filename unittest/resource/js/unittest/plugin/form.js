@@ -8,10 +8,10 @@ module("PLUGIN/form");
 ---------------------------------
 */
 // Test default behavior
-test("a.form.default", function() {
+test("a.form.get-default-test", function() {
 	expect(2);
 
-	var id = "a.form.default-behavior";
+	var id = "a.form.get-default-test";
 
 	// Main element
 	var f = document.createElement("form");
@@ -54,10 +54,10 @@ test("a.form.default", function() {
 
 
 // Test checkbox
-test("a.form.checkbox", function() {
+test("a.form.get-checkbox-test", function() {
 	expect(2);
 
-	var id = "a.form.checkbox-test";
+	var id = "a.form.get-checkbox-test";
 
 	// Main element
 	var f = document.createElement("form");
@@ -91,10 +91,10 @@ test("a.form.checkbox", function() {
 
 
 // Test radio button group
-test("a.form.radio", function() {
+test("a.form.get-radio-test", function() {
 	expect(2);
 
-	var id = "a.form.radio-test";
+	var id = "a.form.get-radio-test";
 
 	// Main element
 	var f = document.createElement("form");
@@ -137,3 +137,34 @@ test("a.form.radio", function() {
   VALIDATE TEST
 ---------------------------------
 */
+// Test a basic validate is working as expected
+test("a.form.validate-default-test", function() {
+	expect(2);
+
+	var id = "a.form.validate-default-test";
+
+	// Main element
+	var f = document.createElement("form");
+	f.id = id;
+	f.style.display = "none";
+	f.onsubmit=function(){return false;}
+
+	// Create few elements with validate needed
+	var i1 = document.createElement("input");
+	i1.id = id + "-i1";
+	i1.type = "email";
+	f.appendChild(i1);
+
+	var i2 = document.createElement("input");
+	i2.id = id + "-i2";
+	i2.pattern = "^[a-zA-Z]+$";
+	f.appendChild(i2);
+
+	// Register element on dom
+	document.body.appendChild(f);
+
+	var test = a.form.validate(document.getElementById(id));
+
+	strictEqual(test[0].id, id + "-i1", "Test second id has been setted as not valid");
+	strictEqual(test[1].id, id + "-i2", "Test second id has been setted as not valid");
+});

@@ -139,6 +139,7 @@ a.form = (function() {
 		var i = inputList.length;
 		while(i--) {
 			var at = __attr(inputList[i], "type");
+			// We allow null type to be consider as valid (as it will be consider as "text" type by most of browsers)
 			if(!a.contains(typeList, at) && !a.isNull(at)) {
 				inputList.splice(i, 1);
 			}
@@ -309,7 +310,7 @@ a.form = (function() {
 				step = (a.isNull(step) || step === "") ? null : parseFloat(step);
 
 				// Check input type does existing in allowed type list
-				if(tagName === "input" && !a.contains(allowedTypes, type)) {
+				if(tagName === "input" && !a.contains(allowedTypes, type) && !a.isNull(type)) {
 					a.console.warn("Type " + type + " for input " + name + " not recognized or not supported", 3);
 					continue;
 				}
@@ -339,7 +340,7 @@ a.form = (function() {
 				}
 
 				// Pattern test
-				if( pattern !== null && (tagName === "textarea" || a.contains(typePatternList, type)) ) {
+				if( pattern !== null && (tagName === "textarea" || (a.contains(typePatternList, type)) || a.isNull(type)) ) {
 					var reg = new RegExp(pattern);
 					if(!reg.test(value)) {
 						errorList.push(__validateError(el, name, "pattern", value));
