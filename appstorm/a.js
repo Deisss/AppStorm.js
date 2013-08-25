@@ -845,27 +845,26 @@ a.environment = (function() {
 a.ajax = function(options, success, error) {
 	"use strict";
 
+	var dp = a.getDefaultAjaxOptions();
+
 	this.params = {
-		url    : "",    // Allowed type : any URL
-		method : "GET", // Allowed type : "GET", "POST"
-		type   : "raw", // Allowed type : raw, json, xml
-		async  : true,  // Allowed type : true, false
-		cache  : false, // Allowed type : true, false
-		data   : {},    // Allowed type : any kind of object composed of key => value
-		header : {}     // Allowed type : any kind of object composed of key => value
+		url    : "",      // Allowed type : any URL
+		method : "GET",   // Allowed type : "GET", "POST"
+		type   : "raw",   // Allowed type : raw, json, xml
+		async  : true,    // Allowed type : true, false
+		cache  : false,   // Allowed type : true, false
+		data   : {},      // Allowed type : any kind of object composed of key => value
+		header : {}       // Allowed type : any kind of object composed of key => value
 	};
 
-	var defaultParams = a.getDefaultAjaxOptions();
-
-	// Binding result function
-	this.success = (a.isFunction(success)) ? success : function(){};
-	this.error   = (a.isFunction(error)) ? error : function(){};
-
-	// Populate params with options
+	// Binding options
 	for(var p in this.params) {
-		// We check given options are same type (from default)
-		if(p in defaultParams && typeof(defaultParams[p]) === typeof(this.params[p])) {
-			this.params[p] = defaultParams[p];
+		if(p === "data" || p === "header") {
+			continue;
+		}
+		// We check given options are same type (from specific request)
+		if(p in dp && typeof(dp[p]) === typeof(this.params[p])) {
+			this.params[p] = dp[p];
 		}
 		// We check given options are same type (from specific request)
 		if(p in options && typeof(options[p]) === typeof(this.params[p])) {
@@ -873,14 +872,35 @@ a.ajax = function(options, success, error) {
 		}
 	}
 
-	// Handle specific case for data
-	if(a.isString(defaultParams.data)) {
-		this.params.data = defaultParams.data;
+	// Now we take care of special case of data and header
+	if(a.isObject(dp.data)) {
+		for(var d in dp.data) {
+			this.params.data[d] = dp.data[d];
+		}
 	}
-	// Correct override (if there is) of defaultParams
-	if(a.isString(options.data) || a.isObject(options.data)) {
+	if(a.isObject(dp.header)) {
+		for(var h in dp.header) {
+			this.params.header[h] = dp.header[h];
+		}
+	}
+
+	if(a.isString(options.data)) {
 		this.params.data = options.data;
+	} else if(a.isObject(options.data)) {
+		for(var dd in options.data) {
+			this.params.data[dd] = options.data[dd];
+		}
 	}
+
+	if(a.isObject(options.header)) {
+		for(var hh in options.header) {
+			this.params.header[hh] = options.header[hh];
+		}
+	}
+
+	// Binding result function
+	this.success = (a.isFunction(success)) ? success : function(){};
+	this.error   = (a.isFunction(error)) ? error : function(){};
 
 	// Detecting browser support of ajax (including old browser support
 	this.request = null;
