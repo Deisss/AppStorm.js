@@ -138,7 +138,8 @@ a.form = (function() {
 
 		var i = inputList.length;
 		while(i--) {
-			if(!a.contains(typeList, __attr(inputList[i], "type"))) {
+			var at = __attr(inputList[i], "type");
+			if(!a.contains(typeList, at) && !a.isNull(at)) {
 				inputList.splice(i, 1);
 			}
 		}
