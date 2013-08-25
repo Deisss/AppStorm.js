@@ -102,6 +102,42 @@ test("a.ajax.defaultOptions", function() {
 	ajx.send();
 });
 
+test("a.ajax.defaultOptions-mixed", function() {
+	stop();
+	expect(2);
+
+	// We setup same request as header one, but with defaultOptions
+	a.setDefaultAjaxOptions({
+		url : "./resource/data/ajax/data.php",
+		type : "raw",
+		cache : true,
+		data : {
+			unittest : "great"
+		}
+	});
+
+	// Prevent scope change
+	var se = strictEqual,
+		st = start;
+
+	// Test url
+	strictEqual(a.getDefaultAjaxOptions().url, "./resource/data/ajax/data.php", "Test default options stored");
+
+	var ajx = new a.ajax({
+		data : {
+			second : "great"
+		}
+	}, function(res){
+		se(res, "get=unittest|greatsecond|great", "Testing data passed threw request (mixed between default and options)");
+		// Now test is done => clear
+		a.setDefaultAjaxOptions({});
+		st();
+	});
+
+	// Starting and waiting reply
+	ajx.send();
+});
+
 /*
 ---------------------------------
   TYPE RELATED (JSON, XML, ...)
