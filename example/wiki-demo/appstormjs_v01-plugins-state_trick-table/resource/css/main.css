@@ -2,14 +2,14 @@
     left: 50%;
     margin-left: -300px;
     position: absolute;
-    top: 30px;
+    top: 10px;
 }
 #root .content{
 	left:50%;
 	margin-left: -300px;
 	width:600px;
     position: absolute;
-	top:170px
+	top:250px
 }
 a{
 	color:#444;
