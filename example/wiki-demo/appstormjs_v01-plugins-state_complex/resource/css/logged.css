@@ -1,0 +1,197 @@
+.left{float:left;width:50%}
+.right{float:right;width:50%}
+
+.clear{clear:both;height:0px;overflow:hidden}
+
+.center {
+	text-align:center;
+}
+
+
+
+table {
+	width:90%;
+	margin:30px;
+	border-collapse:collapse;
+	border:1px solid #dc5b46;
+}
+
+table th {
+	color:white;
+	background:#dc5b46;
+}
+
+table th, table td{
+	padding:5px 10px;
+}
+
+table tr:nth-child(odd) {
+	background:#f9d8d3;
+}
+
+table td a {
+	color:black;
+	text-decoration:none;
+}
+
+table td a:hover {
+	text-decoration:underline;
+}
+
+
+input {
+	border:1px solid #CCC;
+	padding:5px 10px;
+	margin:5px;
+}
+
+form {
+	width:460px;
+	margin:0 auto;
+}
+
+label {
+	display:inline-block;
+	width:200px;
+}
+
+
+
+#logged #menu, #logged #submenu {
+	background: #34495E;
+	padding:20px;
+}
+
+
+#logged #menu li, #logged #submenu li {
+	display:inline;
+	list-style:none;
+	padding:20px;
+	font-weight:bold;
+	font-size:1.2em;
+}
+
+#logged #submenu {
+	background:#2C3E50;
+	padding:10px;
+}
+
+#logged #menu li a, #logged #submenu li a {
+	color:white;
+	text-decoration:none;
+	-webkit-transition: color .3s ease-in;
+	-moz-transition: color .3s ease-in;
+	-o-transition: color .3s ease-in;
+	transition: color .3s ease-in;
+}
+
+#logged #menu li a:hover, #logged #submenu li a:hover {
+	color:#e76049;
+}
+
+
+
+
+/*
+-----------------------
+  DASHBOARD
+-----------------------
+*/
+
+#dashboard {
+	width:960px;
+	margin:0 auto;
+	margin-top:40px;
+}
+
+#dashboard-content {
+	margin-left:30px;
+	margin-top:40px;
+}
+
+
+
+
+/*
+-----------------------
+  USER
+-----------------------
+*/
+#user-list-content {
+	padding:30px 2px;
+}
+
+#user-list-root {
+	padding:30px;
+}
+
+#user-list-root .right {
+	text-align:right;
+}
+
+#user-list-root table {
+	margin:0;
+	width:100%;
+}
+
+#user-create {
+	margin-top:30px;
+}
+
+
+#user-see {
+	width:460px;
+	margin:0 auto;
+}
+
+#user-see a {
+	color:black;
+	text-decoration:none;
+}
+#user-see a:hover {
+	text-decoration:underline;
+}
+
+
+
+
+
+/*
+-----------------------
+  BILL
+-----------------------
+*/
+#bill-list-content {
+	padding:30px 2px;
+}
+
+#bill-list-root {
+	padding:30px;
+}
+
+#bill-list-root .right {
+	text-align:right;
+}
+
+#bill-list-root table {
+	margin:0;
+	width:100%;
+}
+
+#bill-create {
+	margin-top:30px;
+}
+
+
+#bill-see {
+	width:460px;
+	margin:0 auto;
+}
+
+#bill-see a {
+	color:black;
+	text-decoration:none;
+}
+#bill-see a:hover {
+	text-decoration:underline;
+}

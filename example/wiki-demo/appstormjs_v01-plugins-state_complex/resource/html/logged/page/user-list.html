@@ -1,0 +1,20 @@
+<table>
+	<tr>
+		<th>ID</th>
+		<th>name</th>
+		<th>country</th>
+	</tr>
+	{{#userlist}}
+		<tr>
+			<td>
+				<a href="#user-see-{{id}}">{{id}}</a>
+			</td>
+			<td>
+				<a href="#user-see-{{id}}">{{name}}</a>
+			</td>
+			<td>
+				<a href="#user-see-{{id}}">{{country}}</a>
+			</td>
+		</tr>
+	{{/userlist}}
+</table>
