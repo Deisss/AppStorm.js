@@ -1,16 +1,20 @@
 // resource/js/boot.js
- 
+
 (function() {
+	// Set AppStorm.JS default behavior
+	a.environment.set("console", "log");
+	a.environment.set("verbose", 3);
+
 	var currentHash = a.page.event.hash.getHash(),
 		timerId = null,
-		max = 1000;
-
+		max = 200;
+ 
 	// Initialise page event hash system
 	a.page.event.hash.setPreviousHash("");
 	window.location.href = "#loading_application";
-
+ 
 	/**
-	* handle "state change" for every browser
+	 * handle "state change" for every browser
 	*/
 	function firstHandle() {
 		if(a.page.event.hash.getHash() !== currentHash) {
@@ -21,13 +25,12 @@
 			a.timer.remove(timerId);
 		}
 	};
-
+ 
 	// The main starter is here, we will customize it soon
 	if(currentHash === null || currentHash === "" || !a.state.hashExists(currentHash)) {
 		currentHash = "login";
 	}
-
-	// Some browser don't get hash change with onHashchange event, so we decide to use timer
-	// Note : a.page.event.hash is more complex, here is little example
-	timerId = a.timer.add(firstHandle, null, 10);
+ 
+	// Launch the application asap
+	timerId = a.timer.add(firstHandle, null, 50);
 })();
