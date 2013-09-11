@@ -1041,7 +1041,21 @@ a.ajax.prototype.send = function() {
 	this.request.open(method, url, async);
 
 	if(method === "POST") {
-		this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
+			typel              = contentTypeDefault.length,
+			found              = false;
+
+		while(typel--) {
+			var el = contentTypeDefault[typel];
+			if(a.isString(el) && el.length > 0) {
+				found = true;
+				break;
+			}
+		}
+
+		if(!found) {
+			this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		}
 	}
 
 	//Setting headers (if there is)
