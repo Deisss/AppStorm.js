@@ -610,6 +610,25 @@ a.eventEmitter = (function() {
 	};
 
 	/**
+	 * Adding a listener only one
+	 *
+	 * @method addListenerOnce
+	 *
+	 * @param type {String} The event name
+	 * @param fn {Function} The function to attach
+	*/
+	obj.prototype.addListenerOnce = function(type, fn) {
+		var _this = this;
+
+		var once = function(data) {
+			fn(data);
+			_this.removeListener(type, fn);
+		};
+
+		this.addListener(type, once);
+	};
+
+	/**
 	 * Removing a listener to a specific message type
 	 *
 	 * @method removeListener
@@ -997,7 +1016,7 @@ a.ajax.prototype.send = function() {
 		this.request.onreadystatechange = function() {
 			// Any 200 status will be validated
 			if(scope.request.readyState === 4) {
-				var great = (scope.request.status >= 200 && scope.request.status < 300);
+				var great = (scope.request.status >= 200 && scope.request.status < 400);
 				if(great) {
 					// Everything went fine
 					scope.success(scope.parseResult(scope.params, scope.request), scope.request.status);

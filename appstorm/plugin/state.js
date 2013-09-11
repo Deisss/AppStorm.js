@@ -346,6 +346,19 @@ a.state = (function() {
 		return (a.isObject(item)) ? item.id : -1;
 	};
 
+	/**
+	 * Filter an element to extract data, it is directly used by system (does not return any function)
+	 *
+	 * @method __getTreeConverterError
+	 * @private
+	 *
+	 * @param item {Object} Should be a state
+	 * @return {Integer} The id found
+	*/
+	function __getTreeConverterError(item) {
+		return (a.isObject(item) && a.isObject(item.error)) ? item.error : null;
+	};
+
 	/*
 	------------------------------------
 	 CORE
@@ -843,6 +856,67 @@ a.state = (function() {
 		},
 
 		/**
+		 * INTERNAL USE ONLY
+		 * Get the error associated to a given status error and state
+		 *
+		 * @method __getError
+		 * @private
+		 *
+		 * @param state {Object} The state related
+		 * @param status {Integer} The status error code to retrieve
+		 * @return {Mixed} Any revelant data...
+		*/
+		__getError: function(state, status) {
+			var id = state.id;
+			// Convert to str
+			status = "_" + status;
+
+			var path = a.clone(__root);
+
+			// Selecting the good path (the path to add, the path added
+			a.state.helper.tree.selectBranch(path, __getTreeFiller, __getTreeIdTester(id));
+			var _errorList = a.state.helper.tree.flat(path, __getTreeFiller, __getTreeConverterError);
+
+			// We create a dummy internal function to search for many status code...
+			function _searchError(status) {
+				var i = _errorList.length;
+				while(i--) {
+					// For every error item, we search inside for good status code
+					var errorContent = _errorList[i];
+					if(!a.isNull(errorContent)) {
+						for(var err in errorContent) {
+							// We found the good status code, we can exit
+							if(err == status) {
+								return errorContent[err];
+							}
+						}
+					}
+				}
+				return null;
+			};
+
+			// Handle all request check
+			var strList = [
+				status,
+				status.substring(0, status.length - 1) + "x",
+				status.substring(0, status.length - 2) + "xx",
+				"generic",
+				"_generic"
+			];
+
+			// For every possible action, we check it does or not exist error handler
+			for(var y=0, z=strList.length; y<z; ++y) {
+				var str = _searchError(strList[y]);
+				if(!a.isNull(str)) {
+					return str;
+				}
+			}
+
+			// Nothing found
+			return null;
+		},
+
+		/**
 		 * Allow to manage parameter object, to add custom function & co
 		 * (like memory, temporary into variable)
 		 *
@@ -1121,7 +1195,8 @@ a.state.helper.tree = {
  * @param callback {Function} On full chain finish, the callback called
 */
 a.state.helper.chainer = function(type, path, allowed, id, callback) {
-	var max = path.length;
+	var max          = path.length,
+		__errorState = null;
 
 	type = (type === "unload") ? "unload" : "load";
 	allowed = allowed || [];
@@ -1144,9 +1219,21 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 		if(!a.isNull(status)) {
 			obj.status = status;
 		}
-		
+
+		var raiseError = a.state.__getError(__errorState, status);
+
 		// Raising global message
 		a.message.dispatch("a.state.error", obj);
+
+		if(!a.isNull(raiseError)) {
+			if(a.isString(raiseError)) {
+				window.location.href = "#" + raiseError;
+			} else if(a.isFunction(raiseError)) {
+				raiseError(__errorState.id, resource, status);
+			} else {
+				a.console.error("a.state.helper.chainer.__error: error resolver cannot determine action to perform, please check your different error handler (status: " + status + ", state id: " + __errorState.id + ")");
+			}
+		}
 	};
 
 	/**
@@ -1417,6 +1504,9 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 	 * @param clb {Function} The callback to apply on success (or fail)
 	*/
 	function __startState(state, clb) {
+		// We store current error state to retrieve it in case of problem
+		__errorState = state;
+
 		var chain = new a.callback.chainer();
 
 		if(type === "unload") {
