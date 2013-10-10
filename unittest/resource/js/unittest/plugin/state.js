@@ -1392,3 +1392,54 @@ test("a.state.options-parameter", function() {
 		st();
 	}, 600);
 });
+
+
+// Test state message loading
+test("a.state.load-event-dispatch", function() {
+	stop();
+	expect(8);
+	a.state.clear();
+
+	var st = start,
+		se = strictEqual;
+
+	var tree = {
+		id : "root-event-dispatch-test",
+		children: {
+			id : "child-event-dispatch-test",
+			hash : "state-event-dispatch-test"
+		}
+	};
+
+	a.state.add(tree);
+
+	// Now starting to proceed loader
+	setTimeout(function() {
+		a.message.addListener("a.state.load-root-event-dispatch-test", function(data) {
+			se(data.id, data.value, "Test load id");
+			se(data.id, "root-event-dispatch-test", "Test load id");
+		});
+		a.message.addListener("a.state.load-child-event-dispatch-test", function(data) {
+			se(data.id, data.value, "Test load id");
+			se(data.id, "child-event-dispatch-test", "Test load id");
+		});
+		a.message.addListener("a.state.load", function(data) {
+			if(data.id == "child-event-dispatch-test") {
+				se(data.id, data.value, "Test child load id");
+				se(data.id, "child-event-dispatch-test", "Test child load id");
+			} else {
+				se(data.id, data.value, "Test root load id");
+				se(data.id, "root-event-dispatch-test", "Test root load id");
+			}
+		});
+		window.location.href = "#state-event-dispatch-test";
+	}, 200);
+
+	// Old browser will need a little wait...
+	setTimeout(function() {
+		a.state.clear();
+		a.message.clear();
+		window.location.href = "#";
+		st();
+	}, 600);
+});
