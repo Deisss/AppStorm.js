@@ -1545,6 +1545,20 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
 					} else {
 						result.done();
 					}
+				},
+				// Internal function to publish event
+				function(result) {
+					// Dispatch message to say "i've just loaded this state"
+					var stateMessage = {
+						id: state.id,
+						// or
+						value: state.id
+					};
+
+					a.message.dispatch("a.state.load", stateMessage);
+					a.message.dispatch("a.state.load-" + state.id, stateMessage);
+
+					result.done();
 				}
 			);
 		}

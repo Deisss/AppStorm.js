@@ -946,6 +946,11 @@ a.ajax = function(options, success, error) {
  * @return {Object | String} The parsed results
 */
 a.ajax.prototype.parseResult = function(params, http) {
+	// Escape on special case HTTP 204
+	if(http.status === 204) {
+		return "";
+	}
+
 	//We are in non async mode, so the function should reply something
 	var type = params.type.toLowerCase();
 	if(type === "json") {
@@ -1040,27 +1045,21 @@ a.ajax.prototype.send = function() {
 	//Openning the url
 	this.request.open(method, url, async);
 
-	if(method === "POST") {
-		var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
-			typel              = contentTypeDefault.length,
-			found              = false;
+	//Setting headers (if there is)
+	var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
+		contentTypeFound   = false;
+	for(var h in this.params.header) {
+		this.request.setRequestHeader(h, this.params.header[h]);
 
-		while(typel--) {
-			var el = contentTypeDefault[typel];
-			if(a.isString(el) && el.length > 0) {
-				found = true;
-				break;
-			}
-		}
-
-		if(!found) {
-			this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		// In case of POST, a specific content type (a default one) may be needed
+		if(!contentTypeFound && a.contains(contentTypeDefault, h)) {
+			contentTypeFound = true;
 		}
 	}
 
-	//Setting headers (if there is)
-	for(var h in this.params.header) {
-		this.request.setRequestHeader(h, this.params.header[h]);
+	// Set a default one if not already set by user
+	if(!contentTypeFound && method === "POST") {
+		this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	}
 
 	this.request.send(toSend);
