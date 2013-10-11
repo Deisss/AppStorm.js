@@ -97,6 +97,9 @@ a.eventEmitter = (function() {
 		});
 	};
 
+	// Alias
+	obj.prototype.add = obj.prototype.on = obj.prototype.bind = obj.prototype.addListener;
+
 	/**
 	 * Adding a listener only one
 	 *
@@ -110,11 +113,14 @@ a.eventEmitter = (function() {
 
 		var once = function(data) {
 			fn(data);
-			_this.removeListener(type, arguments.callee);
+			_this.removeListener(type, once);
 		};
 
 		this.addListener(type, once);
 	};
+
+	// Alias
+	obj.prototype.once = obj.prototype.onOnce = obj.prototype.bindOnce = obj.prototype.addListenerOnce;
 
 	/**
 	 * Removing a listener to a specific message type
@@ -150,6 +156,9 @@ a.eventEmitter = (function() {
 		__clearEventType(type);
 	};
 
+	// Alias
+	obj.prototype.remove = obj.prototype.off = obj.prototype.unbind = obj.prototype.removeListener;
+
 	/**
 	 * Remove all listeners for a given type
 	 *
@@ -165,6 +174,9 @@ a.eventEmitter = (function() {
 			__clearEventType(type);
 		}
 	};
+
+	// Alias
+	obj.prototype.removeAll = obj.prototype.offAll = obj.prototype.unbindAll = obj.prototype.removeAllListeners;
 
 
 	/**
@@ -183,7 +195,7 @@ a.eventEmitter = (function() {
 
 		// Dispatch event
 		this.dispatch(c, {});
-	},
+	};
 
 	/**
 	 * Call an event, according to it's type
