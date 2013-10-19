@@ -1,111 +1,119 @@
 /* ************************************************************************
 
-	License: MIT Licence
+    License: MIT Licence
 
-	Authors: VILLETTE Charles
+    Authors: VILLETTE Charles
 
-	Date: 2013-05-10
+    Date: 2013-05-10
 
-	Date of last modification: 2013-10-11
+    Date of last modification: 2013-10-20
 
-	Dependencies : [
-		a.js
-	]
+    Dependencies: [
+        a.js
+    ]
 
-	Events : [
-		a.environment.add : {key : the environment key added/modified, value : the value linked to}
-		a.environment.remove : {key : the environment key removed}
-	]
+    Events: [
+        a.environment.add: {
+            key:   the environment key added/modified,
+            value: the value for this key
+        }
+        a.environment.remove: {
+            key:   the environment key removed
+        }
+    ]
 
-	Description:
-		Environment functionnality, to get access to some basic "main options" for system
+    Description:
+        Environment functionnality, to get access to some basic
+        "main options" for system
 
 ************************************************************************ */
 
 
 /**
- * Main environment data store, allow to globally define some rules for project
+ * Main environment data store, allow to globally define some global
+ * rules for managing global environment variable
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:environment">here</a>
+ * Examples:
+ *     <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:environment">here</a>
  *
  * @class environment
  * @static
  * @namespace a
 */
-a.environment = (function() {
-	"use strict";
+a.environment = {
+    /*
+     * DON'T USE DIRECTLY
+     *
+     * Internal store
+    */
+    _store: {
+        "verbose": 2,
+        "console": "log"
+    },
 
-	// Internal storage
-	var __store = {
-		verbose : 2,
-		console : "log"
-	};
+    /**
+     * Get the stored value for given key, null if nothing is stored
+     *
+     * @method get
+     *
+     * @param key {String}     The key to retreive
+     * @return {Mixed | null} The result data, or null if key is not found
+    */
+    get: function(key) {
+        return (key in this._store) ? this._store[key] : null;
+    },
 
-	return {
-		/**
-		 * Get the stored value, null if nothing is stored
-		 *
-		 * @method get
-		 *
-		 * @param key {String} The key to get
-		 * @return {Object} The result object, or null if key is not found
-		*/
-		get : function(key) {
-			return (key in __store) ? __store[key] : null;
-		},
+    /**
+     * Store or modify the key data with incoming value
+     *
+     * @method set
+     *
+     * @param key {String}     The key to store
+     * @param value {Mixed}    Some data to associate to the key
+    */
+    set: function(key, value) {
+        if(a.isNull(key)) {
+            return;
+        }
 
-		/**
-		 * Set a new value to store
-		 *
-		 * @method set
-		 *
-		 * @param key {String} The key to store
-		 * @param value {Mixed} Some data to associate to key
-		*/
-		set : function(key, value) {
-			if(a.isNull(key)) {
-				return;
-			}
-			a.console.log("a.environment.set: add item (key: " + key + ", value: " + value + ")", 3);
-			__store[key] = value;
+        this._store[key] = value;
 
-			// Dispatch event
-			a.message.dispatch("a.environment.add", {
-				key : key,
-				value : value
-			});
-		},
+        // Dispatch event
+        a.message.dispatch("a.environment.add", {
+            key:   key,
+            value: value
+        });
+    },
 
-		/**
-		 * Remove a value stored into environment
-		 *
-		 * @method remove
-		 *
-		 * @param key {String} The previously stored key to remove
-		*/
-		remove : function(key) {
-			if(a.isNull(__store[key])) {
-				return;
-			}
-			a.console.log("a.environment.remove: remove item (key: " + key + ")", 3);
-			delete __store[key];
+    /**
+     * Remove a key stored
+     *
+     * @method remove
+     *
+     * @param key {String} The stored key to remove
+    */
+    remove : function(key) {
+        if(a.isNull(this._store[key])) {
+            return;
+        }
 
-			// Dispatch event
-			a.message.dispatch("a.environment.remove", {
-				key : key
-			});
-		},
+        delete this._store[key];
 
-		/**
-		 * Clear the stored content (all of them)
-		 *
-		 * @method clear
-		*/
-		clear : function() {
-			__store = {
-				verbose : 2,
-				console : "log"
-			};
-		}
-	}
-}());
+        // Dispatch event
+        a.message.dispatch("a.environment.remove", {
+            key: key
+        });
+    },
+
+    /**
+     * Erase everything and rollback to inital change (verbose:2, console: log)
+     *
+     * @method clear
+    */
+    clear : function() {
+        this._store = {
+            "verbose": 2,
+            "console": "log"
+        };
+    }
+};
