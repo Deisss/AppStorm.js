@@ -29,7 +29,7 @@
  * @namespace a
 */
 a.timer = (function() {
-    "use strict";
+    'use strict';
 
     // Internal data
     var _delay = 50,
@@ -43,7 +43,7 @@ a.timer = (function() {
     */
     function _tick() {
         // We dispatch a new tick
-        a.message.dispatch("a.timer.tick", {});
+        a.message.dispatch('a.timer.tick', {});
 
         // For every stored function, we scan and apply
         for(var i in _data) {
@@ -100,9 +100,9 @@ a.timer = (function() {
 
             if(!a.isNumber(timeout) || timeout <= 0) {
                 timeout = 1000;
-                a.console.error("The timeout has not been setted properly " +
-                                    "into timer, timeout has been " +
-                                    "setted to 1000ms", 1);
+                a.console.error('The timeout has not been setted properly ' +
+                                    'into timer, timeout has been ' +
+                                    'setted to 1000ms', 1);
             }
 
             _data[id] = {
