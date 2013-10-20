@@ -106,6 +106,14 @@ window.appstorm = window.a = (function() {
 		},
 
 		/**
+		 * Get the existing stack trace
+		*/
+		getStackTrace: function() {
+			var err = new Error();
+			return err.stack;
+		},
+
+		/**
 		 * Check a variable is a number
 		 *
 		 * @method isNumber

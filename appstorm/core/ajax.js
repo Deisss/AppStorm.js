@@ -1,23 +1,23 @@
 /* ************************************************************************
 
-	License: MIT Licence
+    License: MIT Licence
 
-	Authors: VILLETTE Charles
+    Authors: VILLETTE Charles
 
-	Date: 2013-05-10
+    Date: 2013-05-10
 
-	Date of last modification: 2013-10-11
+    Date of last modification: 2013-10-11
 
-	Dependencies : [
-		a.js
-	]
+    Dependencies : [
+        a.js
+    ]
 
-	Events : [
-		a.ajax : {success : boolean (true fine, false error), status : http code result, url : the url used (before data join), method : the method used, params : the parameters used for request}
-	]
+    Events : [
+        a.ajax : {success : boolean (true fine, false error), status : http code result, url : the url used (before data join), method : the method used, params : the parameters used for request}
+    ]
 
-	Description:
-		Send a request to server side
+    Description:
+        Send a request to server side
 
 ************************************************************************ */
 
@@ -37,78 +37,78 @@
  * @param error {Function} The error function called in case of async
 */
 a.ajax = function(options, success, error) {
-	"use strict";
+    "use strict";
 
-	var dp = a.getDefaultAjaxOptions();
+    var dp = a.getDefaultAjaxOptions();
 
-	this.params = {
-		url    : "",      // Allowed type : any URL
-		method : "GET",   // Allowed type : "GET", "POST"
-		type   : "raw",   // Allowed type : raw, json, xml
-		async  : true,    // Allowed type : true, false
-		cache  : false,   // Allowed type : true, false
-		data   : {},      // Allowed type : any kind of object composed of key => value
-		header : {}       // Allowed type : any kind of object composed of key => value
-	};
+    this.params = {
+        url    : "",      // Allowed type : any URL
+        method : "GET",   // Allowed type : "GET", "POST"
+        type   : "raw",   // Allowed type : raw, json, xml
+        async  : true,    // Allowed type : true, false
+        cache  : false,   // Allowed type : true, false
+        data   : {},      // Allowed type : any kind of object composed of key => value
+        header : {}       // Allowed type : any kind of object composed of key => value
+    };
 
-	// Binding options
-	for(var p in this.params) {
-		if(p === "data" || p === "header") {
-			continue;
-		}
-		// We check given options are same type (from specific request)
-		if(p in dp && typeof(dp[p]) === typeof(this.params[p])) {
-			this.params[p] = dp[p];
-		}
-		// We check given options are same type (from specific request)
-		if(p in options && typeof(options[p]) === typeof(this.params[p])) {
-			this.params[p] = options[p];
-		}
-	}
+    // Binding options
+    for(var p in this.params) {
+        if(p === "data" || p === "header") {
+            continue;
+        }
+        // We check given options are same type (from specific request)
+        if(p in dp && typeof(dp[p]) === typeof(this.params[p])) {
+            this.params[p] = dp[p];
+        }
+        // We check given options are same type (from specific request)
+        if(p in options && typeof(options[p]) === typeof(this.params[p])) {
+            this.params[p] = options[p];
+        }
+    }
 
-	// Now we take care of special case of data and header
-	if(a.isObject(dp.data)) {
-		for(var d in dp.data) {
-			this.params.data[d] = dp.data[d];
-		}
-	}
-	if(a.isObject(dp.header)) {
-		for(var h in dp.header) {
-			this.params.header[h] = dp.header[h];
-		}
-	}
+    // Now we take care of special case of data and header
+    if(a.isObject(dp.data)) {
+        for(var d in dp.data) {
+            this.params.data[d] = dp.data[d];
+        }
+    }
+    if(a.isObject(dp.header)) {
+        for(var h in dp.header) {
+            this.params.header[h] = dp.header[h];
+        }
+    }
 
-	if(a.isString(options.data)) {
-		this.params.data = options.data;
-	} else if(a.isObject(options.data)) {
-		for(var dd in options.data) {
-			this.params.data[dd] = options.data[dd];
-		}
-	}
+    if(a.isString(options.data)) {
+        this.params.data = options.data;
+    } else if(a.isObject(options.data)) {
+        for(var dd in options.data) {
+            this.params.data[dd] = options.data[dd];
+        }
+    }
 
-	if(a.isObject(options.header)) {
-		for(var hh in options.header) {
-			this.params.header[hh] = options.header[hh];
-		}
-	}
+    if(a.isObject(options.header)) {
+        for(var hh in options.header) {
+            this.params.header[hh] = options.header[hh];
+        }
+    }
 
-	// Binding result function
-	this.success = (a.isFunction(success)) ? success : function(){};
-	this.error   = (a.isFunction(error)) ? error : function(){};
+    // Binding result function
+    this.success = (a.isFunction(success)) ? success : function(){};
+    this.error   = (a.isFunction(error)) ? error : function(){};
 
-	// Detecting browser support of ajax (including old browser support
-	this.request = null;
-	if(!a.isNull(window.XMLHttpRequest)) {
-		this.request = new XMLHttpRequest();
-	// Internet explorer specific
-	} else {
-		var msxml = ["Msxml2.XMLHTTP.6.0", "Msxml2.XMLHTTP.3.0", "Msxml2.XMLHTTP", "Microsoft.XMLHTTP"];
-		for(var i in msxml) {
-			try {
-				this.request = new ActiveXObject(msxml[i]);
-			} catch(e) {}
-		}
-	}
+    // Detecting browser support of ajax (including old browser support
+    this.request = null;
+    if(!a.isNull(window.XMLHttpRequest)) {
+        this.request = new XMLHttpRequest();
+    // Internet explorer specific
+    } else {
+        var msxml = ["Msxml2.XMLHTTP.6.0", "Msxml2.XMLHTTP.3.0", "Msxml2.XMLHTTP", "Microsoft.XMLHTTP"];
+        for(var i in msxml) {
+            try {
+                this.request = new ActiveXObject(msxml[i]);
+            } catch(e) {}
+        }
+    }
 };
 
 /**
@@ -121,17 +121,17 @@ a.ajax = function(options, success, error) {
  * @return {Object | String} The parsed results
 */
 a.ajax.prototype.parseResult = function(params, http) {
-	// Escape on special case HTTP 204
-	if(http.status === 204) {
-		return "";
-	}
+    // Escape on special case HTTP 204
+    if(http.status === 204) {
+        return "";
+    }
 
-	//We are in non async mode, so the function should reply something
-	var type = params.type.toLowerCase();
-	if(type === "json") {
-		return a.parser.json.parse(http.responseText);
-	}
-	return (type === "xml") ? http.responseXML : http.responseText;
+    //We are in non async mode, so the function should reply something
+    var type = params.type.toLowerCase();
+    if(type === "json") {
+        return a.parser.json.parse(http.responseText);
+    }
+    return (type === "xml") ? http.responseXML : http.responseText;
 };
 
 /**
@@ -140,9 +140,9 @@ a.ajax.prototype.parseResult = function(params, http) {
  * @method abort
 */
 a.ajax.prototype.abort = function() {
-	try {
-		this.request.abort();
-	} catch(e) {}
+    try {
+        this.request.abort();
+    } catch(e) {}
 };
 
 /**
@@ -151,93 +151,93 @@ a.ajax.prototype.abort = function() {
  * @method send
 */
 a.ajax.prototype.send = function() {
-	var method = this.params.method.toUpperCase();
+    var method = this.params.method.toUpperCase();
 
-	//Creating a cached or not version
-	if(this.params.cache === false) {
-		// Generate a unique random number
-		var rnd = Math.floor(Math.random() * 100000) + 1;
-		// Safari does not like this...
-		try {
-			this.params.data["cachedisable"] = rnd;
-		} catch(e) {}
-	}
+    //Creating a cached or not version
+    if(this.params.cache === false) {
+        // Generate a unique random number
+        var rnd = Math.floor(Math.random() * 100000) + 1;
+        // Safari does not like this...
+        try {
+            this.params.data["cachedisable"] = rnd;
+        } catch(e) {}
+    }
 
-	//Creating the url with GET
-	var toSend = "";
+    //Creating the url with GET
+    var toSend = "";
 
-	if(a.isString(this.params.data)) {
-		toSend = this.params.data;
-	} else {
-		for(var d in this.params.data) {
-			toSend += encodeURIComponent(d) + "=" + encodeURIComponent(this.params.data[d]) + "&";
-		}
-		//toSend get an extra characters & at the end, removing it
-		toSend = toSend.slice(0, -1);
-	}
+    if(a.isString(this.params.data)) {
+        toSend = this.params.data;
+    } else {
+        for(var d in this.params.data) {
+            toSend += encodeURIComponent(d) + "=" + encodeURIComponent(this.params.data[d]) + "&";
+        }
+        //toSend get an extra characters & at the end, removing it
+        toSend = toSend.slice(0, -1);
+    }
 
-	var url = this.params.url,
-		async = this.params.async;
-	if(method === "GET" && toSend !== "") {
-		url += "?" + toSend;
-	}
+    var url = this.params.url,
+        async = this.params.async;
+    if(method === "GET" && toSend !== "") {
+        url += "?" + toSend;
+    }
 
-	//Catching the state change
-	if(async === true) {
-		// Scope helper
-		var scope = {
-			success : this.success,
-			params : this.params,
-			error : this.error,
-			request : this.request,
-			parseResult : this.parseResult
-		};
+    //Catching the state change
+    if(async === true) {
+        // Scope helper
+        var scope = {
+            success : this.success,
+            params : this.params,
+            error : this.error,
+            request : this.request,
+            parseResult : this.parseResult
+        };
 
-		this.request.onreadystatechange = function() {
-			// Any 200 status will be validated
-			if(scope.request.readyState === 4) {
-				var great = (scope.request.status >= 200 && scope.request.status < 400);
-				if(great) {
-					// Everything went fine
-					scope.success(scope.parseResult(scope.params, scope.request), scope.request.status);
-				} else {
-					// An error occurs
-					scope.error(url, scope.request.status);
-				}
+        this.request.onreadystatechange = function() {
+            // Any 200 status will be validated
+            if(scope.request.readyState === 4) {
+                var great = (scope.request.status >= 200 && scope.request.status < 400);
+                if(great) {
+                    // Everything went fine
+                    scope.success(scope.parseResult(scope.params, scope.request), scope.request.status);
+                } else {
+                    // An error occurs
+                    scope.error(url, scope.request.status);
+                }
 
-				// We send a result
-				a.message.dispatch("a.ajax", {
-					success : great,
-					status : scope.request.status,
-					url : scope.params.url,
-					method : scope.method,
-					params : scope.params
-				});
-			}
-		};
-	}
+                // We send a result
+                a.message.dispatch("a.ajax", {
+                    success : great,
+                    status : scope.request.status,
+                    url : scope.params.url,
+                    method : scope.method,
+                    params : scope.params
+                });
+            }
+        };
+    }
 
-	//Openning the url
-	this.request.open(method, url, async);
+    //Openning the url
+    this.request.open(method, url, async);
 
-	//Setting headers (if there is)
-	var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
-		contentTypeFound   = false;
-	for(var h in this.params.header) {
-		this.request.setRequestHeader(h, this.params.header[h]);
+    //Setting headers (if there is)
+    var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
+        contentTypeFound   = false;
+    for(var h in this.params.header) {
+        this.request.setRequestHeader(h, this.params.header[h]);
 
-		// In case of POST, a specific content type (a default one) may be needed
-		if(!contentTypeFound && a.contains(contentTypeDefault, h)) {
-			contentTypeFound = true;
-		}
-	}
+        // In case of POST, a specific content type (a default one) may be needed
+        if(!contentTypeFound && a.contains(contentTypeDefault, h)) {
+            contentTypeFound = true;
+        }
+    }
 
-	// Set a default one if not already set by user
-	if(!contentTypeFound && method === "POST") {
-		this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	}
+    // Set a default one if not already set by user
+    if(!contentTypeFound && method === "POST") {
+        this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    }
 
-	this.request.send(toSend);
+    this.request.send(toSend);
 
-	return (async === false) ? this.parseResult(this.params, this.request) : "No return in async mode";
+    return (async === false) ? this.parseResult(this.params, this.request) : "No return in async mode";
 };
