@@ -248,8 +248,15 @@ a.dom = {
 
 
         // Simple version, for latest browser
-        if(dom.querySelectorAll) {
+        if(name == 'class') {
+            domList = dom.getElementsByClassName(value);
+
+        } else if(name == 'id') {
+            domList = [dom.getElementById(value)];
+
+        } else if(dom.querySelectorAll) {
             // We get [class="ok"] or [class] depending on value setted or not
+
             var search = isStringValue
                             ? '[' + name + '="' + value + '"]'
                             : '[' + name + ']';
@@ -296,6 +303,9 @@ a.dom = {
  * @param elementList {Array}    The list of elements to use
 */
 a.dom.children = function(elementList) {
+    elementList = (typeof(elementList.length) === 'undefined') ?
+                        [elementList] : elementList;
+
     this.elementList = elementList;
     this.length      = elementList.length;
 };
@@ -620,9 +630,11 @@ a.dom.children.prototype = {
     parent: function() {
         var elementList = this.elementList,
             i           = elementList.length;
+
         while(i--) {
             elementList[i] = elementList[i].parentNode;
         }
+
         return this;
     },
 
