@@ -412,6 +412,40 @@ a.dom.children.prototype = {
     },
 
     /**
+     * Get or set style for given elements
+     *
+     * @param rule {String}         The CSS rule we are working with
+     * @param value {String}        The value to set (can be empty for get)
+     * @return {String | null}      The CSS value found in case of get
+    */
+    css: function(rule, value) {
+        // Getter
+        if(typeof(value) === 'undefined') {
+            var cssList     = [],
+                elementList = this.elementList,
+                i           = elementList.length;
+
+            while(i--) {
+                var data = elementList[i].style[rule];
+                if(!a.isNull(data)) {
+                    cssList.push(data);
+                }
+            }
+
+            if(cssList.length <= 1) {
+                return cssList[0] || "";
+            } else {
+                return cssList;
+            }
+        // Setter
+        } else {
+            this.each(function() {
+                this.style[rule] = value;
+            });
+        }
+    },
+
+    /**
      * Add a class to elements
      *
      * @method addClass
