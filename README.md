@@ -1,32 +1,30 @@
 AppStorm.JS
 ===========
 
-AppStorm.JS is a powerfull JS client side framework for building fast and robust application.
+AppStorm.JS is a powerful client-side Javascript framework to build fast, easy to read, and full featured web application.
 
-
-Project structure
+Project Structure
 -----------------
 
-The following structure is used on github:
+This repository uses the following structure:
   * **appstorm**: AppStorm.JS core and plugin data
   * **example**: AppStorm.JS examples -including wiki examples-
   * **logo**: AppStorm.JS logo
   * **unittest**: AppStorm.JS unit test
 
 
-Resources
----------
+External Resources
+------------------
 
-Here is the resource where you can found documentation, example, ...:
   * [website](http://appstormjs.com)
   * [wiki](http://appstormjs.com/wiki)
   * [mail client example](http://appstormjs.com/git/example/mail)
   * [todolist client example](http://appstormjs.com/git/example/todo)
 
 
-Licence & credits
+Licence & Credits
 -----------------
 
 AppStorm.JS is licenced under MIT Licence.
 
-You can found full credits for everything used for making AppStorm.JS [on our wiki](http://appstormjs.com/wiki/doku.php?id=credits).
+You will find all the credits for everything used in AppStorm.JS [on our wiki](http://appstormjs.com/wiki/doku.php?id=credits).
