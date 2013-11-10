@@ -158,7 +158,7 @@ a.timer = (function() {
          * @param id {Integer}         The id to delete
          * @return {Boolean}           The item has been delete or not
         */
-        remove : function(id) {
+        remove: function(id) {
             return delete store[id];
         },
 
@@ -167,7 +167,7 @@ a.timer = (function() {
          *
          * @method clear
         */
-        clear : function() {
+        clear: function() {
             store = {};
         }
     };
