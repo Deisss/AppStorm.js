@@ -86,7 +86,7 @@ a.environment = {
      *
      * @param key {String} The stored key to remove
     */
-    remove : function(key) {
+    remove: function(key) {
         if(a.isNull(this._store[key])) {
             return;
         }
@@ -104,7 +104,7 @@ a.environment = {
      *
      * @method clear
     */
-    clear : function() {
+    clear: function() {
         this._store = {
             'verbose': 2,
             'console': 'log'
