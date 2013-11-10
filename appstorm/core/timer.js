@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-10
-
-    Date of last modification: 2013-10-20
-
     Dependencies : [
         a.js
     ]
@@ -32,23 +26,23 @@ a.timer = (function() {
     'use strict';
 
     // Internal data
-    var _delay = 50,
-        _data  = {};
+    var delay = 50,
+        store = {};
 
     /**
      * Proceed timer tick
      *
-     * @method _tick
+     * @method ticker
      * @private
     */
-    function _tick() {
+    function ticker() {
         // We dispatch a new tick
-        a.message.dispatch('a.timer.tick', {});
+        a.message.dispatch('a.timer.tick');
 
         // For every stored function, we scan and apply
-        for(var i in _data) {
-            var obj = _data[i];
-            obj.current += _delay;
+        for(var i in store) {
+            var obj = store[i];
+            obj.current += delay;
 
             // If it's time to tick
             if(obj.current >= obj.timeout) {
@@ -64,23 +58,23 @@ a.timer = (function() {
     /**
      * Generate a new random
      *
-     * @method _generate
+     * @method generateUniqueId
      * @private
      *
      * @return {Integer}      A new integer generated
     */
-    function _generate() {
-        var rnd = Math.floor(Math.random() * 1000000);
+    function generateUniqueId() {
+        var randomId = Math.floor(Math.random() * 1000000);
 
-        while(!a.isNull(_data[rnd])) {
-            rnd = Math.floor(Math.random() * 1000000)
+        while(!a.isNull(store[randomId])) {
+            randomId = Math.floor(Math.random() * 1000000)
         }
 
-        return rnd;
+        return randomId;
     };
 
     // Auto-start timer
-    setInterval(_tick, _delay);
+    setInterval(ticker, delay);
 
     return {
         /**
@@ -96,21 +90,24 @@ a.timer = (function() {
          *                              this entry
         */
         add: function(fct, scope, timeout) {
-            var id = _generate();
+            var id = generateUniqueId();
 
             if(!a.isNumber(timeout) || timeout <= 0) {
                 timeout = 1000;
-                a.console.error('The timeout has not been setted properly ' +
+                a.console.warn('The timeout has not been setted properly ' +
                                     'into timer, timeout has been ' +
                                     'setted to 1000ms', 1);
             }
 
-            _data[id] = {
+            // Store the new entry
+            store[id] = {
                 fct:     fct,
                 scope:   scope,
                 timeout: timeout,
                 current: 0
             };
+
+            // Return the unique id to manipulate it
             return id;
         },
 
@@ -147,7 +144,7 @@ a.timer = (function() {
          *                              or null if nothing is related to id
         */
         get: function(id) {
-            var item = _data[id];
+            var item = store[id];
             return a.isNull(item) ? null : item;
         },
 
@@ -160,7 +157,7 @@ a.timer = (function() {
          * @return {Boolean}           The item has been delete or not
         */
         remove : function(id) {
-            return delete _data[id];
+            return delete store[id];
         },
 
         /**
@@ -169,7 +166,7 @@ a.timer = (function() {
          * @method clear
         */
         clear : function() {
-            _data = {};
+            store = {};
         }
     };
 })();
