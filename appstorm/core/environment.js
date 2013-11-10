@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-10
-
-    Date of last modification: 2013-10-20
-
     Dependencies: [
         a.js
     ]
@@ -47,8 +41,8 @@ a.environment = {
      * Internal store
     */
     _store: {
-        "verbose": 2,
-        "console": "log"
+        'verbose': 2,
+        'console': 'log'
     },
 
     /**
@@ -79,7 +73,7 @@ a.environment = {
         this._store[key] = value;
 
         // Dispatch event
-        a.message.dispatch("a.environment.add", {
+        a.message.dispatch('a.environment.add', {
             key:   key,
             value: value
         });
@@ -100,7 +94,7 @@ a.environment = {
         delete this._store[key];
 
         // Dispatch event
-        a.message.dispatch("a.environment.remove", {
+        a.message.dispatch('a.environment.remove', {
             key: key
         });
     },
@@ -112,8 +106,8 @@ a.environment = {
     */
     clear : function() {
         this._store = {
-            "verbose": 2,
-            "console": "log"
+            'verbose': 2,
+            'console': 'log'
         };
     }
 };
