@@ -68,7 +68,7 @@ a.timer = (function() {
     function generateUniqueId() {
         var randomId = Math.floor(Math.random() * 1000000);
 
-        while(!a.isNull(store[randomId])) {
+        while(!a.isNone(store[randomId])) {
             randomId = Math.floor(Math.random() * 1000000)
         }
 
@@ -147,7 +147,7 @@ a.timer = (function() {
         */
         get: function(id) {
             var item = store[id];
-            return a.isNull(item) ? null : item;
+            return a.isNone(item) ? null : item;
         },
 
         /**

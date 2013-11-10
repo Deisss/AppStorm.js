@@ -55,7 +55,7 @@ a.console = (function() {
         __data[type].push(value);
 
         // Bug: IE does not support testing variable existence if they are not scopped with the root (here window)
-        if(!a.isNull(window.console) && a.isFunction(window.console.log) && appear !== false) {
+        if(!a.isNone(window.console) && a.isFunction(window.console.log) && appear !== false) {
             // We disable log depending of console level.
             // If no console, or log level, we allow all
             switch(a.environment.get("console")) {
@@ -87,7 +87,7 @@ a.console = (function() {
                             var key = "verbose-" + splitted.join("."),
                                 en  = a.environment.get(key);
 
-                            if(!a.isNull(en)) {
+                            if(!a.isNone(en)) {
                                 found = true;
                                 print = (en < level) ? false : true;
                                 break;
@@ -99,7 +99,7 @@ a.console = (function() {
                     }
 
                     // Check the verbose state to know if we should print or not
-                    if(!found && !a.isNull(a.environment.get("verbose")) && !a.isNull(level)) {
+                    if(!found && !a.isNone(a.environment.get("verbose")) && !a.isNone(level)) {
                         var iverb = parseInt(a.environment.get("verbose"), 10);
                         if(iverb < level) {
                             print = false;

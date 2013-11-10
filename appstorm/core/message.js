@@ -85,7 +85,7 @@ a.eventEmitter = (function() {
             return;
         }
 
-        if(a.isNull(this.__list[type])) {
+        if(a.isNone(this.__list[type])) {
             this.__list[type] = [];
         }
         this.__list[type].push(fn);
@@ -132,7 +132,7 @@ a.eventEmitter = (function() {
     */
     obj.prototype.removeListener = function(type, fn) {
         // If the event type is not listed as existing, we don't need to remove anything
-        if(a.isNull(this.__list[type])) {
+        if(a.isNone(this.__list[type])) {
             return;
         }
 
@@ -167,7 +167,7 @@ a.eventEmitter = (function() {
      * @param type {String} The event type to remove
     */
     obj.prototype.removeAllListeners = function(type) {
-        if(!a.isNull(this.__list[type])) {
+        if(!a.isNone(this.__list[type])) {
             this.__list[type] = [];
 
             // We clear unused list type
@@ -207,7 +207,7 @@ a.eventEmitter = (function() {
     */
     obj.prototype.dispatch = function(type, data) {
         var t = this.__list[type];
-        if(!a.isNull(t)) {
+        if(!a.isNone(t)) {
             for(var i=0, l=t.length; i<l; ++i) {
                 // Scoping to not have trouble
                 (function(fct) {

@@ -98,7 +98,7 @@ a.ajax = function(options, success, error) {
 
     // Detecting browser support of ajax (including old browser support
     this.request = null;
-    if(!a.isNull(window.XMLHttpRequest)) {
+    if(!a.isNone(window.XMLHttpRequest)) {
         this.request = new XMLHttpRequest();
     // Internet explorer specific
     } else {

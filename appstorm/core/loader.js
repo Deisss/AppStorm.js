@@ -52,7 +52,7 @@ a.loader = (function() {
     */
     function __checkCache(uri, callback) {
         // Search in cache
-        if(a.isNull(uri)) {
+        if(a.isNone(uri)) {
             return false;
         }
 
@@ -80,7 +80,7 @@ a.loader = (function() {
     */
     function __populateCache(uri, args) {
         // By default, we cache
-        if(!a.isNull(args) && args.cache === false) {
+        if(!a.isNone(args) && args.cache === false) {
             return;
         }
         __cache.push(uri);
@@ -105,7 +105,7 @@ a.loader = (function() {
             el.setAttribute(i, options[i]);
         }
 
-        if(!a.isNull(args) && args.id) {
+        if(!a.isNone(args) && args.id) {
             el.setAttribute("id", args.id);
         }
 
@@ -182,11 +182,11 @@ a.loader = (function() {
         };
 
         a.console.log("a.loader: load resource (url: " + uri + ")", 3);
-        if(!a.isNull(args)) {
+        if(!a.isNone(args)) {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
             }
-            if(!a.isNull(args.type) && (args.type === "json" || args.type === "xml") ) {
+            if(!a.isNone(args.type) && (args.type === "json" || args.type === "xml") ) {
                 options.type = args.type;
             }
             if(a.isObject(args.data)) {
@@ -374,7 +374,7 @@ a.loader = (function() {
          * @param args {Object} An object to set property for javaFX (like javascript name...), we need : args.code (the main to start), args.id (the id of project). args.width and height are optional
         */
         javafx : function(uri, callback, args, error) {
-            if(a.isNull(args) || a.isNull(args.code) || a.isNull(args.id)) {
+            if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
                 a.console.warn("a.loader.javafx : the system need args.code and args.name setted to be able to load any javafx resource... This uri will not be loaded : " + uri, 3);
                 return;
             }
@@ -401,7 +401,7 @@ a.loader = (function() {
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0 && !a.isNull(document.getElementById(args.id).Packages)) {
+                if(max-- > 0 && !a.isNone(document.getElementById(args.id).Packages)) {
                     a.timer.remove(timer);
                     if(a.isFunction(callback)) {
                         callback();
@@ -423,7 +423,7 @@ a.loader = (function() {
          * @param args {Object} An object to set property for Flash
         */
         flash : function(uri, callback, args, error) {
-            if(a.isNull(args) || a.isNull(args.rootId) || a.isNull(args.id)) {
+            if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 a.console.warn("a.loader.flash : the system need args parameters : rootId, id, setted to be able to load any flash resource... This uri will not be loaded : " + uri, 3);
                 return;
             }
@@ -456,7 +456,7 @@ a.loader = (function() {
          * @param args {Object} An object to set property for Silverlight
         */
         silverlight : function(uri, callback, args, error) {
-            if(a.isNull(args) || a.isNull(args.rootId) || a.isNull(args.id)) {
+            if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 a.console.warn("a.loader.silverlight : the system need args parameters : rootId, id, setted to be able to load any silverlight resource... This uri will not be loaded : " + uri, 3);
                 return;
             }
@@ -491,7 +491,7 @@ a.loader = (function() {
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0 && !a.isNull(document.getElementById(args.id).Content)) {
+                if(max-- > 0 && !a.isNone(document.getElementById(args.id).Content)) {
                     a.timer.remove(timer);
                     callback();
                 } else if(max <= 0 && a.isFunction(error)) {

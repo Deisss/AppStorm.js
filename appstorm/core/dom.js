@@ -140,9 +140,9 @@ a.dom = {
         */
 
         // In case of null dom, it's 2 parameters or single parameter mode
-        if(a.isNull(dom)) {
+        if(a.isNone(dom)) {
             // We are in single parameter mode
-            if(a.isNull(value)) {
+            if(a.isNone(value)) {
                 value = document;
             }
             // We are in 2 parameters mode, with value = dom
@@ -427,7 +427,7 @@ a.dom.children.prototype = {
 
             while(i--) {
                 var data = elementList[i].style[rule];
-                if(!a.isNull(data)) {
+                if(!a.isNone(data)) {
                     cssList.push(data);
                 }
             }
@@ -629,7 +629,7 @@ a.dom.children.prototype = {
             while(i--) {
                 try {
                     var data = elementList[i].getAttribute();
-                    if(!a.isNull(data) && !a.contains(valueList, data)) {
+                    if(!a.isNone(data) && !a.contains(valueList, data)) {
                         valueList.push(data);
                     }
                 } catch(ex) {}

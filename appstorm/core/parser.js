@@ -25,7 +25,7 @@
 */
 
 // BEGIN JSON3 - only if json is not supported
-if(a.isNull(JSON) && (a.isNull(JSON.parser) || a.isNull(JSON.stringify)) ) {
+if(a.isNone(JSON) && (a.isNone(JSON.parser) || a.isNone(JSON.stringify)) ) {
 
 ;(function(){var e=void 0,i=!0,k=null,l={}.toString,m,n,p="function"===typeof define&&define.c,q=!p&&"object"==typeof exports&&exports;q||p?"object"==typeof JSON&&JSON?p?q=JSON:(q.stringify=JSON.stringify,q.parse=JSON.parse):p&&(q=this.JSON={}):q=this.JSON||(this.JSON={});var r,t,u,x,z,B,C,D,E,F,G,H,I,J=new Date(-3509827334573292),K,O,P;try{J=-109252==J.getUTCFullYear()&&0===J.getUTCMonth()&&1==J.getUTCDate()&&10==J.getUTCHours()&&37==J.getUTCMinutes()&&6==J.getUTCSeconds()&&708==J.getUTCMilliseconds()}catch(Q){}
 function R(b){var c,a,d,j=b=="json";if(j||b=="json-stringify"||b=="json-parse"){if(b=="json-stringify"||j){if(c=typeof q.stringify=="function"&&J){(d=function(){return 1}).toJSON=d;try{c=q.stringify(0)==="0"&&q.stringify(new Number)==="0"&&q.stringify(new String)=='""'&&q.stringify(l)===e&&q.stringify(e)===e&&q.stringify()===e&&q.stringify(d)==="1"&&q.stringify([d])=="[1]"&&q.stringify([e])=="[null]"&&q.stringify(k)=="null"&&q.stringify([e,l,k])=="[null,null,null]"&&q.stringify({A:[d,i,false,k,"\x00\u0008\n\u000c\r\t"]})==
@@ -136,9 +136,9 @@ a.parser = {
          *                            string if the parsing fails
         */
         stringify: function(value) {
-            if(!a.isNull(value) && !a.isNull(value.xml)) {
+            if(!a.isNone(value) && !a.isNone(value.xml)) {
                 return value.xml;
-            } else if(!a.isNull(window.XMLSerializer)) {
+            } else if(!a.isNone(window.XMLSerializer)) {
                 try {
                     var serializer = new window.XMLSerializer();
                     return serializer.serializeToString(value);
@@ -171,7 +171,7 @@ a.parser = {
          *                                in case of problem
         */
         parse: function(value) {
-            if(!a.isNull(window.ActiveXObject)) {
+            if(!a.isNone(window.ActiveXObject)) {
                 var doc = null;
                 // 4: we stop at MSXML 3.0
                 for(var i=0; i<4; ++i) {
@@ -196,7 +196,7 @@ a.parser = {
                     return null;
                 }
                 return doc;
-            } else if(!a.isNull(window.DOMParser)) {
+            } else if(!a.isNone(window.DOMParser)) {
                 return (new DOMParser()).parseFromString(value, 'text/xml');
             }
 

@@ -66,7 +66,7 @@ a.environment = {
      * @param value {Mixed}    Some data to associate to the key
     */
     set: function(key, value) {
-        if(a.isNull(key)) {
+        if(a.isNone(key)) {
             return;
         }
 
@@ -87,7 +87,7 @@ a.environment = {
      * @param key {String} The stored key to remove
     */
     remove: function(key) {
-        if(a.isNull(this._store[key])) {
+        if(a.isNone(this._store[key])) {
             return;
         }
 
