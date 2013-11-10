@@ -6,7 +6,9 @@
         a.js
     ]
 
-    Events : []
+    Events : [
+        a.timer.tick : null (no data)
+    ]
 
     Description:
         Simple timer system, provide a single timer for many bindings
@@ -32,10 +34,10 @@ a.timer = (function() {
     /**
      * Proceed timer tick
      *
-     * @method ticker
+     * @method tick
      * @private
     */
-    function ticker() {
+    function tick() {
         // We dispatch a new tick
         a.message.dispatch('a.timer.tick');
 
@@ -74,7 +76,7 @@ a.timer = (function() {
     };
 
     // Auto-start timer
-    setInterval(ticker, delay);
+    setInterval(tick, delay);
 
     return {
         /**
