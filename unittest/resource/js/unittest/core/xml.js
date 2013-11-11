@@ -21,7 +21,7 @@ test("a.parser.xml.stringify", function() {
 
 	var stringify = a.parser.xml.stringify(doc);
 	// Removing line brakes
-	stringify = stringify.replace(/(\r\n|\n|\r)/gm,"");
+	stringify = stringify.replace(/(\r\n|\n|\r)/gm, "");
 	// Remove xml tag (appends on Opera browser)
 	stringify = stringify.replace("<?xml version=\"1.0\"?>", "");
 

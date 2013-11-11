@@ -15,11 +15,6 @@ test("a.parser.json.parse", function() {
 	deepEqual(a.parser.json.parse(json3), ["a", "b", "c"], "Testing parsing array");
 	// Test fail
 	strictEqual(a.parser.json.parse(fail1), null, "Testing wrong data give back a null value");
-	// Test console show failure...
-	var trace = a.console.trace();
-	var lastError = trace["error"].pop();
-
-	strictEqual(lastError, "a.parser.json.parse : unable to parse the value : " + fail1, "Testing console error output");
 });
 
 // Test json stringify
@@ -45,10 +40,5 @@ test("a.parser.json.stringify", function() {
 	strictEqual(a.parser.json.stringify(obj2), '{"system":{"ok":"hello","second":4}}', "Testing stringify more complex object");
 	// Test fail (sending null value to replacer make it not working at all...
 	strictEqual(a.parser.json.stringify(john), "", "Testing wrong data give empty string");
-
-	var trace = a.console.trace();
-	var lastError = trace["error"].pop();
-
-	strictEqual(lastError, "a.parser.json.stringify : unable to stringify the value : [object Object]", "Testing console error output");
 });
 

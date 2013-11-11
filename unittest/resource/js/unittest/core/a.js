@@ -15,7 +15,7 @@ test("a.contains", function() {
 	};
 	var arrTest = ["ok"];
 
-	strictEqual(a.contains(objTest, "ok"), true, "Test object working");
+	strictEqual(a.contains(objTest, "yatta"), true, "Test object working");
 	strictEqual(a.contains(objTest, "ok2"), false, "Test object working");
 	strictEqual(a.contains(arrTest, "ok"), true, "Test array working");
 	strictEqual(a.contains(arrTest, "ok2"), false, "Test array working");
