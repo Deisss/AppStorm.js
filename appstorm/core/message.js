@@ -10,6 +10,7 @@
 
     Dependencies : [
         a.js
+        core/console.js
     ]
 
     Events : [

@@ -4,6 +4,10 @@
 
     Dependencies : [
         a.js
+        core/console.js
+        core/parser.js
+        core/message.js
+        core/loader.js
     ]
 
     Events : [

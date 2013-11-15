@@ -381,9 +381,9 @@ a.state = (function() {
                 => Now system unbuild delete, and rebuild add, and takes care to not unbuild something which don't need to.
                 Also, The system is hanble to run synchronously for going faster (unloading/loading item list of same level is done synchronously)
         */
-        var pathToDelete = a.clone(__root),
-            pathToAdd    = a.clone(__root),
-            pathWildcard = a.clone(__root),
+        var pathToDelete = a.deepClone(__root),
+            pathToAdd    = a.deepClone(__root),
+            pathWildcard = a.deepClone(__root),
 
         // We search extra controller loaded by user, to delete
             externalDelete = __getExternalDelete(data.value);
@@ -486,7 +486,7 @@ a.state = (function() {
          * @return {Array} A clone of current stored object
         */
         tree : function() {
-            return a.clone(__root);
+            return a.deepClone(__root);
         },
 
         /**
@@ -543,7 +543,7 @@ a.state = (function() {
 
             // We allow children to be a single object and not an array
             if(!a.isArray(ctrl.children) && a.isObject(ctrl.children)) {
-                ctrl.children = [ a.clone(ctrl.children) ];
+                ctrl.children = [ a.deepClone(ctrl.children) ];
             }
 
             var parentCheck   = (!a.isNone(ctrl.parent)),
@@ -613,7 +613,7 @@ a.state = (function() {
             // The user ask to preload everything, so we handle this
             if(ctrl.bootOnLoad === true) {
                 // We clone, then remove everything linked to data : we want to load everything, except data
-                var copy = a.clone(ctrl);
+                var copy = a.deepClone(ctrl);
                 // Remove all load function/unload functions, and data info
                 copy.data = copy.converter = copy.options = null;
                 copy.preLoad = copy.load = copy.postLoad = null;
@@ -672,10 +672,10 @@ a.state = (function() {
         */
         loadById : function(id, hashtagList, callback) {
             // We search for id chain
-            var pathToAdd = a.clone(__root),
+            var pathToAdd = a.deepClone(__root),
                 // We need to know the current path, and the current root
                 hash = a.page.event.hash.getHash(),
-                path = a.clone(__root);
+                path = a.deepClone(__root);
 
             // Selecting the good path (the path to add, the path added
             a.state.helper.tree.selectBranch(pathToAdd, __getTreeFiller, __getTreeIdTester(id));
@@ -760,7 +760,7 @@ a.state = (function() {
                 count     = [],
                 // After delete : we setup again delete as it was before
                 // this is because unloadById will not remove previous entry
-                duplicate = a.clone(__del);
+                duplicate = a.deepClone(__del);
 
             while(length--) {
                 if(a.contains(__del[length].itemList, id)) {
@@ -784,7 +784,7 @@ a.state = (function() {
             }
 
             // Nothing found into system, we go for hashtag reload (instead of manual reload)
-            var currentPath = a.clone(__root),
+            var currentPath = a.deepClone(__root),
                 hash = a.page.event.hash.getHash();
 
             // Selecting the good path (the path to add, the path added
@@ -862,7 +862,7 @@ a.state = (function() {
             // Convert to str
             status = "_" + status;
 
-            var path = a.clone(__root);
+            var path = a.deepClone(__root);
 
             // Selecting the good path (the path to add, the path added
             a.state.helper.tree.selectBranch(path, __getTreeFiller, __getTreeIdTester(id));
@@ -1074,7 +1074,7 @@ a.state.helper.tree = {
     /**
      * Keep only branch where specific item appears
      * Note : there is no return value because tree will be modified as a "pointed tree", so use tree after.
-     * Note : If you need to keep original tree, you need to duplicate the tree before using this function (use a.clone for that)
+     * Note : If you need to keep original tree, you need to duplicate the tree before using this function (use a.deepClone for that)
      * Ex : tester (hash come from other scope) :
      * function(item){if(item.hash === hash || item.hash === "*"){return true;}; return false;}
      * Ex : filler (must return an array, so send back empty array in case of problem) :
@@ -1293,7 +1293,7 @@ a.state.helper.chainer = function(type, path, allowed, id, callback) {
      * @return {Function} The function to use for loading data
     */
     function __generateDefaultDataLoader(name, data, options, internal) {
-        var opt  = a.clone(options),
+        var opt  = a.deepClone(options),
             hash = a.page.event.hash.getHash();
 
         // Parsing options with parameters if possible

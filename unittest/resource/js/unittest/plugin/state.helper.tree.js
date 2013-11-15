@@ -5,7 +5,7 @@ module("PLUGIN/state");
 // Concern state default create/clone object
 (function(q) {
 	// Test cloning object
-	q.test("a.clone", function() {
+	q.test("a.deepClone", function() {
 		var toClone1 = {
 			ok : {
 				hello : "word"
@@ -19,10 +19,10 @@ module("PLUGIN/state");
 			this.test = "ok";
 		};
 
-		var cloned1 = a.clone(toClone1);
-		var cloned2 = a.clone(toClone2);
-		var cloned3 = a.clone(toClone3);
-		var cloned4 = a.clone(toClone4);
+		var cloned1 = a.deepClone(toClone1);
+		var cloned2 = a.deepClone(toClone2);
+		var cloned3 = a.deepClone(toClone3);
+		var cloned4 = a.deepClone(toClone4);
 
 		// Now we change some property (in both cloned and original), we check clone difference appearing
 		cloned1.ok.hello = "none";
@@ -245,26 +245,26 @@ module("PLUGIN/state");
 		};
 
 		// First test : on full array
-		var selectBranchTest1 = a.clone(test);
+		var selectBranchTest1 = a.deepClone(test);
 		a.state.helper.tree.selectBranch(selectBranchTest1, selectBranchFiller, generateSelectBranchTester("tag2"));
 		var flatSelectBranchResult1 = a.state.helper.tree.flat(selectBranchTest1, flatFiller, flatConverter);
 		var attendedSelectedBranchResult1 = [1, 7, 8, 9, 2, 4, 11];
 
 
 		// Second test : on full array
-		var selectBranchTest2 = a.clone(test);
+		var selectBranchTest2 = a.deepClone(test);
 		a.state.helper.tree.selectBranch(selectBranchTest2, selectBranchFiller, generateSelectBranchTester("tag3"));
 		var flatSelectBranchResult2 = a.state.helper.tree.flat(selectBranchTest2, flatFiller, flatConverter);
 		var attendedSelectedBranchResult2 = [1, 9, 3, 4, 10, 13, 12];
 
 		// Third test : on subpart (good)
-		var selectBranchTest3 = new Array(a.clone(test[0]));
+		var selectBranchTest3 = new Array(a.deepClone(test[0]));
 		a.state.helper.tree.selectBranch(selectBranchTest3, selectBranchFiller, generateSelectBranchTester("tag5"));
 		var flatSelectBranchResult3 = a.state.helper.tree.flat(selectBranchTest3, flatFiller, flatConverter);
 		var attendedSelectedBranchResult3 = [1, 5, 9];
 
 		// 4th test : on subpart (nothing)
-		var selectBranchTest4 = new Array(a.clone(test[2]));
+		var selectBranchTest4 = new Array(a.deepClone(test[2]));
 		a.state.helper.tree.selectBranch(selectBranchTest4, selectBranchFiller, generateSelectBranchTester("tag2"));
 		var flatSelectBranchResult4 = a.state.helper.tree.flat(selectBranchTest4, flatFiller, flatConverter);
 		// No result to show
@@ -285,28 +285,28 @@ module("PLUGIN/state");
 	q.test("a.state.helper.tree.selectLevel", function() {
 		var selectLevelFiller = flatFiller;
 
-		var selectLevelTest1 = a.clone(test);
+		var selectLevelTest1 = a.deepClone(test);
 		var selectLevelResult1 = a.state.helper.tree.selectLevel(selectLevelTest1, selectLevelFiller, 0);
 		var flatSelectLevelResult1 = a.state.helper.tree.flat(selectLevelResult1, flatFiller, flatConverter);
 		var attendedSelectedLevelResult1 = [1, 5, 7, 8, 9, 2, 6, 3, 4, 10, 13, 11, 12];
 
-		var selectLevelTest2 = a.clone(test);
+		var selectLevelTest2 = a.deepClone(test);
 		var selectLevelResult2 = a.state.helper.tree.selectLevel(selectLevelTest2, selectLevelFiller, 2);
 		var flatSelectLevelResult2 = a.state.helper.tree.flat(selectLevelResult2, flatFiller, flatConverter);
 		var attendedSelectedLevelResult2 = [13, 8];
 
-		var selectLevelTest3 = a.clone(test);
+		var selectLevelTest3 = a.deepClone(test);
 		var selectLevelResult3 = a.state.helper.tree.selectLevel(selectLevelTest3, selectLevelFiller, 1);
 		var flatSelectLevelResult3 = a.state.helper.tree.flat(selectLevelResult3, flatFiller, flatConverter);
 		var attendedSelectedLevelResult3 = [10, 13, 11, 12, 6, 5, 7, 8, 9];
 
-		var selectLevelTest4 = a.clone(test);
+		var selectLevelTest4 = a.deepClone(test);
 		var selectLevelResult4 = a.state.helper.tree.selectLevel(selectLevelTest4[1].children, selectLevelFiller, 0);
 		var flatSelectLevelResult4 = a.state.helper.tree.flat(selectLevelResult4, flatFiller, flatConverter);
 		var attendedSelectedLevelResult4 = [6];
 
 		// Negative result give back 0...
-		var selectLevelTest5 = a.clone(test);
+		var selectLevelTest5 = a.deepClone(test);
 		var selectLevelResult5 = a.state.helper.tree.selectLevel(selectLevelTest5, selectLevelFiller, -1);
 		var flatSelectLevelResult5 = a.state.helper.tree.flat(selectLevelResult5, flatFiller, flatConverter);
 		var attendedSelectedLevelResult5 = [1, 5, 7, 8, 9, 2, 6, 3, 4, 10, 13, 11, 12];

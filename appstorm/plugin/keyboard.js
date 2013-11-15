@@ -4,6 +4,7 @@
 
     Dependencies : [
         a.js
+        core/console.js
 
         ** Mousetrap IS NEEDED AND IS EXTERNAL LIBRARY **
     ]

@@ -10,6 +10,7 @@
 
     Dependencies : [
         a.js
+        core/environment.js
     ]
 
     Events : []

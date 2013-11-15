@@ -4,6 +4,8 @@
 
     Dependencies : [
         a.js
+        core/console.js
+        core/message.js
         plugin/callback.js
         plugin/language.js (optional)
 

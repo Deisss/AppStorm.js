@@ -10,6 +10,8 @@
 
     Dependencies : [
         a.js
+        core/parser.js
+        core/message.js
     ]
 
     Events : [

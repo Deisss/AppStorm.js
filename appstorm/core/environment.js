@@ -4,6 +4,7 @@
 
     Dependencies: [
         a.js
+        core/message.js
     ]
 
     Events: [
@@ -34,16 +35,16 @@
  * @static
  * @namespace a
 */
-a.environment = {
+a.environment = new function() {
     /*
      * DON'T USE DIRECTLY
      *
      * Internal store
     */
-    _store: {
+    var store = {
         'verbose': 2,
         'console': 'log'
-    },
+    };
 
     /**
      * Get the stored value for given key, null if nothing is stored
@@ -53,9 +54,9 @@ a.environment = {
      * @param key {String}     The key to retreive
      * @return {Mixed | null} The result data, or null if key is not found
     */
-    get: function(key) {
-        return (key in this._store) ? this._store[key] : null;
-    },
+    this.get = function(key) {
+        return (key in store) ? store[key] : null;
+    };
 
     /**
      * Store or modify the key data with incoming value
@@ -65,19 +66,19 @@ a.environment = {
      * @param key {String}     The key to store
      * @param value {Mixed}    Some data to associate to the key
     */
-    set: function(key, value) {
+    this.set = function(key, value) {
         if(a.isNone(key)) {
             return;
         }
 
-        this._store[key] = value;
+        store[key] = value;
 
         // Dispatch event
         a.message.dispatch('a.environment.add', {
             key:   key,
             value: value
         });
-    },
+    };
 
     /**
      * Remove a key stored
@@ -86,28 +87,28 @@ a.environment = {
      *
      * @param key {String} The stored key to remove
     */
-    remove: function(key) {
-        if(a.isNone(this._store[key])) {
+    this.remove = function(key) {
+        if(a.isNone(store[key])) {
             return;
         }
 
-        delete this._store[key];
+        delete store[key];
 
         // Dispatch event
         a.message.dispatch('a.environment.remove', {
             key: key
         });
-    },
+    };
 
     /**
      * Erase everything and rollback to inital change (verbose:2, console: log)
      *
      * @method clear
     */
-    clear: function() {
-        this._store = {
+    this.clear = function() {
+        store = {
             'verbose': 2,
             'console': 'log'
         };
-    }
+    };
 };

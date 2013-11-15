@@ -4,6 +4,8 @@
 
     Dependencies : [
         a.js
+        core/environment.js
+        core/console.js
     ]
 
     Events : []
@@ -150,8 +152,6 @@ a.parser = {
                     if(a.environment.get('debug')) {
                         a.console.error(a.getStackTrace(), 1);
                     }
-                } finally {
-                    return '';
                 }
             }
 

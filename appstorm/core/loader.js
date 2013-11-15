@@ -10,6 +10,10 @@
 
     Dependencies : [
         a.js
+        core/console.js
+        core/timer.js
+        core/environment.js
+        core/ajax.js
     ]
 
     Events : []

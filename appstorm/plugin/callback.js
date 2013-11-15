@@ -4,6 +4,8 @@
 
     Dependencies : [
         a.js
+        core/message.js
+        core/console.js
     ]
 
     Events : [
