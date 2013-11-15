@@ -9,7 +9,7 @@
         plugin/callback.js
         plugin/language.js (optional)
 
-        ** Mustache.js OR handlebars.js IS NEEDED AND IS EXTERNAL LIBRARY **
+        ** handlebars.js IS NEEDED AND IS EXTERNAL LIBRARY **
     ]
 
     Events : [
@@ -68,16 +68,14 @@ a.page.template = {
     get : function(uri, data, callback, error) {
         var handler = null;
 
-        // If mustache is not define (Mustache is not defined) we exit
-        if(a.isObject(window.Mustache)) {
-            handler = window.Mustache;
-        } else if(a.isObject(window.Handlebars)) {
+        // If handlebars is not defined, we exit
+        if(a.isObject(window.Handlebars)) {
             handler = window.Handlebars;
         }
 
         // Crash if none is found
         if(handler == null) {
-            a.console.error("a.page.template.get: unable to find Mustache.JS or Handlebars.JS ! Can't proceed", 1);
+            a.console.error("a.page.template.get: unable to find Handlebars.JS ! Can't proceed", 1);
             return;
         }
 
