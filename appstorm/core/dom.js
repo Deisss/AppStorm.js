@@ -244,8 +244,9 @@ a.dom = {
 
         // We remove ' ' from value and attribute
         name  = name.replace(/ /g,'');
-        value = value.replace(/ /g,'');
-
+        if(isStringValue) {
+            value = value.replace(/ /g,''); 
+        }
 
         // Simple version, for latest browser
         if(name == 'class') {
@@ -523,8 +524,20 @@ a.dom.children.prototype = {
      * @return {String | null}      The CSS value found in case of get
     */
     css: function(rule, value) {
+        rule = rule || '';
+
+        // Transform rule for a js like ruler
+        if(rule.indexOf('-') >= 0) {
+            var splitRule = rule.split('-');
+            for(var i=1, l=splitRule.length; i<l; ++i) {
+                var s = splitRule[i];
+                splitRule[i] = s.charAt(0).toUpperCase() + s.slice(1);
+            }
+            rule = splitRule.join('');
+        }
+
         // Getter
-        if(typeof(value) === 'undefined') {
+        if(a.isUndefined(value)) {
             var cssList     = [],
                 elementList = this.elementList,
                 i           = elementList.length;
@@ -537,7 +550,7 @@ a.dom.children.prototype = {
             }
 
             if(cssList.length <= 1) {
-                return cssList[0] || "";
+                return cssList[0] || '';
             } else {
                 return cssList;
             }
@@ -558,15 +571,12 @@ a.dom.children.prototype = {
      * @return {this}               The chain element
     */
     addClass: function(classname) {
+        var reg = new RegExp('(\\s|^)' + classname + '(\\s|$)');
         this.each(function() {
             if(this.classList) {
                 this.classList.add(classname);
             // We test the element don't have classname first
-            } else if(
-                !this.className.match(
-                    new RegExp('(\\s|^)' + classname + '(\\s|$)')
-                )
-            ) {
+            } else if(!this.className.match(reg)) {
                 this.className += ' ' + classname;
             }
         });
@@ -755,11 +765,18 @@ a.dom.children.prototype = {
     */
     parent: function() {
         var elementList = this.elementList,
+            newList     = [],
             i           = elementList.length;
 
         while(i--) {
-            elementList[i] = elementList[i].parentNode;
+            var element = elementList[i].parentNode;
+            // We append only if parent is not already register
+            if(!a.contains(newList, element)) {
+                newList.push(element);
+            }
         }
+
+        this.elementList = newList;
 
         return this;
     },
