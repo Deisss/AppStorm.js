@@ -723,6 +723,10 @@ a.dom.children.prototype = {
      * @param value {String}        The value to get
     */
     attribute: function(attribute, value) {
+        var arrayAttribute = 
+            a.isString(attribute) ?   attribute.replace(/ /g,'').split(',')
+                                  :   attribute;;
+
         // Getter
         if(a.isUndefined(value)) {
             var valueList   = [],
@@ -730,12 +734,15 @@ a.dom.children.prototype = {
                 i           = elementList.length;
 
             while(i--) {
-                try {
-                    var data = elementList[i].getAttribute(attribute);
-                    if(!a.isNone(data) && !a.contains(valueList, data)) {
-                        valueList.push(data);
-                    }
-                } catch(ex) {}
+                for(var j=0, l=arrayAttribute.length; j<l; ++j) {
+                    try {
+                        var data = elementList[i]
+                                .getAttribute(arrayAttribute[j]);
+                        if(!a.isNone(data) && !a.contains(valueList, data)) {
+                            valueList.push(data);
+                        }
+                    } catch(ex) {}
+                }
             }
 
             if(valueList.length < 2) {
@@ -747,9 +754,11 @@ a.dom.children.prototype = {
         // Setter
         } else {
             this.each(function() {
-                try {
-                    this.setAttribute(attribute, value);
-                } catch(ex) {}
+                for(var j=0, l=arrayAttribute.length; j<l; ++j) {
+                    try {
+                        this.setAttribute(arrayAttribute[j], value);
+                    } catch(ex) {}
+                }
             });
             return this;
         }
