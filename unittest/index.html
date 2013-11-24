@@ -1,122 +1,165 @@
 <!DOCTYPE html>
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta charset="utf-8" />
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-		<meta http-equiv="Content-Language" content="en" />
-		<!-- Run IE in current version (not compatibility) mode -->
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <head>
+        <meta charset="utf-8" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta http-equiv="Content-Language" content="en" />
+        <!-- Run IE in current version (not compatibility) mode -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-		<!-- Apple iDevice support & Android device -->
-		<link href="../logo/asjs.png" rel="apple-touch-icon" />
-		<link href="../logo/appstormjs.png" rel="apple-touch-startup-image" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<meta content="yes" name="apple-mobile-web-app-capable" />
-		<meta content="default" name="apple-mobile-web-app-status-bar-style" />
+        <!-- Apple iDevice support & Android device -->
+        <link href="../logo/asjs.png" rel="apple-touch-icon" />
+        <link href="../logo/appstormjs.png" rel="apple-touch-startup-image" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="default" name="apple-mobile-web-app-status-bar-style" />
 
-		<!-- Content information -->
-		<meta name="description" content="Unit Test tool for AppStorm.JS" />
-		<meta name="keywords" content="AppStorm.JS, AppStorm, App Storm, UnitTest, unit-test" />
-		<meta name="robots" content="index, follow, all" />
-		<title>AppStorm.JS - Unit Test</title>
-
-
-
-		<!-- Optional (recommanded) -->
-
-		<!-- Provide basic HTML5 feature for Internet Explorer -->
-		<!--[if lt IE 9]>
-			<script src="resource/js/vendor/html5shiv.js"></script>
-		<![endif]-->
-
-		<!-- QUnit unit test tool -->
-		<link href="resource/css/vendor/qunit-1.11.0.css" rel="stylesheet" type="text/css" />
-
-		<!-- Define here your custom CSS files : here an example with loading -->
-		<link href="resource/css/main.css" rel="stylesheet" type="text/css" />
-	</head>
-
-	<body>
-		<!-- represent a page -->
-		<div id="logo-container">
-			<img id="logo" src="../logo/appstormjs.png" alt="logo AppStorm.JS" />
-		</div>
-		<div id="qunit"></div>
-		<div id="qunit-fixture"></div>
+        <!-- Content information -->
+        <meta name="description" content="Unit Test tool for AppStorm.JS" />
+        <meta name="keywords" content="AppStorm.JS, AppStorm, App Storm, UnitTest, unit-test" />
+        <meta name="robots" content="index, follow, all" />
+        <title>AppStorm.JS - Unit Test</title>
 
 
+
+        <!-- Optional (recommanded) -->
+
+        <!-- Provide basic HTML5 feature for Internet Explorer -->
+        <!--[if lt IE 9]>
+            <script src="resource/js/vendor/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- QUnit unit test tool -->
+        <link href="resource/css/vendor/qunit-1.11.0.css" rel="stylesheet" type="text/css" />
+
+        <!-- Define here your custom CSS files : here an example with loading -->
+        <link href="resource/css/main.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <!-- represent a page -->
+        <div id="logo-container">
+            <img id="logo" src="../logo/appstormjs.png" alt="logo AppStorm.JS" />
+        </div>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
 
 
 
 
 
-		<!-- Script -->
-
-		<!-- QUnit unit test tool -->
-		<script src="resource/js/vendor/qunit-1.11.0.js"></script>
-		<script src="resource/js/vendor/qunit-testskip.js"></script>
 
 
 
 
-		<!-- AppStorm.JS -->
-		<script src="../appstorm/vendor/underscore-1.5.2.min.js"></script>
-		<script src="../appstorm/vendor/handlebars-1.1.2.min.js"></script>
-		<script src="../appstorm/vendor/mousetrap-1.4.5.min.js"></script>
 
-		<!-- Required script used by AppStorm.JS (or needed to prevent unsupported element) -->
-		<script id="a-core" src="../appstorm/a.js"></script>
+        <!-- a.dom unit test elements -->
+        <div style='display:none'>
+            <!-- id test -->
+            <a id='a.dom.testid'>a.dom.testid</a>
+            <input type='text' id='a.dom.secondtestid' />
 
-		<!-- core -->
-		<script src="../appstorm/core/console.js"></script>
-		<script src="../appstorm/core/environment.js"></script>
-		<script src="../appstorm/core/message.js"></script>
-		<script src="../appstorm/core/parser.js"></script>
-		<script src="../appstorm/core/timer.js"></script>
-		<script src="../appstorm/core/ajax.js"></script>
-		<script src="../appstorm/core/loader.js"></script>
+            <!-- class and tag test -->
+            <a class='a.dom.testclass'></a>
+            <div id='a.dom.testtag'>
+                <a class='a.dom.testclass'></a>
+                <span>
+                    <i class='a.dom.testclass'></i>
+                    <a></a>
+                    <b class='a.dom.secondtestclass'></b>
+                </span>
+            </div>
 
-		<!-- plugin -->
-		<script src="../appstorm/plugin/keyboard.js"></script>
-		<script src="../appstorm/plugin/storage.js"></script>
-		<script src="../appstorm/plugin/language.js"></script>
-		<script src="../appstorm/plugin/callback.js"></script>
-		<script src="../appstorm/plugin/form.js"></script>
-		<script src="../appstorm/plugin/page.js"></script>
-		<script src="../appstorm/plugin/state.js"></script>
+            <div id='a.dom.secondtesttag'>
+                <a></a>
+            </div>
+
+            <!-- attr test -->
+            <a data-attr-test='a.dom.testattr'></a>
+            <div>
+                <span data-attr-test='a.dom.testattr'></span>
+                <i data-attr-test='a.dom.secondtestattr'></i>
+            </div>
+        </div>
 
 
 
 
-		<!-- Unit test - CORE -->
-		<script src="resource/js/unittest/core/a.js"></script>
-		<script src="resource/js/unittest/core/console.js"></script>
-		<script src="resource/js/unittest/core/json.js"></script>
-		<script src="resource/js/unittest/core/xml.js"></script>
-		<script src="resource/js/unittest/core/message.js"></script>
-		<script src="resource/js/unittest/core/environment.js"></script>
-		<script src="resource/js/unittest/core/timer.js"></script>
-		<script src="resource/js/unittest/core/ajax.js"></script>
-		<script src="resource/js/unittest/core/loader.js"></script>
 
-		<!-- Unit test - PLUGINS -->
-		<script src="resource/js/unittest/plugin/callback.js"></script>
-		<script src="resource/js/unittest/plugin/keyboard.js"></script>
-		<script src="resource/js/unittest/plugin/form.js"></script>
-		<script src="resource/js/unittest/plugin/storage.js"></script>
-		<script src="resource/js/unittest/plugin/language.js"></script>
-		<script src="resource/js/unittest/plugin/page.js"></script>
-		<script src="resource/js/unittest/plugin/state.helper.tree.js"></script>
-		<script src="resource/js/unittest/plugin/state.helper.parameter.js"></script>
-		<script src="resource/js/unittest/plugin/state.id.js"></script>
-		<script src="resource/js/unittest/plugin/state.type.js"></script>
-		<script src="resource/js/unittest/plugin/state.bug.js"></script>
-		<script src="resource/js/unittest/plugin/state.js"></script>
 
-		<!-- set AppStorm.JS in debug mode -->
-		<script>
-			a.environment.set("debug", true);
-			a.environment.set("verbose", 1);
-		</script>
-	</body>
+
+
+
+
+        <!-- Script -->
+
+        <!-- QUnit unit test tool -->
+        <script src="resource/js/vendor/qunit-1.11.0.js"></script>
+        <script src="resource/js/vendor/qunit-testskip.js"></script>
+
+
+
+
+        <!-- AppStorm.JS -->
+        <script src="../appstorm/vendor/underscore-1.5.2.min.js"></script>
+        <script src="../appstorm/vendor/handlebars-1.1.2.min.js"></script>
+        <script src="../appstorm/vendor/mousetrap-1.4.5.min.js"></script>
+
+        <!-- Required script used by AppStorm.JS (or needed to prevent unsupported element) -->
+        <script id="a-core" src="../appstorm/a.js"></script>
+
+        <!-- core -->
+        <script src="../appstorm/core/console.js"></script>
+        <script src="../appstorm/core/environment.js"></script>
+        <script src="../appstorm/core/message.js"></script>
+        <script src="../appstorm/core/parser.js"></script>
+        <script src="../appstorm/core/timer.js"></script>
+        <script src="../appstorm/core/ajax.js"></script>
+        <script src="../appstorm/core/loader.js"></script>
+        <script src="../appstorm/core/dom.js"></script>
+
+        <!-- plugin -->
+        <script src="../appstorm/plugin/keyboard.js"></script>
+        <script src="../appstorm/plugin/storage.js"></script>
+        <script src="../appstorm/plugin/language.js"></script>
+        <script src="../appstorm/plugin/callback.js"></script>
+        <script src="../appstorm/plugin/form.js"></script>
+        <script src="../appstorm/plugin/page.js"></script>
+        <script src="../appstorm/plugin/state.js"></script>
+
+
+
+
+        <!-- Unit test - CORE -->
+        <script src="resource/js/unittest/core/a.js"></script>
+        <script src="resource/js/unittest/core/console.js"></script>
+        <script src="resource/js/unittest/core/json.js"></script>
+        <script src="resource/js/unittest/core/xml.js"></script>
+        <script src="resource/js/unittest/core/message.js"></script>
+        <script src="resource/js/unittest/core/environment.js"></script>
+        <script src="resource/js/unittest/core/timer.js"></script>
+        <script src="resource/js/unittest/core/ajax.js"></script>
+        <script src="resource/js/unittest/core/loader.js"></script>
+        <script src="resource/js/unittest/core/dom.js"></script>
+
+        <!-- Unit test - PLUGINS -->
+        <script src="resource/js/unittest/plugin/callback.js"></script>
+        <script src="resource/js/unittest/plugin/keyboard.js"></script>
+        <script src="resource/js/unittest/plugin/form.js"></script>
+        <script src="resource/js/unittest/plugin/storage.js"></script>
+        <script src="resource/js/unittest/plugin/language.js"></script>
+        <script src="resource/js/unittest/plugin/page.js"></script>
+        <script src="resource/js/unittest/plugin/state.helper.tree.js"></script>
+        <script src="resource/js/unittest/plugin/state.helper.parameter.js"></script>
+        <script src="resource/js/unittest/plugin/state.id.js"></script>
+        <script src="resource/js/unittest/plugin/state.type.js"></script>
+        <script src="resource/js/unittest/plugin/state.bug.js"></script>
+        <script src="resource/js/unittest/plugin/state.js"></script>
+
+        <!-- set AppStorm.JS in debug mode -->
+        <script>
+            a.environment.set("debug", true);
+            a.environment.set("verbose", 1);
+        </script>
+    </body>
 </html>
