@@ -13,7 +13,7 @@ a.dom = {
      * @return {a.dom.children}         A chain object
     */
     query: function(check, dom) {
-        dom = (a.isObject(dom)) ? dom : document;
+        dom = dom || document;
 
         if(!dom.querySelectorAll && window.jQuery) {
             return this.el(jQuery(check));
@@ -146,7 +146,7 @@ a.dom = {
                 value = document;
             }
             // We are in 2 parameters mode, with value = dom
-            if(a.isObject(value)) {
+            if(a.isObject(value) && !a.isArray(value)) {
                 return this.attr(name, null, value);
 
             // We are in 2 parameters mode, without value = dom
@@ -253,6 +253,10 @@ a.dom = {
 
         } else if(name == 'id') {
             domList = [dom.getElementById(value)];
+            // In case of 'not found', we remove
+            if(a.isNull(domList[0])) {
+                domList.pop();
+            }
 
         } else if(dom.querySelectorAll) {
             // We get [class="ok"] or [class] depending on value setted or not
@@ -294,6 +298,106 @@ a.dom = {
         return new a.dom.children(domList);
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Abstract layer for binding event with DOM
+*/
+a.dom.event = new function() {
+    var bind   = null,
+        unbind = null;
+
+    // New browser
+    function addEventListener(el, type, fn) {
+        el.addEventListener(type, fn, false);
+    };
+    function removeEventListener(el, type, fn) {
+        el.removeEventListener(type, fn, false);
+    };
+
+    // IE
+    function attachEvent(el, type, fn) {
+        el.attachEvent('on' + type, fn);
+    };
+    function detachEvent(el, type, fn) {
+        el.detachEvent('on' + type, fn);
+    };
+
+    // Old Browsers
+    function rawBindEvent(el, type, fn) {
+        el['on' + type] = fn;
+    };
+    function rawUnbindEvent(el, type, fn) {
+        el['on' + type] = null;
+    };
+
+
+
+    if(a.isFunction(window.addEventListener)) {
+        bind   = addEventListener;
+        unbind = removeEventListener;
+    } else if(a.isFunction(document.attachEvent)) {
+        bind   = attachEvent;
+        unbind = detachEvent;
+    } else {
+        bind   = rawBindEvent;
+        unbind = rawUnbindEvent;
+    }
+
+    // Expose function
+    this.bind   = bind;
+    this.unbind = unbind;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -549,13 +653,7 @@ a.dom.children.prototype = {
                 continue;
             }
             this.each(function(evt) {
-                if(document.addEventListener) {
-                    this.addEventListener(evt, fct, false);
-                } else if(document.attachEvent) {
-                    this.attachEvent('on' + evt, fct);
-                } else {
-                    this['on' + evt] = fct;
-                }
+                a.dom.event.bind(this, evt, fct);
             }, bindList[i].toLowerCase());
         }
 
@@ -579,13 +677,7 @@ a.dom.children.prototype = {
             }
 
             this.each(function(evt) {
-                if(document.removeEventListener) {
-                    this.removeEventListener(evt, fct, false);
-                } else if(document.detachEvent) {
-                    this.detachEvent('on' + evt, fct);
-                } else {
-                    this['on' + evt] = undefined;
-                }
+                a.dom.event.unbind(this, evt, fct);
             }, bindList[i].toLowerCase());
         }
 
@@ -670,6 +762,23 @@ a.dom.children.prototype = {
         }
 
         return this;
+    },
+
+    /**
+     * Select direct children of all elements
+    */
+    children: function() {
+        var elementList = this.elementList,
+            replaceList = [],
+            i           = elementList.length;
+
+        while(i--) {
+            // Creating childnodes array system
+            replaceList.push(a.toArray(elementList[i].childNodes));
+        }
+
+        // Erasing previous list with new one
+        this.elementList = a.union.apply(this, replaceList);
     },
 
     /**
