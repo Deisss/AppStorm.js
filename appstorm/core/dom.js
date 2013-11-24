@@ -723,21 +723,28 @@ a.dom.children.prototype = {
      * @param value {String}        The value to get
     */
     attribute: function(attribute, value) {
-        if(typeof(value) === 'undefined') {
+        // Getter
+        if(a.isUndefined(value)) {
             var valueList   = [],
                 elementList = this.elementList,
                 i           = elementList.length;
 
             while(i--) {
                 try {
-                    var data = elementList[i].getAttribute();
+                    var data = elementList[i].getAttribute(attribute);
                     if(!a.isNone(data) && !a.contains(valueList, data)) {
                         valueList.push(data);
                     }
                 } catch(ex) {}
             }
 
-            return valueList;
+            if(valueList.length < 2) {
+                return valueList.join('');
+            } else {
+                return valueList;
+            }
+
+        // Setter
         } else {
             this.each(function() {
                 try {
@@ -756,6 +763,20 @@ a.dom.children.prototype = {
     */
     data: function(attribute, value) {
         return this.attribute('data-' + attribute, value);
+    },
+
+    /**
+     * Same as data or attribute, but multi tag check
+     *
+     * @param attribute {String}    The attribute to set
+     * @param value {String}        The value to get
+    */
+    appstorm: function(attribute, value) {
+        // TODO: attribute does not handle ',' and array delimiter
+        return this.attribute(
+              'data-' + attribute
+            + ',a-'   + attribute
+            + ','     + attribute, value);
     },
 
     /**
@@ -782,7 +803,7 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select direct children of all elements
+     * Select direct children of all stored elements
     */
     children: function() {
         var elementList = this.elementList,
@@ -790,12 +811,22 @@ a.dom.children.prototype = {
             i           = elementList.length;
 
         while(i--) {
-            // Creating childnodes array system
             replaceList.push(a.toArray(elementList[i].childNodes));
         }
 
         // Erasing previous list with new one
-        this.elementList = a.union.apply(this, replaceList);
+        var flatArray = a.uniq(a.flatten(replaceList)),
+            j = flatArray.length;
+
+        while(j--) {
+            if(flatArray[j].nodeType == 3) {
+                flatArray.splice(j, 1);
+            }
+        }
+
+        this.elementList = flatArray;
+
+        return this;
     },
 
     /**

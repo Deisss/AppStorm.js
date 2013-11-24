@@ -300,12 +300,51 @@ test('a.dom.children.attr', function() {
     strictEqual(attr2.length, 1, 'Test length');
 });
 
+// Test selecting attribute tag elements
 test('a.dom.children.attribute', function() {
+    // Getter test
 
+    // Simple element
+    var single = a.dom.id('a.dom.testidattr').tag('span')
+            .attribute('data-attr-test');
+    strictEqual(single, 'a.dom.testattr', 'Test single element');
+
+    // Multi elements
+    var multi = a.dom.id('a.dom.testidattr').children()
+            .attribute('data-attr-test');
+    strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
+            'Test multi element');
+
+
+    // Setter test
+    a.dom.id('a.dom.testidattr').tag('span').attribute('data-some', 'ok');
+    var set = a.dom.id('a.dom.testidattr').tag('span').attribute('data-some');
+    strictEqual(set, 'ok', 'Test setter');
 });
 
+// Quite the same as attribute, but with (data- used always before)
 test('a.dom.children.data', function() {
+    // Simple element
+    var single = a.dom.id('a.dom.testidattr').tag('span')
+            .data('attr-test');
+    strictEqual(single, 'a.dom.testattr', 'Test single element');
 
+    // Multi elements
+    var multi = a.dom.id('a.dom.testidattr').children()
+            .data('attr-test');
+    strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
+            'Test multi element');
+
+
+    // Setter test
+    a.dom.id('a.dom.testidattr').tag('span').data('second', 'ok');
+    var set = a.dom.id('a.dom.testidattr').tag('span').data('second');
+    strictEqual(set, 'ok', 'Test setter');
+});
+
+test('a.dom.children.appstorm', function() {
+    // Same as data but multi attribute getter/setter
+    // TODO: attribute does not handle ',' and array delimiter
 });
 
 // Test going to parent element
