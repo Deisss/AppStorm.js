@@ -265,12 +265,74 @@ test('a.dom.children.toggleClass', function() {
             true, 'Test has class inverted is true');
 });
 
+// Test click system
 test('a.dom.children.bind', function() {
+    stop();
+    expect(1);
 
+    // Internal function to fire click event
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    };
+
+    var se = strictEqual,
+        st = start();
+
+    var click = function() {
+        se(true, true, 'Test click has been binded');
+
+        // Unbind and continue
+        a.dom.id('a.dom.testid').unbind('click', click);
+        st();
+    };
+
+    a.dom.id('a.dom.testid').bind('click', click);
+
+    // Fake a click
+    eventFire(a.dom.id('a.dom.testid').get(0), 'click');
 });
 
+// Test unbinding does work
 test('a.dom.children.unbind', function() {
+    stop();
+    expect(1);
 
+    // Internal function to fire click event
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    };
+
+    var se = strictEqual,
+        st = start;
+
+    var click = function() {
+        alert('If you see this message it means unbind did not unbind...');
+        se(true, false, 'Test click should not be fired');
+    };
+
+    a.dom.id('a.dom.testid').bind('click', click);
+    a.dom.id('a.dom.testid').unbind('click', click);
+
+    // Fake a click
+    eventFire(a.dom.id('a.dom.testid').get(0), 'click');
+
+    strictEqual(true, true, 'Fake test');
+
+    a.timer.once(function() {
+        st();
+    }, null, 100);
 });
 
 // Test getting sub element by tag
@@ -523,5 +585,5 @@ test('a.dom.children.each', function() {
 
     a.timer.once(function() {
         st();
-    }, 50);
+    }, null, 50);
 });
