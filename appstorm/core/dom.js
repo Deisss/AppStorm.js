@@ -36,6 +36,22 @@ a.dom = {
             return element;
         }
 
+        if(a.isString(element)) {
+            if(String.prototype.trim) {
+                element = element.trim();
+            } else {
+                element = element.replace(/^\s+|\s+$/g, '');
+            }
+
+            // If there is only alphanumeric, we go for id
+            var reg = /^[a-zA-Z0-9 _-]+$/i;
+            if(reg.test(element)) {
+                return this.id(element);
+            } else {
+                return this.query(element);
+            }
+        }
+
         // Detect jQuery elements
         if(window.jQuery && element instanceof jQuery) {
             var domList = [],
