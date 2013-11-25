@@ -31,6 +31,11 @@ a.dom = {
      * @return {a.dom.children}         A chain object
     */
     el: function(element) {
+        // Detect already parsed
+        if(element instanceof a.dom.children) {
+            return element;
+        }
+
         // Detect jQuery elements
         if(window.jQuery && element instanceof jQuery) {
             var domList = [],
@@ -847,8 +852,13 @@ a.dom.children.prototype = {
      * @return {this}               The chain element
     */
     insertBefore: function(element) {
+        var dom = a.dom.el(element),
+            elements = dom.getElements();
+
         this.each(function() {
-            this.parentNode.insertBefore(element, this);
+            for(var i=0, l=elements.length; i<l; ++i) {
+                this.parentNode.insertBefore(elements[i], this);
+            }
         });
         return this;
     },
@@ -862,8 +872,13 @@ a.dom.children.prototype = {
      * @return {this}               The chain element
     */
     insertAfter: function(element) {
+        var dom = a.dom.el(element),
+            elements = dom.getElements();
+
         this.each(function() {
-            this.parentNode.insertBefore(element, this.nextSibling);
+            for(var i=0, l=elements.length; i<l; ++i) {
+                this.parentNode.insertBefore(elements[i], this.nextSibling);
+            }
         });
         return this;
     },
@@ -893,9 +908,14 @@ a.dom.children.prototype = {
      * @return {this}               The chain element
     */
     remove: function(element) {
+        var dom = a.dom.el(element),
+            elements = dom.getElements();
+
         this.each(function() {
             try {
-                this.parentNode.removeChild(element);
+                for(var i=0, l=elements.length; i<l; ++i) {
+                    this.removeChild(elements[i]);
+                }
             } catch(ex) {}
         });
         return this;
@@ -910,8 +930,13 @@ a.dom.children.prototype = {
      * @return {this}               The chain element
     */
     append: function(element) {
+        var dom = a.dom.el(element),
+            elements = dom.getElements();
+
         this.each(function() {
-            this.appendChild(element);
+            for(var i=0, l=elements.length; i<l; ++i) {
+                this.appendChild(elements[i]);
+            }
         });
         return this;
     },
@@ -926,8 +951,7 @@ a.dom.children.prototype = {
     */
     replace: function(element) {
         this.empty();
-        this.append(element);
-        return this;
+        return this.append(element);
     },
 
     /**
@@ -944,6 +968,7 @@ a.dom.children.prototype = {
             argumentArray = Array.prototype.slice.call(arguments),
             fct           = argumentArray[0],
             args          = argumentArray.slice(1);
+
         fct = a.isFunction(fct) ? fct : function() {};
         for(var i=0, l=list.length; i<l; ++i) {
             // Calling element with this as element currently selected

@@ -324,6 +324,8 @@ test('a.dom.children.attribute', function() {
 
 // Quite the same as attribute, but with (data- used always before)
 test('a.dom.children.data', function() {
+    // Getter
+
     // Simple element
     var single = a.dom.id('a.dom.testidattr').tag('span')
             .data('attr-test');
@@ -342,9 +344,20 @@ test('a.dom.children.data', function() {
     strictEqual(set, 'ok', 'Test setter');
 });
 
+// Multi attribute check (data-'attribute', a-'attribute', 'attribute')
 test('a.dom.children.appstorm', function() {
-    // Same as data but multi attribute getter/setter
-    // TODO: attribute does not handle ',' and array delimiter
+    // Getter
+    var getter = a.dom.id('a.dom.children.appstorm').children()
+                    .appstorm('children-appstorm');
+    strictEqual(getter.join(','), 'system,great,super', 'Array result');
+
+    // Setter
+    a.dom.id('a.dom.children.appstorm').children()
+                    .appstorm('children-appstorm', 'content');
+    var getter2 = a.dom.id('a.dom.children.appstorm').children()
+                    .appstorm('children-appstorm');
+    // It's not an array as all values are same
+    strictEqual(getter2, 'content', 'Array result');
 });
 
 // Test going to parent element
@@ -363,24 +376,91 @@ test('a.dom.children.parent', function() {
     strictEqual(sub[0].id, 'a.dom.children.parenttest', 'Test element');
 });
 
+// Test selecting direct children
 test('a.dom.children.children', function() {
+    // First 'easy' test
+    var first = a.dom.id('a.dom.testtag').tag('span')
+                        .children().getElements();
 
+    strictEqual(first.length, 3, 'Test length');
+    strictEqual(first[0].nodeName, 'I', 'Test I tag');
+    strictEqual(first[1].nodeName, 'A', 'Test A tag');
+    strictEqual(first[2].nodeName, 'B', 'Test B tag');
+
+    // Second 'hard' test
+    var second = a.dom.id(['a.dom.testidattr', 'a.dom.children.parenttest'])
+                        .children().getElements();
+    strictEqual(second.length, 4, 'Test length');
+    strictEqual(second[0].nodeName, 'SPAN', 'Test SPAN tag');
+    strictEqual(second[1].nodeName, 'I', 'Test I tag');
+    strictEqual(second[2].nodeName, 'A', 'Test A tag 1');
+    strictEqual(second[3].nodeName, 'A', 'Test A tag 2');
 });
 
+// Test insertBefore elements
 test('a.dom.children.insertBefore', function() {
+    var div = document.createElement('div');
+    div.id  = 'a.dom.children.insertBefore';
+    var append = a.dom.el(div);
 
+    a.dom.id('a.dom.children.insert').insertBefore(append);
+
+    // Getting inserted element
+    var elements = a.dom.id('a.dom.children.insert').parent().children()
+                        .getElements();
+    strictEqual(elements.length, 2, 'Test length');
+    strictEqual(elements[0].id, 'a.dom.children.insertBefore', 'Test first');
+    strictEqual(elements[1].id, 'a.dom.children.insert', 'Test second');
+
+    // Clearing
+    a.dom.id('a.dom.children.insert').parent().remove(append);
 });
 
+// Test insertAfter elements
 test('a.dom.children.insertAfter', function() {
+    var div = document.createElement('div');
+    div.id  = 'a.dom.children.insertAfter';
+    var append = a.dom.el(div);
 
+    a.dom.id('a.dom.children.insert').insertAfter(append);
+
+    // Getting inserted element
+    var elements = a.dom.id('a.dom.children.insert').parent().children()
+                        .getElements();
+    strictEqual(elements.length, 2, 'Test length');
+    strictEqual(elements[0].id, 'a.dom.children.insert', 'Test first');
+    strictEqual(elements[1].id, 'a.dom.children.insertAfter', 'Test second');
+
+    // Clearing
+    a.dom.id('a.dom.children.insert').parent().remove(append);
 });
 
+// Test clearing content
 test('a.dom.children.empty', function() {
-
+    var clear = a.dom.id('a.dom.children.empty').empty()
+        .children().getElements();
+    strictEqual(clear.length, 0, 'Test empty result');
 });
 
+// Testing remove element
 test('a.dom.children.remove', function() {
+    var append  = document.createElement('div');
+    append.id   = 'a.dom.children.insert2';
 
+    a.dom.id('a.dom.children.insert').insertBefore(append);
+
+    // Test remove only remove one element
+    var elements = a.dom.id('a.dom.children.insert').parent()
+                    .remove(document.getElementById('a.dom.children.insert'))
+                    .children().getElements();
+    strictEqual(elements.length, 1, 'Test length');
+    strictEqual(elements[0].id, 'a.dom.children.insert2', 'Test id');
+
+    // Re-creating first elements
+    var div = document.createElement('div');
+    div.id = 'a.dom.children.insert';
+    a.dom.id('a.dom.children.insert2').insertBefore(div).parent()
+            .remove(a.dom.id('a.dom.children.insert2'));
 });
 
 test('a.dom.children.append', function() {
