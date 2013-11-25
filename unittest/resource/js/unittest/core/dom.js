@@ -463,14 +463,65 @@ test('a.dom.children.remove', function() {
             .remove(a.dom.id('a.dom.children.insert2'));
 });
 
+// Test appending element
 test('a.dom.children.append', function() {
+    var div = document.createElement('div');
+    div.id  = 'a.dom.children.append';
+    a.dom.id('a.dom.children.insert').parent().append(div);
 
+    // Checking included as expected
+    var elements = a.dom.id('a.dom.children.insert')
+                    .parent().children().getElements();
+    strictEqual(elements.length, 2, 'Test length');
+    strictEqual(elements[1].id, 'a.dom.children.append');
+
+    // We remove (rollback to default data)
+    a.dom.id('a.dom.children.insert').parent().remove(div);
 });
 
+// Testing replace method
 test('a.dom.children.replace', function() {
+    var div = document.createElement('div');
+    div.id  = 'a.dom.children.replace';
+    a.dom.id('a.dom.children.insert').parent().replace(div);
 
+    // Checking included as expected
+    var elements = a.dom.id('a.dom.children.replace')
+                    .parent().children().getElements();
+    strictEqual(elements.length, 1, 'Test length');
+    strictEqual(elements[0].id, 'a.dom.children.replace');
+
+    // We remove (rollback to default data)
+    var old = document.createElement('div');
+    old.id  = 'a.dom.children.insert';
+    a.dom.id('a.dom.children.replace').parent()
+        .replace(old);
 });
 
+// Test data each
 test('a.dom.children.each', function() {
+    stop();
+    expect(8);
 
+    var se = strictEqual,
+        st = start;
+
+    // Test parameters
+    a.dom.id([
+            'a.dom.secondtesttag',
+            'a.dom.children.parenttest'
+    ]).each(function(a, b, c) {
+        if(this.id == 'a.dom.secondtesttag') {
+            se(this.id, 'a.dom.secondtesttag', 'Test id');
+        } else {
+            se(this.id, 'a.dom.children.parenttest', 'Test id');
+        }
+        se(a, 1, 'Test first parameter');
+        se(b, 2, 'Test second parameter');
+        se(c, 'test', 'Test third parameter');
+    }, 1, 2, 'test');
+
+    a.timer.once(function() {
+        st();
+    }, 50);
 });
