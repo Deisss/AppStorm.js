@@ -459,6 +459,22 @@ test('a.dom.children.children', function() {
     strictEqual(second[3].nodeName, 'A', 'Test A tag 2');
 });
 
+// Testing selecting all sub children
+test('a.dom.children.all', function() {
+    var all = a.dom.id('a.dom.testtag').all().getElements();
+
+    strictEqual(all.length, 5, 'Test length');
+    strictEqual(all[0].nodeName, 'A', 'Test A tag');
+    strictEqual(all[1].nodeName, 'SPAN', 'Test SPAN tag');
+    strictEqual(all[2].nodeName, 'I', 'Test I tag');
+    strictEqual(all[3].nodeName, 'A', 'Test A tag');
+    strictEqual(all[4].nodeName, 'B', 'Test B tag');
+
+    var duplicate = a.dom.id(['a.dom.testtag', 'a.dom.testtag'])
+            .all().getElements();
+    strictEqual(duplicate.length, 5, 'Test duplicate length');
+});
+
 // Test insertBefore elements
 test('a.dom.children.insertBefore', function() {
     var div = document.createElement('div');

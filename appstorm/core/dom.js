@@ -834,6 +834,8 @@ a.dom.children.prototype = {
 
     /**
      * Select direct children of all stored elements
+     *
+     * @return {this}               The chain element
     */
     children: function() {
         var elementList = this.elementList,
@@ -842,6 +844,37 @@ a.dom.children.prototype = {
 
         while(i--) {
             replaceList.push(a.toArray(elementList[i].childNodes));
+        }
+
+        // Erasing previous list with new one
+        var flatArray = a.uniq(a.flatten(replaceList)),
+            j = flatArray.length;
+
+        while(j--) {
+            if(flatArray[j].nodeType == 3) {
+                flatArray.splice(j, 1);
+            }
+        }
+
+        this.elementList = flatArray;
+
+        return this;
+    },
+
+    /**
+     * Select all sub elements
+     *
+     * @return {this}               The chain element
+    */
+    all: function() {
+        var elementList = this.elementList,
+            replaceList = [],
+            i           = elementList.length;
+
+        while(i--) {
+            replaceList.push(a.toArray(
+                elementList[i].getElementsByTagName('*')
+            ));
         }
 
         // Erasing previous list with new one
