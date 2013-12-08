@@ -10,7 +10,7 @@ a.dom = {
      *
      * @param check {String}            The string to search for
      * @param dom {DOMElement}          The dom to search inside
-     * @return {a.dom.children}         A chain object
+     * @return {a.dom.children}         A chainable object
     */
     query: function(check, dom) {
         dom = dom || document;
@@ -28,7 +28,7 @@ a.dom = {
      * @method el
      *
      * @param element {DOMElement}      A dom element to work with
-     * @return {a.dom.children}         A chain object
+     * @return {a.dom.children}         A chainable object
     */
     el: function(element) {
         // Detect already parsed
@@ -79,7 +79,7 @@ a.dom = {
      * @method id
      *
      * @param id {String | Array}       The id(s) to search
-     * @return {a.dom.children}         A chain object
+     * @return {a.dom.children}         A chainable object
     */
     id: function(id) {
         return this.attr('id', id, document);
@@ -95,7 +95,7 @@ a.dom = {
      *                                  (like 'active', 'container', ...)
      * @param dom {DOMElement | null}   The init dom to start searching from
                                         or null to use document
-     * @return {a.dom.children}         A chain object
+     * @return {a.dom.children}         A chainable object
     */
     cls: function(clsname, dom) {
         return this.attr('class', clsname, dom);
@@ -110,7 +110,7 @@ a.dom = {
      * @param name {String | Array}     The tag(s) to search (input, a, ...)
      * @param dom {DOMElement | null}   The init dom to start searching from,
      *                                  or null to use document
-     * @return {Array}                  The list of elements found
+     * @return {a.dom.children}         A chainable object
     */
     tag: function(name, dom) {
         // Remove string from name
@@ -150,8 +150,12 @@ a.dom = {
     /**
      * Find elements by attribute name
      *
-     * @param name {String | Array} 
-     * @return {Array}                  The list of elements found
+     * @method attr
+     *
+     * @param name {String | Array}         The attribute name to search
+     * @param value {String | null}         The attribute value (can be empty)
+     * @param dom {DOMElement}              The dom to start search from
+     * @return {a.dom.children}             A chainable object
     */
     attr: function(name, value, dom) {
         /*
@@ -348,9 +352,6 @@ a.dom = {
  * Abstract layer for binding event with DOM
 */
 a.dom.event = new function() {
-    var bind   = null,
-        unbind = null;
-
     // New browser
     function addEventListener(el, type, fn) {
         el.addEventListener(type, fn, false);
@@ -378,19 +379,15 @@ a.dom.event = new function() {
 
 
     if(a.isFunction(window.addEventListener)) {
-        bind   = addEventListener;
-        unbind = removeEventListener;
+        this.bind   = addEventListener;
+        this.unbind = removeEventListener;
     } else if(a.isFunction(document.attachEvent)) {
-        bind   = attachEvent;
-        unbind = detachEvent;
+        this.bind   = attachEvent;
+        this.unbind = detachEvent;
     } else {
-        bind   = rawBindEvent;
-        unbind = rawUnbindEvent;
+        this.bind   = rawBindEvent;
+        this.unbind = rawUnbindEvent;
     }
-
-    // Expose function
-    this.bind   = bind;
-    this.unbind = unbind;
 };
 
 
@@ -429,10 +426,11 @@ a.dom.event = new function() {
  * @param elementList {Array}    The list of elements to use
 */
 a.dom.children = function(elementList) {
-    elementList = (typeof(elementList.length) === 'undefined') ?
+    elementList = a.isUndefined(elementList.length) ?
                         [elementList] : elementList;
 
     this.elementList = elementList;
+    // Copy the property length at any time
     this.length      = elementList.length;
 };
 
@@ -446,9 +444,8 @@ a.dom.children.prototype = {
      * The last parameter should be the dom to use for search
      *
      * @method _perform
+     * @chainable
      * @private
-     *
-     * @return {this}       The chain element
     */
     _perform: function() {
         var list          = [],
@@ -517,9 +514,9 @@ a.dom.children.prototype = {
      * Select sub-id elements
      *
      * @method id
+     * @chainable
      *
      * @param id {String}    The id or list of ids to search
-     * @return {this}        The chain element
     */
     id: function(id) {
         return this._perform(a.dom.id, id);
@@ -529,9 +526,9 @@ a.dom.children.prototype = {
      * Select sub-class elements
      *
      * @method cls
+     * @chainable
      *
      * @param clsname {String}    The class or list of classes to search
-     * @return {this}             The chain element
     */
     cls: function(clsname) {
         return this._perform(a.dom.cls, clsname);
@@ -539,6 +536,8 @@ a.dom.children.prototype = {
 
     /**
      * Get or set style for given elements
+     *
+     * @method css
      *
      * @param rule {String}         The CSS rule we are working with
      * @param value {String}        The value to set (can be empty for get)
@@ -587,9 +586,9 @@ a.dom.children.prototype = {
      * Add a class to elements
      *
      * @method addClass
+     * @chainable
      *
      * @param classname {String}    The classname to append to every elements
-     * @return {this}               The chain element
     */
     addClass: function(classname) {
         var reg = new RegExp('(\\s|^)' + classname + '(\\s|$)');
@@ -607,8 +606,10 @@ a.dom.children.prototype = {
     /**
      * Test if all elements got classname or not
      *
+     * @method hasClass
+     * @chainable
+     *
      * @param classname {String}     The classname to test on every elements
-     * @return {this}                The chain element
     */
     hasClass: function(classname) {
         var reg         = new RegExp('(\\s|^)' + classname + '(\\s|$)'),
@@ -627,8 +628,10 @@ a.dom.children.prototype = {
     /**
      * Remove a class element
      *
+     * @method removeClass
+     * @chainable
+     *
      * @param classname {String}     The classname to remove on every elements
-     * @return {this}                The chain element
     */
     removeClass: function(classname) {
         this.each(function(scope) {
@@ -648,8 +651,10 @@ a.dom.children.prototype = {
     /**
      * toggle a class element
      *
+     * @method toggleClass
+     * @chainable
+     *
      * @param classname {String}      The classname to toggle on every elements
-     * @return {this}                 The chain element
     */
     toggleClass: function(classname) {
         this.each(function(scope) {
@@ -671,9 +676,11 @@ a.dom.children.prototype = {
     /**
      * Bind function to given event
      *
+     * @method bind
+     * @chainable
+     *
      * @param binding {String | Array}   The event/list to apply to
      * @param fct {Function}             The handler to receive event
-     * @return {this}                    The chain element
     */
     bind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -694,9 +701,11 @@ a.dom.children.prototype = {
     /**
      * Unbind event to given function
      *
+     * @method unbind
+     * @chainable
+     *
      * @param binding {String | Array}   The event/list to remove
      * @param fct {Function}             The handler of event
-     * @return {this}                    The chain element
     */
     unbind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -718,8 +727,10 @@ a.dom.children.prototype = {
     /**
      * Select sub-tag elements
      *
+     * @method tag
+     * @chainable
+     *
      * @param name {String}    The tag or list of tags to search
-     * @return {this}          The chain element
     */
     tag: function(name) {
         return this._perform(a.dom.tag, name);
@@ -728,10 +739,12 @@ a.dom.children.prototype = {
     /**
      * Select sub-attributes elements
      *
+     * @method attr
+     * @chainable
+     *
      * @param attribute {String}    The attribute or list of
      *                              attributes to search
      * @param value {String | null} The value to use, can be empty
-     * @return {this}               The chain element
     */
     attr: function(attribute, value) {
         return this._perform(a.dom.attr, attribute, value);
@@ -740,13 +753,16 @@ a.dom.children.prototype = {
     /**
      * Append or get attribute
      *
+     * @method attribute
+     * @chainable
+     *
      * @param attribute {String}    The attribute to set
      * @param value {String}        The value to get
     */
     attribute: function(attribute, value) {
         var arrayAttribute = 
             a.isString(attribute) ?   attribute.replace(/ /g,'').split(',')
-                                  :   attribute;;
+                                  :   attribute;
 
         // Getter
         if(a.isUndefined(value)) {
@@ -788,6 +804,9 @@ a.dom.children.prototype = {
     /**
      * Same as attribute, but for data- HTML5 tag
      *
+     * @method data
+     * @chainable
+     *
      * @param attribute {String}    The attribute to set
      * @param value {String}        The value to get
     */
@@ -797,6 +816,9 @@ a.dom.children.prototype = {
 
     /**
      * Same as data or attribute, but multi tag check
+     *
+     * @method appstorm
+     * @chainable
      *
      * @param attribute {String}    The attribute to set
      * @param value {String}        The value to get
@@ -812,7 +834,8 @@ a.dom.children.prototype = {
     /**
      * Move to the parent element for every element stored
      *
-     * @return {this}               The chain element
+     * @method parent
+     * @chainable
     */
     parent: function() {
         var elementList = this.elementList,
@@ -828,6 +851,7 @@ a.dom.children.prototype = {
         }
 
         this.elementList = newList;
+        this.length = newList.length;
 
         return this;
     },
@@ -835,12 +859,17 @@ a.dom.children.prototype = {
     /**
      * Select direct children of all stored elements
      *
-     * @return {this}               The chain element
+     * @method children
+     * @chainable
+     *
+     * @param types {Array | null}  The nodeTypes to keep (default: 3)
     */
-    children: function() {
+    children: function(types) {
         var elementList = this.elementList,
             replaceList = [],
             i           = elementList.length;
+
+        types = types || [1];
 
         while(i--) {
             replaceList.push(a.toArray(elementList[i].childNodes));
@@ -851,12 +880,13 @@ a.dom.children.prototype = {
             j = flatArray.length;
 
         while(j--) {
-            if(flatArray[j].nodeType == 3) {
+            if(!a.contains(types, flatArray[j].nodeType)) {
                 flatArray.splice(j, 1);
             }
         }
 
         this.elementList = flatArray;
+        this.length = flatArray.length;
 
         return this;
     },
@@ -864,7 +894,8 @@ a.dom.children.prototype = {
     /**
      * Select all sub elements
      *
-     * @return {this}               The chain element
+     * @method all
+     * @chainable
     */
     all: function() {
         var elementList = this.elementList,
@@ -888,6 +919,7 @@ a.dom.children.prototype = {
         }
 
         this.elementList = flatArray;
+        this.length = flatArray.length;
 
         return this;
     },
@@ -896,9 +928,9 @@ a.dom.children.prototype = {
      * Insert before selected element
      *
      * @method insertBefore
+     * @chainable
      *
      * @param element {DOMElement}  The element to insert
-     * @return {this}               The chain element
     */
     insertBefore: function(element) {
         var dom = a.dom.el(element),
@@ -916,9 +948,9 @@ a.dom.children.prototype = {
      * Insert after selected element
      *
      * @method insertAfter
+     * @chainable
      *
      * @param element {DOMElement}  The element to insert
-     * @return {this}               The chain element
     */
     insertAfter: function(element) {
         var dom = a.dom.el(element),
@@ -936,8 +968,7 @@ a.dom.children.prototype = {
      * Empty all elements stored
      *
      * @method empty
-     *
-     * @return {this}    The chain element
+     * @chainable
     */
     empty: function() {
         this.each(function() {
@@ -952,9 +983,9 @@ a.dom.children.prototype = {
      * Remove element from content
      *
      * @method remove
+     * @chainable
      *
      * @param element {DOMElement}  The element to remove
-     * @return {this}               The chain element
     */
     remove: function(element) {
         var dom = a.dom.el(element),
@@ -974,9 +1005,9 @@ a.dom.children.prototype = {
      * Append element to the existing content
      *
      * @method append
+     * @chainable
      *
      * @param element {DOMElement}  The element to append
-     * @return {this}               The chain element
     */
     append: function(element) {
         var dom = a.dom.el(element),
@@ -994,9 +1025,9 @@ a.dom.children.prototype = {
      * Replace the existing content with given element
      *
      * @method replace
+     * @chainable
      *
      * @param element {DOMElement}  The element to append
-     * @return {this}               The chain element
     */
     replace: function(element) {
         this.empty();
@@ -1007,10 +1038,10 @@ a.dom.children.prototype = {
      * Apply on each elements the given function
      *
      * @method each
+     * @chainable
      *
      * @param fct {Function}        The function to apply to elements
      * Other parameters are passed to every function call as arguments
-     * @return {this}               The chain element
     */
     each: function() {
         var list          = this.elementList,
