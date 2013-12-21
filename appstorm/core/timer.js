@@ -59,24 +59,6 @@ a.timer = (function() {
         }
     };
 
-    /**
-     * Generate a new random
-     *
-     * @method generateUniqueId
-     * @private
-     *
-     * @return {Integer}      A new integer generated
-    */
-    function generateUniqueId() {
-        var randomId = Math.floor(Math.random() * 1000000);
-
-        while(!a.isNone(store[randomId])) {
-            randomId = Math.floor(Math.random() * 1000000)
-        }
-
-        return randomId;
-    };
-
     // Auto-start timer
     setInterval(tick, delay);
 
@@ -94,7 +76,7 @@ a.timer = (function() {
          *                              this entry
         */
         add: function(fct, scope, timeout) {
-            var id = generateUniqueId();
+            var id = a.uniqueId();
 
             if(!a.isNumber(timeout) || timeout <= 0) {
                 timeout = 1000;
