@@ -47,6 +47,25 @@ a.getStackTrace = function() {
 };
 
 /**
+ * Inherit a constructor from a parent
+ *
+ * @method inherit
+ *
+ * @param child {Object}                    An object to extend
+ * @param parent {Object}                   A parent object to get prototype
+ *                                          from
+*/
+a.inherit = (function() {
+    var f = function() {};
+    return function(child, parent) {
+        f.prototype = parent.prototype;
+        child.prototype = new f();
+        child.parent = p.prototype;
+        child.prototype.constructor = child;
+    }
+}());
+
+/**
  * If the element is null or undefined
  *
  * @param obj {Object} The element to test
@@ -105,7 +124,7 @@ a.deepClone = function(obj) {
  * @value {Mixed} The value to search
 */
 a.contains = function(obj, value) {
-    if(obj instanceof Array) {
+    if(a.isArray(obj)) {
         var i = obj.length;
         while(i--) {
             if(obj[i] === value) {
@@ -213,6 +232,7 @@ a.isArray = function(ar) {
 */
 a.setDefaultAjaxOptions = function(options) {
     if(a.isObject(options)) {
+        a.mem.set('app.ajax.default', options);
         this.__defaultAjaxOptions = options;
     }
 };
