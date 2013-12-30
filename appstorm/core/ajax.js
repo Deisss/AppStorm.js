@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-10
-
-    Date of last modification: 2013-10-11
-
     Dependencies : [
         a.js
         core/parser.js
@@ -15,7 +9,13 @@
     ]
 
     Events : [
-        a.ajax : {success : boolean (true fine, false error), status : http code result, url : the url used (before data join), method : the method used, params : the parameters used for request}
+        a.ajax : {
+            success : boolean (true fine, false error)
+            status : http code result
+            url : the url used (before data join)
+            method : the method used
+            params : the parameters used for request
+        }
     ]
 
     Description:
@@ -34,28 +34,31 @@
  * @constructor
  * @async
  *
- * @param options {Object} An option map to change the behaviour of component
- * @param success {Function} The success function called in case of async
- * @param error {Function} The error function called in case of async
+ * @param options {Object}                  An option map to change
+ *                                          the behaviour of component
+ * @param success {Function}                The success function called
+ *                                          in case of async
+ * @param error {Function}                  The error function called in
+ *                                          case of async
 */
 a.ajax = function(options, success, error) {
-    "use strict";
+    'use strict';
 
     var dp = a.getDefaultAjaxOptions();
 
     this.params = {
-        url    : "",      // Allowed type : any URL
-        method : "GET",   // Allowed type : "GET", "POST"
-        type   : "raw",   // Allowed type : raw, json, xml
+        url    : '',      // Allowed type : any URL
+        method : 'GET',   // Allowed type : "GET", "POST"
+        type   : 'raw',   // Allowed type : raw, json, xml
         async  : true,    // Allowed type : true, false
         cache  : false,   // Allowed type : true, false
-        data   : {},      // Allowed type : any kind of object composed of key => value
-        header : {}       // Allowed type : any kind of object composed of key => value
+        data   : {},      // Allowed type : any kind of object | key => value
+        header : {}       // Allowed type : any kind of object | key => value
     };
 
     // Binding options
     for(var p in this.params) {
-        if(p === "data" || p === "header") {
+        if(p === 'data' || p === 'header') {
             continue;
         }
         // We check given options are same type (from specific request)
@@ -104,8 +107,13 @@ a.ajax = function(options, success, error) {
         this.request = new XMLHttpRequest();
     // Internet explorer specific
     } else {
-        var msxml = ["Msxml2.XMLHTTP.6.0", "Msxml2.XMLHTTP.3.0", "Msxml2.XMLHTTP", "Microsoft.XMLHTTP"];
-        for(var i in msxml) {
+        var msxml = [
+            'Msxml2.XMLHTTP.6.0',
+            'Msxml2.XMLHTTP.3.0',
+            'Msxml2.XMLHTTP',
+            'Microsoft.XMLHTTP'
+        ];
+        for(var i=0, l=msxml.length; i<l; ++i) {
             try {
                 this.request = new ActiveXObject(msxml[i]);
             } catch(e) {}
@@ -118,22 +126,23 @@ a.ajax = function(options, success, error) {
  *
  * @method parseResult
  *
- * @param params {Object} The parameter list from configuration ajax
- * @param http {Object} The xmlHttpRequest started
- * @return {Object | String} The parsed results
+ * @param params {Object}                   The parameter list from
+ *                                          configuration ajax
+ * @param http {Object}                     The xmlHttpRequest started
+ * @return {Object | String}                The parsed results
 */
 a.ajax.prototype.parseResult = function(params, http) {
     // Escape on special case HTTP 204
     if(http.status === 204) {
-        return "";
+        return '';
     }
 
     //We are in non async mode, so the function should reply something
     var type = params.type.toLowerCase();
-    if(type === "json") {
+    if(type == 'json') {
         return a.parser.json.parse(http.responseText);
     }
-    return (type === "xml") ? http.responseXML : http.responseText;
+    return (type == 'xml') ? http.responseXML : http.responseText;
 };
 
 /**
@@ -158,10 +167,10 @@ a.ajax.prototype.send = function() {
     //Creating a cached or not version
     if(this.params.cache === false) {
         // Generate a unique random number
-        var rnd = Math.floor(Math.random() * 100000) + 1;
+        var rnd = a.uniqueId('rnd_');
         // Safari does not like this...
         try {
-            this.params.data["cachedisable"] = rnd;
+            this.params.data['cachedisable'] = rnd;
         } catch(e) {}
     }
 
@@ -172,7 +181,8 @@ a.ajax.prototype.send = function() {
         toSend = this.params.data;
     } else {
         for(var d in this.params.data) {
-            toSend += encodeURIComponent(d) + "=" + encodeURIComponent(this.params.data[d]) + "&";
+            toSend += encodeURIComponent(d) + '=' +
+                    encodeURIComponent(this.params.data[d]) + '&';
         }
         //toSend get an extra characters & at the end, removing it
         toSend = toSend.slice(0, -1);
@@ -180,40 +190,44 @@ a.ajax.prototype.send = function() {
 
     var url = this.params.url,
         async = this.params.async;
-    if(method === "GET" && toSend !== "") {
-        url += "?" + toSend;
+    if(method == 'GET' && toSend) {
+        url += '?' + toSend;
     }
 
     //Catching the state change
     if(async === true) {
         // Scope helper
         var scope = {
-            success : this.success,
-            params : this.params,
-            error : this.error,
-            request : this.request,
+            success     : this.success,
+            params      : this.params,
+            error       : this.error,
+            request     : this.request,
             parseResult : this.parseResult
         };
 
         this.request.onreadystatechange = function() {
+            var status = scope.request.status;
             // Any 200 status will be validated
             if(scope.request.readyState === 4) {
-                var great = (scope.request.status >= 200 && scope.request.status < 400);
+                var great = (status >= 200 && status < 400);
                 if(great) {
                     // Everything went fine
-                    scope.success(scope.parseResult(scope.params, scope.request), scope.request.status);
+                    scope.success(
+                        scope.parseResult(scope.params, scope.request),
+                        status
+                    );
                 } else {
                     // An error occurs
-                    scope.error(url, scope.request.status);
+                    scope.error(url, status);
                 }
 
                 // We send a result
                 a.message.dispatch("a.ajax", {
                     success : great,
-                    status : scope.request.status,
-                    url : scope.params.url,
-                    method : scope.method,
-                    params : scope.params
+                    status  : status,
+                    url     : scope.params.url,
+                    method  : scope.method,
+                    params  : scope.params
                 });
             }
         };
@@ -223,23 +237,29 @@ a.ajax.prototype.send = function() {
     this.request.open(method, url, async);
 
     //Setting headers (if there is)
-    var contentTypeDefault = ["Content-Type", "Content-type", "content-type"],
+    var contentTypeDefault = ['Content-Type', 'Content-type', 'content-type'],
         contentTypeFound   = false;
-    for(var h in this.params.header) {
-        this.request.setRequestHeader(h, this.params.header[h]);
+    for(var header in this.params.header) {
+        this.request.setRequestHeader(header, this.params.header[header]);
 
-        // In case of POST, a specific content type (a default one) may be needed
-        if(!contentTypeFound && a.contains(contentTypeDefault, h)) {
+        // In case of POST:
+        //   a specific content type (a default one) may be needed
+        if(!contentTypeFound && a.contains(contentTypeDefault, header)) {
             contentTypeFound = true;
         }
     }
 
     // Set a default one if not already set by user
-    if(!contentTypeFound && method === "POST") {
-        this.request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    if(!contentTypeFound && method === 'POST') {
+        this.request.setRequestHeader(
+            'Content-type',
+            'application/x-www-form-urlencoded'
+        );
     }
 
     this.request.send(toSend);
 
-    return (async === false) ? this.parseResult(this.params, this.request) : "No return in async mode";
+    return (async === false) ?
+            this.parseResult(this.params, this.request) :
+            'No return in async mode';
 };
