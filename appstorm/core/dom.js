@@ -1,9 +1,33 @@
+/* ************************************************************************
+
+    License: MIT Licence
+
+    Dependencies : [
+        a.js
+    ]
+
+    Events : []
+
+    Description:
+        Provide a really basic dom manipulation plugin.
+        This helps to use appstorm by itself without any jQuery or others.
+        It really not the best, but it does work well, and already pretty 
+        usefull!
+
+************************************************************************ */
 /**
- * Provide basic DOM manipulation (really basic one)
+ * Provide a really basic dom manipulation plugin.
+ * This helps to use appstorm by itself without any jQuery or others.
+ * It really not the best, but it does work well, and already pretty 
+ * usefull!
+ *
+ * @class dom
+ * @static
+ * @namespace a
 */
 a.dom = {
     /**
-     * USE ONLY IF YOU HAVE JQUERY, OR DONT CARE OLD BROWSER
+     * USE ONLY IF YOU HAVE JQUERY, OR DONT CARE OLD BROWSER (IE 8 and +)
      * Use direct jquery or querySelectorAll to select items
      *
      * @method query
