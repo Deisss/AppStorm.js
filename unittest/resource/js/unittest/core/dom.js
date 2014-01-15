@@ -1,6 +1,6 @@
 // Unit test for a.dom.*
 
-module('CORE');
+module('core/dom.js');
 
 
 /*
