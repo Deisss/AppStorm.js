@@ -2,29 +2,33 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-10
-
-    Date of last modification: 2013-10-11
-
     Dependencies : [
         a.js
         core/console.js
     ]
 
     Events : [
-        a.message.add {type : the type listeners (like "a.storage.add"), function : the associated function}
-        a.message.remove {type : the type listeners (like "a.storage.add"), function : the associated function}
-        a.message.removeAll {type : the type listeners (like "a.storage.add")}
+        a.message.add {
+            type : the type listeners (like "a.storage.add"),
+            function : the associated function
+        }
+        a.message.remove {
+            type : the type listeners (like "a.storage.add"),
+            function : the associated function
+        }
+        a.message.removeAll {
+            type : the type listeners (like "a.storage.add")
+        }
         a.message.clear {}
     ]
 
     Description:
-        Define one reusable object (eventEmitter) and create a root event system (message)
+        Define one reusable object (eventEmitter)
+        and create a root event system (message)
         ( @see : http://simplapi.wordpress.com/2012/09/01/custom-event-listener-in-javascript/ )
 
 ************************************************************************ */
+
 
 
 /**
@@ -36,167 +40,166 @@
  * @constructor
  * @namespace a
 */
-a.eventEmitter = (function() {
-    "use strict";
+a.eventEmitter = function(base) {
+    this.list = {};
+    this.base = base;
+};
 
-    var obj = function(){
-        this.__list = {};
-        this.__base = "a.message";
-    };
 
+a.eventEmitter.prototype = {
     /**
-     * Clear the unused (empty) types
+     * Clear the event listeners which don't have any function added
      *
-     * @method __clearEventType
+     * @method clearEventType
      * @private
-     *
-     * @param type {String} The type associated with current clearing
     */
-    function __clearEventType(type) {
-        // At the end, we clear unused listeners array type (we must go backward for multi splice problem)
-        for(var i in obj.__list) {
-            if(obj.__list[i].length < 1) {
-                delete obj.__list[i];
+    clearEventType: function() {
+        // At the end, we clear unused
+        // listeners array type
+        // (we must go backward for multi splice problem)
+        for(var i in this.list) {
+            if(!this.list[i] || this.list[i].length < 1) {
+                delete this.list[i];
             }
         }
-    };
+    },
 
     /**
-     * Set the name of event root type, you can specify your own "root name" to identify more easily the event emitter
+     * Bind a function to an event type
      *
-     * @method setName
+     * @method bind
      *
-     * @param name {String} The name to set (default is "a.message")
+     * @param type {String}                 The event type
+     * @param fn {Function}                 The function to bind to event
+     * @param scope {Object | null}         The scope to bind to function
+     * @param once {Boolean | null}         If we should start it only once or not
     */
-    obj.prototype.setName = function(name) {
-        this.__base = "" + name;
-    };
-
-    /**
-     * Adding a listener to a specific message type
-     *
-     * @method addListener
-     *
-     * @param type {String} The event name
-     * @param fn {Function} The function to attach
-    */
-    obj.prototype.addListener = function(type, fn) {
-        if(!a.isFunction(fn)) {
-            a.console.warn(this.__base + ".addListener : unable to bind function, this is not a function", 1);
+    bind: function(type, fn, scope, once) {
+        // The type is invalid (empty string or not a string)
+        if(!type || !a.isString(type)) {
+            var msg = '.bind: the type cannot be bind (type: ' + type + ')';
+            a.console.warn(this.base + msg, 1);
             return;
         }
 
-        if(a.isNone(this.__list[type])) {
-            this.__list[type] = [];
+        // The function is invalid (not a function)
+        if(!a.isFunction(fn)) {
+            var msg = '.bind: unable to bind function, this is not a function';
+            a.console.warn(this.base + msg, 1);
+            return;
         }
-        this.__list[type].push(fn);
+
+        if(once !== true) {
+            once = false;
+        }
+
+        // Create a new array for the given type
+        if(a.isUndefined(this.list[type])) {
+            this.list[type] = [];
+        }
+
+        this.list[type].push({
+            fct:   fn,
+            scope: scope || null,
+            once:  once
+        });
 
         // Dispatch event
-        this.dispatch(this.__base + ".add", {
-            type : type,
-            fct : fn
+        this.dispatch(this.base + '.add', {
+            type:  type,
+            fct:   fn
         });
-    };
-
-    // Alias
-    obj.prototype.add = obj.prototype.on = obj.prototype.bind = obj.prototype.addListener;
+    },
 
     /**
-     * Adding a listener only one
+     * Adding a listener only once
      *
-     * @method addListenerOnce
+     * @method bindOnce
      *
-     * @param type {String} The event name
-     * @param fn {Function} The function to attach
+     * @param type {String}                 The event type
+     * @param fn {Function}                 The function to bind to event
+     * @param scope {Object | null}         The scope to bind to function
     */
-    obj.prototype.addListenerOnce = function(type, fn) {
-        var _this = this;
-
-        var once = function(data) {
-            fn(data);
-            _this.removeListener(type, once);
-        };
-
-        this.addListener(type, once);
-    };
-
-    // Alias
-    obj.prototype.once = obj.prototype.onOnce = obj.prototype.bindOnce = obj.prototype.addListenerOnce;
+    bindOnce: function(type, fn, scope) {
+        this.bind(type, fn, scope, true);
+    },
 
     /**
      * Removing a listener to a specific message type
      *
-     * @method removeListener
+     * @method unbind
      *
      * @param type {String} The event name
      * @param fn {Function} The function to detach
     */
-    obj.prototype.removeListener = function(type, fn) {
-        // If the event type is not listed as existing, we don't need to remove anything
-        if(a.isNone(this.__list[type])) {
+    unbind: function(type, fn) {
+        // The type is invalid (empty string or not a string)
+        if(!type || !a.isString(type)) {
+            var msg = '.unbind: the type cannot be bind (type: ' + type + ')';
+            a.console.warn(this.base + msg, 1);
+            return;
+        }
+
+        // If the event type is not listed as existing,
+        // we don't need to remove anything
+        var elementList = this.list[type];
+        if(a.isNone(elementList)) {
             return;
         }
 
         // Multiple splice : we must go backward to prevent index error
-        var i = this.__list[type].length;
+        var i = elementList.length;
         if(a.isFunction(fn)) {
             while(i--) {
-                if(this.__list[type][i] === fn) {
-                    this.__list[type].splice(i, 1);
+                if(elementList[i].fct === fn) {
+                    elementList.splice(i, 1);
                 }
             }
         }
 
         // Dispatch event
-        this.dispatch(this.__base + ".remove", {
-            type : type,
-            fct : fn
+        this.dispatch(this.base + '.unbind', {
+            type: type,
+            fct:  fn
         });
 
         // We clear unused list type
-        __clearEventType(type);
-    };
-
-    // Alias
-    obj.prototype.remove = obj.prototype.off = obj.prototype.unbind = obj.prototype.removeListener;
+        this.clearEventType(type);
+    },
 
     /**
      * Remove all listeners for a given type
      *
-     * @method removeAllListeners
+     * @method unbindAll
      *
      * @param type {String} The event type to remove
     */
-    obj.prototype.removeAllListeners = function(type) {
-        if(!a.isNone(this.__list[type])) {
-            this.__list[type] = [];
+    unbindAll: function(type) {
+        if(!a.isNone(this.list[type])) {
+            this.list[type] = [];
 
             // We clear unused list type
-            __clearEventType(type);
+            this.clearEventType(type);
         }
-    };
-
-    // Alias
-    obj.prototype.removeAll = obj.prototype.offAll = obj.prototype.unbindAll = obj.prototype.removeAllListeners;
-
+    },
 
     /**
      * Clear all listeners from all event type
      *
      * @method clear
     */
-    obj.prototype.clear = function() {
-        var c = this.__base + ".clear";
+    clear: function() {
+        var c = this.base + '.clear';
 
-        for(var i in this.__list) {
+        for(var i in this.list) {
             if(i !== c) {
-                delete this.__list[i];
+                delete this.list[i];
             }
         }
 
         // Dispatch event
         this.dispatch(c, {});
-    };
+    },
 
     /**
      * Call an event, according to it's type
@@ -206,23 +209,21 @@ a.eventEmitter = (function() {
      * @param type {String} The event name to dispatch
      * @param data {Object} Anything you want to pass threw this event
     */
-    obj.prototype.dispatch = function(type, data) {
-        var t = this.__list[type];
-        if(!a.isNone(t)) {
-            for(var i=0, l=t.length; i<l; ++i) {
+    dispatch: function(type, data) {
+        var dispatcher = this.list[type];
+        if(!a.isNone(dispatcher)) {
+            for(var i=0, l=dispatcher.length; i<l; ++i) {
                 // Scoping to not have trouble
-                (function(fct) {
+                (function(fct, scope) {
                     // Binding into timeout for not waiting function to finish
                     setTimeout(function() {
-                        fct(data);
+                        fct.call(scope, data);
                     }, 0);
-                })(t[i]);
+                })(dispatcher[i].fct, dispatcher[i].scope);
             }
         }
-    };
-
-    return obj;
-}());
+    }
+};
 
 
 /**
@@ -236,7 +237,4 @@ a.eventEmitter = (function() {
  * @uses eventEmitter
  * @namespace a
 */
-// Setting main event loop (general one where everybody can access it from everywhere)
-a.message = new a.eventEmitter();
-// Removing setName, unused on message object
-a.message.setName = function(){};
+a.message = new a.eventEmitter('a.message');
