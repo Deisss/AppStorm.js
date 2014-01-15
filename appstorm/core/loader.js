@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-11
-
-    Date of last modification: 2013-10-11
-
     Dependencies : [
         a.js
         core/console.js
@@ -27,21 +21,21 @@
 /**
  * Dynamic loader for many files type
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:loader">here</a>
+ * Examples: <a href='http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:loader'>here</a>
  *
  * @class loader
  * @static
  * @namespace a
 */
 a.loader = (function() {
-    "use strict";
+    'use strict';
 
     // Store some cache here
-    var __cache = [],
+    var __cache     = [],
         // Store the number of css files currently loading threw timer hack...
-        nCSS = 0,
-        nJS  = 0,
-        htmlMethods = ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"];
+        nCSS        = 0,
+        nJS         = 0,
+        htmlMethods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 
     /**
      * Check the cache, and launch callback if uri is already listed in cache
@@ -50,9 +44,10 @@ a.loader = (function() {
      * @private
      * @async
      *
-     * @param uri {String} The path to access data
-     * @param callback {Function | null} The callback to apply after loader
-     * @return {Boolean} True if it's already inside cache, and false in other case
+     * @param uri {String}                  The path to access data
+     * @param callback {Function | null}    The callback to apply after loader
+     * @return {Boolean}                    True if it's already inside cache,
+     *                                      and false in other case
     */
     function __checkCache(uri, callback) {
         // Search in cache
@@ -79,8 +74,9 @@ a.loader = (function() {
      * @method __populateCache
      * @private
      *
-     * @param uri {String} The path to access data
-     * @param args {Object} The arguments to check if cache is specified and policy to use
+     * @param uri {String}                  The path to access data
+     * @param args {Object}                 The arguments to check if cache
+     *                                      is specified and policy to use
     */
     function __populateCache(uri, args) {
         // By default, we cache
@@ -97,12 +93,15 @@ a.loader = (function() {
      * @private
      * @async
      *
-     * @param el {DOM} A createElement type result
-     * @param options {Object} HTML Options to add to link appended
-     * @param callback {Function | null} The callback to apply after loader
-     * @param uri {String} The path to access data
-     * @param args {Object | null} The arguments to check if cache is specified and policy to use
-     * @param error {Function | null} The callback to raise in case of problem (never used)
+     * @param el {DOM}                      A createElement type result
+     * @param options {Object}              HTML Options to add to link
+     *                                      appended
+     * @param callback {Function | null}    The callback to apply after loader
+     * @param uri {String}                  The path to access data
+     * @param args {Object | null}          The arguments to check if cache
+     *                                      is specified and policy to use
+     * @param error {Function | null}       The callback to raise in case
+     *                                      of problem (never used)
     */
     function __appendToHeader(el, options, callback, uri, args, error) {
         for(var i in options) {
@@ -110,7 +109,7 @@ a.loader = (function() {
         }
 
         if(!a.isNone(args) && args.id) {
-            el.setAttribute("id", args.id);
+            el.setAttribute('id', args.id);
         }
 
         // Handle if system already trigger or not callback
@@ -130,10 +129,11 @@ a.loader = (function() {
         };
 
         if(el.addEventListener) {
-            el.addEventListener("load", cb, false);
+            el.addEventListener('load', cb, false);
         } else if(el.readyState) {
             el.onreadystatechange = function() {
-                if (this.readyState === "complete" || this.readyState === "loaded") {
+                if (this.readyState == 'complete'
+                        || this.readyState == 'loaded') {
                     cb();
                 }
             };
@@ -141,15 +141,21 @@ a.loader = (function() {
             el.onload = cb;
         }
 
-        // Hack for old Firefox/webkit browsers (who does not have onload on link elements)
-        // Note : using 'onload' in document.createElement('link') is not always enough
-        // By default, too many browser got this bug, so we always activate it
-        if(options.type === "text/css") {
+        /*
+         * Hack for old Firefox/webkit browsers
+         * (who does not have onload on link elements)
+         *
+         * Note : using 'onload' in document.createElement('link')
+         * is not always enough
+         *
+         * By default, too many browser got this bug, so we always activate it
+        */
+        if(options.type === 'text/css') {
             var currentCSS = document.styleSheets.length;
             nCSS++;
             var cssLoad = a.timer.add(
                 function() {
-                    if (document.styleSheets.length > (currentCSS + nCSS - 1)) {
+                    if (document.styleSheets.length > (currentCSS + nCSS-1)) {
                         nCSS--;
                         a.timer.remove(cssLoad);
                         cb();
@@ -159,7 +165,7 @@ a.loader = (function() {
         }
 
         // Inserting document into header
-        document.getElementsByTagName("head")[0].appendChild(el);
+        document.getElementsByTagName('head')[0].appendChild(el);
     };
 
     /**
@@ -169,28 +175,34 @@ a.loader = (function() {
      * @private
      * @async
      *
-     * @param uri {String} The data path
-     * @param callback {Function | null} The callback to apply in case of success
-     * @param args {Object | null} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
-     * @param error {Function | null} The callback to apply in case of error
+     * @param uri {String}                  The data path
+     * @param callback {Function | null}    The callback to apply in
+     *                                      case of success
+     * @param args {Object | null}          An ajax argument object,
+     *                                      not all of them are used
+     *                                      (some are automatically generated
+     *                                      and cannot be changed)
+     * @param error {Function | null}       The callback to apply
+     *                                      in case of error
     */
     function __ajaxLoader(uri, callback, args, error) {
         var options = {
             url    : uri,   //Allowed type : any URL
-            method : "GET", //Allowed type : "GET", "POST"
-            type   : "raw", //Allowed type : raw, json, xml
+            method : 'GET', //Allowed type : 'GET', 'POST'
+            type   : 'raw', //Allowed type : raw, json, xml
             async  : true,  //Allowed type : true, false
             cache  : true,  //Allowed type : true, false
-            data   : {},    //Allowed type : any kind of object composed of key => value
-            header : {}     //Allowed type : any kind of object composed of key => value
+            data   : {},    //Allowed type : any kind of object | key => value
+            header : {}     //Allowed type : any kind of object | key => value
         };
 
-        a.console.log("a.loader: load resource (url: " + uri + ")", 3);
+        a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
         if(!a.isNone(args)) {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
             }
-            if(!a.isNone(args.type) && (args.type === "json" || args.type === "xml") ) {
+            if(!a.isNone(args.type)
+                && (args.type == 'json' || args.type == 'xml') ) {
                 options.type = args.type;
             }
             if(a.isObject(args.data)) {
@@ -224,9 +236,13 @@ a.loader = (function() {
          * @method js
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
         js : function(uri, callback, args, error) {
             if(__checkCache(uri, callback)) {
@@ -242,14 +258,19 @@ a.loader = (function() {
          * @method jsonp
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
-        jsonp : function(uri, callback, args, error){
-            var type = (a.isObject(args) && args.type) ? args.type : "text/javascript";
-            a.console.log("a.loader: load resource (url: " + uri + ")", 3);
-            __appendToHeader(document.createElement("script"), {
+        jsonp: function(uri, callback, args, error){
+            var type = (a.isObject(args) && args.type) ? args.type
+                        : 'text/javascript';
+            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            __appendToHeader(document.createElement('script'), {
                     type : type,
                     src : uri
                 }, callback, uri, args, error
@@ -262,22 +283,26 @@ a.loader = (function() {
          * @method json
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
-        json : function(uri, callback, args, error) {
+        json: function(uri, callback, args, error) {
             // Setting type
             if(!a.isObject(args)) {
                 args = {};
             }
-            args.type = "json";
+            args.type = 'json';
 
             // Setting the accepted return type
             if(!a.isObject(args.header)) {
                 args.header = {};
             }
-            args.header["accept"] = "application/json, text/javascript";
+            args.header['accept'] = 'application/json, text/javascript';
 
             __ajaxLoader(uri, callback, args, error);
         },
@@ -288,22 +313,26 @@ a.loader = (function() {
          * @method xml
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
-        xml : function(uri, callback, args, error) {
+        xml: function(uri, callback, args, error) {
             // Setting the type
             if(!a.isObject(args)) {
                 args = {};
             }
-            args.type = "xml";
+            args.type = 'xml';
 
             // Setting the accepted return type
             if(!a.isObject(args.header)) {
                 args.header = {};
             }
-            args.header["accept"] = "application/xml, text/xml";
+            args.header['accept'] = 'application/xml, text/xml';
 
             __ajaxLoader(uri, callback, args, error);
         },
@@ -314,19 +343,23 @@ a.loader = (function() {
          * @method css
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
-        css : function(uri, callback, args, error) {
+        css: function(uri, callback, args, error) {
             if(__checkCache(uri, callback)) {
                 return;
             }
 
-            a.console.log("a.loader: load resource (url: " + uri + ")", 3);
-            __appendToHeader(document.createElement("link"), {
-                    rel  : "stylesheet",
-                    type : "text/css",
+            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            __appendToHeader(document.createElement('link'), {
+                    rel  : 'stylesheet',
+                    type : 'text/css',
                     href : uri
                 }, callback, uri, args, error
             );
@@ -339,11 +372,15 @@ a.loader = (function() {
          * @method html
          * @async
          *
-         * @param uri {String} The path to access content
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An ajax argument object, not all of them are used (some are automatically generated and cannot be changed)
+         * @param uri {String}               The path to access content
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An ajax argument object,
+         *                                   not all of them are used
+         *                                   (some are automatically generated
+         *                                   and cannot be changed)
         */
-        html : function(uri, callback, args, error) {
+        html: function(uri, callback, args, error) {
             if(__checkCache(uri, callback)) {
                 return;
             }
@@ -352,10 +389,10 @@ a.loader = (function() {
             if(!a.isObject(args)) {
                 args = {};
             }
-            args.type = "raw";
+            args.type = 'raw';
 
             // In debug mode, we disallow cache
-            if(a.environment.get("debug") === true) {
+            if(a.environment.get('debug') === true) {
                 args.cache = false;
             }
 
@@ -363,7 +400,7 @@ a.loader = (function() {
             if(!a.isObject(args.header)) {
                 args.header = {};
             }
-            args.header["accept"] = "text/html";
+            args.header['accept'] = 'text/html';
             __ajaxLoader(uri, callback, args, error);
         },
 
@@ -373,13 +410,24 @@ a.loader = (function() {
          * @method javafx
          * @async
          *
-         * @param uri {String} The path for given jar files to load
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An object to set property for javaFX (like javascript name...), we need : args.code (the main to start), args.id (the id of project). args.width and height are optional
+         * @param uri {String}               The path for given jar files to
+         *                                   load
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An object to set property for
+         *                                   javaFX (like javascript name...),
+         *                                   we need : args.code (the main to
+         *                                   start), args.id (the id of
+         *                                   project). args.width and height
+         *                                   are optional
         */
-        javafx : function(uri, callback, args, error) {
+        javafx: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
-                a.console.warn("a.loader.javafx : the system need args.code and args.name setted to be able to load any javafx resource... This uri will not be loaded : " + uri, 3);
+                var error =  'a.loader.javafx: the system need args.code ';
+                    error += 'and args.name setted to be able to load any ';
+                    error += 'javafx resource... This uri will not be ';
+                    error += 'loaded: ' + uri;
+                a.console.warn(error, 3);
                 return;
             }
 
@@ -388,8 +436,8 @@ a.loader = (function() {
             }
 
             // Load (if needed) javaFX javascript include helper
-            var version = (args.version) ? args.version : "1.3";
-            this.js("http://dl.javafx.com/" + version + "/dtfx.js", function() {
+            var version = (args.version) ? args.version : '1.3';
+            this.js('http://dl.javafx.com/' +version+ '/dtfx.js', function() {
                 javafx({
                     archive: uri,
                     width: args.width || 1,
@@ -399,13 +447,14 @@ a.loader = (function() {
                 });
             });
 
-            // There is no "load" event, so we emulate one
+            // There is no 'load' event, so we emulate one
             var timer = null,
                 max = 2000;
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0 && !a.isNone(document.getElementById(args.id).Packages)) {
+                if(max-- > 0 && !a.isNone(
+                        document.getElementById(args.id).Packages)) {
                     a.timer.remove(timer);
                     if(a.isFunction(callback)) {
                         callback();
@@ -422,13 +471,20 @@ a.loader = (function() {
          * @method flash
          * @async
          *
-         * @param uri {String} The path for given swf files to load
-         * @param callback {Function | null} The callback to call after loading success
-         * @param args {Object} An object to set property for Flash
+         * @param uri {String}               The path for given swf files to
+         *                                   load
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success
+         * @param args {Object}              An object to set property for
+         *                                   Flash
         */
-        flash : function(uri, callback, args, error) {
+        flash: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                a.console.warn("a.loader.flash : the system need args parameters : rootId, id, setted to be able to load any flash resource... This uri will not be loaded : " + uri, 3);
+                var error =  'a.loader.flash: the system need args ';
+                    error += 'parameters: rootId, id, setted to be able ';
+                    error += 'to load any flash resource... This uri ';
+                    error += 'will not be loaded: ' + uri;
+                a.console.warn(error, 3);
                 return;
             }
 
@@ -437,9 +493,20 @@ a.loader = (function() {
             }
 
             // Load (if needed) the swfobject.js to load flash from that
-            this.js(a.url + "vendor/storage/flash/swfobject.js", function() {
-                swfobject.embedSWF(uri, args.rootId, "100%", "100%", "10.0.0", a.url + "vendor/storage/flash/expressInstall.swf", args.flashvars, args.params, {id : args.id}, function(e) {
-                    // We do make a small timeout, for a strange reason the success event is not really ready
+            this.js(a.url + 'vendor/storage/flash/swfobject.js', function() {
+                swfobject.embedSWF(
+                        uri,
+                        args.rootId,
+                        '100%',
+                        '100%',
+                        '10.0.0',
+                        a.url + 'vendor/storage/flash/expressInstall.swf',
+                        args.flashvars,
+                        args.params,
+                        {id : args.id},
+                function(e) {
+                    // We do make a small timeout, for a strange reason 
+                    // the success event is not really ready
                     if(e.success === false && a.isFunction(error)) {
                         error(uri, 408);
                     }else if(e.success === true && a.isFunction(callback)) {
@@ -455,13 +522,21 @@ a.loader = (function() {
          * @method silverlight
          * @async
          *
-         * @param uri {String} The path for given xap files to load
-         * @param callback {Function | null} The callback to call after loading success (NOTE : silverlight is not able to fire load event, so it's not true here...)
-         * @param args {Object} An object to set property for Silverlight
+         * @param uri {String}               The path for given xap files to load
+         * @param callback {Function | null} The callback to call after
+         *                                   loading success (NOTE: silverlight
+         *                                   is not able to fire load event,
+         *                                   so it's not true here...)
+         * @param args {Object}              An object to set property for
+         *                                   Silverlight
         */
-        silverlight : function(uri, callback, args, error) {
+        silverlight: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                a.console.warn("a.loader.silverlight : the system need args parameters : rootId, id, setted to be able to load any silverlight resource... This uri will not be loaded : " + uri, 3);
+                var error =  'a.loader.silverlight: the system need args ';
+                    error += 'parameters: rootId, id, setted to be able ';
+                    error += 'to load any silverlight resource... This uri ';
+                    error += 'will not be loaded: ' + uri;
+                a.console.warn(error, 3);
                 return;
             }
 
@@ -469,19 +544,19 @@ a.loader = (function() {
                 return;
             }
 
-            a.console.log("a.loader: load resource (url: " + uri + ")", 3);
-            var obj = document.createElement("object");
-            obj.id = args.id;
-            obj.data = "data:application/x-silverlight-2,"
-            obj.type = "application/x-silverlight-2";
+            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            var obj  = document.createElement('object');
+            obj.id   = args.id;
+            obj.data = 'data:application/x-silverlight-2,'
+            obj.type = 'application/x-silverlight-2';
 
             if(!a.isArray(args.params)) {args.params = [];}
 
             // Adding URI to element
-            args.params.push({name : "source", value : uri});
+            args.params.push({name : 'source', value : uri});
 
             for(var i=0, l=args.params.length; i<l; ++i) {
-                var param = document.createElement("param");
+                var param = document.createElement('param');
                 param.name = args.params[i].name;
                 param.value = args.params[i].value;
                 obj.appendChild(param);
@@ -489,13 +564,15 @@ a.loader = (function() {
 
             document.getElementById(args.rootId).appendChild(obj);
 
-            // There is no "load" event, so we emulate one
+            // There is no 'load' event, so we emulate one
             var timer = null,
                 max = 2000;
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0 && !a.isNone(document.getElementById(args.id).Content)) {
+                if(max-- > 0
+                    && !a.isNone(document.getElementById(args.id).Content)) {
+
                     a.timer.remove(timer);
                     callback();
                 } else if(max <= 0 && a.isFunction(error)) {
@@ -511,7 +588,7 @@ a.loader = (function() {
          *
          * @return {Array} The cache trace
         */
-        trace : function() {
+        trace: function() {
             return __cache;
         }
     };
