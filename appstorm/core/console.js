@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Authors: VILLETTE Charles
-
-    Date: 2013-05-10
-
-    Date of last modification: 2013-10-11
-
     Dependencies : [
         a.js
         core/environment.js
