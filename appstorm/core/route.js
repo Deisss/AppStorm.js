@@ -27,7 +27,7 @@ a.route = new function() {
     var mem = a.mem.getInstance('app.route');
 
     /**
-     * Parse the action parameter
+     * Parse the action parameter.
      *
      * @method getAction
      * @private
@@ -41,7 +41,7 @@ a.route = new function() {
     };
 
     /**
-     * bind a function to a hash
+     * bind a function to a hash.
      *
      * @method bind
      * @chainable
@@ -67,7 +67,7 @@ a.route = new function() {
     };
 
     /**
-     * Remove a binding with a previous hash associated
+     * Remove a binding with a previous hash associated.
      *
      * @param unbind
      * @chainable
@@ -94,7 +94,7 @@ a.route = new function() {
 
     /**
      * The otherwise function is used when no function are linked to a given
-     * hash
+     * hash.
      *
      * @method otherwise
      * @chainable
@@ -114,6 +114,19 @@ a.route = new function() {
             mem.set(action, fct);
         }
         return this;
+    };
+
+    /**
+     * Navigate to a given hashtag.
+     *
+     * @method go
+     *
+     * @param hash {String}                 The hashtag to navigate to
+    */
+    this.go = function(hash) {
+        if(hash) {
+            window.location.href = '#' + hash;
+        }
     };
 
     /**
