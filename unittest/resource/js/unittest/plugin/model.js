@@ -1,7 +1,5 @@
 // Unit test for a.model (plugin)
 
-// TODO: model.clear ne semble pas être appelé (dans init)
-
 module('plugin/model.js');
 
 // Test nullable properties
@@ -9,11 +7,11 @@ test('a.model.property-nullable', function() {
     var unittest = a.model('unittest', {
         testnullable: {
             nullable: true,
-            value: 'ok'
+            init: 'ok'
         },
         testnotnullable: {
             nullable: false,
-            value: 'ok'
+            init: 'ok'
         }
     });
     var unit = new unittest();
@@ -42,22 +40,39 @@ test('a.model.property-init', function() {
     unit.set('testinit', 'something');
     strictEqual(unit.get('testinit'), 'something', 'Test erase init');
 
-    unit.clear();
+    unit.init();
 
     strictEqual(unit.get('testinit'), 'ok', 'Test clear init');
 });
 
 // Test property needed
 test('a.model.property-needed', function() {
-    ok(1==1);
-    // TODO: needed est un peu extérieur
+    var unittest = a.model('unittest', {
+        need: {
+            needed: true,
+            init: 'ok'
+        },
+        notneeded: {
+            needed: false,
+            init: 'ok'
+        }
+    });
+
+    var unit = new unittest();
+
+    unit.takeSnapshot();
+    var snapshot = unit.differenceSnapshot(true);
+
+    // Test outputted value
+    strictEqual(snapshot.needed, undefined);
+    strictEqual(snapshot.need, 'ok');
 });
 
 // Test property check
 test('a.model.property-check', function() {
     var unittest = a.model('unittest', {
         testcheck: {
-            value: 'ok',
+            init: 'ok',
             check: 'String'
         }
     });
@@ -77,7 +92,7 @@ test('a.model.property-check', function() {
 test('a.model.property-validate', function() {
     var unittest = a.model('unittest', {
         testvalidate: {
-            value: 'ok',
+            init: 'ok',
             validate: function(value, old) {
                 if(value == 'something') {
                     return true;
@@ -101,7 +116,7 @@ test('a.model.property-validate', function() {
 test('a.model.property-transform', function() {
     var unittest = a.model('unittest', {
         testtransform: {
-            value: 'ok',
+            init: 'ok',
             transform: function(value, old) {
                 return '' + old + value;
             }
@@ -129,7 +144,7 @@ test('a.model.property-event', function() {
 
     var unittest = a.model('unittest', {
         evt: {
-            value: 'another',
+            init: 'another',
             event: 'super'
         }
     });
@@ -164,7 +179,7 @@ test('a.model.property-apply', function() {
 
     var unittest = a.model('unittest', {
         app: {
-            value: 'another',
+            init: 'another',
             apply: function(value, old) {
                 se(value, 'ok');
                 st();
@@ -178,11 +193,134 @@ test('a.model.property-apply', function() {
 });
 
 
-/*
-TODO:
-  Test get/set/list/has/clear/toJson/fromJson/takeSnapshot/getSnapshot/
-  differenceSnapshot
 
-  => avec snapshot => tester needed again
 
-*/
+// Test list function
+test('a.model.list', function() {
+    var unittest = a.model('unittest', {
+        A: {
+            init: 'ok'
+        },
+        B: {
+            init: 'something'
+        }
+    });
+
+    var unit = new unittest();
+    var list = unit.list();
+
+    strictEqual(list.join(','), 'A,B');
+});
+
+// Test has function
+test('a.model.has', function() {
+    var unittest = a.model('unittest', {
+        A: {
+            init: 'ok'
+        },
+        B: {
+            init: 'something'
+        }
+    });
+
+    var unit = new unittest();
+
+    strictEqual(unit.has('A'), true);
+    strictEqual(unit.has('B'), true);
+    strictEqual(unit.has('C'), false);
+});
+
+// Test init function
+test('a.model.init', function() {
+    var unittest = a.model('unittest', {
+        testA: {
+            init: 'ok'
+        },
+        testB: {
+            init: 'something'
+        },
+        testC: {
+            // Value will be erased on first loading
+            value: 'notok'
+        }
+    });
+
+    var unit = new unittest();
+
+    // First init
+    strictEqual(unit.get('testA'), 'ok', 'Test init1');
+    strictEqual(unit.get('testB'), 'something', 'Test init2');
+    strictEqual(unit.get('testC'), null, 'Test init3');
+
+    // Change init
+    unit.set('testA', 'another');
+    unit.set('testB', 'stuff');
+    unit.set('testC', 'great');
+
+    strictEqual(unit.get('testA'), 'another', 'Test change init1');
+    strictEqual(unit.get('testB'), 'stuff', 'Test change init2');
+    strictEqual(unit.get('testC'), 'great', 'Test change init3');
+
+    // Rollback init
+    unit.init();
+
+    // Second init
+    strictEqual(unit.get('testA'), 'ok', 'Test rollback init1');
+    strictEqual(unit.get('testB'), 'something', 'Test rollback init2');
+    strictEqual(unit.get('testC'), null, 'Test rollback init3');
+});
+
+// Test jsons function
+test('a.model.json', function() {
+    var unittest = a.model('unittest', {
+        testA: {
+            init: 'something'
+        },
+        testB: {
+            init: 'great'
+        }
+    });
+
+    var unit = new unittest();
+    unit.set('testA', 'another');
+    var json = unit.toJSON();
+
+    strictEqual(json, '{"testA":"another","testB":"great"}', 'Test JSON');
+
+    var second = new unittest();
+    second.fromJSON(json);
+
+    var alternative = second.toJSON();
+
+    strictEqual(json, '{"testA":"another","testB":"great"}', 'Test second');
+});
+
+// Test snapshot function
+test('a.model.snapshot', function() {
+    var unittest = a.model('unittest', {
+        snap: {
+            needed: true,
+            init: 'ok'
+        },
+        nosnap: {
+            init: 'notok'
+        },
+        so: {
+            init: 'something'
+        }
+    });
+
+    var unit = new unittest();
+    // Taking snapshot
+    unit.takeSnapshot();
+
+    var firstSimpleSnapshot  = a.parser.json.stringify(
+                    unit.differenceSnapshot(true)
+        ),
+        firstComplexSnapshot = a.parser.json.stringify(
+                    unit.differenceSnapshot(false)
+        );
+
+    strictEqual(firstSimpleSnapshot, '{"snap":"ok"}');
+    strictEqual(firstComplexSnapshot, '{"snap":{"value":"ok","old":"ok"}}')
+});
