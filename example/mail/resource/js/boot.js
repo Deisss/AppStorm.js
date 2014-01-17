@@ -1,19 +1,19 @@
 // This part allow system to startup (decide what to startup, in which situation)
 
 (function() {
-	var currentHash = a.page.event.hash.getHash(),
+	var currentHash = a.hash.getHash(),
 		timerId = null,
 		max = 1000;
 
 	// Initialise page event hash system
-	a.page.event.hash.setPreviousHash("");
+	a.hash.setPreviousHash("");
 	window.location.href = "#loading_application";
 
 	/**
 	 * handle "state change" for every browser
 	*/
 	function firstHandle() {
-		if(a.page.event.hash.getHash() !== currentHash) {
+		if(a.hash.getHash() !== currentHash) {
 			window.location.href = "#" + currentHash;
 			max = 0;
 		}
