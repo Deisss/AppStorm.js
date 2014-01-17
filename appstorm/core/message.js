@@ -41,8 +41,8 @@
  * @namespace a
 */
 a.eventEmitter = function(base) {
-    this.list = {};
-    this.base = base;
+    this.eventList = {};
+    this.eventBaseName = base;
 };
 
 
@@ -57,9 +57,9 @@ a.eventEmitter.prototype = {
         // At the end, we clear unused
         // listeners array type
         // (we must go backward for multi splice problem)
-        for(var i in this.list) {
-            if(!this.list[i] || this.list[i].length < 1) {
-                delete this.list[i];
+        for(var i in this.eventList) {
+            if(!this.eventList[i] || this.eventList[i].length < 1) {
+                delete this.eventList[i];
             }
         }
     },
@@ -72,20 +72,21 @@ a.eventEmitter.prototype = {
      * @param type {String}                 The event type
      * @param fn {Function}                 The function to bind to event
      * @param scope {Object | null}         The scope to bind to function
-     * @param once {Boolean | null}         If we should start it only once or not
+     * @param once {Boolean | null}         If we should start it only once or
+     *                                      not
     */
     bind: function(type, fn, scope, once) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
             var msg = '.bind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.base + msg, 1);
+            a.console.warn(this.eventBaseName + msg, 1);
             return;
         }
 
         // The function is invalid (not a function)
         if(!a.isFunction(fn)) {
             var msg = '.bind: unable to bind function, this is not a function';
-            a.console.warn(this.base + msg, 1);
+            a.console.warn(this.eventBaseName + msg, 1);
             return;
         }
 
@@ -94,18 +95,18 @@ a.eventEmitter.prototype = {
         }
 
         // Create a new array for the given type
-        if(a.isUndefined(this.list[type])) {
-            this.list[type] = [];
+        if(a.isUndefined(this.eventList[type])) {
+            this.eventList[type] = [];
         }
 
-        this.list[type].push({
+        this.eventList[type].push({
             fct:   fn,
             scope: scope || null,
             once:  once
         });
 
         // Dispatch event
-        this.dispatch(this.base + '.add', {
+        this.dispatch(this.eventBaseName + '.add', {
             type:  type,
             fct:   fn
         });
@@ -136,13 +137,13 @@ a.eventEmitter.prototype = {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
             var msg = '.unbind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.base + msg, 1);
+            a.console.warn(this.eventBaseName + msg, 1);
             return;
         }
 
         // If the event type is not listed as existing,
         // we don't need to remove anything
-        var elementList = this.list[type];
+        var elementList = this.eventList[type];
         if(a.isNone(elementList)) {
             return;
         }
@@ -158,7 +159,7 @@ a.eventEmitter.prototype = {
         }
 
         // Dispatch event
-        this.dispatch(this.base + '.unbind', {
+        this.dispatch(this.eventBaseName + '.unbind', {
             type: type,
             fct:  fn
         });
@@ -175,8 +176,8 @@ a.eventEmitter.prototype = {
      * @param type {String} The event type to remove
     */
     unbindAll: function(type) {
-        if(!a.isNone(this.list[type])) {
-            this.list[type] = [];
+        if(!a.isNone(this.eventList[type])) {
+            this.eventList[type] = [];
 
             // We clear unused list type
             this.clearEventType(type);
@@ -189,11 +190,11 @@ a.eventEmitter.prototype = {
      * @method clear
     */
     clear: function() {
-        var c = this.base + '.clear';
+        var c = this.eventBaseName + '.clear';
 
-        for(var i in this.list) {
+        for(var i in this.eventList) {
             if(i !== c) {
-                delete this.list[i];
+                delete this.eventList[i];
             }
         }
 
@@ -210,7 +211,7 @@ a.eventEmitter.prototype = {
      * @param data {Object} Anything you want to pass threw this event
     */
     dispatch: function(type, data) {
-        var dispatcher = this.list[type];
+        var dispatcher = this.eventList[type];
         if(!a.isNone(dispatcher)) {
             for(var i=0, l=dispatcher.length; i<l; ++i) {
                 // Scoping to not have trouble
