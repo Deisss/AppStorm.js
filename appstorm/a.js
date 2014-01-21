@@ -47,25 +47,6 @@ a.getStackTrace = function() {
 };
 
 /**
- * Inherit a constructor from a parent
- *
- * @method inherit
- *
- * @param child {Object}                    An object to extend
- * @param parent {Object}                   A parent object to get prototype
- *                                          from
-*/
-a.inherit = (function() {
-    var f = function() {};
-    return function(child, parent) {
-        f.prototype = parent.prototype;
-        child.prototype = new f();
-        child.parent = p.prototype;
-        child.prototype.constructor = child;
-    }
-}());
-
-/**
  * If the element is null or undefined
  *
  * @param obj {Object} The element to test
@@ -85,7 +66,8 @@ a.isNone = function(obj) {
 * @return {Object} A new state object
 */
 a.deepClone = function(obj) {
-    if (a.isObject(obj)) {
+    // The deep clone only take care of object, and not function
+    if (a.isObject(obj) && !a.isFunction(obj)) {
         // Array cloning
         if(a.isArray(obj)) {
             var l = obj.length,
@@ -112,114 +94,6 @@ a.deepClone = function(obj) {
         }
     }
     return obj;
-};
-
-
-/**
- * The value exist in given object/array
- *
- * @method contains
- *
- * @param obj {Array | Object} A collection to search in
- * @value {Mixed} The value to search
-*/
-a.contains = function(obj, value) {
-    if(a.isArray(obj)) {
-        var i = obj.length;
-        while(i--) {
-            if(obj[i] === value) {
-                return true;
-            }
-        }
-    } else if(this.isObject(obj)) {
-        return (value in obj);
-    }
-    return false;
-};
-
-
-/**
- * Check a variable is a number
- *
- * @method isNumber
- *
- * @param o {Mixed} The variable to check
- * @return {Boolean} True if it's a number, false in other cases
-*/
-a.isNumber = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-};
-
-/**
- * Check a variable is an object
- *
- * @method isObject
- *
- * @param o {Mixed} The variable to check
- * @return {Boolean} True if it's an object, false in other cases
-*/
-a.isObject = function(o) {
-    return (typeof(o) === "object" && o !== null);
-};
-
-/**
- * Check a variable is a string
- *
- * @method isString
- *
- * @param s {Mixed} The variable to check
- * @return {Boolean} True if it's a string, false in other cases
-*/
-a.isString = function(s) {
-    return (typeof(s) === "string");
-};
-
-/**
- * Check a variable is a function
- *
- * @method isFunction
- *
- * @param s {Mixed} The variable to check
- * @return {Boolean} True if it's a function, false in other cases
-*/
-a.isFunction = function(f) {
-    return (typeof(f) === "function");
-};
-
-/**
- * Test a variable is undefined or null
- *
- * @method isNull
- *
- * @param u {Mixed} The variable to check
- * @return {Boolean} True if it's a undefined variable, false in other cases
-*/
-a.isNull = function(u) {
-    return (typeof(u) === "undefined" || u === null);
-};
-
-/**
- * Test a variable is a boolean
- *
- * @method isBoolean
- *
- * @param u {Mixed} The variable to check
- * @return {Boolean} True if it's a boolean, false in other cases
-*/
-a.isBoolean = function(b) {
-    return (typeof(b) === "boolean");
-};
-
-/**
- * Test a variable is an array
- *
- * @method isArray
- *
- * @param ar {Mixed} The variable to check
- * @return {Boolean} True if it's an array, false in other cases
-*/
-a.isArray = function(ar) {
-    return (ar instanceof Array);
 };
 
 /**
