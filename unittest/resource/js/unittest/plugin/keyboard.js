@@ -19,6 +19,7 @@ test('a.keyboard.addListener', function() {
 
     var callback = function() {
         se(true, true, 'Event where fired as expected');
+        a.keyboard.reset();
         st();
     };
 
@@ -38,6 +39,7 @@ test('a.keyboard.removeListener', function() {
 
     var callback = function() {
         se(true, true, 'Event where fired as expected');
+        a.keyboard.reset();
     };
 
     a.keyboard.bind('a', callback);
@@ -46,7 +48,7 @@ test('a.keyboard.removeListener', function() {
     // Now launching mousetrap trigger (only one of two callback should pass)
     Mousetrap.trigger('a');
 
-    a.keyboard.unbind('a');
+    a.keyboard.unbind('a', callback);
 
     Mousetrap.trigger('a');
     Mousetrap.trigger('c');
