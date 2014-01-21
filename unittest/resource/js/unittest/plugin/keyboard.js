@@ -53,5 +53,9 @@ test('a.keyboard.removeListener', function() {
     Mousetrap.trigger('a');
     Mousetrap.trigger('c');
 
-    setTimeout(start, 1000);
+    var st = start;
+    setTimeout(function() {
+        a.keyboard.reset();
+        st();
+    }, 1000);
 });
