@@ -424,6 +424,34 @@ test('a.template.append-complex', function() {
 });
 
 
+// Test loading partial template
+test('a.template.partial', function() {
+    stop();
+    expect(3);
+
+    var se = strictEqual,
+        st = start;
+
+    a.template.partial(
+        'testpartial',
+        './resource/data/page.template/tmpl-partial.html',
+        function(name, uri) {
+            se(name, 'testpartial', 'Test template name');
+            se(uri, "<a id='test-partial'>hello</a>", 'test template content');
+
+            // Now we load the template and check everything is working
+            a.template.get(
+                './resource/data/page.template/tmpl-partial-container.html',
+                null,
+                function(content) {
+                    se(content, "<a id='test-partial'>hello</a>",
+                                                    'Test result');
+                    st();
+            });
+    });
+});
+
+
 // Bug : using innerHTML remove onclick on sibbling children
 // We do a workaround for that, but we have to be sure it will never come back
 // Here is a test for.

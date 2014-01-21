@@ -25,11 +25,6 @@
 
 ************************************************************************ */
 
-// Provide basic page hash/template management structure
-a.page = {};
-
-
-
 
 /**
  * Create a template system based on handlebars.
@@ -42,12 +37,79 @@ a.page = {};
 */
 a.template = {
     /**
+     * Store cached partials
+     * @property __part
+     * @type Object
+     * @default {}
+    */
+    __part: {},
+
+    /**
      * Store cached template
      * @property __tmpl
      * @type Object
      * @default {}
     */
     __tmpl: {},
+
+    /**
+     * Register a new partial into template system (handlebars partial).
+     *
+     * @method partial
+     * @async
+     *
+     * @param name {String}                 The partial name to use inside
+     *                                      handlebars templates
+     * @param uri {String}                  The uri to load (GET method), or
+     *                                      a template string (see options
+     *                                      parameter)
+     * @param callback {Function | null}    The callback to call after loading
+     *                                      success
+     * @param options {Object}              Options can have only one element:
+     *                                      noLoading : Boolean
+     *                                      Indicate if we should use uri as
+     *                                      template string instead of uri to 
+     *                                      load from network
+    */
+    partial: function(name, uri, callback, options) {
+        var handler = a.isObject(window.Handlebars) ? window.Handlebars : null,
+            fctName = 'a.template.partial';
+
+        // Crash if handlebars is not found
+        if(!handler) {
+            a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
+            return;
+        }
+
+        var partialsStore = this.__part;
+
+        if(a.isString(partialsStore[name])) {
+            a.console.log(fctName +': loading ' + name + ' from cache', 3);
+            return partialsStore[name];
+        }
+
+        if(options && options.noloading == true) {
+            a.console.log(fctName +': loading ' + name + ' from parameter', 3);
+            partialsStore[name] = uri;
+            handler.registerPartial(name, uri);
+
+            // Callback
+            if(a.isFunction(callback)) {
+                callback(name, uri);
+            }
+        } else {
+            a.loader.html(uri, function(content) {
+                a.console.log(fctName +': loading ' + name + ' from url', 3);
+                partialsStore[name] = content;
+                handler.registerPartial(name, content);
+
+                // Callback
+                if(a.isFunction(callback)) {
+                    callback(name, content);
+                }
+            });
+        }
+    },
 
     /**
      * Use cache or retrieve a specific template from network
@@ -69,7 +131,7 @@ a.template = {
             fctName = 'a.template.get';
 
         // Crash if handlebars is not found
-        if(handler == null) {
+        if(!handler) {
             a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
             return;
         }
