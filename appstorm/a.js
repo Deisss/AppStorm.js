@@ -13,6 +13,7 @@
 
 ;
 
+
 /*
  * Bind AppStorm.JS to underscore
 */
@@ -33,6 +34,22 @@ a.__defaultAjaxOptions = {};
  * @type String
 */
 a.url = '';
+
+/**
+ * Change the function initial scope for given one
+ *
+ * @method scope
+ *
+ * @param fct {Function}                    The function to bind scope
+ * @param scope {Object}                    The object scope to link
+ * @return {Function}                       Intermediate function with scope
+ *                                          binding
+*/
+a.scope = function(fct, scope) {
+    return function() {
+        return fct.apply(scope, arguments);
+    }
+};
 
 /**
  * Get the existing stack trace
