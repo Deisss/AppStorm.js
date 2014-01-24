@@ -37,67 +37,75 @@ a.storage = {
     /**
      * Debug on console the get item action
      *
-     * @method __printGetItem
+     * @method debugGet
      * @private
      *
-     * @param element {String} The element (like cookie, localStorage, ...)
-     * @param key {String} The key to debug
-     * @param value {Mixed} The value to dump
+     * @param element {String}              The element (like cookie,
+     *                                      localStorage, ...)
+     * @param key {String}                  The key to debug
+     * @param value {Mixed}                 The value to dump
     */
-    __printGetItem : function(element, key, value) {
-        if(key !== "__test_support") {
-            a.console.log("a.storage.type." + element + ".getItem: get element (key: " + key + ", value: " + value + ")", 3);
+    debugGet: function(element, key, value) {
+        if(key !== '_support_t') {
+            a.console.log('a.storage.type.' + element + 
+              '.get: get element (key: ' + key + ', value: ' + value + ')', 3);
         }
     },
 
     /**
      * Debug on console the get item error action
      *
-     * @method __printGetErrorItem
+     * @method printError
      * @private
      *
-     * @param element {String} The element (like cookie, localStorage, ...)
-     * @param key {String} The key to debug
+     * @param element {String}              The element (like cookie,
+     *                                      localStorage, ...)
+     * @param key {String}                  The key to debug
     */
-    __printGetErrorItem : function(element, key) {
-        if(key !== "__test_support") {
-            a.console.log("a.storage.type." + element + ".getItem: unable to find key (" + key + ") in store", 2);
+    printError: function(element, key) {
+        if(key !== '_support_t') {
+            a.console.log('a.storage.type.' + element +
+                '.get: unable to find key (' + key + ') in store', 2);
         }
     },
 
     /**
      * Debug on console the set item action
      *
-     * @method __printSetItem
+     * @method debugSet
      * @private
      *
-     * @param element {String} The element (like cookie, localStorage, ...)
-     * @param key {String} The key to debug
-     * @param value {Mixed} The value to dump
+     * @param element {String}              The element (like cookie,
+     *                                      localStorage, ...)
+     * @param key {String}                  The key to debug
+     * @param value {Mixed}                 The value to dump
     */
-    __printSetItem : function(element, key, value) {
-        if(key !== "__test_support") {
-            a.console.log("a.storage.type." + element + ".setItem: add element (key: " + key + ", value: " + value + ")", 3);
+    debugSet: function(element, key, value) {
+        if(key !== '_support_t') {
+            a.console.log('a.storage.type.' + element +
+              '.set: add element (key: ' + key + ', value: ' + value + ')', 3);
         }
     },
 
     /**
      * Debug on console the remove item action
      *
-     * @method __printRemoveItem
+     * @method debugRemove
      * @private
      *
-     * @param element {String} The element (like cookie, localStorage, ...)
-     * @param key {String} The key to debug
+     * @param element {String}              The element (like cookie,
+     *                                      localStorage, ...)
+     * @param key {String}                  The key to debug
     */
-    __printRemoveItem : function(element, key) {
-        if(key !== "__test_support") {
-            a.console.log("a.storage.type." + element + ".removeItem: remove element (key: " + key + ")", 3);
+    debugRemove: function(element, key) {
+        if(key !== '_support_t') {
+            a.console.log('a.storage.type.' + element + 
+                '.remove: remove element (key: ' + key + ')', 3);
         }
     },
 
     // Access to individual storage
-    type:{}
+    type: {}
 };
 
 
@@ -111,109 +119,101 @@ a.storage = {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.cookie = (function() {
-    "use strict";
-
+a.storage.type.cookie = new function() {
     // Temporary desactivate event while making test
-    var __active = false;
+    var active = false;
 
-    // Define an object, but create some usefull data inside like "isEnabled" data which indicate support or not of cookies
-    var obj = {
-        /**
-         * @property support
-         * @type Boolean
-         * @default false
-        */
-        support : false,
-        /**
-         * @property engine
-         * @type String
-         * @default cookie
-         * @final
-        */
-        engine  : "cookie",
-        /**
-         * Set a new cookie, or delete a cookie using a too old expires
-         *
-         * @method setItem
-         *
-         * @param name {String} The key to use
-         * @param value {Mixed} The value to store
-         * @param days {Integer} Number of days before expires
-        */
-        setItem : function(name, value, days) {
-            var expires = "";
-            a.storage.__printSetItem("cookie", name, value);
-            if(days) {
-                var date = new Date();
-                date.setTime(date.getTime()+(days*24*60*60*1000));
-                expires = "; expires=" + date.toGMTString();
-            }
-            document.cookie = name + "=" + escape(a.parser.json.stringify(value)) + expires + "; path=/";
-        },
+    /**
+     * @property support
+     * @type Boolean
+     * @default false
+    */
+    this.support = false;
 
-        /**
-         * Get the stored cookie, return null if something went wrong
-         *
-         * @method getItem
-         *
-         * @param name {String} The cookie name stored
-         * @return {Mixed} Any data stored inside cookie
-        */
-        getItem : function(name) {
-            if (document.cookie.length > 0) {
-                var c_start = document.cookie.indexOf(name + "=");
-                if (c_start != -1) {
-                    c_start = c_start + name.length + 1;
-                    var c_end = document.cookie.indexOf(";", c_start);
-                    if (c_end == -1) {
-                        c_end = document.cookie.length;
-                    }
-                    var result = a.parser.json.parse(unescape(document.cookie.substring(c_start, c_end)));
-                    a.storage.__printGetItem("cookie", name, result);
-                    return result;
+    /**
+     * @property engine
+     * @type String
+     * @default cookie
+     * @final
+    */
+    this.engine = 'cookie';
+
+    /**
+     * Set a new cookie, or delete a cookie using a too old expires
+     *
+     * @method set
+     *
+     * @param name {String}                 The key to use
+     * @param value {Mixed}                 The value to store
+     * @param days {Integer}                Number of days before expires
+    */
+    this.set = function(name, value, days) {
+        var expires = '';
+        a.storage.debugSet('cookie', name, value);
+        if(days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            expires = '; expires=' + date.toGMTString();
+        }
+
+        var cookieSet =  name + '=' + escape(a.parser.json.stringify(value));
+            cookieSet += expires + '; path=/';
+        document.cookie = cookieSet;
+    };
+
+    /**
+     * Get the stored cookie, return null if something went wrong
+     *
+     * @method get
+     *
+     * @param name {String}                 The cookie name stored
+     * @return {Mixed}                      Any data stored inside cookie
+    */
+    this.get = function(name) {
+        if (document.cookie.length > 0) {
+            var start = document.cookie.indexOf(name + '=');
+            if (start != -1) {
+                start = start + name.length + 1;
+                var end = document.cookie.indexOf(';', start);
+                if (end == -1) {
+                    end = document.cookie.length;
                 }
-            }
-            a.storage.__printGetErrorItem("cookie", name);
-            return null;
-        },
-
-        /**
-         * Remove a previously stored cookie
-         *
-         * @method removeItem
-         *
-         * @param name {String} The cookie name to delete
-        */
-        removeItem : function(name) {
-            a.storage.__printRemoveItem("cookie", name);
-            this.setItem(name, "", -1);
-
-            // Dispatch event
-            if(__active) {
-                a.message.dispatch("a.storage.remove", {
-                    key : name
-                });
+                var result = a.parser.json.parse(
+                            unescape(document.cookie.substring(start, end)));
+                a.storage.debugGet('cookie', name, result);
+                return result;
             }
         }
+        a.storage.printError('cookie', name);
+        return null;
+    };
+
+    /**
+     * Remove a previously stored cookie
+     *
+     * @method remove
+     *
+     * @param name {String}                 The cookie name to delete
+    */
+    this.remove = function(name) {
+        a.storage.debugRemove('cookie', name);
+        this.set(name, '', -1);
     };
 
     // Cookie
     // Testing the current
-    var test = "__test_support";
-    obj.setItem(test, "ok");
+    var test = '_support_t';
+    this.set(test, 'o');
 
     // Test system is working
-    if(obj.getItem(test) === "ok") {
-        obj.removeItem(test);
-        obj.support = true;
+    if(this.get(test) == 'o') {
+        this.remove(test);
+        this.support = true;
     }
 
     // Activate event
-    __active = true;
-
-    return obj;
-})();
+    active = true;
+};
 
 
 /**
@@ -240,96 +240,91 @@ a.storage.cookie = a.storage.type.cookie;
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.localStorage = (function() {
-    "use strict";
+a.storage.type.localStorage = new function() {
+    var support = false,
+        idTest  = '_support_t',
+        store   = 'localStorage';
 
-    var __support = false,
-        __idTest  = "__test_support",
-        __ls      = "localStorage";
-
-    // Test support (if you use localStorageShim this should work for most of browsers (including old IE) !)
-    if(__ls in window && window[__ls] !== null) {
+    // Test support (if you use localStorageShim
+    // this should work for most of browsers (including old IE) !)
+    if(store in window && window[store] != null) {
         // Testing database work or not
-        window.localStorage.setItem(__idTest, "o");
+        window.localStorage.setItem(idTest, 'o');
 
         // Test system is working
-        if(window.localStorage.getItem(__idTest) === "o") {
-            window.localStorage.removeItem(__idTest);
-            __support = true;
+        if(window.localStorage.getItem(idTest) == 'o') {
+            window.localStorage.removeItem(idTest);
+            support = true;
         }
     }
 
-    return {
-        /**
-         * @property support
-         * @type Boolean
-         * @default false
-        */
-        support : __support,
-        /**
-         * @property engine
-         * @type String
-         * @default localStorage
-         * @final
-        */
-        engine  : __ls,
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            if(__support) {
-                var item = window.localStorage.getItem(key);
-                if(a.isNone(item)) {
-                    a.storage.__printGetErrorItem("localStorage", key);
-                    return null;
-                }
-                var value = a.parser.json.parse(item);
-                a.storage.__printGetItem("localStorage", key, value);
-                return value;
+    /**
+     * @property support
+     * @type Boolean
+     * @default false
+    */
+    this.support = support;
+
+    /**
+     * @property engine
+     * @type String
+     * @default localStorage
+     * @final
+    */
+    this.engine  = store;
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        if(support) {
+            var item = window.localStorage.getItem(key);
+            if(a.isNone(item)) {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            if(__support) {
-                a.storage.__printSetItem("localStorage", key, value);
-                window.localStorage.setItem(key, a.parser.json.stringify(value));
-                a.message.dispatch("a.storage.add", {
-                    key : key,
-                    value : value
-                });
-            }
-        },
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            if(__support) {
-                a.storage.__printRemoveItem("localStorage", key);
-                window.localStorage.removeItem(key);
-                a.message.dispatch("a.storage.remove", {
-                    key : key
-                });
-            }
+            var value = a.parser.json.parse(item);
+            a.storage.debugGet(this.engine, key, value);
+            return value;
+        }
+        return null;
+    };
+
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        if(support) {
+            a.storage.debugSet(this.engine, key, value);
+            window.localStorage.setItem(key, a.parser.json.stringify(value));
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = function(key) {
+        if(support) {
+            a.storage.debugRemove(this.engine, key);
+            window.localStorage.removeItem(key);
+        }
+    };
+};
 
 
 
@@ -342,100 +337,96 @@ a.storage.type.localStorage = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.globalStorage = (function() {
-    "use strict";
-
-    var __support  = false,
-        __idTest   = "__test_support",
-        __hostname = window.location.hostname;
+a.storage.type.globalStorage = new function() {
+    var support  = false,
+        idTest   = '_support_t',
+        hostname = window.location.hostname;
 
     if(!a.isNone(window.globalStorage)) {
-        window.globalStorage[__hostname].setItem(__idTest, "ok");
+        window.globalStorage[hostname].setItem(idTest, 'o');
 
         // Test system is working
-        if(window.globalStorage[__hostname].getItem(__idTest) == "ok") {
-            window.globalStorage[__hostname].removeItem(__idTest);
-            __support = true;
+        if(window.globalStorage[hostname].getItem(idTest) == 'o') {
+            window.globalStorage[hostname].removeItem(idTest);
+            support = true;
         }
     }
 
-    return {
-        /**
-         * @property support
-         * @type Boolean
-         * @default false
-        */
-        support : __support,
-        /**
-         * @property engine
-         * @type String
-         * @default globalStorage
-         * @final
-        */
-        engine  : "globalStorage",
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            if(__support) {
-                var item = window.globalStorage[__hostname].getItem(key);
-                // On some system, item will be an object with "value" and "secure" property
-                if(a.isObject(item) && !a.isNone(item.value)) {
-                    var value = a.parser.json.parse(item.value);
-                    a.storage.__printGetItem("globalStorage", key, value);
-                    return value;
-                } else if(!a.isNone(item)) {
-                    var value = a.parser.json.parse(item);
-                    a.storage.__printGetItem("globalStorage", key, value);
-                    return value;
-                } else {
-                    a.storage.__printGetErrorItem("globalStorage", key);
-                    return null;
-                }
-            }
-            return null;
-        },
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            if(__support) {
-                a.storage.__printSetItem("globalStorage", key, value);
-                window.globalStorage[__hostname].setItem(key, a.parser.json.stringify(value));
-                a.message.dispatch("a.storage.add", {
-                    key : key,
-                    value : value
-                });
-            }
-        },
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            if(__support) {
-                a.storage.__printRemoveItem("globalStorage", key);
-                window.globalStorage[__hostname].removeItem(key);
-                a.message.dispatch("a.storage.remove", {
-                    key : key
-                });
+    /**
+     * @property support
+     * @type Boolean
+     * @default false
+    */
+    this.support = support;
+
+    /**
+     * @property engine
+     * @type String
+     * @default globalStorage
+     * @final
+    */
+    this.engine = 'globalStorage';
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        if(support) {
+            var item = window.globalStorage[hostname].getItem(key);
+            // On some system, item will be an object with
+            // "value" and "secure" property
+            if(a.isObject(item) && !a.isNone(item.value)) {
+                var value = a.parser.json.parse(item.value);
+                a.storage.debugGet(this.engine, key, value);
+                return value;
+            } else if(!a.isNone(item)) {
+                var value = a.parser.json.parse(item);
+                a.storage.debugGet(this.engine, key, value);
+                return value;
+            } else {
+                a.storage.printError(this.engine, key);
+                return null;
             }
         }
+        return null;
     };
-})();
+
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        if(support) {
+            a.storage.debugSet(this.engine, key, value);
+            window.globalStorage[hostname].setItem(key,
+                                        a.parser.json.stringify(value));
+        }
+    };
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = function(key) {
+        if(support) {
+            a.storage.debugRemove(this.engine, key);
+            window.globalStorage[hostname].removeItem(key);
+        }
+    };
+};
 
 
 
@@ -448,77 +439,54 @@ a.storage.type.globalStorage = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.memory = (function() {
-    "use strict";
+a.storage.type.memory = new function() {
+    var store = a.mem.getInstance('app.storage');
 
-    var __data = {};
+    /**
+     * @property support
+     * @type Boolean
+     * @default true
+    */
+    this.support = true;
 
-    return {
-        /**
-         * @property support
-         * @type Boolean
-         * @default true
-        */
-        support : true,
-        /**
-         * @property engine
-         * @type String
-         * @default memory
-         * @final
-        */
-        engine  : "memory",
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            var value = __data[key];
-            if(!a.isNone(value)) {
-                a.storage.__printGetItem("memory", key, value);
-                a.console.log("a.storage.memory.getItem: found item (key: " + key + ", value: " + value + ")", 3);
-                return value;
-            }
-            a.storage.__printGetErrorItem("memory", key);
-            return null;
-        },
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            __data[key] = value;
-            a.storage.__printSetItem("memory", key, value);
-            a.message.dispatch("a.storage.add", {
-                key : key,
-                value : value
-            });
-        },
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            a.storage.__printRemoveItem("memory", key);
-            if(!a.isNone(__data[key])) {
-                delete __data[key];
-                a.message.dispatch("a.storage.remove", {
-                    key : key
-                });
-            }
-        }
-    }
-})();
+    /**
+     * @property engine
+     * @type String
+     * @default memory
+     * @final
+    */
+    this.engine = 'memory';
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = store.get;
+
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = store.set;
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = store.remove;
+};
 
 
 /**
@@ -545,97 +513,91 @@ a.storage.memory = a.storage.type.memory;
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.sessionStorage = (function() {
-    "use strict";
-
-    var __support = false,
-        __idTest  = "__test_support",
-        __ss      = "sessionStorage";
+a.storage.type.sessionStorage = new function() {
+    var support = false,
+        idTest  = '_support_t',
+        ss      = 'sessionStorage';
 
 
     // Test support
-    if(__ss in window && !a.isNone(window[__ss])) {
+    if(ss in window && !a.isNone(window[ss])) {
         // Testing database work or not
-        window.sessionStorage.setItem(__idTest, "o");
+        window.sessionStorage.setItem(idTest, 'o');
 
         // Test system is working
-        if(window.sessionStorage.getItem(__idTest) === "o") {
-            window.sessionStorage.removeItem(__idTest);
-            __support = true;
+        if(window.sessionStorage.getItem(idTest) == 'o') {
+            window.sessionStorage.removeItem(idTest);
+            support = true;
         }
     }
 
-    return {
-        /**
-         * @property support
-         * @type Boolean
-         * @default false
-        */
-        support : __support,
-        /**
-         * @property engine
-         * @type String
-         * @default sessionStorage
-         * @final
-        */
-        engine  : __ss,
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            if(__support) {
-                var item = window.sessionStorage.getItem(key);
-                if(a.isNone(item)) {
-                    a.storage.__printGetErrorItem("sessionStorage", key);
-                    return null;
-                }
-                var value = a.parser.json.parse(item);
-                a.storage.__printGetItem("sessionStorage", key, value);
-                return value;
+    /**
+     * @property support
+     * @type Boolean
+     * @default false
+    */
+    this.support = support;
+
+    /**
+     * @property engine
+     * @type String
+     * @default sessionStorage
+     * @final
+    */
+    this.engine = ss;
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        if(support) {
+            var item = window.sessionStorage.getItem(key);
+            if(a.isNone(item)) {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            if(__support) {
-                a.storage.__printSetItem("sessionStorage", key, value);
-                window.sessionStorage.setItem(key, a.parser.json.stringify(value));
-                a.message.dispatch("a.storage.add", {
-                    key : key,
-                    value : value
-                });
-            }
-        },
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            if(__support) {
-                a.storage.__printRemoveItem("sessionStorage", key);
-                window.sessionStorage.removeItem(key);
-                a.message.dispatch("a.storage.remove", {
-                    key : key
-                });
-            }
+            var value = a.parser.json.parse(item);
+            a.storage.debugGet(this.engine, key, value);
+            return value;
+        }
+        return null;
+    };
+
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        if(support) {
+            a.storage.debugSet(this.engine, key, value);
+            window.sessionStorage.setItem(key, a.parser.json.stringify(value));
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = function(key) {
+        if(support) {
+            a.storage.debugRemove(this.engine, key);
+            window.sessionStorage.removeItem(key);
+        }
+    };
+};
 
 
 
@@ -649,114 +611,113 @@ a.storage.type.sessionStorage = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.userData = (function() {
-    "use strict";
-
-    var __support = false,
-        __idTest  = "__test_support",
-        uid       = "a_storage",
-        dbName    = "aUserDataStorage";
+a.storage.type.userData = new function() {
+    var support = false,
+        idTest  = '_support_t',
+        uid     = 'a_storage',
+        dbName  = 'aUserDataStorage';
 
     // Store for internet explorer
 
     // Test support
     if(document.all) {
-        // On some IE, db.load and db.save may be disabled (binary behavior disable)...
+        // On some IE, db.load and db.save may be disabled
+        // (binary behavior disable)...
         try {
             // Creating userData storage
-            document.write('<input type="hidden" id="' + uid + '" style="display:none;behavior:url(\'#default#userData\')" />');
+            document.write(
+                '<input type="hidden" id="' + uid +
+                '" style="display:none;behavior:url(\'#default#userData\')" />'
+            );
+
             var db = document.getElementById(uid);
             db.load(dbName);
 
             // Testing work before setting as default
-            db.setAttribute(__idTest, "ok");
+            db.setAttribute(idTest, 'o');
             db.save(dbName);
 
             // Test system is working
-            if(db.getAttribute(__idTest) === "ok") {
+            if(db.getAttribute(idTest) == 'o') {
                 // Deleting test
-                db.removeAttribute(__idTest);
+                db.removeAttribute(idTest);
                 db.save(dbName);
 
-                __support = true;
+                support = true;
             }
         } catch(e) {
-            __support = false;
+            support = false;
         }
     }
 
-    return {
-        /**
-         * @property support
-         * @type Boolean
-         * @default false
-        */
-        support : __support,
-        /**
-         * @property engine
-         * @type String
-         * @default userData
-         * @final
-        */
-        engine  : "userData",
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            if(__support) {
-                var value = a.parser.json.parse(db.getAttribute(key));
-                if(a.isNone(value)) {
-                    a.storage.__printGetErrorItem("userData", key);
-                    return null;
-                }
-                a.storage.__printGetItem("userData", key, value);
-                return value;
+    /**
+     * @property support
+     * @type Boolean
+     * @default false
+    */
+    this.support = support;
+
+    /**
+     * @property engine
+     * @type String
+     * @default userData
+     * @final
+    */
+    this.engine = 'userData';
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        if(support) {
+            var value = a.parser.json.parse(db.getAttribute(key));
+            if(a.isNone(value)) {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            if(__support) {
-                a.storage.__printSetItem("userData", key, value);
-                db.setAttribute(key, a.parser.json.stringify(value));
-                db.save(dbName);
-                a.message.dispatch("a.storage.add", {
-                    key : key,
-                    value : value
-                });
-            }
-        },
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            if(__support) {
-                a.storage.__printRemoveItem("userData", key);
-                db.removeAttribute(key);
-                db.save(dbName);
-                a.message.dispatch("a.storage.remove", {
-                    key : key
-                });
-            }
+            a.storage.debugGet(this.engine, key, value);
+            return value;
+        }
+        return null;
+    };
+
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        if(support) {
+            a.storage.debugSet(this.engine, key, value);
+            db.setAttribute(key, a.parser.json.stringify(value));
+            db.save(dbName);
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String} The key to remove
+    */
+    this.remove = function(key) {
+        if(support) {
+            a.storage.debugRemove(this.engine, key);
+            db.removeAttribute(key);
+            db.save(dbName);
+        }
+    };
+};
 
 
 
@@ -769,155 +730,159 @@ a.storage.type.userData = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.flash = (function() {
-    "use strict";
-
-    var __support = false,
-        __ready   = false,
-        __id      = "flashstorage";
+a.storage.type.flash = new function() {
+    var support = false,
+        ready   = false,
+        id      = 'flashstorage';
 
     /**
      * Start flash and check availability
      *
-     * @method __startFlash
+     * @method includeFlash
      * @private
      * @async
      *
-     * @param callback {Function | null} The callback function to call after loading
+     * @param callback {Function | null}    The callback function to call
+     *                                      after loading
     */
-    function __startFlash(callback) {
-        if(__support === false && __ready === false) {
+    function includeFlash(callback) {
+        if(support == false && ready == false) {
             // Append to root an object for recieving flash
-            var root = document.createElement("div");
-            root.id = "flashstoragecontent";
+            var root = document.createElement('div');
+            root.id = 'flashstoragecontent';
             document.body.appendChild(root);
 
             var data = {
-                id : __id,
+                id : id,
                 rootId : root.id,
 
                 flashvars : {},
                 params : {
-                    wmode: "transparent",
-                    menu: "false",
-                    scale: "noScale",
-                    allowFullscreen: "true",
-                    allowScriptAccess: "always"
+                    wmode: 'transparent',
+                    menu: 'false',
+                    scale: 'noScale',
+                    allowFullscreen: 'true',
+                    allowScriptAccess: 'always'
                 }
             };
 
             // Loading file
-            a.loader.flash(a.url + "vendor/storage/flash/localStorage.swf", function(e) {
-                __ready = true;
+            a.loader.flash(a.url + 'vendor/storage/flash/localStorage.swf',
+            function(e) {
+                ready = true;
 
                 var el = document.getElementById(data.id);
 
-                if(el.testData() === true) {
-                    __support = true;
-                    el.setDatabase("a_flashStorage");
+                if(el.testData() == true) {
+                    support = true;
+                    el.setDatabase('a_flashStorage');
                 }
-                if(__support === true && a.isFunction(callback)) {
-                    callback(__support);
+                if(support == true && a.isFunction(callback)) {
+                    callback(support);
                 }
             }, data);
-        } else if(__support === true && a.isFunction(callback)) {
-            callback(__support);
+        } else if(support == true && a.isFunction(callback)) {
+            callback(support);
         }
     };
 
-    return {
-        /**
-         * Get the support state of flash.
-         * Note: it may arrive little bit after using start function...
-         *
-         * @method support
-         *
-         * @return {Boolean} True if support is active, false in other cases
-        */
-        support : function() {return __support;},
-        /**
-         * Get the ready state of flash object
-         *
-         * @method ready
-         *
-         * @return {Boolean} True if it's ready, false in other cases
-        */
-        ready : function() {return __ready;},
-        /**
-         * @property engine
-         * @type String
-         * @default flash
-         * @final
-        */
-        engine : "flash",
+    /**
+     * Get the support state of flash.
+     * Note: it may arrive little bit after using start function...
+     *
+     * @method support
+     *
+     * @return {Boolean}                    True if support is active,
+     *                                      false in other cases
+    */
+    this.support = function() {return support;};
 
-        /**
-         * Start (include and prepare) flash object
-         * Note: automatically done by system you don't need to...
-         *
-         * @method start
-         * @async
-         *
-         * @param callback {Function} The function to call in case of success
-        */
-        start : function(callback) {
-            __startFlash(callback);
-        },
+    /**
+     * Get the ready state of flash object
+     *
+     * @method ready
+     *
+     * @return {Boolean}                    True if it's ready,
+     *                                      false in other cases
+    */
+    this.ready = function() {return ready;};
 
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            this.start();
-            if(__support === true) {
-                var item = document.getElementById(__id).getData(key);
-                if(a.isNone(item)) {
-                    a.storage.__printGetErrorItem("flash", key);
-                    return null;
-                }
-                a.storage.__printGetItem("flash", key, item);
-                return item;
+    /**
+     * @property engine
+     * @type String
+     * @default flash
+     * @final
+    */
+    this.engine = 'flash';
+
+    /**
+     * Start (include and prepare) flash object
+     * Note: automatically done by system you don't need to...
+     *
+     * @method start
+     * @async
+     *
+     * @param callback {Function}           The function to call
+     *                                      in case of success
+    */
+    this.start = function(callback) {
+        includeFlash(callback);
+    };
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        this.start();
+        if(support == true) {
+            var item = document.getElementById(id).getData(key);
+            if(a.isNone(item)) {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
+            a.storage.debugGet(this.engine, key, item);
+            return item;
+        }
+        return null;
+    };
 
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printSetItem("flash", key, value);
-                document.getElementById(__id).setData(key, value);
-            }
-        },
-
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printRemoveItem("flash", key);
-                return document.getElementById(__id).removeData(key);
-            }
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        this.start();
+        if(support == true) {
+            a.storage.debugSet(this.engine, key, value);
+            document.getElementById(id).setData(key, value);
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = function(key) {
+        this.start();
+        if(support == true) {
+            a.storage.debugRemove(this.engine, key);
+            return document.getElementById(id).removeData(key);
+        }
+    };
+};
 
 
 
@@ -930,153 +895,160 @@ a.storage.type.flash = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.silverlight = (function() {
-    "use strict";
-
-    var __support = false,
-        __ready   = false,
-        __id      = "silverlightstorage";
+a.storage.type.silverlight = new function() {
+    var support = false,
+        ready   = false,
+        id      = 'silverlightstorage';
 
     /**
      * Start silverlight and check availability
      *
-     * @method __startSilverlight
+     * @method includeSilverlight
      * @private
      * @async
      *
-     * @param callback {Function | null} The callback function to call after loading
+     * @param callback {Function | null}    The callback function to
+     *                                      call after loading
     */
-    function __startSilverlight(callback) {
-        if(__support === false && __ready === false) {
+    function includeSilverlight(callback) {
+        if(support == false && ready == false) {
             // Append to root an object for recieving flash
-            var root = document.createElement("div");
-            root.id = "__silverlightstorage";
+            var root = document.createElement('div');
+            root.id = '_silverlightstorage';
             document.body.appendChild(root);
 
             var data = {
-                id : __id,
+                id : id,
                 rootId : root.id,
 
                 params : [{
-                    name : "minRuntimeVersion",
-                    value : "2.0.31005.0"
+                    name : 'minRuntimeVersion',
+                    value : '2.0.31005.0'
                 },{
-                    name : "autoUpgrade",
-                    value : "true"
+                    name : 'autoUpgrade',
+                    value : 'true'
                 }]
             };
 
             // Loading file
-            a.loader.silverlight(a.url + "vendor/storage/silverlight/silverlightStorage.xap", function(e) {
-                __ready = true;
+            a.loader.silverlight(a.url +
+                'vendor/storage/silverlight/silverlightStorage.xap',
+            function(e) {
+                ready = true;
 
                 var el = document.getElementById(data.id);
-                if(el.Content.store.testData() === true) {
-                    __support = true;
+                if(el.Content.store.testData() == true) {
+                    support = true;
                 }
-                if(__support === true && a.isFunction(callback)) {
-                    callback(__support);
+                if(support == true && a.isFunction(callback)) {
+                    callback(support);
                 }
             }, data);
-        } else if(__support === true && a.isFunction(callback)) {
-            callback(__support);
+        } else if(support == true && a.isFunction(callback)) {
+            callback(support);
         }
     };
 
-    return {
-        /**
-         * Get the support state of silverlight.
-         * Note: it may arrive little bit after using start function...
-         *
-         * @method support
-         *
-         * @return {Boolean} True if support is active, false in other cases
-        */
-        support : function() {return __support;},
-        /**
-         * Get the ready state of silverlight object
-         *
-         * @method ready
-         *
-         * @return {Boolean} True if it's ready, false in other cases
-        */
-        ready : function() {return __ready;},
-        /**
-         * @property engine
-         * @type String
-         * @default silverlight
-         * @final
-        */
-        engine : "silverlight",
 
-        /**
-         * Start (include and prepare) silverlight object
-         * Note: automatically done by system you don't need to...
-         *
-         * @method start
-         * @async
-         *
-         * @param callback {Function} The function to call in case of success
-        */
-        start : function(callback) {
-            __startSilverlight(callback);
-        },
+    /**
+     * Get the support state of silverlight.
+     * Note: it may arrive little bit after using start function...
+     *
+     * @method support
+     *
+     * @return {Boolean}                    True if support is active,
+     *                                      false in other cases
+    */
+    this.support = function() {return support;};
 
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            this.start();
-            if(__support === true) {
-                var item = document.getElementById(__id).Content.store.loadData(key);
-                if(a.isNone(item) || item === "false") {
-                    a.storage.__printGetErrorItem("silverlight", key);
-                    return null;
-                }
-                var value = a.parser.json.parse(item);
-                a.storage.__printGetItem("silverlight", key, value);
-                return value;
+    /**
+     * Get the ready state of silverlight object
+     *
+     * @method ready
+     *
+     * @return {Boolean}                    True if it's ready,
+     *                                      false in other cases
+    */
+    this.ready = function() {return ready;};
+
+    /**
+     * @property engine
+     * @type String
+     * @default silverlight
+     * @final
+    */
+    this.engine = 'silverlight';
+
+    /**
+     * Start (include and prepare) silverlight object
+     * Note: automatically done by system you don't need to...
+     *
+     * @method start
+     * @async
+     *
+     * @param callback {Function}           The function to call
+     *                                      in case of success
+    */
+    this.start = function(callback) {
+        includeSilverlight(callback);
+    };
+
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        this.start();
+        if(support == true) {
+            var item = document.getElementById(id).Content.store.loadData(key);
+            if(a.isNone(item) || item === 'false') {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
+            var value = a.parser.json.parse(item);
+            a.storage.debugGet(this.engine, key, value);
+            return value;
+        }
+        return null;
+    };
 
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printSetItem("silverlight", key, value);
-                document.getElementById(__id).Content.store.saveData(key, a.parser.json.stringify(value));
-            }
-        },
-
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printRemoveItem("silverlight", key);
-                document.getElementById(__id).Content.store.removeData(key);
-            }
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        this.start();
+        if(support == true) {
+            a.storage.debugSet(this.engine, key, value);
+            document.getElementById(id).Content.store.saveData(
+                                key, a.parser.json.stringify(value));
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String}                  The key to remove
+    */
+    this.remove = function(key) {
+        this.start();
+        if(support == true) {
+            a.storage.debugRemove(this.engine, key);
+            document.getElementById(id).Content.store.removeData(key);
+        }
+    };
+};
 
 
 
@@ -1089,142 +1061,148 @@ a.storage.type.silverlight = (function() {
  * @static
  * @namespace a.storage.type
 */
-a.storage.type.javafx = (function() {
-    "use strict";
-
-    var __support = false,
-        __ready   = false,
-        __id      = "javafxstorage";
+a.storage.type.javafx = new function() {
+    var support = false,
+        ready   = false,
+        id      = 'javafxstorage';
 
     /**
      * Start javaFX and check availability
      *
-     * @method __startJavaFX
+     * @method includeJavaFX
      * @private
      * @async
      *
-     * @param callback {Function | null} The callback function to call after loading
+     * @param callback {Function | null}    The callback function to
+     *                                      call after loading
     */
-    function __startJavaFX(callback) {
-        if(__support === false && __ready === false) {
+    function includeJavaFX(callback) {
+        if(support == false && ready == false) {
             var data = {
-                code : "javafxstorage.Main",
-                id : "javafxstorage"
+                code : 'javafxstorage.Main',
+                id : id
             };
 
             // Loading file
-            a.loader.javafx(a.url + "vendor/storage/javafx/JavaFXStorage.jar", function() {
-                __ready = true;
-                var t = document.getElementById("javafxstorage");
+            a.loader.javafx(a.url +
+                'vendor/storage/javafx/JavaFXStorage.jar',
+            function() {
+                ready = true;
+                var t = document.getElementById(id);
 
-                if(t.Packages.javafxstorage.localStorage.testData() === true) {
-                    __support = true;
-                    el.setDatabase("a_javafxStorage");
+                if(t.Packages.javafxstorage.localStorage.testData() == true) {
+                    support = true;
+                    el.setDatabase('a_javafxStorage');
                 }
                 
-                if(__support === true && a.isFunction(callback)) {
-                    callback(__support);
+                if(support == true && a.isFunction(callback)) {
+                    callback(support);
                 }
             }, data);
-        } else if(__support === true && a.isFunction(callback)) {
-            callback(__support);
+        } else if(support == true && a.isFunction(callback)) {
+            callback(support);
         }
     };
 
-    return {
-        /**
-         * Get the support state of javafx.
-         * Note: it may arrive little bit after using start function...
-         *
-         * @method support
-         *
-         * @return {Boolean} True if support is active, false in other cases
-        */
-        support : function() {return __support;},
-        /**
-         * Get the ready state of javafx object
-         *
-         * @method ready
-         *
-         * @return {Boolean} True if it's ready, false in other cases
-        */
-        ready : function() {return __ready;},
-        /**
-         * @property engine
-         * @type String
-         * @default javafx
-         * @final
-        */
-        engine : "javafx",
+    /**
+     * Get the support state of javafx.
+     * Note: it may arrive little bit after using start function...
+     *
+     * @method support
+     *
+     * @return {Boolean}                    True if support is active,
+     *                                      false in other cases
+    */
+    this.support = function() {return support;},
+    /**
+     * Get the ready state of javafx object
+     *
+     * @method ready
+     *
+     * @return {Boolean}                    True if it's ready,
+     *                                      false in other cases
+    */
+    this.ready = function() {return ready;},
+    /**
+     * @property engine
+     * @type String
+     * @default javafx
+     * @final
+    */
+    this.engine = 'javafx',
 
-        /**
-         * Start (include and prepare) javafx object
-         * Note: automatically done by system you don't need to...
-         *
-         * @method start
-         * @async
-         *
-         * @param callback {Function} The function to call in case of success
-        */
-        start : function(callback) {
-            __startJavaFX(callback);
-        },
+    /**
+     * Start (include and prepare) javafx object
+     * Note: automatically done by system you don't need to...
+     *
+     * @method start
+     * @async
+     *
+     * @param callback {Function}           The function to call
+     *                                      in case of success
+    */
+    this.start = function(callback) {
+        includeJavaFX(callback);
+    };
 
-        /**
-         * Get the stored key
-         *
-         * @method getItem
-         *
-         * @param key {String} The key to retrieve
-         * @return {Mixed | null} The value in case of success, null if not found
-        */
-        getItem : function(key) {
-            this.start();
-            if(__support === true) {
-                var item = document.getElementById(__id).Packages.javafxstorage.localStorage.loadData(key);
-                if(a.isNone(item) || item === "false") {
-                    a.storage.__printGetErrorItem("javafx", key);
-                    return null;
-                }
-                var value = a.parser.json.parse(item);
-                a.storage.__printGetItem("javafx", key, value);
-                return value;
+    /**
+     * Get the stored key
+     *
+     * @method get
+     *
+     * @param key {String}                  The key to retrieve
+     * @return {Mixed | null}               The value in case of success,
+     *                                      null if not found
+    */
+    this.get = function(key) {
+        this.start();
+        if(support == true) {
+            var item = document.getElementById(id).Packages.
+                                javafxstorage.localStorage.loadData(key);
+            if(a.isNone(item) || item === 'false') {
+                a.storage.printError(this.engine, key);
+                return null;
             }
-            return null;
-        },
+            var value = a.parser.json.parse(item);
+            a.storage.debugGet(this.engine, key, value);
+            return value;
+        }
+        return null;
+    };
 
-        /**
-         * Store a new key/value pair
-         *
-         * @method setItem
-         *
-         * @param key {String} The key to set
-         * @param value {Mixed} The data to add
-        */
-        setItem : function(key, value) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printSetItem("javafx", key, value);
-                document.getElementById(__id).Packages.javafxstorage.localStorage.saveData(key, a.parser.json.stringify(value));
-            }
-        },
-
-        /**
-         * Remove a given key from store
-         *
-         * @method removeItem
-         *
-         * @param key {String} The key to remove
-        */
-        removeItem : function(key) {
-            this.start();
-            if(__support === true) {
-                a.storage.__printRemoveItem("javafx", key);
-                document.getElementById(__id).Packages.javafxstorage.localStorage.removeData(key);
-            }
+    /**
+     * Store a new key/value pair
+     *
+     * @method set
+     *
+     * @param key {String}                  The key to set
+     * @param value {Mixed}                 The data to add
+    */
+    this.set = function(key, value) {
+        this.start();
+        if(support == true) {
+            a.storage.debugSet(this.engine, key, value);
+            document.getElementById(id).Packages.javafxstorage.
+                    localStorage.saveData(key, a.parser.json.stringify(value));
         }
     };
-})();
+
+    /**
+     * Remove a given key from store
+     *
+     * @method remove
+     *
+     * @param key {String} The key to remove
+    */
+    this.remove = function(key) {
+        this.start();
+        if(support == true) {
+            a.storage.debugRemove(this.engine, key);
+            document.getElementById(id).Packages.
+                        javafxstorage.localStorage.removeData(key);
+        }
+    };
+};
 
 
 
@@ -1245,14 +1223,16 @@ a.storage.type.javafx = (function() {
  * @namespace a.storage
 */
 a.storage.temporary = (function() {
-    "use strict";
+    'use strict';
 
-    var store = ["sessionStorage", "cookie", "memory"];
+    var store = ['sessionStorage', 'cookie', 'memory'];
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log("a.storage.temporary: choosing storage " + a.storage.type[temp].engine, 3);
-            a.message.dispatch("a.storage.temporary.change", { engine : temp });
+            a.console.log('a.storage.temporary: choosing storage ' + 
+                    a.storage.type[temp].engine, 3);
+            a.message.dispatch('a.storage.temporary.change', 
+                            { engine : temp });
             return a.storage.type[temp];
         }
     }
@@ -1273,25 +1253,28 @@ a.storage.temporary = (function() {
  * @namespace a.storage
 */
 a.storage.external = (function() {
-    var __started = false;
+    'use strict';
+
+    var started = false;
 
     /**
      * Start the callback function if possible
      *
-     * @method __startCallback
+     * @method startCallback
      * @private
      * @async
      *
-     * @param type {Object} The object to use for external
-     * @param callback {Function | null} The function to launch if a store has been found
+     * @param type {Object}                 The object to use for external
+     * @param callback {Function | null}    The function to launch if a
+     *                                      store has been found
     */
-    function __startCallback(type, callback) {
-        a.storage.external.ready = type.ready;
+    function startCallback(type, callback) {
+        a.storage.external.ready   = type.ready;
         a.storage.external.support = type.support;
-        a.storage.external.engine = type.engine;
-        a.storage.external.getItem = type.getItem;
-        a.storage.external.setItem = type.setItem;
-        a.storage.external.removeItem = type.removeItem;
+        a.storage.external.engine  = type.engine;
+        a.storage.external.get     = type.get;
+        a.storage.external.set     = type.set;
+        a.storage.external.remove  = type.remove;
 
         if(a.isFunction(callback)) {
             callback();
@@ -1305,33 +1288,34 @@ a.storage.external = (function() {
          * @method start
          * @async
          *
-         * @param callback {Function | null} The function to launch if a store has been found
+         * @param callback {Function | null}    The function to launch if
+         *                                      a store has been found
         */
         start : function(callback) {
             var silvt = a.storage.type.silverlight,
                 flash = a.storage.type.flash,
                 javax = a.storage.type.javafx;
 
-            var cs = "a.storage.external: choosing storage ";
+            var cs = 'a.storage.external: choosing storage ';
 
             // Loading silverlight
             silvt.start(function(svtSupport) {
                 if(svtSupport) {
-                    a.console.log(cs + "silverlight", 3);
-                    __startCallback(silvt, callback);
+                    a.console.log(cs + 'silverlight', 3);
+                    startCallback(silvt, callback);
                 } else {
                     // Loading flash
                     flash.start(function(flashSupport) {
                         if(flashSupport) {
-                            a.console.log(cs + "flash", 3);
-                            __startCallback(flash, callback);
+                            a.console.log(cs + 'flash', 3);
+                            startCallback(flash, callback);
                         } else {
                             javax.start(function(javaxSupport) {
                                 if(javaxSupport) {
-                                    a.console.log(cs + "javafx", 3);
-                                    __startCallback(javax, callback);
+                                    a.console.log(cs + 'javafx', 3);
+                                    startCallback(javax, callback);
                                 } else {
-                                    a.console.warn(cs + "NONE AVAILABLE", 3);
+                                    a.console.warn(cs + 'NONE AVAILABLE', 3);
                                 }
                             });
                         }
@@ -1354,14 +1338,16 @@ a.storage.external = (function() {
  * @namespace a.storage
 */
 a.storage.persistent = (function() {
-    "use strict";
+    'use strict';
 
-    var store = ["localStorage", "globalStorage", "userData", "cookie"];
+    var store = ['localStorage', 'globalStorage', 'userData', 'cookie'];
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log("a.storage.persistent: choosing storage " + a.storage.type[temp].engine, 3);
-            a.message.dispatch("a.storage.persistent.change", { engine : temp });
+            a.console.log('a.storage.persistent: choosing storage ' + 
+                                    a.storage.type[temp].engine, 3);
+            a.message.dispatch('a.storage.persistent.change', 
+                                    { engine : temp });
             return a.storage.type[temp];
         }
     }
@@ -1372,16 +1358,16 @@ a.storage.persistent = (function() {
 
 if(a.storage.persistent == null) {
     a.storage.persistent = {};
-    a.storage.persistent.support    = false;
-    a.storage.persistent.engine     = function(){return "none";};
-    a.storage.persistent.getItem    = function(){return null;};
-    a.storage.persistent.setItem    = function(){};
-    a.storage.persistent.removeItem = function(){};
+    a.storage.persistent.support = false;
+    a.storage.persistent.engine  = function(){return 'none';};
+    a.storage.persistent.get     = function(){return null;};
+    a.storage.persistent.set     = function(){};
+    a.storage.persistent.remove  = function(){};
 }
 
 // Now storage himself got same as persistent
-a.storage.support    = a.storage.persistent.support;
-a.storage.engine     = a.storage.persistent.engine;
-a.storage.getItem    = a.storage.persistent.getItem;
-a.storage.setItem    = a.storage.persistent.setItem;
-a.storage.removeItem = a.storage.persistent.removeItem;
+a.storage.support = a.storage.persistent.support;
+a.storage.engine  = a.storage.persistent.engine;
+a.storage.get     = a.storage.persistent.get;
+a.storage.set     = a.storage.persistent.set;
+a.storage.remove  = a.storage.persistent.remove;
