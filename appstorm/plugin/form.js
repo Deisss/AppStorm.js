@@ -80,7 +80,10 @@ a.form = (function() {
         if(tagName === 'input' || tagName === 'textarea') {
             return (type === 'checkbox') ? e.checked : e.value;
         } else if(tagName === 'select') {
-            return e.options[e.selectedIndex].value;
+            if(e.options[e.selectedIndex]) {
+                return e.options[e.selectedIndex].value 
+            }
+            return null;
         }
     };
 
