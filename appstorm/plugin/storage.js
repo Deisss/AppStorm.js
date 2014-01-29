@@ -18,14 +18,18 @@
     ]
 
     Description:
-        Storage capacities, allow to manage many storage to get quick access to everything
+        Storage capacities, allow to manage many storage to get quick access
+        to everything
 
-        cookie : Cookie functionnality, manipulate cookie with a simplified interface
-        temporary : Use the "most powerfull" system in the whole list of temporary store available
+        cookie : Cookie functionnality, manipulate cookie with a simplified
+                 interface
+        temporary : Use the "most powerfull" system in the whole list of
+                    temporary store available
 
 ************************************************************************ */
 /**
- * Storage capacities, allow to manage many storage to get quick access to everything
+ * Storage capacities, allow to manage many storage to get quick
+ * access to everything
  *
  * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
@@ -1371,3 +1375,40 @@ a.storage.engine  = a.storage.persistent.engine;
 a.storage.get     = a.storage.persistent.get;
 a.storage.set     = a.storage.persistent.set;
 a.storage.remove  = a.storage.persistent.remove;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+------------------------------
+  PARAMETERS TYPE ASSOCIATED
+------------------------------
+*/
+(function() {
+    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
+    a.parameter.addParameterType('memory',     a.storage.memory.get);
+    a.parameter.addParameterType('persistent', a.storage.persistent.get);
+    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
+
+    // Default 'store' behavior
+    function getGlobalStore(name) {
+        var temp = a.storage.temporary.get(name);
+        if(a.isNone(temp)) {
+            temp = a.storage.persistent.get(name);
+        }
+        return temp;
+    };
+
+    a.parameter.addParameterType('storage', getGlobalStore);
+    a.parameter.addParameterType('store', getGlobalStore);
+})();
