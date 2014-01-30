@@ -262,16 +262,8 @@ a.state = new function() {
             loading      = a.uniq(a.flatten(foundHashState(currentHash))),
             unloading    = loaded,
         // Only keep difference between (= state allowed to load/unload)
-            diff1        = a.difference(loading, unloading),
-            diff2        = a.difference(unloading, loading);
-
-        // Selecting only intersection of 'allowed load' and 'potential load'
-        // This helps as diff contains both unload and load behavior
-        var loadingIntersection   = a.uniq(a.flatten(
-                                        a.intersection(loading, diff1)
-                                    )),
-            unloadingIntersection = a.flatten(a.intersection(unloading,
-                                                                    diff2));
+            loadingIntersection   = a.difference(loading, unloading),
+            unloadingIntersection = a.difference(unloading, loading);
 
         // Perform the unload/load process
         performUnloadChanges(unloadingIntersection, function() {
