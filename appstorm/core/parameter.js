@@ -46,13 +46,13 @@ a.parameter = {
      *                                      start (integer) as content
     */
     extract: function(input, customRegex) {
-        // Example allowed : ' id : [a-fA-F0-9]+ is valid
+        // Example allowed : ' id : [a-fA-F0-9]+ is valid,
+        // simple-te_st: [0-9]+ is valid too
         // valid : a-z and A-Z and 0-9 and -, _, [, ], +, ?, *
         // and of course () and \ and /
         // var regexParameterExtracter =
-        //     /\{\{(\s*\w+\s*:\s*[a-z0-9_\-\[\]\(\)\+\*\?\\\/]+\s*)\}\}/gmi,
-        var regexParameterExtracter =
-            /\{\{(\s*\w+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
+        //     /\{\{(\s*[a-zA-Z0-9-_-\-]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
+        var regexParameterExtracter = /\{\{(\s*[a-zA-Z0-9-\--_]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
             // trim
             trimRegex = /^\s+|\s+$/g;
 
@@ -166,13 +166,13 @@ a.parameter = {
         if (a.isString(input) && input
                 && input.indexOf('{{') >= 0 && input.indexOf('}}') >= 0) {
 
-            var rgx = /\{\{(\s*\w+\s*)\}\}/gmi;
+            var emptyNameRegex = /\{\{(\s*\w+\s*)\}\}/gmi;
             // Param in input should be like this {{hash:name}} or
             // {{store:name}} so it should be same way
 
             var paramStr =      this.extract(input),
                 paramInternal = this.extract(internal),
-                extraStr =      this.extract(input, rgx);
+                extraStr =      this.extract(input, emptyNameRegex);
 
             // Merge default parameters, and new one
             paramStr = paramStr.concat(extraStr);

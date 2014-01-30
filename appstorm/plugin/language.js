@@ -345,8 +345,8 @@ a.language = (function() {
 
     // If storage is enabled, we try to get the stored value in the store
     if(storageSupported) {
-        var tmpLanguage = a.storage.persistent.getItem(__stored + "language"),
-            tmpAllowed  = a.storage.persistent.getItem(__stored + "allowed");
+        var tmpLanguage = a.storage.persistent.get(__stored + "language"),
+            tmpAllowed  = a.storage.persistent.get(__stored + "allowed");
 
         // If language do exist
         if(a.isString(tmpLanguage)) {
@@ -428,7 +428,7 @@ a.language = (function() {
 
             // Save language if possible
             if(storageSupported) {
-                a.storage.persistent.setItem(__stored + "language", __language);
+                a.storage.persistent.set(__stored + "language", __language);
             }
 
             this.translate(document, update);
@@ -473,7 +473,7 @@ a.language = (function() {
             // We try to store into storage if available
             if(storageSupported) {
                 a.console.log("a.language.setAllowed: set allowed language to " + __allowed, 3);
-                a.storage.persistent.setItem(__stored + "allowed", __allowed);
+                a.storage.persistent.set(__stored + "allowed", __allowed);
             }
         },
 

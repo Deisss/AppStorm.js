@@ -45,7 +45,7 @@ a.url = '';
  * @return {Function}                       Intermediate function with scope
  *                                          binding
 */
-a.scope = function(fct, scope) {
+a.scope = function scope(fct, scope) {
     return function() {
         return fct.apply(scope, arguments);
     }
@@ -58,7 +58,7 @@ a.scope = function(fct, scope) {
  *
  * @return {String} Stack trace
 */
-a.getStackTrace = function() {
+a.getStackTrace = function getStackTrace() {
     var err = new Error();
     return err.stack;
 };
@@ -68,7 +68,7 @@ a.getStackTrace = function() {
  *
  * @param obj {Object} The element to test
 */
-a.isNone = function(obj) {
+a.isNone = function isNone(obj) {
     return (a.isNull(obj) || a.isUndefined(obj));
 };
 
@@ -82,7 +82,7 @@ a.isNone = function(obj) {
 * @param obj {Object} A state object
 * @return {Object} A new state object
 */
-a.deepClone = function(obj) {
+a.deepClone = function deepClone(obj) {
     // The deep clone only take care of object, and not function
     if (a.isObject(obj) && !a.isFunction(obj)) {
         // Array cloning
@@ -113,6 +113,30 @@ a.deepClone = function(obj) {
     return obj;
 };
 
+
+a.extend = function extend(object, source, guard) {
+    if (!object) {
+      return object;
+    }
+    var args = arguments,
+        argsIndex = 0,
+        argsLength = args.length,
+        type = typeof guard;
+
+    if ((type == 'number' || type == 'string') && args[3] && args[3][guard] === source) {
+      argsLength = 2;
+    }
+    while (++argsIndex < argsLength) {
+      source = args[argsIndex];
+      if (source) {
+        for (var key in source) {
+          object[key] = source[key];
+        }
+      }
+    }
+    return object;
+  }
+
 /**
  * Define the default ajax options to send on every request.
  * At any time, by providing good options, you can override this content on a single ajax request.
@@ -121,7 +145,7 @@ a.deepClone = function(obj) {
  *
  * @param options {Object} The default options to set
 */
-a.setDefaultAjaxOptions = function(options) {
+a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
     if(a.isObject(options)) {
         a.mem.set('app.ajax.default', options);
         this.__defaultAjaxOptions = options;
@@ -135,7 +159,7 @@ a.setDefaultAjaxOptions = function(options) {
  *
  * @return {Object} The default ajax options setted
 */
-a.getDefaultAjaxOptions = function() {
+a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
     return this.__defaultAjaxOptions;
 };
 
@@ -145,7 +169,7 @@ a.getDefaultAjaxOptions = function() {
 (function() {
     // Detecting base url of AppStorm.JS
     var me = document.getElementById('a-core');
-    if(me && typeof(me.src) !== 'undefined') {
+    if(me && !a.isNone(me.src)) {
         a.url = me.src.replace(new RegExp('/[^/]*$'), '/');
     }
 }());

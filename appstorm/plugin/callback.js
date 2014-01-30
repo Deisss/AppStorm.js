@@ -67,6 +67,7 @@ a.callback.synchronizerInstance = function(callbacks, success, error) {
     this.successFunction = success;
     this.errorFunction   = error;
     this.data            = {};
+    this.resultScope     = null;
     this.scope           = null;
     this.parrallelCount  = 0;
     this.running         = false;
@@ -195,7 +196,7 @@ a.callback.synchronizerInstance.prototype = {
 
             // We raise final success function
             if(a.isFunction(this.successFunction)) {
-                var scope  = this.scope || this;
+                var scope = this.resultScope || this.scope || this;
                 this.successFunction.call(scope, this.getResultObject());
             }
         }
@@ -215,7 +216,7 @@ a.callback.synchronizerInstance.prototype = {
         var wasRunning      = this.running;
         this.running        = false;
 
-        var scope  = this.scope || this,
+        var scope  = this.resultScope || this.scope || this,
             args   = a.toArray(arguments);
 
         if(wasRunning && a.isFunction(this.errorFunction)) {
@@ -315,6 +316,7 @@ a.callback.chainerInstance = function(callbacks, success, error) {
     this.successFunction = success;
     this.errorFunction   = error;
     this.data            = {};
+    this.resultScope     = null;
     this.scope           = null;
 };
 
@@ -440,6 +442,7 @@ a.callback.chainerInstance.prototype = {
         if(!this.queue.length) {
             // Success is now launched
             if(a.isFunction(this.successFunction)) {
+                scope = this.resultScope || scope;
                 this.successFunction.apply(scope, args);
             }
             return;

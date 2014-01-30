@@ -24,7 +24,7 @@
  * @static
  * @namespace a
 */
-a.acl = new function() {
+a.acl = a.extend(new function() {
     var mem = a.mem.getInstance('app.acl');
 
     /**
@@ -36,6 +36,7 @@ a.acl = new function() {
     */
     this.setCurrentRole = function(role) {
         mem.set('current', role);
+        this.dispatch('change', role);
     };
 
     /**
@@ -134,4 +135,4 @@ a.acl = new function() {
     this.isRefused = function(minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
     };
-};
+}, new a.eventEmitter('a.acl'));

@@ -136,10 +136,89 @@ test('a.form.get-radio-test', function() {
 
 // Test select, with or without option inside
 test('a.form.select-empty', function() {
-    ok(1==0);
+    expect(1);
+
+    var id = 'a.form.select-empty';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // Select element
+    var sel = document.createElement('select');
+    sel.name = id + '-content';
+    f.appendChild(sel);
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    // Test the system is not hang by not existing options
+    strictEqual(test[id + '-content'], null, 'Test empty select');
+});
+test('a.form.select-single', function() {
+    expect(1);
+
+    var id = 'a.form.select-single';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // Select element
+    var sel = document.createElement('select');
+    sel.name = id + '-content';
+    f.appendChild(sel);
+
+    var opt = document.createElement('option');
+    opt.value = 'yatta';
+    sel.appendChild(opt);
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    // Test the system is not hang by not existing options
+    strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
 test('a.form.select-full', function() {
-    ok(1==0);
+    expect(1);
+
+    var id = 'a.form.select-full';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // Select element
+    var sel = document.createElement('select');
+    sel.name = id + '-content';
+    f.appendChild(sel);
+
+    var opt1 = document.createElement('option');
+    opt1.value = 'yatta';
+    sel.appendChild(opt1);
+
+    var opt2 = document.createElement('option');
+    opt2.value = 'ok';
+    sel.appendChild(opt2);
+    opt2.selectedIndex = 1;
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    // Test the system is not hang by not existing options
+    strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
 
 /*

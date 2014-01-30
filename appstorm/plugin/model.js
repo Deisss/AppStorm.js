@@ -7,7 +7,9 @@
         core/message.js
     ]
 
-    Events : []
+    Events : [
+        init: {}
+    ]
 
     Description:
         Provide a model based system to create and manage models threw
@@ -19,6 +21,8 @@
 TODO:
   Avoir un model manager permettant de gérer le binding avec un formulaire.
   Check doit pouvoir accepter un tableau
+
+  Accepter un pattern comme validation d'un élément du model
 */
 
 
@@ -26,9 +30,12 @@ TODO:
  * Property available element :
  *   - nullable {Boolean}   if the property can be set to null or not
  *   - init {Mixed}         the initial value
- *   - needed {Boolean}     Indicate if the property should ALWAYS be included when performing a save to server
- *   - check {String}       the typeof check (like String, Function, Object, ...)
- *   - validate {Function}  the function to use for validate input. Must return true and false value to validate or not
+ *   - needed {Boolean}     Indicate if the property should ALWAYS be
+ *                          included when performing a save to server
+ *   - check {String}       the typeof check (like String, Object, ...)
+ *   - pattern {String}     the regex pattern to check
+ *   - validate {Function}  the function to use for validate input.
+ *                          Must return true and false value to validate or not
  *   - transform {Function} the transformation to apply before setting data
  *   - event {String}       the event to raise on any change
  *   - apply {Function}     the apply element
@@ -45,24 +52,21 @@ TODO:
  *                                          model.
  * @param requests {Object}                 The server side associated requests
  *                                          to manipulate the model, save it...
- * @param validates {Object}                The validation function(s) to
- *                                          control model state
 */
-a.model = function(name, properties, requests, validates) {
+a.model = function(name, properties, requests) {
     return function() {
         var model = 
             a.extend(
                 new a.modelInstance(
                     name,
-                    a.deepClone(properties),
-                    a.deepClone(requests),
-                    a.deepClone(validates)
+                    a.clone(properties),
+                    a.clone(requests)
                 ),
                 new a.eventEmitter('a.model')
             );
 
         // Resetting model
-        model.clear();
+        model.init();
 
         // Returning freshly created model
         return model;
@@ -82,17 +86,19 @@ a.model = function(name, properties, requests, validates) {
  *                                          model.
  * @param requests {Object}                 The server side associated requests
  *                                          to manipulate the model, save it...
- * @param validates {Object}                The validation function(s) to
- *                                          control model state
 */
-a.modelInstance = function(name, properties, requests, validates) {
+a.modelInstance = function(name, properties, requests) {
     this.name = name || '';
-    // TODO: create validate
     this.properties = {};
-    this.snapshot = {};
+    this.snapshot   = {};
+    this.requests   = {};
 
     if(a.isObject(properties) && !a.isNone(properties)) {
         this.properties = properties;
+    }
+
+    if(a.isObject(requests) && !a.isNone(requests)) {
+        this.requests = requests;
     }
 }
 
@@ -191,9 +197,9 @@ a.modelInstance.prototype = {
     /**
      * Clear model (rollback to default values for all properties)
      *
-     * @method clear
+     * @method init
     */
-    clear: function() {
+    init: function() {
         for(var property in this.properties) {
             this.properties[property]['value'] = 
                     this.properties[property]['init'] || null;
@@ -202,7 +208,7 @@ a.modelInstance.prototype = {
         // Save current setted data
         this.takeSnapshot();
 
-        this.dispatch('clear', {});
+        this.dispatch('init', {});
     },
 
     /**
@@ -217,7 +223,7 @@ a.modelInstance.prototype = {
         for(var property in this.properties) {
             json[property] = this.get(property);
         }
-        return json;
+        return a.parser.json.stringify(json);
     },
 
     /**
@@ -228,6 +234,9 @@ a.modelInstance.prototype = {
      * @param data {Object}                 The input JSON data
     */
     fromJSON: function(data) {
+        if(a.isString(data) && data.length > 0) {
+            data = a.parser.json.parse(data);
+        }
         for(var property in this.properties) {
             if(property in data) {
                 this.properties[property]['value'] = data[property];
@@ -274,6 +283,7 @@ a.modelInstance.prototype = {
      *                                      But sometimes you may prefer to get
      *                                      only the current value and not old
      *                                      one, this parameter is for that.
+     *                                      (default: false)
      * @return {Object}                     The difference between old and
      *                                      current model state
     */
@@ -303,5 +313,20 @@ a.modelInstance.prototype = {
         }
 
         return difference;
+    },
+
+    /**
+     * Get one of the associated model request.
+     *
+     * @param request
+
+    */
+    request: function(name) {
+        // TODO: here we take the existing request, and create a ready to use
+        // object
+        var input  = this.requests[name] || {},
+            output = {};
+
+
     }
 };

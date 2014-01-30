@@ -57,5 +57,5 @@ test('a.keyboard.removeListener', function() {
     setTimeout(function() {
         a.keyboard.reset();
         st();
-    }, 1000);
+    }, 250);
 });

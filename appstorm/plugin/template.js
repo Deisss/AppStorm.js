@@ -38,19 +38,19 @@
 a.template = {
     /**
      * Store cached partials
-     * @property __part
+     * @property _part
      * @type Object
      * @default {}
     */
-    __part: {},
+    _part: {},
 
     /**
      * Store cached template
-     * @property __tmpl
+     * @property _tmpl
      * @type Object
      * @default {}
     */
-    __tmpl: {},
+    _tmpl: {},
 
     /**
      * Register a new partial into template system (handlebars partial).
@@ -81,7 +81,7 @@ a.template = {
             return;
         }
 
-        var partialsStore = this.__part;
+        var partialsStore = this._part;
 
         if(a.isString(partialsStore[name])) {
             a.console.log(fctName +': loading ' + name + ' from cache', 3);
@@ -160,19 +160,19 @@ a.template = {
                 // First try to use Handlebars.js
                 if(a.isNone(handler.to_html)) {
                     // Act like a render method (threw compile method)
-                    var tmpl = handler.compile(a.template.__tmpl[h]);
+                    var tmpl = handler.compile(a.template._tmpl[h]);
                     clb(tmpl(d));
 
                 // Rollback on Mustache.js
                 } else {
-                    clb(handler.to_html(a.template.__tmpl[h], d));
+                    clb(handler.to_html(a.template._tmpl[h], d));
                 }
             }
         };
 
         // If the template is already listed into existing template,
         // directly load
-        if(a.isString(this.__tmpl[hash])) {
+        if(a.isString(this._tmpl[hash])) {
             a.console.log(fctName +': loading ' + hash + ' from cache', 3);
             callCallback(callback, hash, data);
             return;
@@ -181,10 +181,10 @@ a.template = {
         // Template exist on page DOM, but it's not registred to ich for now
         if(document.getElementById(hash)) {
             // We add it to template list registered to go quicker next time
-            if(!this.__tmpl[hash]) {
+            if(!this._tmpl[hash]) {
                 a.console.log(
                     fctName + ': loading ' + hash + ' from inner html page',3);
-                this.__tmpl[hash] = document.getElementById(hash).innerHTML;
+                this._tmpl[hash] = document.getElementById(hash).innerHTML;
             }
 
             // We finally send the callback
@@ -195,10 +195,10 @@ a.template = {
         // Same with this time original id, template exist on page DOM
         if(document.getElementById(orig)) {
             // We add it to template list registered to go quicker next time
-            if(!this.__tmpl[orig]) {
+            if(!this._tmpl[orig]) {
                 a.console.log(
                     fctName + ': loading ' + orig + ' from inner html page',3);
-                this.__tmpl[orig] = document.getElementById(orig).innerHTML;
+                this._tmpl[orig] = document.getElementById(orig).innerHTML;
             }
 
             // We finally send the callback
@@ -209,8 +209,8 @@ a.template = {
         // Last try : we try to use uri to load template from server side,
         // then parse it
         var parse = function(content, status, state) {
-            if(!a.template.__tmpl[hash]) {
-                a.template.__tmpl[hash] = content;
+            if(!a.template._tmpl[hash]) {
+                a.template._tmpl[hash] = content;
             }
             callCallback(callback, hash, data);
             return;

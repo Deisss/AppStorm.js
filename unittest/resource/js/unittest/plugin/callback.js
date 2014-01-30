@@ -323,6 +323,68 @@ test('a.callback.synchronizer-chainer', function() {
 });
 
 
+// This time, we do the same, but we include a scope change
+test('a.callback.synchronizer-chainer-with-scope', function() {
+    stop();
+    expect(10);
+
+    // Prevent scope change
+    var se = strictEqual,
+        st = start;
+
+    // We will add 7 times this callback, two for each system and one alone
+    var defaultCallback = function(result) {
+        result = result || this;
+        se(true, true, 'Not final result ');
+        result.success();
+    };
+    // We add it 3 times : one of them will not have any success function
+    var finalCallback = function() {
+        se(true, true,
+           'The test succeed : the system could stop event before final time');
+    };
+
+    var sync1  = a.callback.synchronizer(),
+        sync2  = a.callback.synchronizer(),
+        chain1 = a.callback.chainer([
+            defaultCallback,
+            defaultCallback
+        ],
+            finalCallback
+        ),
+        chain2 = a.callback.chainer([
+            defaultCallback
+        ],
+            finalCallback
+        ),
+        o = {};
+
+    sync1.addCallback(defaultCallback);
+    sync1.addCallback(defaultCallback);
+
+    sync2.addCallback(defaultCallback);
+    sync2.addCallback(defaultCallback);
+
+    sync2.successFunction = finalCallback;
+
+    chain1.successFunction = finalCallback;
+    chain2.successFunction = finalCallback;
+
+    sync1.scope = o;
+    sync1.start();
+    sync2.scope = o;
+    sync2.start();
+    chain1.scope = o;
+    chain1.start();
+    chain2.scope = o;
+    chain2.start();
+
+    setTimeout(function() {
+        st();
+    }, 200);
+});
+
+
 
 /*
 ---------------------------------

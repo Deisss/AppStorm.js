@@ -117,7 +117,7 @@ test('a.model.property-transform', function() {
     var unittest = a.model('unittest', {
         testtransform: {
             init: 'ok',
-            transform: function(value, old) {
+            transform: function piou(value, old) {
                 return '' + old + value;
             }
         }
@@ -323,4 +323,14 @@ test('a.model.snapshot', function() {
 
     strictEqual(firstSimpleSnapshot, '{"snap":"ok"}');
     strictEqual(firstComplexSnapshot, '{"snap":{"value":"ok","old":"ok"}}')
+});
+
+
+
+test('a.model.validates', function() {
+    ok(1==1);
+});
+
+test('a.model.requests', function() {
+    ok(1==1);
 });
