@@ -9,6 +9,7 @@
         // Can be also a single string, or array of strings
 // TODO: create uri:// and model:// to create kind of special system for hash, do that
 // only on add, like uri will trace all parents to find final url...
+// TODO: create the bootOnLoad
 a.state = new function() {
     var tree   = {},
         loaded = [];
@@ -254,7 +255,7 @@ a.state = new function() {
     */
     function performHashChange(data) {
         // TODO: bind eventEmitter from this instead
-        a.message.dispatch('a.state.begin', {});
+        a.message.dispatch('a.state.begin', data);
 
         // Using a.uniq will remove all double states found
         var currentHash  = data.value,
@@ -267,10 +268,12 @@ a.state = new function() {
 
         // Perform the unload/load process
         performUnloadChanges(unloadingIntersection, function() {
-            loaded = loadingIntersection;
+            // We remove unloaded elements and add new elements
+            loaded = a.difference(loaded, unloadingIntersection)
+                                        .concat(loadingIntersection);
 
             performLoadChanges(loadingIntersection, function() {
-                a.message.dispatch('a.state.end', {});
+                a.message.dispatch('a.state.end', data);
             });
         });
     };
@@ -365,8 +368,12 @@ a.state = new function() {
     */
     this.add = function(state) {
         // TODO: manage children
+
         // Only for existing state
-        if(!a.isObject(state)) {
+        if(a.isArray(state)) {
+            a.each(state, function(element) {
+                this.add(element);
+            }, this);
             return;
         }
 
@@ -408,7 +415,7 @@ a.state = new function() {
         }
 
         // Internal object to store cached value
-        state._storm.data  = state.data || '';
+        state._storm.data  = state.data || {};
         state._storm.option= state.option || null;
 
         // Parsing hash element
@@ -425,7 +432,7 @@ a.state = new function() {
         state._storm.acl = performSingleAclTest(state, a.acl.getCurrentRole());
 
         // We delete place as we will use it
-        state.data = null;
+        state.data = {};
         delete state.option;
 
         tree[state.id] = state;
@@ -437,6 +444,7 @@ a.state = new function() {
                 this.add(child);
             }, this);
         } else if(a.isObject(children)) {
+            children.parent = state.id;
             this.add(children);
         }
     };
@@ -499,8 +507,9 @@ a.state = new function() {
 
             // From currently setted state, we remove elements
             // who don't need to load
-            var difference = a.uniq(loaded, states);
+            var difference = a.difference(states, loaded);
 
+            // Difference
             performLoadChanges(difference, function() {
                 // We update loaded from this elements
                 loaded = loaded.concat(difference);
@@ -539,7 +548,8 @@ a.state = new function() {
      * @param hash {String}                 The hash to try
     */
     this.hashExists = function(hash) {
-        var states = foundHashState(hash);
+        // The foundHashState return array of array, so we flat it
+        var states = a.flatten(foundHashState(hash));
         return (states.length > 0);
     };
 };

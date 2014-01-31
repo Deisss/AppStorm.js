@@ -82,21 +82,21 @@ test('a.state.parameter-passthrew', function() {
             data.plop = data.objId;
         },
         preLoad : function(chain) {
-            chain.setData('data2', 'ok');
+            this.data['data2'] = 'ok';
             chain.done();
         },
         postLoad : function(chain) {
-            se(chain.getData('objId'), 'hello from data', 'test data pass');
-            se(chain.getData('plop'), 'hello from data', 'test data pass');
-            se(chain.getData('data2'), 'ok', 'test from postload');
+            se(this.data['objId'], 'hello from data', 'test data pass');
+            se(this.data['plop'], 'hello from data', 'test data pass');
+            se(this.data['data2'], 'ok', 'test from postload');
             a.state.clear();
             st();
         }
     };
     a.state.add(test);
 
+    // Place a value and try result
     a.storage.memory.set('test_objid', 'hello from data');
-
     a.state.load('testloadpassthrew');
 });
 

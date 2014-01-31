@@ -170,12 +170,12 @@ a.state.chain = new function() {
      *                                      (may be needed)
     */
     function generateDefaultLoader(fct, uri, extra) {
-        return function(result) {
+        return function(chain) {
             a.loader[fct](uri, function(data) {
                 if(a.isFunction(extra)) {
                     extra(data);
                 }
-                result.done();
+                chain.next();
             });
         };
     };
@@ -228,13 +228,29 @@ a.state.chain = new function() {
     a.state.chain.add(true, 'title', function title() {
         // TODO: extrapolate parameters from state
         if(this.title) {
-            document.title = this.title;
+            document.title = a.parameter.extrapolate(
+                        this.title, a.hash.getHash(), this.hash);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: include (insert included elements into DOM)
     a.state.chain.add(true, 'include', function include() {
+        var hash     = a.hash.getHash(),
+            internal = this.hash,
+            args     = arguments;
+
+        if(a.isObject(this._storm.data)) {
+            // TODO: does not apply on many elements
+            a.each(this._storm.data, function(value, key) {
+                this.data[key] = a.parameter.extrapolate(value, hash,
+                                                                    internal);
+            }, this);
+        }
+
+        // The last part is for include only, so we stop if there is no...
+        // TODO: when data will be able to catch url, remove this (cannot be
+        // used like this)
         if(!this.include) {
             goToNextStep.apply(this, arguments);
             return;
@@ -243,8 +259,10 @@ a.state.chain = new function() {
         // Load files, and bring html using entry/type
         // TODO: take arguments to get arguments to pass threw next function
         // and success/fail
-        // TODO: the next function (content) may not be needed
-        var sync     = a.callback.synchronizer(null),
+        // TODO: do error function
+        var sync     = a.callback.synchronizer(null, a.scope(function() {
+            goToNextStep.apply(this, args);
+        }, this), null),
             role     = a.acl.getCurrentRole(),
             partials = this.include.partials;
 
@@ -255,26 +273,33 @@ a.state.chain = new function() {
 
         // Loading CSS
         a.each(css, function(url) {
-            sync.addCallback(function() {
-                generateDefaultLoader('css', url);
-            });
+            sync.addCallback(generateDefaultLoader('css', url));
         });
 
         // Loading JS
         a.each(js, function(url) {
-            sync.addCallback(function() {
-                generateDefaultLoader('js', url);
-            });
+            sync.addCallback(generateDefaultLoader('js', url));
         });
 
         // Loading translate
-        //TODO: load translate (use tr array)
+        a.each(tr, function(url) {
+            sync.addCallback(
+                generateDefaultLoader('json', url, function(content) {
+                    a.each(content, function(translate, index) {
+                        a.language.addTranslation(index, translate, true);
+                    });
+                })
+            );
+        });
 
         // Loading HTML
-        sync.addCallback(function(chain) {
-            // TODO: manage success/error
-            a.template.get(html[0], {}, null, null);
-        });
+        sync.addCallback(a.scope(function(chain) {
+            var url   = html[0],
+                state = this;
+            url = a.parameter.extrapolate(url, hash, internal);
+            this._storm.html = url;
+            a.template.get(url, {}, chain.next, chain.error);
+        }, this));
 
         // Loading partials
         a.each(partials, function(uri, name) {
@@ -283,26 +308,54 @@ a.state.chain = new function() {
             });
         });
 
-        // TODO: load data and store result into this.data
 
-        goToNextStep.apply(this, arguments);
+        sync.start();
     });
 
     // Load: converter before rendering data
     a.state.chain.add(true, 'converter', function converter() {
+        // We merge all data
+        var chain = a.last(arguments);
+
         if(this.converter) {
-            this.converter.apply(this, this.data);
+            this.converter.call(this, this.data);
         }
+
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: content (insert HTML content)
     a.state.chain.add(true, 'content', function contentLoad() {
-        // TODO: load partials, data, and html from store, and apply !!!
+        var args = arguments;
 
-        // Use this.data to get data from state
+        // There is no html to load, we skip
+        if(!this._storm.html) {
+            goToNextStep.apply(this, args);
+            return;
+        }
 
-        goToNextStep.apply(this, arguments);
+        a.template.get(this._storm.html, this.data, a.scope(
+        function(content) {
+            // TODO: do translate here before converting !
+            // TODO: publish content here into DOM using entry/type
+
+
+            // TODO: be able to use here the fact an entry can be function
+
+            // It's allowed to want to load content, but not use it...
+            if(this.entry) {
+                var entry = a.dom.query(this.entry),
+                    type  = this.type || 'replace';
+
+                if(type == 'replace') {
+                    a.template.replace(entry, content);
+                } else if(type == 'append') {
+                    a.template.append(entry, content);
+                }
+            }
+
+            goToNextStep.apply(this, args);
+        }, this));
     });
 
     // LOAD: load

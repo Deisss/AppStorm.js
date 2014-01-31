@@ -266,10 +266,6 @@ a.template = {
      * @param callback {Function | null} The function to raise when job is done
     */
     remove: function(el, callback) {
-        /*
-        while(el.firstChild) {
-            el.removeChild(el.firstChild);
-        }*/
         a.dom.el(el).empty();
         if(a.isFunction(callback)) {
             callback();
@@ -289,15 +285,15 @@ a.template = {
      *                                      template finish loading
     */
     append: function(el, content, callback) {
+        el = a.dom.el(el);
         var h = this.htmlToDom(content);
         if(a.isObject(h)) {
-            /*for(var i=0, l=h.length; i<l; ++i) {
-                el.appendChild(h[i]);
-            }*/
-            a.dom.el(el).append(h);
+            el.append(h);
         }
         if(!a.isNone(a.language)) {
-            a.language.translate(el);
+            a.each(el.getElements(), function(element) {
+                a.language.translate(element);
+            });
         }
         if(a.isFunction(callback)) {
             callback(content);

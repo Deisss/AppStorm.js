@@ -95,6 +95,11 @@ a.dom = {
             return new this.children(element);
         }
 
+        // Detecting NodeList
+        if(element[0]) {
+            return new this.children(a.toArray(element));
+        }
+
         // Detect single DOM element
         return new this.children([element]);
     },
