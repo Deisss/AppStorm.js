@@ -443,7 +443,7 @@ a.state = new function() {
                 child.parent = state.id;
                 this.add(child);
             }, this);
-        } else if(a.isObject(children)) {
+        } else if(a.isTrueObject(children)) {
             children.parent = state.id;
             this.add(children);
         }

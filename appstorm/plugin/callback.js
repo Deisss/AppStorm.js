@@ -119,7 +119,7 @@ a.callback.synchronizerInstance.prototype = {
      * @param scope {Object}                The scope to apply to callbacks
     */
     setScope: function(scope) {
-        if(!a.isNone(scope) && a.isObject(scope)) {
+        if(a.isTrueObject(scope)) {
             this.scope = scope;
         }
     },
@@ -363,7 +363,7 @@ a.callback.chainerInstance.prototype = {
      * @param scope {Object}                The scope to apply to callbacks
     */
     setScope: function(scope) {
-        if(!a.isNone(scope) && a.isObject(scope)) {
+        if(a.isTrueObject(scope)) {
             this.scope = scope;
         }
     },

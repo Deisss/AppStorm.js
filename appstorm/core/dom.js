@@ -95,8 +95,8 @@ a.dom = {
             return new this.children(element);
         }
 
-        // Detecting NodeList
-        if(element[0]) {
+        // Detecting NodeList (special case)
+        if(element instanceof NodeList) {
             return new this.children(a.toArray(element));
         }
 
@@ -145,7 +145,7 @@ a.dom = {
     */
     tag: function(name, dom) {
         // Remove string from name
-        dom = (a.isObject(dom)) ? dom : document;
+        dom = (a.isTrueObject(dom)) ? dom : document;
 
         var tagList = a.isString(name)
                         ? name.replace(/ /g,'').split(',')
@@ -202,7 +202,7 @@ a.dom = {
                 value = document;
             }
             // We are in 2 parameters mode, with value = dom
-            if(a.isObject(value) && !a.isArray(value)) {
+            if(a.isTrueObject(value) && !a.isArray(value)) {
                 return this.attr(name, null, value);
 
             // We are in 2 parameters mode, without value = dom

@@ -72,12 +72,12 @@ a.ajax = function(options, success, error) {
     }
 
     // Now we take care of special case of data and header
-    if(a.isObject(dp.data)) {
+    if(a.isTrueObject(dp.data)) {
         for(var d in dp.data) {
             this.params.data[d] = dp.data[d];
         }
     }
-    if(a.isObject(dp.header)) {
+    if(a.isTrueObject(dp.header)) {
         for(var h in dp.header) {
             this.params.header[h] = dp.header[h];
         }
@@ -85,13 +85,13 @@ a.ajax = function(options, success, error) {
 
     if(a.isString(options.data)) {
         this.params.data = options.data;
-    } else if(a.isObject(options.data)) {
+    } else if(a.isTrueObject(options.data)) {
         for(var dd in options.data) {
             this.params.data[dd] = options.data[dd];
         }
     }
 
-    if(a.isObject(options.header)) {
+    if(a.isTrueObject(options.header)) {
         for(var hh in options.header) {
             this.params.header[hh] = options.header[hh];
         }

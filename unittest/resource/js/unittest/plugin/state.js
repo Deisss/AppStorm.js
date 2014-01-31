@@ -863,22 +863,28 @@ test('a.state.data-converter-append', function() {
     var test = {
         id : 'data-converter-append',
         hash : 'data-converter-append',
-        converter:function(data) {
-            data.another = 'chain';
-        },
+        entry: 'body',
+        type:  'append',
 
         data : 'resource/data/state/data-converter-append.json',
         include : {
             html : 'resource/data/state/data-converter-append.html'
         },
 
+        converter:function(data) {
+            data.another = 'chain';
+        },
         // Test content has been loaded with converter modification
-        load : function(html) {
-            document.body.innerHTML += html;
-            var loaded = document.getElementById('data-converter-append-loaded');
-            se(loaded.innerHTML.toLowerCase(), 'converted', 'Test loading data converter');
-            var second = document.getElementById('data-converter-append-another-loaded');
-            se(second.innerHTML.toLowerCase(), 'chain', 'Test append loading data converter');
+        load : function(chain) {
+            var loaded = document
+                            .getElementById('data-converter-append-loaded');
+            se(loaded.innerHTML.toLowerCase(), 'converted',
+                                            'Test loading data converter');
+            var second = document
+                    .getElementById('data-converter-append-another-loaded');
+            se(second.innerHTML.toLowerCase(), 'chain',
+                                        'Test append loading data converter');
+            chain.next();
         }
     };
 
@@ -996,7 +1002,7 @@ test('a.state.error', function() {
 
     // Now starting to proceed loader
     setTimeout(function() {
-        a.message.addListener('a.state.error', function(data) {
+        a.message.bind('a.state.error', function(data) {
             se(data.resource.indexOf('resource/data/notexist.json'), 0, 'Test data resource error');
             se(data.status, 404, 'Test data response');
         });
@@ -1035,7 +1041,7 @@ test('a.state.error2', function() {
 
     // Now starting to proceed loader
     setTimeout(function() {
-        a.message.addListener('a.state.error', function(data) {
+        a.message.bind('a.state.error', function(data) {
             se(data.resource.indexOf('resource/data/notexist.html'), 0, 'Test html resource error');
             se(data.status, 404, 'Test data response');
         });
@@ -1173,7 +1179,7 @@ test('a.state.error-hash3', function() {
 
     a.state.add(tree);
 
-    a.message.addListener('a.page.event.hash', function(data) {
+    a.message.bind('a.page.event.hash', function(data) {
         // Prevent a wrong catch bug, and does not make test unreliable (as it will raise 0 event if nothing is found, stopping system)
         if(data.value === 'hash-error-404') {
             se(data.value, 'hash-error-404', 'Test value is linked');

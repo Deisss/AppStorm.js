@@ -25,7 +25,7 @@ window.appstorm = window.a = _.noConflict();
  *
  * @private
 */
-a.__defaultAjaxOptions = {};
+a._defaultAjaxOptions = {};
 
 /**
  * The core url (for vendor loading)
@@ -56,7 +56,7 @@ a.scope = function scope(fct, scope) {
  *
  * @method getStackTrace
  *
- * @return {String} Stack trace
+ * @return {String}                         Stack trace
 */
 a.getStackTrace = function getStackTrace() {
     var err = new Error();
@@ -64,27 +64,46 @@ a.getStackTrace = function getStackTrace() {
 };
 
 /**
- * If the element is null or undefined
+ * Test if the element is null or undefined
  *
- * @param obj {Object} The element to test
+ * @method isNone
+ *
+ * @param obj {Object}                      The element to test
+ * @return {Boolean}                        True if element is null/undefined
+ *                                          False in other cases
 */
 a.isNone = function isNone(obj) {
     return (a.isNull(obj) || a.isUndefined(obj));
 };
 
+
 /**
-* Duplicate a state (used internally)
+ * Test if the element is a non-null object type
+ *
+ * @method isTrueObject
+ *
+ * @param obj {Object}                      The element to test
+ * @return {Boolean}                        True if it's an object, false if
+ *                                          it's a null value, or not an object
+*/
+a.isTrueObject = function isTrueObject(obj) {
+    return (typeof(obj) == 'object' && !a.isNone(obj));
+};
+
+
+/**
+* Create a deep copy (used internally)
 * FROM : http://www.xenoveritas.org/blog/xeno/the-correct-way-to-clone-javascript-arrays
 * Credits to them ! Little bug corrected :p
 *
 * @method clone
 *
-* @param obj {Object} A state object
-* @return {Object} A new state object
+* @param obj {Object}                       A state object
+* @return {Object}                          A new state object
 */
 a.deepClone = function deepClone(obj) {
     // The deep clone only take care of object, and not function
-    if (a.isObject(obj) && !a.isFunction(obj)) {
+    if (a.isTrueObject(obj) && !a.isFunction(obj)) {
         // Array cloning
         if(a.isArray(obj)) {
             var l = obj.length,
@@ -101,7 +120,7 @@ a.deepClone = function deepClone(obj) {
                 r = new obj.constructor();
             }
             // Bug : json object does not have prototype
-            if(a.isObject(obj.prototype)) {
+            if(a.isTrueObject(obj.prototype)) {
                 r.prototype = obj.prototype;
             }
             for(var k in obj) {
@@ -114,6 +133,17 @@ a.deepClone = function deepClone(obj) {
 };
 
 
+/**
+ * Extend an object with child properties (underscore.js like)
+ *
+ * @method extend
+ *
+ * @param object {Object}                   The element to extend with other
+ *                                          properties
+ * @param source {Object}                   The source object to take
+ *                                          properties from
+ * @return {Object}                         A combined object
+*/
 a.extend = function extend(object, source, guard) {
     if (!object) {
       return object;
@@ -123,7 +153,8 @@ a.extend = function extend(object, source, guard) {
         argsLength = args.length,
         type = typeof guard;
 
-    if ((type == 'number' || type == 'string') && args[3] && args[3][guard] === source) {
+    if ((type == 'number' || type == 'string') && args[3]
+                                && args[3][guard] === source) {
       argsLength = 2;
     }
     while (++argsIndex < argsLength) {
@@ -139,28 +170,30 @@ a.extend = function extend(object, source, guard) {
 
 /**
  * Define the default ajax options to send on every request.
- * At any time, by providing good options, you can override this content on a single ajax request.
+ * At any time, by providing good options, you can override this content
+ * on a single ajax request.
  *
  * @method setDefaultAjaxOptions
  *
- * @param options {Object} The default options to set
+ * @param options {Object}                  The default options to set
 */
 a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
-    if(a.isObject(options)) {
+    if(a.isTrueObject(options)) {
         a.mem.set('app.ajax.default', options);
-        this.__defaultAjaxOptions = options;
+        this._defaultAjaxOptions = options;
     }
 };
 
 /**
- * Get the default ajax options currently stored (and used by every ajax request)
+ * Get the default ajax options currently stored
+ * (and used by every ajax request)
  *
  * @method getDefaultAjaxOptions
  *
- * @return {Object} The default ajax options setted
+ * @return {Object}                         The default ajax options setted
 */
 a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
-    return this.__defaultAjaxOptions;
+    return this._defaultAjaxOptions;
 };
 
 /*

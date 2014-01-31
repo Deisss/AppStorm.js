@@ -385,7 +385,7 @@ a.storage.type.globalStorage = new function() {
             var item = window.globalStorage[hostname].getItem(key);
             // On some system, item will be an object with
             // "value" and "secure" property
-            if(a.isObject(item) && !a.isNone(item.value)) {
+            if(a.isTrueObject(item) && !a.isNone(item.value)) {
                 var value = a.parser.json.parse(item.value);
                 a.storage.debugGet(this.engine, key, value);
                 return value;

@@ -98,6 +98,7 @@ a.form = (function() {
     */
     function getFieldList(dom) {
         // dom must be a a.dom element
+        console.log(dom);
         var elements = dom.tag(['input', 'textarea', 'select']).getElements();
 
         // We remove input who are not listed in typeList

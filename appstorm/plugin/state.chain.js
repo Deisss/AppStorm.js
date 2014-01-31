@@ -193,7 +193,7 @@ a.state.chain = new function() {
      * @return {Array}                      The founded include or empty string
     */
     function getInclude(state, name, role) {
-        var include  = state.include,
+        var include  = state.include || [],
             tmp_role = name + '_' + role,
             tmpRole  = name + role.charAt(0).toUpperCase() + role.slice(1),
             tmp_def  = name + '_default',
@@ -207,8 +207,8 @@ a.state.chain = new function() {
             i = converted.length;
 
         while(i--) {
-            // TODO: apply extrapolate parameter here
-            converted[i] = converted[i];
+            converted[i] = a.parameter.extrapolate(
+                        converted[i], a.hash.getHash(), state.hash);
         }
 
         return converted;
@@ -240,20 +240,12 @@ a.state.chain = new function() {
             internal = this.hash,
             args     = arguments;
 
-        if(a.isObject(this._storm.data)) {
+        if(a.isTrueObject(this._storm.data)) {
             // TODO: does not apply on many elements
             a.each(this._storm.data, function(value, key) {
                 this.data[key] = a.parameter.extrapolate(value, hash,
                                                                     internal);
             }, this);
-        }
-
-        // The last part is for include only, so we stop if there is no...
-        // TODO: when data will be able to catch url, remove this (cannot be
-        // used like this)
-        if(!this.include) {
-            goToNextStep.apply(this, arguments);
-            return;
         }
 
         // Load files, and bring html using entry/type
@@ -264,7 +256,8 @@ a.state.chain = new function() {
             goToNextStep.apply(this, args);
         }, this), null),
             role     = a.acl.getCurrentRole(),
-            partials = this.include.partials;
+            partials = (this.include && this.include.partials) ? 
+                            this.include.partials : [];
 
         var css  = getInclude(this, 'css',       role),
             js   = getInclude(this, 'js',        role),
@@ -292,12 +285,37 @@ a.state.chain = new function() {
             );
         });
 
+        // Loading data
+        /*if(a.isString(this._storm.data)) {
+            // Direct load from string
+            this.data = a.parameter.extrapolate(this._storm.data, hash,
+                                                                    internal);
+
+            // Correct options trouble behaviour
+            if(!a.isTrueObject(options)) {
+                options = {
+                    type : "json"
+                };
+            }
+
+            if(!a.isString(options.type)) {
+                options.type = "json";
+            }
+        } else if()*/
+
         // Loading HTML
         sync.addCallback(a.scope(function(chain) {
-            var url   = html[0],
-                state = this;
+            var url   = html[0];
+
+            // Nohting to load
+            if(!url) {
+                chain.next();
+                return;
+            }
+
             url = a.parameter.extrapolate(url, hash, internal);
             this._storm.html = url;
+            console.log(url);
             a.template.get(url, {}, chain.next, chain.error);
         }, this));
 

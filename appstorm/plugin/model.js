@@ -93,11 +93,11 @@ a.modelInstance = function(name, properties, requests) {
     this.snapshot   = {};
     this.requests   = {};
 
-    if(a.isObject(properties) && !a.isNone(properties)) {
+    if(a.isTrueObject(properties)) {
         this.properties = properties;
     }
 
-    if(a.isObject(requests) && !a.isNone(requests)) {
+    if(a.isTrueObject(requests)) {
         this.requests = requests;
     }
 }

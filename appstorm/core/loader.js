@@ -205,10 +205,10 @@ a.loader = (function() {
                 && (args.type == 'json' || args.type == 'xml') ) {
                 options.type = args.type;
             }
-            if(a.isObject(args.data)) {
+            if(a.isTrueObject(args.data)) {
                 options.data = args.data;
             }
-            if(a.isObject(args.header)) {
+            if(a.isTrueObject(args.header)) {
                 options.header = args.header;
             }
             if(a.isBoolean(args.cache)) {
@@ -267,7 +267,7 @@ a.loader = (function() {
          *                                   and cannot be changed)
         */
         jsonp: function(uri, callback, args, error){
-            var type = (a.isObject(args) && args.type) ? args.type
+            var type = (a.isTrueObject(args) && args.type) ? args.type
                         : 'text/javascript';
             a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
             __appendToHeader(document.createElement('script'), {
@@ -293,13 +293,13 @@ a.loader = (function() {
         */
         json: function(uri, callback, args, error) {
             // Setting type
-            if(!a.isObject(args)) {
+            if(!a.isTrueObject(args)) {
                 args = {};
             }
             args.type = 'json';
 
             // Setting the accepted return type
-            if(!a.isObject(args.header)) {
+            if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
             args.header['accept'] = 'application/json, text/javascript';
@@ -323,13 +323,13 @@ a.loader = (function() {
         */
         xml: function(uri, callback, args, error) {
             // Setting the type
-            if(!a.isObject(args)) {
+            if(!a.isTrueObject(args)) {
                 args = {};
             }
             args.type = 'xml';
 
             // Setting the accepted return type
-            if(!a.isObject(args.header)) {
+            if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
             args.header['accept'] = 'application/xml, text/xml';
@@ -386,7 +386,7 @@ a.loader = (function() {
             }
 
             // Setting type
-            if(!a.isObject(args)) {
+            if(!a.isTrueObject(args)) {
                 args = {};
             }
             args.type = 'raw';
@@ -397,7 +397,7 @@ a.loader = (function() {
             }
 
             // Setting the accepted return type
-            if(!a.isObject(args.header)) {
+            if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
             args.header['accept'] = 'text/html';

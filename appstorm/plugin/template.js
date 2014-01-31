@@ -72,7 +72,8 @@ a.template = {
      *                                      load from network
     */
     partial: function(name, uri, callback, options) {
-        var handler = a.isObject(window.Handlebars) ? window.Handlebars : null,
+        var handler = a.isTrueObject(window.Handlebars) ? window.Handlebars :
+                                                                        null,
             fctName = 'a.template.partial';
 
         // Crash if handlebars is not found
@@ -127,7 +128,8 @@ a.template = {
      *                                      problem
     */
     get: function(uri, data, callback, error) {
-        var handler = a.isObject(window.Handlebars) ? window.Handlebars : null,
+        var handler = a.isTrueObject(window.Handlebars) ? window.Handlebars :
+                                                                        null,
             fctName = 'a.template.get';
 
         // Crash if handlebars is not found
@@ -287,7 +289,7 @@ a.template = {
     append: function(el, content, callback) {
         el = a.dom.el(el);
         var h = this.htmlToDom(content);
-        if(a.isObject(h)) {
+        if(a.isTrueObject(h)) {
             el.append(h);
         }
         if(!a.isNone(a.language)) {
