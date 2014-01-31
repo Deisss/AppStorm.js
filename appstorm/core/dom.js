@@ -90,14 +90,14 @@ a.dom = {
             element = domList;
         }
 
+        // Detecting NodeList (special case)
+        if(element instanceof window.NodeList) {
+            element = a.toArray(element);
+        }
+
         // Detect array elements
         if(a.isArray(element)) {
             return new this.children(element);
-        }
-
-        // Detecting NodeList (special case)
-        if(element instanceof NodeList) {
-            return new this.children(a.toArray(element));
         }
 
         // Detect single DOM element
