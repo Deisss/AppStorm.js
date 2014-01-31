@@ -1,6 +1,3 @@
-//TODO: remove jquery usage
-
-
 // Manipulate a.state loading and unloading chain
 a.state.chain = new function() {
     var loadingChain   = [],
@@ -181,6 +178,47 @@ a.state.chain = new function() {
     };
 
     /**
+     * Get the data from url or store
+     *
+     * @method generateDefaultDataLoader
+     * @private
+     *
+     * @param state {Object}                The state who need thoose data
+     * @param name {String | null}          The current object name to get
+     * @param options {Object}              The request options to send to ajax
+    */
+    function generateDefaultDataLoader(state, name, options) {
+        return function(chain) {
+            // We are not in URL mode
+            if(options.url.indexOf("{{") === 0
+            && options.url.indexOf("}}") === (options.url.length - 2)) {
+                if(a.isNone(name)) {
+                    state.data = options.url;
+                } else {
+                    state.data[name] = options.url;
+                }
+                chain.next();
+
+            // We need to get url
+            } else {
+                var request = new a.ajax(options, function(content) {
+                    if(a.isNone(name)) {
+                        state.data = content;
+                    } else {
+                        state.data[name] = content;
+                    }
+                    chain.next();
+
+                // TODO: create error
+                }, null);
+
+                // Starting and waiting reply
+                request.send();
+            }
+        };
+    };
+
+    /**
      * Get the parsed with parameters version of every request from include.
      *
      * @method getInclude
@@ -240,12 +278,44 @@ a.state.chain = new function() {
             internal = this.hash,
             args     = arguments;
 
+        // Creating options element
+        this.options = {
+            type: 'json'
+        };
+        if(a.isTrueObject(this._storm.options)) {
+            this.options = {};
+
+            function parseOption(options) {
+                a.each(options, function(option, key) {
+                    if(a.isTrueObject(option)) {
+                        parseOption(option);
+                    } else {
+                        options[key] = a.parameter.extrapolate(option, hash,
+                                                                    internal);
+                    }
+                })
+            };
+            parseOption(this._storm.options);
+
+            if(!a.isString(this.options.type)) {
+                this.options.type = 'json';
+            }
+        }
+
+
+        // Creating data elements
+        this.data = {};
         if(a.isTrueObject(this._storm.data)) {
             // TODO: does not apply on many elements
             a.each(this._storm.data, function(value, key) {
                 this.data[key] = a.parameter.extrapolate(value, hash,
                                                                     internal);
             }, this);
+        } else if(a.isString(this._storm.data)) {
+            this.data = {
+                url: a.parameter.extrapolate(this._storm.data, hash, internal),
+                options: a.deepClone(this.options)
+            };
         }
 
         // Load files, and bring html using entry/type
@@ -286,22 +356,42 @@ a.state.chain = new function() {
         });
 
         // Loading data
-        /*if(a.isString(this._storm.data)) {
-            // Direct load from string
-            this.data = a.parameter.extrapolate(this._storm.data, hash,
-                                                                    internal);
 
-            // Correct options trouble behaviour
-            if(!a.isTrueObject(options)) {
-                options = {
-                    type : "json"
-                };
-            }
 
-            if(!a.isString(options.type)) {
-                options.type = "json";
+        if(a.isTrueObject(this.data)) {
+            // We are in basic url/option object mode
+            if(a.isString(this.data.url)) {
+                this.data.options.url = this.data.url;
+                sync.addCallback(generateDefaultDataLoader(this, null,
+                                                        this.data.options));
+
+            // We are in complex (multi data) mode
+            } else {
+                a.each(this.data, function(content, name) {
+                    // Content can also be a direct url access
+                    if(a.isString(content)) {
+                        content = {
+                            url: content,
+                            options: null
+                        };
+                    }
+
+                    if(!a.isObject(content.options)) {
+                        content.options = {
+                            type : 'json'
+                        };
+                    }
+
+                    if(content.url) {
+                        // Converting options url to parsed one
+                        content.options.url = a.parameter.extrapolate(
+                                            content.url, hash, internal),
+                        sync.addCallback(generateDefaultDataLoader(this, name,
+                                                        content.options));
+                    }
+                }, this);
             }
-        } else if()*/
+        }
 
         // Loading HTML
         sync.addCallback(a.scope(function(chain) {
@@ -315,7 +405,6 @@ a.state.chain = new function() {
 
             url = a.parameter.extrapolate(url, hash, internal);
             this._storm.html = url;
-            console.log(url);
             a.template.get(url, {}, chain.next, chain.error);
         }, this));
 
@@ -356,8 +445,6 @@ a.state.chain = new function() {
         function(content) {
             // TODO: do translate here before converting !
             // TODO: publish content here into DOM using entry/type
-
-
             // TODO: be able to use here the fact an entry can be function
 
             // It's allowed to want to load content, but not use it...

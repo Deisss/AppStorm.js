@@ -415,8 +415,8 @@ a.state = new function() {
         }
 
         // Internal object to store cached value
-        state._storm.data  = state.data || {};
-        state._storm.option= state.option || null;
+        state._storm.data    = state.data || {};
+        state._storm.options = state.options || null;
 
         // Parsing hash element
         if(state.hash && a.isString(state.hash)) {
@@ -432,8 +432,8 @@ a.state = new function() {
         state._storm.acl = performSingleAclTest(state, a.acl.getCurrentRole());
 
         // We delete place as we will use it
-        state.data = {};
-        delete state.option;
+        state.data    = {};
+        state.options = null;
 
         tree[state.id] = state;
 
