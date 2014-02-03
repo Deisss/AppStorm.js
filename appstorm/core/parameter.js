@@ -273,3 +273,16 @@ a.parameter = {
         delete this._fct[name];
     }
 };
+
+
+
+// We allow the 'mem' parameter which manipulate a.mem
+
+/*
+------------------------------
+  PARAMETERS TYPE ASSOCIATED
+------------------------------
+*/
+(function() {
+    a.parameter.addParameterType('mem',  a.mem.get);
+})();
