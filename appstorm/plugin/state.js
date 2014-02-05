@@ -348,7 +348,7 @@ a.state = new function() {
 
 
     // Bind events from other elements
-    a.hash.bind('a.hash', performHashChange);
+    a.hash.bind('change', performHashChange);
     a.acl.bind('change', performAclChange);
 
 

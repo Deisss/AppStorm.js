@@ -165,7 +165,7 @@ a.route = new function() {
     };
 
     // We bind the hash event system
-    a.hash.bind('a.hash', function(data) {
+    a.hash.bind('change', function(data) {
         callApplyHashChange(data.value, 'enter');
         callApplyHashChange(data.old,   'leave');
     });

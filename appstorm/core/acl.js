@@ -37,6 +37,7 @@ a.acl = a.extend(new function() {
     this.setCurrentRole = function(role) {
         mem.set('current', role);
         this.dispatch('change', role);
+        a.message.dispatch('a.acl.change', role);
     };
 
     /**

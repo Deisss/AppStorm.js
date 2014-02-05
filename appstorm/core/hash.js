@@ -97,8 +97,8 @@ a.hash = new function() {
                     value: currentHash,
                     old:   previousHash
                 };
-                that.dispatch('a.hash', eventObject);
-                a.message.dispatch('a.hash', eventObject);
+                that.dispatch('change', eventObject);
+                a.message.dispatch('a.hash.change', eventObject);
             }
             previousHash = currentHash;
             store.set('previous', previousHash);
