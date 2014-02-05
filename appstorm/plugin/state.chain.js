@@ -177,30 +177,52 @@ a.state.chain = new function() {
         };
     };
 
+    function parseDataOption(options, hash, internal) {
+        a.each(options, function(option, key) {
+            if(a.isTrueObject(option)) {
+                parseDataOption(option, hash, internal);
+            } else {
+                options[key] = a.parameter.extrapolate(option, hash, internal);
+            }
+        })
+    };
+
     /**
      * Get the data from url or store
      *
-     * @method generateDefaultDataLoader
+     * @method generateDataLoader
      * @private
      *
      * @param state {Object}                The state who need thoose data
      * @param name {String | null}          The current object name to get
      * @param options {Object}              The request options to send to ajax
     */
-    function generateDefaultDataLoader(state, name, options) {
+    function generateDataLoader(state, name, url, options) {
+        var initContent = a.isNone(name) ?
+                            state._storm.data : state._storm.data[name],
+            hash      = a.hash.getHash(),
+            internal  = state.hash || '',
+            // In this case we don't want the string escape, so we ask for
+            // original content (false at the end)
+            parsedUrl = a.parameter.extrapolate(url, hash, internal, false);
+
+        parseDataOption(options, hash, internal);
+
         return function(chain) {
-            // We are not in URL mode
-            if(options.url.indexOf("{{") === 0
-            && options.url.indexOf("}}") === (options.url.length - 2)) {
+            // We are not in URL mode as suggest url mode
+            if(a.isString(initContent) && initContent.indexOf("{{") === 0
+            && initContent.indexOf("}}") === (initContent.length - 2)) {
                 if(a.isNone(name)) {
-                    state.data = options.url;
+                    state.data = parsedUrl;
                 } else {
-                    state.data[name] = options.url;
+                    state.data[name] = parsedUrl;
                 }
                 chain.next();
 
             // We need to get url
             } else {
+                options.url = parsedUrl;
+
                 var request = new a.ajax(options, function(content) {
                     if(a.isNone(name)) {
                         state.data = content;
@@ -278,46 +300,6 @@ a.state.chain = new function() {
             internal = this.hash,
             args     = arguments;
 
-        // Creating options element
-        this.options = {
-            type: 'json'
-        };
-        if(a.isTrueObject(this._storm.options)) {
-            this.options = {};
-
-            function parseOption(options) {
-                a.each(options, function(option, key) {
-                    if(a.isTrueObject(option)) {
-                        parseOption(option);
-                    } else {
-                        options[key] = a.parameter.extrapolate(option, hash,
-                                                                    internal);
-                    }
-                })
-            };
-            parseOption(this._storm.options);
-
-            if(!a.isString(this.options.type)) {
-                this.options.type = 'json';
-            }
-        }
-
-
-        // Creating data elements
-        this.data = {};
-        if(a.isTrueObject(this._storm.data)) {
-            // TODO: does not apply on many elements
-            a.each(this._storm.data, function(value, key) {
-                this.data[key] = a.parameter.extrapolate(value, hash,
-                                                                    internal);
-            }, this);
-        } else if(a.isString(this._storm.data)) {
-            this.data = {
-                url: a.parameter.extrapolate(this._storm.data, hash, internal),
-                options: a.deepClone(this.options)
-            };
-        }
-
         // Load files, and bring html using entry/type
         // TODO: take arguments to get arguments to pass threw next function
         // and success/fail
@@ -356,42 +338,55 @@ a.state.chain = new function() {
         });
 
         // Loading data
+        var differenceData = null;
+        if(a.isArray(this._storm.data) || a.isTrueObject(this._storm.data)) {
+            differenceData = a.differenceObject(this.data, this._storm.data);
+        }
+        this.data = this._storm.data;
+        this.options = this._storm.options || {type: 'json'};
 
+        // This case is converted into {url/options} one
+        if(a.isString(this.data)) {
+            this.data = {
+                url:     this.data,
+                options: a.clone(this.options)
+            };
+        }
 
         if(a.isTrueObject(this.data)) {
-            // We are in basic url/option object mode
-            if(a.isString(this.data.url)) {
-                this.data.options.url = this.data.url;
-                sync.addCallback(generateDefaultDataLoader(this, null,
+            // We are in single-data mode
+            if('url' in this.data && 'options' in this.data) {
+                sync.addCallback(generateDataLoader(this, null, this.data.url,
                                                         this.data.options));
 
-            // We are in complex (multi data) mode
+            // We are in multi-data mode
             } else {
-                a.each(this.data, function(content, name) {
-                    // Content can also be a direct url access
-                    if(a.isString(content)) {
-                        content = {
-                            url: content,
-                            options: null
+                a.each(this.data, function(data, name) {
+                    if(a.isString(data)) {
+                        data = {
+                            url:     data,
+                            options: this.options
                         };
                     }
 
-                    if(!a.isObject(content.options)) {
-                        content.options = {
-                            type : 'json'
-                        };
-                    }
-
-                    if(content.url) {
-                        // Converting options url to parsed one
-                        content.options.url = a.parameter.extrapolate(
-                                            content.url, hash, internal),
-                        sync.addCallback(generateDefaultDataLoader(this, name,
-                                                        content.options));
-                    }
+                    sync.addCallback(generateDataLoader(this, name, data.url,
+                                                    data.options));
                 }, this);
+
+                // We put back data into element
+                if(differenceData) {
+                    a.each(differenceData, function(data, name) {
+                        this.data[name] = data;
+                    }, this);
+                }
             }
+        } else {
+            // TODO: change dat
+            alert('error');
+            // TODO: error
         }
+
+
 
         // Loading HTML
         sync.addCallback(a.scope(function(chain) {

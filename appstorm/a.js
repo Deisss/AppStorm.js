@@ -134,6 +134,29 @@ a.deepClone = function deepClone(obj) {
 
 
 /**
+ * Get the difference between objects.
+ *
+ * @method
+ *
+ * @param obj1 {Object}                     The object initial to retrieve
+ *                                          difference from
+ * @param obj2 {Object}                     The second object to check
+ *                                          difference from
+ * @return {Object}                         The result-free object
+*/
+a.differenceObject = function differenceObject(obj1, obj2) {
+    var keys = a.difference(a.keys(obj1), a.keys(obj2)),
+        result = {};
+
+    a.each(keys, function(key) {
+        result[key] = this[key];
+    }, obj1);
+
+    return result;
+};
+
+
+/**
  * Extend an object with child properties (underscore.js like)
  *
  * @method extend
