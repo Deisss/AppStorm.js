@@ -210,8 +210,8 @@ a.state.chain = new function() {
 
         return function(chain) {
             // We are not in URL mode as suggest url mode
-            if(a.isString(initContent) && initContent.indexOf("{{") === 0
-            && initContent.indexOf("}}") === (initContent.length - 2)) {
+            if(a.isString(initContent) && initContent.indexOf('{{') === 0
+            && initContent.indexOf('}}') === (initContent.length - 2)) {
                 if(a.isNone(name)) {
                     state.data = parsedUrl;
                 } else {
@@ -277,6 +277,8 @@ a.state.chain = new function() {
 
     // LOAD: preLoad
     a.state.chain.add(true, 'preLoad', function preLoad() {
+        // TODO: update current state using a.state._currentState
+        a.state._currentState = this;
         if(this.preLoad) {
             this.preLoad.apply(this, arguments);
         } else {

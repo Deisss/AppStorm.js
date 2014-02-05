@@ -2,11 +2,11 @@
 
 // dependencies: a.parameter, a.acl, a.hash
 
-// TODO: put ACL test in cache... So if needed create an event on acl (unit test this - especially changing current
-    // acl does update everything)
+// TODO: unit test state on acl changes (unit test the fact it's updated in every states)
 // TODO: create loadAsync: true/false and unloadAsync: true/false:
         // manage the way the load/unload is done (if chain.next is needed or done on state.chain directly)
         // Can be also a single string, or array of strings
+        // => unit test it
 // TODO: create uri:// and model:// to create kind of special system for hash, do that
 // only on add, like uri will trace all parents to find final url...
 // TODO: create the bootOnLoad
@@ -33,6 +33,52 @@ a.state = new function() {
             Also, The system is hanble to run synchronously for going faster (unloading/loading item list of same level is done synchronously)
     */
 
+    /**
+     * Handle errors reporting during state load/unload.
+     *
+     * @method raiseError
+     * @private
+     *
+     * @param resource {String}             The uri which fail to load
+     * @param status {String}               The error status (like 404)
+    */
+    function raiseError(resource, status) {
+        var report = {};
+
+        if(!a.isNone(resource)) {
+            report.resource = resource;
+        }
+        if(!a.isNone(status)) {
+            report.status = status;
+        }
+
+        // Get the error
+        // TODO: create __errorState
+        var raiseError = a.state.__getError(__errorState, status);
+
+        // Raising global message
+        // TODO: make state able to send requests, and make THIS as state
+        // this.dispatch('error', report);
+        a.message.dispatch('a.state.error', report);
+
+        if(raiseError) {
+            // TODO: make documentation how to create a proper error state
+            if(a.isString(raiseError)) {
+                window.location.href = '#' + raiseError;
+
+            } else if(a.isFunction(raiseError)) {
+                raiseError(__errorState.id, resource, status);
+
+            // No handler to catch error, we raise an error on console
+            } else {
+                a.console.error('a.state.raiseError: an error occurs, but ' +
+                            'no error where existing to handle it. Please ' +
+                            'check your error handler (status: ' + status +
+                            ', state id: ' + __errorState.id + ')', 1);
+            }
+        }
+    };
+
 
 
     /**
@@ -54,7 +100,6 @@ a.state = new function() {
         var callbacks = a.pluck(a.state.chain.get(loadOrUnload), 'fct'),
             chain     = a.callback.chainer(callbacks, success, error);
 
-        // TODO: error on success: the scope is changed here and cause error
         chain.scope = state;
         chain.resultScope = scope;
         chain.start();
@@ -203,8 +248,7 @@ a.state = new function() {
         var statesLevel = a.groupBy(states, function(state) {
                 return -state._storm.level;
             }),
-            // TODO: create error
-            chain = a.callback.chainer(null, callback, null);
+            chain = a.callback.chainer(null, callback, raiseError);
 
         a.each(statesLevel, function(level) {
             chain.addCallback(function() {
@@ -230,8 +274,7 @@ a.state = new function() {
         var statesLevel = a.groupBy(states, function(state) {
                 return state._storm.level;
             }),
-            // TODO: create error
-            chain = a.callback.chainer(null, callback, null);
+            chain = a.callback.chainer(null, callback, raiseError);
 
         a.each(statesLevel, function(level) {
             chain.addCallback(function() {
@@ -367,8 +410,6 @@ a.state = new function() {
      * @param state {Object}                A state to add to system
     */
     this.add = function(state) {
-        // TODO: manage children
-
         // Only for existing state
         if(a.isArray(state)) {
             a.each(state, function(element) {
@@ -447,6 +488,26 @@ a.state = new function() {
             children.parent = state.id;
             this.add(children);
         }
+    };
+
+    /**
+     * From an existing state (found by id), create a free-clone copy of it,
+     * and replace all elements inside found in extendedState.
+     * This allow to quickly duplicate a state-base element.
+     *
+     * @method use
+     *
+     * @param id {String}                   The id to get the base to duplicate
+     * @param extendState {Object}          The state to replace data from
+     *                                      original and create new state from.
+    */
+    this.use = function(id, extendState) {
+        var state = this.get(id);
+
+        // The extend will create a clone of it, and replace all
+        // elements found in extendState into the state copy, exactly
+        // what we want !
+        this.add(a.extend(state, extendState));
     };
 
     /**
