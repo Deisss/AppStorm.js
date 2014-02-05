@@ -83,14 +83,16 @@ test('a.state.parameter-passthrew', function() {
         },
         preLoad : function(chain) {
             this.data['data2'] = 'ok';
-            chain.done();
+            chain.next();
         },
         postLoad : function(chain) {
             se(this.data['objId'], 'hello from data', 'test data pass');
             se(this.data['plop'], 'hello from data', 'test data pass');
             se(this.data['data2'], 'ok', 'test from postload');
-            a.state.clear();
+
             st();
+            a.state.clear();
+            chain.next();
         }
     };
     a.state.add(test);
@@ -116,7 +118,7 @@ test('a.state.request-abort', function() {
         hash : 'request-abort-b',
         preLoad : function(chain) {
             se(true, true, 'Arrive on time');
-            chain.done();
+            chain.next();
         }
     };
 
@@ -124,10 +126,11 @@ test('a.state.request-abort', function() {
         id : 'child-c',
         hash : 'request-abort-c',
         preLoad : function(chain) {
-            a.timer.once(chain.done, null, 1000);
+            a.timer.once(chain.error, null, 500);
         },
-        load : function() {
+        load : function(chain) {
             se(false, true, 'should be cancelled');
+            chain.next();
         }
     };
 
@@ -149,5 +152,5 @@ test('a.state.request-abort', function() {
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 2000);
+    }, 1000);
 });

@@ -625,6 +625,9 @@ test('a.state-multiData', function() {
     var tree = {
         hash : 'astatemanager13',
 
+        entry: 'body',
+        type:  'append',
+
         data : {
             userList : 'resource/data/state/multidata-1.json',
             projectList : 'resource/data/state/multidata-2.json',
@@ -635,33 +638,43 @@ test('a.state-multiData', function() {
             html : 'resource/data/state/multidata.html'
         },
 
-        // On load function, we will catch html parsed from Mustache, and check content
-        load : function(html) {
-            document.body.innerHTML += html;
-
+        // On load function, we will catch html parsed from Mustache,
+        // and check content
+        load : function(chain) {
             // UserList test
-            var user1 = document.getElementById('multidata-userlist4-chain');
-            var user2 = document.getElementById('multidata-userlist5-chain');
+            var user1 = document.getElementById('multidata-userlist4-result');
+            var user2 = document.getElementById('multidata-userlist5-result');
 
             se(user1.innerHTML.toLowerCase(), 'george', 'Test first user');
-            se(user2.innerHTML.toLowerCase(), 'christophe', 'Test second user');
+            se(user2.innerHTML.toLowerCase(), 'christophe', 
+                                                        'Test second user');
 
             // ProjectList test
-            var project1 = document.getElementById('multidata-projectlist202-chain');
-            var project2 = document.getElementById('multidata-projectlist300-chain');
+            var project1 = document
+                        .getElementById('multidata-projectlist202-result');
+            var project2 = document
+                        .getElementById('multidata-projectlist300-result');
 
-            se(project1.innerHTML.toLowerCase(), 'project 1', 'Test first project');
-            se(project2.innerHTML.toLowerCase(), 'superb project', 'Test second project');
+            se(project1.innerHTML.toLowerCase(), 'project 1',
+                                                    'Test first project');
+            se(project2.innerHTML.toLowerCase(), 'superb project',
+                                                    'Test second project');
 
             // Testing object loading
-            var myself1 = document.getElementById('multidata-myself-id-chain');
+            var myself1 = document
+                        .getElementById('multidata-myself-id-result');
             se(myself1.innerHTML.toLowerCase(), '30', 'Test user id');
 
-            var myself2 = document.getElementById('multidata-myself-firstname-chain');
+            var myself2 = document
+                        .getElementById('multidata-myself-firstname-result');
             se(myself2.innerHTML.toLowerCase(), 'js', 'Test user firstname');
 
-            var myself3 = document.getElementById('multidata-myself-lastname-chain');
-            se(myself3.innerHTML.toLowerCase(), 'appstorm', 'Test user lastname');
+            var myself3 = document
+                        .getElementById('multidata-myself-lastname-result');
+            se(myself3.innerHTML.toLowerCase(), 'appstorm',
+                                                    'Test user lastname');
+
+            chain.next();
         }
     };
 
@@ -908,59 +921,55 @@ test('a.state.data-converter-append', function() {
 // Test binding parameters to data
 test('a.state.data-cross-parameter', function() {
     stop();
-    expect(8);
+    expect(4);
     a.state.clear();
 
     var se = strictEqual,
         st = start;
 
     var test = {
-        id : 'data-cross-parameter',
-        hash : 'data-cross-parameter-{{id : [0-9]+}}-{{parent : [a-zA-Z0-9]+}}',
+        id:    'data-cross-parameter',
+        hash:  'data-cross-parameter-{{id: [0-9]+}}-{{parent: [a-zA-Z0-9]+}}',
+        entry: 'body',
+        type:  'append',
 
         // Binding parameter from hashtag
-        data : {
-            id : '{{id}}',
-            something : '{{parent}}',
-            mem : '{{memory : cross-parameter}}',
-            memComplex : '{{memory : cross-parameter-complex}}'
+        data: {
+            id:          '{{id}}',
+            something:   '{{parent}}',
+            mem:         '{{memory: cross-parameter}}',
+            memComplex:  '{{memory: cross-parameter-complex}}'
         },
 
-        include : {
-            html : 'resource/data/state/data-cross-parameter.html'
+        include: {
+            html: 'resource/data/state/data-cross-parameter.html'
         },
 
         // Test content has been loaded with parameter modification
-        load : function(html) {
-            document.body.innerHTML += html;
+        load : function(chain) {
             var id = document.getElementById('data-cross-parameter-id');
             se(id.innerHTML, '9860', 'Test data cross parameter');
 
-            var appstormID = document.getElementById('data-cross-parameter-id-appstorm');
-            se(appstormID.innerHTML, '9860', 'Test data cross parameter threw appstorm');
+            var parent = document
+                        .getElementById('data-cross-parameter-parent');
+            se(parent.innerHTML, 'dataParent01',
+                                                'Test data cross parameter');
 
-            var parent = document.getElementById('data-cross-parameter-parent');
-            se(parent.innerHTML, 'dataParent01', 'Test data cross parameter');
-
-            var parentID = document.getElementById('data-cross-parameter-parent-appstorm');
-            se(parentID.innerHTML, 'dataParent01', 'Test data cross parameter threw appstorm');
-
-            var mem = document.getElementById('data-cross-parameter-mem-appstorm');
-            se(mem.innerHTML, 'plopu', 'Test data cross parameter');
-
-            var memID = document.getElementById('data-cross-parameter-mem-appstorm');
-            se(memID.innerHTML, 'plopu', 'Test data cross parameter threw appstorm');
-
-            var memComplexA = document.getElementById('data-cross-parameter-mem-complex-a');
+            var memComplexA = document
+                    .getElementById('data-cross-parameter-mem-complex-a');
             se(memComplexA.innerHTML, 'b', 'Test data cross parameter');
 
-            var memComplexC = document.getElementById('data-cross-parameter-mem-complex-c');
+            var memComplexC = document
+                    .getElementById('data-cross-parameter-mem-complex-c');
             se(memComplexC.innerHTML, 'd', 'Test data cross parameter');
+
+            // Continue
+            chain.next();
         }
     };
 
-    a.storage.memory.setItem('cross-parameter', 'plopu');
-    a.storage.memory.setItem('cross-parameter-complex', {
+    a.storage.memory.set('cross-parameter', 'plopu');
+    a.storage.memory.set('cross-parameter-complex', {
         a : 'b',
         c : 'd'
     });
@@ -975,226 +984,6 @@ test('a.state.data-cross-parameter', function() {
     // Old browser will need a little wait...
     setTimeout(function() {
         a.state.clear();
-        window.location.href = '#';
-        st();
-    }, 600);
-});
-
-
-
-// Test raising a 404 error does raise the chainer error function
-test('a.state.error', function() {
-    stop();
-    expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var test = {
-        id : 'test-error',
-        hash : 'test-error',
-
-        data : 'resource/data/notexist.json'
-    };
-
-    a.state.add(test);
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        a.message.bind('a.state.error', function(data) {
-            se(data.resource.indexOf('resource/data/notexist.json'), 0, 'Test data resource error');
-            se(data.status, 404, 'Test data response');
-        });
-        window.location.href = '#test-error';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        a.state.clear();
-        a.message.clear();
-        window.location.href = '#';
-        st();
-    }, 600);
-});
-
-
-// Test raising 404 on html
-test('a.state.error2', function() {
-    stop();
-    expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var test = {
-        id : 'test-error2',
-        hash : 'test-error2',
-
-        include : {
-            html : 'resource/data/notexist.html'
-        }
-    };
-
-    a.state.add(test);
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        a.message.bind('a.state.error', function(data) {
-            se(data.resource.indexOf('resource/data/notexist.html'), 0, 'Test html resource error');
-            se(data.status, 404, 'Test data response');
-        });
-
-        window.location.href = '#test-error2';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        a.state.clear();
-        a.message.clear();
-        window.location.href = '#';
-        st();
-    }, 600);
-});
-
-
-// Test getting hashtag loaded on error appearing
-test('a.state.error-hash', function() {
-    stop();
-    expect(4);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var tree = {
-        id : 'errorhashroot',
-
-        error: {
-            _404: function(state, resource, status) {
-                se(true, true, 'Test 404 is found');
-                se(state, 'test-error-hash', 'Test 404 is raised by state');
-                se(resource.substring(0, 13), 'someunknowurl', 'Test resourced handled');
-                se(status, 404, 'Test 404 error code');
-            },
-            _40x: function() {
-                se(true, false, 'Test 40x should not be raised here');
-            }
-        },
-
-        children : {
-            id : 'test-error-hash',
-            hash : 'test-error-hash',
-            data : 'someunknowurl',
-            error: {
-                generic: function() {
-                    se(true, false, 'Test generic is not used');
-                }
-            }
-        }
-    };
-
-    a.state.add(tree);
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        a.state.clear();
-        a.message.clear();
-        window.location.href = '#';
-        st();
-    }, 600);
-});
-
-
-// Test getting hashtag loaded on error appearing
-test('a.state.error-hash2', function() {
-    stop();
-    expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var tree = {
-        id : 'errorhashroot2',
-
-        children : {
-            id : 'test-error-hash2',
-            hash : 'test-error-hash2',
-            data : 'someunknowurl2',
-
-            error: {
-                generic: function() {
-                    se(true, true, 'Test generic is raised');
-                }
-            }
-        }
-    };
-
-    a.state.add(tree);
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash2';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        a.state.clear();
-        a.message.clear();
-        window.location.href = '#';
-        st();
-    }, 600);
-});
-
-
-// Test getting hashtag loaded on error appearing
-test('a.state.error-hash3', function() {
-    stop();
-    expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var tree = {
-        id : 'errorhashroot3',
-
-        children : {
-            id : 'test-error-hash3',
-            hash : 'test-error-hash3',
-            data : 'someunknowurl3',
-
-            error: {
-                generic: 'hash-error-404'
-            }
-        }
-    };
-
-    a.state.add(tree);
-
-    a.message.bind('a.page.event.hash', function(data) {
-        // Prevent a wrong catch bug, and does not make test unreliable (as it will raise 0 event if nothing is found, stopping system)
-        if(data.value === 'hash-error-404') {
-            se(data.value, 'hash-error-404', 'Test value is linked');
-        }
-    });
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash3';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        a.state.clear();
-        a.message.clear();
         window.location.href = '#';
         st();
     }, 600);
