@@ -153,13 +153,15 @@ a.parameter = {
      *                                      parameters from.
      * @param internal {String}             The hashtag stored internally
      *                                      (with parameters)
-     * @param replace {Boolean | null}      Indicate if system should use
-     *                                      replace or directly send back
-     *                                      data (default : true)
+     * @param escape {Boolean | null}       Indicate if system should escape
+     *                                      content to string before sending
+     *                                      back, it means if yes, the system
+     *                                      will send back '[object object]'
+     *                                      for an object (default: yes)
     */
-    extrapolate: function(input, hash, internal, replace) {
-        if(replace !== false) {
-            replace = true;
+    extrapolate: function(input, hash, internal, escape) {
+        if(escape !== false) {
+            escape = true;
         }
 
         // Only if there is some parameters in input
@@ -215,7 +217,7 @@ a.parameter = {
 
             // We perform final replace : storage replace and hashtag replace
             var ps = paramStr.length,
-                pr = (replace === false) ? function(a, b, c){return c;} :
+                pr = (escape === false) ? function(a, b, c){return c;} :
                                                                 this.replace;
 
             while(ps--) {
