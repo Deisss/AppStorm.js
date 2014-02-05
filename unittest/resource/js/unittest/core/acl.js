@@ -61,3 +61,28 @@ test('a.acl.refused', function() {
     strictEqual(a.acl.isRefused('b'), false);
     strictEqual(a.acl.isRefused('c'), true);
 });
+
+
+// Test event based is well performed
+test('a.acl-event', function() {
+    stop();
+    expect(2);
+
+    var se = strictEqual,
+        st = start;
+
+    function testEvent(role) {
+        se(role, 'role-event-based');
+    };
+
+    a.message.bind('a.acl.change', testEvent);
+    a.acl.bind('change', testEvent);
+
+    a.acl.setCurrentRole('role-event-based');
+
+    setTimeout(function() {
+        a.message.unbind('a.acl.change', testEvent);
+        a.acl.unbind('change', testEvent);
+        st();
+    }, 100);
+});
