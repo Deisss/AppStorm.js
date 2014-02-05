@@ -278,7 +278,8 @@ a.parameter = {
 
 
 
-// We allow the 'mem' parameter which manipulate a.mem
+// We allow the 'mem' parameter which manipulate a.mem, and environment for
+// same purpose
 
 /*
 ------------------------------
@@ -287,4 +288,5 @@ a.parameter = {
 */
 (function() {
     a.parameter.addParameterType('mem',  a.mem.get);
+    a.parameter.addParameterType('environment', a.environment.get);
 })();

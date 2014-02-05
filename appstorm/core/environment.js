@@ -33,3 +33,16 @@ a.environment = a.mem.getInstance('app.environment');
 // Default data
 a.environment.set('verbose', 2);
 a.environment.set('console', 'log');
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    // Get environment elements
+    Handlebars.registerHelper('environment', function(value) {
+        return new Handlebars.SafeString(a.environment.get(value));
+    });
+})();

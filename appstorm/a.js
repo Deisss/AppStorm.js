@@ -229,3 +229,33 @@ a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
         a.url = me.src.replace(new RegExp('/[^/]*$'), '/');
     }
 }());
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    // From: http://blog.teamtreehouse.com/handlebars-js-part-3-tips-and-tricks
+    Handlebars.registerHelper('debug', function(optionalValue) {
+        a.console.log('===== CONTEXT ======');
+        a.console.log(this);
+     
+        if(!a.isUndefined(optionalValue)) {
+            a.console.log('====== VALUE =======');
+            a.console.log(optionalValue);
+        }
+    });
+
+    // Try to count elements
+    Handlebars.registerHelper('count', function(value) {
+        a.console.log('=== DEBUG COUNT ====');
+        if(a.isUndefined(value.length)) {
+            a.console.log('Length is not defined for value');
+            a.console.log(value);
+        } else {
+            a.console.log(value.length);
+        }
+    });
+})();

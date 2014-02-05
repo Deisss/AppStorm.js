@@ -1394,7 +1394,13 @@ a.storage.remove  = a.storage.persistent.remove;
   PARAMETERS TYPE ASSOCIATED
 ------------------------------
 */
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
 (function() {
+    // Parameters type
     a.parameter.addParameterType('temporary',  a.storage.temporary.get);
     a.parameter.addParameterType('memory',     a.storage.memory.get);
     a.parameter.addParameterType('persistent', a.storage.persistent.get);
@@ -1411,4 +1417,27 @@ a.storage.remove  = a.storage.persistent.remove;
 
     a.parameter.addParameterType('storage', getGlobalStore);
     a.parameter.addParameterType('store', getGlobalStore);
+
+
+    // Handlebars type
+    Handlebars.registerHelper('temporary', function(value) {
+        return new Handlebars.SafeString(a.storage.temporary.get(value));
+    });
+    Handlebars.registerHelper('memory', function(value) {
+        return new Handlebars.SafeString(a.storage.memory.get(value));
+    });
+    Handlebars.registerHelper('persistent', function(value) {
+        return new Handlebars.SafeString(a.storage.persistent.get(value));
+    });
+    Handlebars.registerHelper('cookie', function(value) {
+        return new Handlebars.SafeString(a.storage.cookie.get(value));
+    });
+
+    // Default 'store' behavior, encaps into Handlebars SafeString
+    function getHandlebarsStore(name) {
+        return new Handlebars.SafeString(getGlobalStore(name));
+    };
+
+    Handlebars.registerHelper('storage', getHandlebarsStore);
+    Handlebars.registerHelper('store', getHandlebarsStore);
 })();

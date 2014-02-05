@@ -203,3 +203,16 @@ a.mem = (function() {
 if(a.isString(a.url) && a.url.length > 0) {
     a.mem.set('app.url', a.url);
 }
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    // Get environment elements
+    Handlebars.registerHelper('mem', function(value) {
+        return new Handlebars.SafeString(a.mem.get(value));
+    });
+})();
