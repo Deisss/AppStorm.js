@@ -347,6 +347,8 @@ a.state.chain = new function() {
         this.data = this._storm.data;
         this.options = this._storm.options || {type: 'json'};
 
+        // TODO: support for calling function in data parameters
+
         // This case is converted into {url/options} one
         if(a.isString(this.data)) {
             this.data = {
