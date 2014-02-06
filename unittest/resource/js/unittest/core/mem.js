@@ -30,3 +30,25 @@ test('a.mem.instance', function() {
     strictEqual(a.mem.get('some.test.inside'), null);
     strictEqual(instance.get('inside'), null);
 });
+
+
+// Testing list function
+test('a.mem.list', function() {
+    a.mem.set('tempList', 'ok');
+
+    var instance = a.mem.getInstance('list.test');
+    instance.set('t', 'ok');
+
+    var list1 = a.mem.list(),
+        list2 = instance.list();
+
+    strictEqual(list2.t, 'ok');
+    strictEqual(list1.tempList, 'ok', 'Test global list');
+    strictEqual(list1['list.test.t'], 'ok', 'Test instance list');
+    strictEqual(list2.tempList, undefined,
+                                'Test instance does not have full list');
+
+    // Cleaning elements
+    instance.remove('t');
+    a.mem.remove('tempList');
+});
