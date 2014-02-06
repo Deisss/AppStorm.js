@@ -325,6 +325,38 @@ test('a.model.snapshot', function() {
     strictEqual(firstComplexSnapshot, '{"snap":{"value":"ok","old":"ok"}}')
 });
 
+// Test model manager
+test('a.modelManager', function() {
+    var model = a.model('modelmanagertest', {}, null);
+
+    var instance1 = new model(),
+        instance2 = new model();
+
+    var storedInstance1 = a.modelManager.get(instance1.uid),
+        storedInstance2 = a.modelManager.get(instance2.uid);
+
+    strictEqual(storedInstance1.uid, instance1.uid);
+    strictEqual(storedInstance2.uid, instance2.uid);
+
+    var list = a.modelManager.getByName('modelmanagertest');
+
+    // We test the list element before removing everything inside
+    strictEqual(list.length, 2);
+    if(list[0].uid == instance1.uid) {
+        strictEqual(list[0].uid, instance1.uid);
+        strictEqual(list[1].uid, instance2.uid);
+    } else {
+        strictEqual(list[1].uid, instance1.uid);
+        strictEqual(list[0].uid, instance2.uid);
+    }
+
+    a.modelManager.remove(storedInstance1.uid);
+    strictEqual(a.modelManager.get(instance1.uid), null);
+    strictEqual(a.modelManager.get(instance2.uid).uid, instance2.uid);
+
+    a.modelManager.remove(storedInstance2.uid);
+});
+
 
 
 test('a.model.validates', function() {
