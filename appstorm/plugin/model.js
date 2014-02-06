@@ -19,7 +19,6 @@
 
 /*
 TODO:
-  Avoir un model manager permettant de gérer le binding avec un formulaire.
   Check doit pouvoir accepter un tableau
 
   Accepter un pattern comme validation d'un élément du model
@@ -54,24 +53,168 @@ TODO:
  *                                          to manipulate the model, save it...
 */
 a.model = function(name, properties, requests) {
+    a.modelPooler.set(name, {
+        properties: properties,
+        requests: requests
+    });
+
     return function() {
-        var model = 
-            a.extend(
-                new a.modelInstance(
-                    name,
-                    a.clone(properties),
-                    a.clone(requests)
-                ),
-                new a.eventEmitter('a.model')
-            );
-
-        // Resetting model
-        model.init();
-
-        // Returning freshly created model
-        return model;
+        return a.modelPooler.createInstance(name);
     };
 };
+
+
+
+
+
+
+
+
+
+
+/**
+ * A model manager helps to keep a trace of every model currently used by the
+ * application.
+ *
+ * @class modelManager
+ * @namespace a
+ * @constructor
+*/
+a.modelManager = {
+    /**
+     * Store a pointer to every instance of every model created.
+     * @property _store
+     * @type Object
+     * @default {}
+    */
+    _store: a.mem.getInstance('app.model.instance'),
+
+    /**
+     * Store a new model into the modelManager.
+     *
+     * @method set
+     *
+     * @param model {Object}                The new model to store
+    */
+    set: function(model) {
+        this._store.set(model.uid, model);
+    },
+
+    /**
+     * Get a model from it's uid (the unique id is automatically generated
+     * for every model, it's available threw myModelInstance.uid)
+     *
+     * @method get
+     *
+     * @param uid {Integer}                 The unique id to search related
+     *                                      model from
+     * @return {Object | null}              The related model found, or null if
+     *                                      nothing is found
+    */
+    get: function(uid) {
+        return this._store.get(uid);
+    },
+
+    /**
+     * Remove a model from store.
+     *
+     * @method remove
+     *
+     * @param uid {Integer}                 The uid to remove
+    */
+    remove: function(uid) {
+        this._store.remove(uid);
+    },
+
+    /**
+     * Get all models related to a given namespace. For example, if you create
+     * a.model('user'), this function helps to find all *user* model created.
+     *
+     * @method getByName
+     *
+     * @param name {String}                 The model name to find
+     * @return {Array}                      The array with all model instance
+     *                                      related to this name
+    */
+    getByName: function(name) {
+        var result = [];
+
+        a.each(this._store.list(), function(element) {
+            if(element.name === name) {
+                result.push(element);
+            }
+        });
+
+        return result;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * A model pooler aims to create a storage space to keep every model type
+ * existing.
+ *
+ * @class modelPooler
+ * @namespace a
+ * @constructor
+*/
+a.modelPooler = a.mem.getInstance('app.model.type');
+
+/**
+ * Simple function to generate new instance from a base
+ *
+ * @method createInstance
+ *
+ * @param name {String}                     The model type we want to create
+ * @return {Object}                         The model instance created
+*/
+a.modelPooler.createInstance = function(name) {
+    var instanceType = this.get(name);
+
+    var model = 
+        a.extend(
+            new a.modelInstance(
+                name,
+                a.clone(instanceType.properties),
+                a.clone(instanceType.requests)
+            ),
+            new a.eventEmitter('a.model')
+        );
+
+    // Resetting model
+    model.init();
+
+    // Adding model to modelManager system
+    a.modelManager.set(model);
+
+    // Returning freshly created model
+    return model;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A model instance generator to manage multiple instance from a main model.
@@ -92,6 +235,10 @@ a.modelInstance = function(name, properties, requests) {
     this.properties = {};
     this.snapshot   = {};
     this.requests   = {};
+
+    // Internal unique id tracer
+    this.uid        = a.uniqueId();
+    this.nid        = name + '-' + this.uid;
 
     if(a.isTrueObject(properties)) {
         this.properties = properties;
@@ -330,3 +477,29 @@ a.modelInstance.prototype = {
 
     }
 };
+
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    // From a given uid, get the linked model
+    a.parameter.addParameterType('model',  function(uid) {
+        return a.modelManager.get(uid);
+    });
+
+    // This helps to get model uid from a given model
+    // The idea behind this is to recieve a model in parameter and lets
+    // get the uid for form plugin
+    Handlebars.registerHelper('model', function(object) {
+        if(a.isString(object) || a.isNumber(object)) {
+            return object;
+        } else if(a.isTrueObject(object) && object.uid) {
+            return object.uid;
+        }
+        return null;
+    });
+})();
