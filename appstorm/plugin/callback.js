@@ -21,8 +21,10 @@
 
     Description:
         Simple synchronizer/chainer for callback list of functions
-        synchronizer : Load many functions at same time, when they all finish raise the final callback
-        chainer : Load many functions one by one, when last one finish raise the final callback
+        synchronizer : Load many functions at same time, when they all finish
+                       raise the final callback
+        chainer : Load many functions one by one, when last one finish raise
+                  the final callback
 
 ************************************************************************ */
 
@@ -193,6 +195,7 @@ a.callback.synchronizerInstance.prototype = {
         // The error function is managed by stop function
         if(this.parrallelCount == 0 && this.running) {
             this.running = false;
+            this.dispatch('success');
 
             // We raise final success function
             if(a.isFunction(this.successFunction)) {
@@ -219,6 +222,7 @@ a.callback.synchronizerInstance.prototype = {
         var scope  = this.resultScope || this.scope || this,
             args   = a.toArray(arguments);
 
+        this.dispatch('error');
         if(wasRunning && a.isFunction(this.errorFunction)) {
             args.push(this.getResultObject());
             this.errorFunction.apply(scope, args);
@@ -235,6 +239,8 @@ a.callback.synchronizerInstance.prototype = {
     start: function() {
         this.parrallelCount = this.callbacks.length;
         this.running = true;
+
+        this.dispatch('start');
 
         // There is no callback, we directly jump on success
         if(this.parrallelCount <= 0) {
@@ -440,6 +446,8 @@ a.callback.chainerInstance.prototype = {
 
         // We stop if queue is ended
         if(!this.queue.length) {
+            this.dispatch('success');
+
             // Success is now launched
             if(a.isFunction(this.successFunction)) {
                 scope = this.resultScope || scope;
@@ -469,6 +477,8 @@ a.callback.chainerInstance.prototype = {
         this.queue = [];
         var scope  = this.scope || this,
             args   = a.toArray(arguments);
+
+        this.dispatch('stop');
         if(a.isFunction(this.errorFunction)) {
             args.push(this.getResultObject());
             this.errorFunction.apply(scope, args);
@@ -487,6 +497,7 @@ a.callback.chainerInstance.prototype = {
 
         // Preparing queue
         this.queue = a.deepClone(this.callbacks);
+        this.dispatch('start');
 
         // Starting queue
         this.next();
