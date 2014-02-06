@@ -79,6 +79,34 @@ a.mem = (function() {
     };
 
     /**
+     * Get the full stored elements
+     *
+     * @method listFromStore
+     * @private
+     *
+     * @param prefix {String}               The prefix to use as 'search from
+     *                                      that point'
+     * @return {Object}                     A key value object with all values
+     *                                      found matching prefix
+    */
+    function listFromStore(prefix) {
+        var key = sanitizeKey(prefix);
+        if(!key) {
+            return store;
+        } else {
+            var partialStore = {};
+            a.each(store, function(value, index) {
+                if(index.indexOf(key) === 0) {
+                    // We remove the prefix stored
+                    var parsedIndex = index.substring(key.length + 1);
+                    partialStore[parsedIndex] = value;
+                }
+            });
+            return partialStore;
+        }
+    };
+
+    /**
      * Store a new element, or erase a previous element
      *
      * @method setToStore
@@ -135,12 +163,24 @@ a.mem = (function() {
          *
          * @method get
          *
-         * @param key {String}                  The key to retrieve value from
-         * @return {Object | null}              null in case of not found, and
-         *                                      the stored value if found
+         * @param key {String}              The key to retrieve value from
+         * @return {Object | null}          null in case of not found, and
+         *                                  the stored value if found
         */
         get: function(key) {
             return getFromStore(this.prefix + '.' + key);
+        },
+
+        /**
+         * Get the full currently stored elements.
+         *
+         * @method list
+         *
+         * @return {Object}                  An object of all currently stored
+         *                                   elements
+        */
+        list: function() {
+            return listFromStore(this.prefix);
         },
 
         /**
@@ -148,8 +188,8 @@ a.mem = (function() {
          *
          * @method set
          *
-         * @param key {String}                  The key to set value linked to
-         * @param value {Object}                The value to associate to key
+         * @param key {String}              The key to set value linked to
+         * @param value {Object}            The value to associate to key
         */
         set: function(key, value) {
             setToStore(this.prefix + '.' + key, value);
@@ -160,7 +200,7 @@ a.mem = (function() {
          *
          * @method remove
          *
-         * @param key {String}                  The key to erase from store
+         * @param key {String}              The key to erase from store
         */
         remove: function(key) {
             removeFromStore(this.prefix + '.' + key);
