@@ -254,6 +254,51 @@ test('a.callback.synchronizer-addCallback', function() {
 });
 
 
+// Test event success, error, start event
+test('a.callback.synchronizer-event', function() {
+    stop();
+    expect(2);
+
+    var sync = a.callback.synchronizer(),
+        se = strictEqual,
+        st = start;
+
+    sync.bind('start', function() {
+        se(true, true);
+    });
+    sync.bind('success', function() {
+        se(true, true);
+        st();
+    });
+
+    sync.start();
+});
+
+
+
+// Test the result scope element
+test('a.callback.synchronizer-resultScope', function() {
+    stop();
+    expect(1);
+
+    var sync = a.callback.synchronizer(null, function() {
+        se(this.ok, 'ok');
+        st();
+    }),
+        se = strictEqual,
+        st = start;
+
+    sync.scope = {
+        ok: 'not-ok'
+    };
+    sync.resultScope = {
+        ok: 'ok'
+    };
+
+    sync.start();
+});
+
+
 
 
 /*
@@ -644,5 +689,46 @@ test('a.callback.chainer-data', function() {
     });
 
     // Now running system
+    chain.start();
+});
+
+test('a.callback.chainer-event', function() {
+    stop();
+    expect(2);
+
+    var chain = a.callback.chainer(),
+        se = strictEqual,
+        st = start;
+
+    chain.bind('start', function() {
+        se(true, true);
+    });
+    chain.bind('success', function() {
+        se(true, true);
+        st();
+    });
+
+    chain.start();
+});
+
+// Test result scope on chainer
+test('a.callback.chainer-resultScope', function() {
+    stop();
+    expect(1);
+
+    var chain = a.callback.chainer(null, function() {
+        se(this.ok, 'ok');
+        st();
+    }),
+        se = strictEqual,
+        st = start;
+
+    chain.scope = {
+        ok: 'not-ok'
+    };
+    chain.resultScope = {
+        ok: 'ok'
+    };
+
     chain.start();
 });
