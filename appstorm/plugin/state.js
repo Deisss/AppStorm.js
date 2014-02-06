@@ -504,11 +504,14 @@ a.state = new function() {
     this.use = function(id, extendState) {
         var state = this.get(id);
 
-        // The extend will create a clone of it, and replace all
-        // elements found in extendState into the state copy, exactly
-        // what we want !
-        this.add(a.extend(state, extendState));
+        // We create a clone of initial state (to not alter the original copy)
+        // and replace all elements found in extendState into the state copy,
+        // exactly what we want !
+        this.add(a.extend(a.deepClone(state), extendState));
     };
+
+    // Alias
+    this.extend = this.use;
 
     /**
      * Remove a state from existing state.
