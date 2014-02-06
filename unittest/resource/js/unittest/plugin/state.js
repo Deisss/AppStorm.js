@@ -1114,3 +1114,41 @@ test('a.state.options-parameter', function() {
         st();
     }, 600);
 });
+
+
+// Test the 'use' extend system
+test('a.state.use', function() {
+    var initialState = {
+        id: 'init-state',
+        hash: 'init-state',
+        preLoad: function(chain) {
+            chain.next();
+        }
+    };
+
+    a.state.add(initialState);
+
+    a.state.use('init-state', {
+        id: 'sub-state',
+        postLoad: function(chain) {
+            chain.next();
+        }
+    });
+
+    var storedInitialState = a.state.get('init-state'),
+        storedSubState = a.state.get('sub-state');
+
+    // Now we test the current init-state element
+    strictEqual(storedInitialState.id, 'init-state', 'Test id');
+    strictEqual(storedInitialState._storm.hash, 'init-state', 'Test hash');
+    strictEqual(a.isFunction(storedInitialState.preLoad), true,
+                                                            'Test preLoad');
+    strictEqual(a.isFunction(storedInitialState.postLoad), false,
+                                                            'Test postLoad');
+
+    // We test the duplicate element
+    strictEqual(storedSubState.id, 'sub-state', 'Test id');
+    strictEqual(storedSubState._storm.hash, 'init-state', 'Test hash');
+    strictEqual(a.isFunction(storedSubState.preLoad), true, 'Test preLoad');
+    strictEqual(a.isFunction(storedSubState.postLoad), true, 'Test postLoad');
+});
