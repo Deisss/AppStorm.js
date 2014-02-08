@@ -70,7 +70,7 @@ module("PLUGIN/language");
 	} else {
 		test("a.language.current.storage", function() {
 			a.language.setCurrent("unittest-storage", false);
-			var storageCurrent = a.storage.getItem("a_language_store_language");
+			var storageCurrent = a.storage.get("a_language_store_language");
 
 			// Test system does not already contains unit test
 			strictEqual(storageCurrent, "unittest-storage", "Test unit test setted");
@@ -78,7 +78,7 @@ module("PLUGIN/language");
 			a.language.setCurrent("unittest-storage2", false);
 
 			// Now we compare again
-			var afterStorage = a.storage.getItem("a_language_store_language");
+			var afterStorage = a.storage.get("a_language_store_language");
 
 			strictEqual(afterStorage, "unittest-storage2", "Test the latest language has been taken in consideration");
 		});
@@ -147,7 +147,7 @@ module("PLUGIN/language");
 		testSkip("a.language.allowed.storage (STORAGE NOT SUPPORTED)");
 	} else {
 		test("a.language.allowed.storage", function() {
-			var storageAllowed = a.storage.getItem("a_language_store_allowed");
+			var storageAllowed = a.storage.get("a_language_store_allowed");
 
 			// Test system does not already contains unit test
 			strictEqual(a.contains(userAllowed, "newlang"), false, "Test unit test does not already define allowed");
@@ -159,7 +159,7 @@ module("PLUGIN/language");
 			a.language.setAllowed(storageAllowed);
 
 			// Now we compare again
-			var afterStorage = a.storage.getItem("a_language_store_allowed");
+			var afterStorage = a.storage.get("a_language_store_allowed");
 
 			strictEqual(afterStorage.pop(), "newlang", "Test the latest language has been taken in consideration");
 		});
