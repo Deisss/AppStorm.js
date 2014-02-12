@@ -260,7 +260,7 @@ a.binding = (function() {
             while(m = reg.exec(value)) {
                 var start   = m.index,
                     bracket = m[0],
-                    name    = m[1].replace(/^\s+|\s+$/g, ''),
+                    name    = a.trim(m[1]),
                     base    = 'data-inner-bind-' + name;
 
                 found = true;
