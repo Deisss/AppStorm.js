@@ -71,11 +71,7 @@ a.dom = {
         }
 
         if(a.isString(element)) {
-            if(String.prototype.trim) {
-                element = element.trim();
-            } else {
-                element = element.replace(/^\s+|\s+$/g, '');
-            }
+            element = a.trim(element);
 
             // If there is only alphanumeric, we go for id
             var reg = /^[a-zA-Z0-9 _-]+$/i;
