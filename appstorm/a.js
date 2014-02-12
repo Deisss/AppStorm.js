@@ -92,6 +92,24 @@ a.isTrueObject = function isTrueObject(obj) {
 
 
 /**
+ * Allow trimming string value
+ *
+ * @method trim
+ *
+ * @param str {String}                      The value to trim
+ * @return {String}                         The trimmed value
+*/
+a.trim = function(str) {
+    // We allow both native and custom trim
+    if (!String.prototype.trim) {
+        return str.replace(/^\s+|\s+$/g, '');
+    } else {
+        return str.trim();
+    }
+};
+
+
+/**
 * Create a deep copy (used internally)
 * FROM : http://www.xenoveritas.org/blog/xeno/the-correct-way-to-clone-javascript-arrays
 * Credits to them ! Little bug corrected :p
