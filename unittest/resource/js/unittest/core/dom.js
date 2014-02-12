@@ -434,7 +434,7 @@ test('a.dom.children.parent', function() {
     // only one parent
     var sub = a.dom.cls('a.dom.children.parent').parent().getElements();
     strictEqual(sub.length, 1, 'Test only one parent is selected');
-    console.log(sub);
+
     strictEqual(sub[0].id, 'a.dom.children.parenttest', 'Test element');
 });
 

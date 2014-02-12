@@ -53,10 +53,14 @@ TODO:
  *                                          to manipulate the model, save it...
 */
 a.model = function(name, properties, requests) {
-    a.modelPooler.set(name, {
-        properties: properties,
-        requests: requests
-    });
+    // Only allow new name (already existing name just give already existing
+    // model definition)
+    if(!a.modelPooler.get(name)) {
+        a.modelPooler.set(name, {
+            properties: properties,
+            requests: requests
+        });
+    }
 
     return function() {
         return a.modelPooler.createInstance(name);
@@ -175,13 +179,17 @@ a.modelPooler = a.mem.getInstance('app.model.type');
  * @method createInstance
  *
  * @param name {String}                     The model type we want to create
- * @return {Object}                         The model instance created
+ * @return {Object | null}                  The model instance created, or null
+ *                                          if model name is not defined
 */
 a.modelPooler.createInstance = function(name) {
     var instanceType = this.get(name);
 
-    var model = 
-        a.extend(
+    if(!instanceType) {
+        return null;
+    }
+
+    var model = a.extend(
             new a.modelInstance(
                 name,
                 a.clone(instanceType.properties),
@@ -466,15 +474,19 @@ a.modelInstance.prototype = {
      * Get one of the associated model request.
      *
      * @param request
-
+     *
+     * @param name {String}                 The request name to get
     */
     request: function(name) {
         // TODO: here we take the existing request, and create a ready to use
         // object
         var input  = this.requests[name] || {},
-            output = {};
+            output = {type: 'json'};
 
+        output.method = input.method;
+        output.url    = input.url;
 
+        return output;
     }
 };
 

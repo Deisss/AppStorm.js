@@ -1157,13 +1157,16 @@ test('a.state.use', function() {
 
 // Test system allow bind/unbind event
 test('a.state.load-bind', function() {
-    // Loader un bout d'html dans lequel ya 2 tag 'a'
-    // Sur le premier on bind la première, et le second un autre truc
-    // On deload, on retest, ca ne doit plus répondre au binding
+    // We create a binding
+    // Test binding is working
+    // Unload state
+    // Test binding is not working
     stop();
     expect(2);
+    a.state.clear();
 
-    var se = strictEqual;
+    var st = start,
+        se = strictEqual;
 
     var state = {
         id:    'state-bind-unbind',
@@ -1219,5 +1222,73 @@ test('a.state.load-bind', function() {
         second.click();
     }, 1200);
 
-    setTimeout(start, 1400);
+    setTimeout(function() {
+        st();
+        a.state.clear();
+    }, 1400);
+});
+
+
+
+
+// Test system allow bind/unbind event ON the entry directly
+test('a.state.load-bind-entry', function() {
+    // We create a binding
+    // Test binding is working
+    // Unload state
+    // Test binding is not working
+    stop();
+    expect(1);
+    a.state.clear();
+
+    var st = start,
+        se = strictEqual;
+
+    var state = {
+        id:    'state-bind-unbind-entry',
+        hash:  'unittest-state-bind-unbind-entry',
+        entry: '#a-state-direct-entry-bind',
+        type:  'append',
+
+        bind: {
+            'click': function() {
+                se(this.id, 'a-state-direct-entry-bind', 'Test id click');
+            }
+        }
+    };
+
+    a.state.add(state);
+
+
+    // Now starting to proceed loader
+    setTimeout(function() {
+        window.location.href = '#unittest-state-bind-unbind-entry';
+    }, 200);
+
+    setTimeout(function() {
+        // We test binding appear
+        var entry = document.getElementById('a-state-direct-entry-bind');
+
+        // We start unit test
+        entry.click();
+    }, 600);
+
+    // Old browser will need a little wait...
+    setTimeout(function() {
+        // We leave it, so system will unbind
+        window.location.href = '#';
+    }, 1000);
+
+    setTimeout(function() {
+        // We test binding appear
+        var entry = document.getElementById('a-state-direct-entry-bind');
+
+        // We start unit test (should do nothing)
+        entry.click();
+    }, 1200);
+
+    setTimeout(function() {
+        a.state.clear();
+        st();
+    }, 1400);
 });

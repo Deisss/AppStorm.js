@@ -477,8 +477,6 @@ a.state.chain = new function() {
         var bindings = this.bind || this.bindings || this.events || null,
             entry    = a.dom.el(this.entry);
 
-        // TODO: if first element is only composed of ' ' (spaces)
-        // Then the entry himself is binded...
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
 
@@ -498,7 +496,7 @@ a.state.chain = new function() {
 
             // A single element: direct action on entry level
             } else if(split.length == 1) {
-                entry.bind(action, fct);
+                entry.bind(a.trim(split[0]), fct);
             }
         });
 
@@ -556,7 +554,7 @@ a.state.chain = new function() {
 
             // A single element: direct action on entry level
             } else if(split.length == 1) {
-                entry.unbind(action, fct);
+                entry.unbind(a.trim(split[0]), fct);
             }
         });
 
