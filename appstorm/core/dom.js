@@ -42,12 +42,12 @@ a.dom = {
      *
      * @method query
      *
-     * @param check {String}            The string to search for
-     * @param dom {DOMElement}          The dom to search inside
-     * @return {a.dom.children}         A chainable object
+     * @param check {String}                The string to search for
+     * @param dom {DOMElement}              The dom to search inside
+     * @return {a.dom.children}             A chainable object
     */
     query: function(check, dom) {
-        dom = dom || document;
+        dom = a.dom.el(dom).get(0) || document;
 
         if(!dom.querySelectorAll && window.jQuery) {
             return this.el(jQuery(check));
@@ -61,8 +61,8 @@ a.dom = {
      *
      * @method el
      *
-     * @param element {DOMElement}      A dom element to work with
-     * @return {a.dom.children}         A chainable object
+     * @param element {DOMElement}          A dom element to work with
+     * @return {a.dom.children}             A chainable object
     */
     el: function(element) {
         // Detect already parsed
@@ -117,8 +117,8 @@ a.dom = {
      *
      * @method id
      *
-     * @param id {String | Array}       The id(s) to search
-     * @return {a.dom.children}         A chainable object
+     * @param id {String | Array}           The id(s) to search
+     * @return {a.dom.children}             A chainable object
     */
     id: function(id) {
         return this.attr('id', id, document);
@@ -130,11 +130,11 @@ a.dom = {
      *
      * @method cls
      *
-     * @param clsname {String | Array}  The classname(s) to search
-     *                                  (like 'active', 'container', ...)
-     * @param dom {DOMElement | null}   The init dom to start searching from
-                                        or null to use document
-     * @return {a.dom.children}         A chainable object
+     * @param clsname {String | Array}      The classname(s) to search
+     *                                      (like 'active', 'container', ...)
+     * @param dom {DOMElement | null}       The init dom to start searching
+     *                                      from or null to use document
+     * @return {a.dom.children}             A chainable object
     */
     cls: function(clsname, dom) {
         return this.attr('class', clsname, dom);
@@ -146,10 +146,10 @@ a.dom = {
      *
      * @method tag
      *
-     * @param name {String | Array}     The tag(s) to search (input, a, ...)
-     * @param dom {DOMElement | null}   The init dom to start searching from,
-     *                                  or null to use document
-     * @return {a.dom.children}         A chainable object
+     * @param name {String | Array}         The tag(s) to search (input, a,...)
+     * @param dom {DOMElement | null}       The init dom to start searching
+     *                                      from, or null to use document
+     * @return {a.dom.children}             A chainable object
     */
     tag: function(name, dom) {
         // Remove string from name
@@ -164,14 +164,13 @@ a.dom = {
         if(i > 1) {
             while(i--) {
                 var chainElement = this.tag(tagList[i], dom),
-                    elementList  = chainElement.getElements();
+                    elements  = chainElement.getElements();
 
-                var j = elementList.length;
-                while(j--) {
-                    if(!a.contains(domList, elementList[j])) {
-                        domList.push(elementList[j]);
+                a.each(elements, function(element) {
+                    if(!a.contains(domList, element)) {
+                        domList.push(element);
                     }
-                }
+                });
             }
 
             return new a.dom.children(domList);
@@ -222,8 +221,8 @@ a.dom = {
         /**
          * From a string or an array, get a string version
          *
-         * @param str {String | Array}     Separate elements
-         * @return {Array}                 The split version
+         * @param str {String | Array}      Separate elements
+         * @return {Array}                  The split version
         */
         function stringToArray(str) {
             return a.isString(str) ? str.replace(/ /g,'').split(',') : str;
@@ -233,16 +232,15 @@ a.dom = {
          * Append elements to parentList only if there are not already
          * inside collection.
          *
-         * @param parentList {Array}       The parentList to append elements to
-         * @param appendList {Array}       The list of elements to append
+         * @param parentList {Array}        The arrays to append elements to
+         * @param children {Array}          The list of elements to append
         */
         function appendList(parentList, children) {
-            var i = children.length;
-            while(i--) {
-                if(!a.contains(parentList, children[i])) {
-                    parentList.push(children[i]);
+            a.each(children, function(child) {
+                if(!a.contains(parentList, child)) {
+                    parentList.push(child);
                 }
-            }
+            });
         };
 
         /*
@@ -462,7 +460,7 @@ a.dom.event = new function() {
 /**
  * Handle recursive sub-search
  *
- * @param elementList {Array}    The list of elements to use
+ * @param elementList {Array}               The list of elements to use
 */
 a.dom.children = function(elementList) {
     elementList = a.isUndefined(elementList.length) ?
@@ -489,7 +487,7 @@ a.dom.children.prototype = {
     _perform: function() {
         var list          = [],
             elementList   = this.elementList,
-            argsArray     = Array.prototype.slice.call(arguments),
+            argsArray     = a.toArray(arguments),
             fct           = argsArray[0],
             args          = argsArray.slice(1),
             argsLength    = args.length,
@@ -507,13 +505,13 @@ a.dom.children.prototype = {
             */
             args[argsLength] = elementList[i];
             // We call the apply function with this as 'a.dom'
-            var chainList  = fct.apply(a.dom, args),
-                childList  = chainList.getElements(),
-                j          = childList.length;
+            var chainList = fct.apply(a.dom, args),
+                children  = chainList.getElements(),
+                j         = children.length;
 
             while(j--) {
-                if(!a.contains(list, childList[j])) {
-                    list.push(childList[j]);
+                if(!a.contains(list, children[j])) {
+                    list.push(children[j]);
                 }
             }
         }
@@ -530,9 +528,9 @@ a.dom.children.prototype = {
      *
      * @method get
      *
-     * @param index {Integer}        The index to retrieve
-     * @return {DOMElement | null}   The dom element linked or null
-     *                               if not found
+     * @param index {Integer}               The index to retrieve
+     * @return {DOMElement | null}          The dom element linked or null
+     *                                      if not found
     */
     get: function(index) {
         return this.elementList[index] || null;
@@ -543,7 +541,7 @@ a.dom.children.prototype = {
      *
      * @method getElements
      *
-     * @return {Array}    The element list stored
+     * @return {Array}                      The element list stored
     */
     getElements: function() {
         return this.elementList;
@@ -555,7 +553,7 @@ a.dom.children.prototype = {
      * @method id
      * @chainable
      *
-     * @param id {String}    The id or list of ids to search
+     * @param id {String}                   The id or list of ids to search
     */
     id: function(id) {
         return this._perform(a.dom.id, id);
@@ -567,7 +565,8 @@ a.dom.children.prototype = {
      * @method cls
      * @chainable
      *
-     * @param clsname {String}    The class or list of classes to search
+     * @param clsname {String}              The class or list of classes to
+     *                                      search
     */
     cls: function(clsname) {
         return this._perform(a.dom.cls, clsname);
@@ -578,9 +577,10 @@ a.dom.children.prototype = {
      *
      * @method css
      *
-     * @param rule {String}         The CSS rule we are working with
-     * @param value {String}        The value to set (can be empty for get)
-     * @return {String | null}      The CSS value found in case of get
+     * @param rule {String}                 The CSS rule we are working with
+     * @param value {String}                The value to set (can be empty for
+     *                                      get)
+     * @return {String | null}              The CSS value found in case of get
     */
     css: function(rule, value) {
         rule = rule || '';
@@ -588,10 +588,12 @@ a.dom.children.prototype = {
         // Transform rule for a js like ruler
         if(rule.indexOf('-') >= 0) {
             var splitRule = rule.split('-');
+
             for(var i=1, l=splitRule.length; i<l; ++i) {
                 var s = splitRule[i];
                 splitRule[i] = s.charAt(0).toUpperCase() + s.slice(1);
             }
+
             rule = splitRule.join('');
         }
 
@@ -627,7 +629,8 @@ a.dom.children.prototype = {
      * @method addClass
      * @chainable
      *
-     * @param classname {String}    The classname to append to every elements
+     * @param classname {String}            The classname to append to every
+     *                                      elements
     */
     addClass: function(classname) {
         var reg = new RegExp('(\\s|^)' + classname + '(\\s|$)');
@@ -648,15 +651,16 @@ a.dom.children.prototype = {
      * @method hasClass
      * @chainable
      *
-     * @param classname {String}     The classname to test on every elements
+     * @param classname {String}            The classname to test on every
+     *                                      elements
     */
     hasClass: function(classname) {
-        var reg         = new RegExp('(\\s|^)' + classname + '(\\s|$)'),
-            elementList = this.elementList,
-            i           = elementList.length;
+        var reg      = new RegExp('(\\s|^)' + classname + '(\\s|$)'),
+            elements = this.elementList,
+            i        = elements.length;
 
         while(i--) {
-            if(!elementList[i].className.match(reg)) {
+            if(!elements[i].className.match(reg)) {
                 return false;
             }
         }
@@ -670,7 +674,8 @@ a.dom.children.prototype = {
      * @method removeClass
      * @chainable
      *
-     * @param classname {String}     The classname to remove on every elements
+     * @param classname {String}            The classname to remove on every
+     *                                      elements
     */
     removeClass: function(classname) {
         this.each(function(scope) {
@@ -693,7 +698,8 @@ a.dom.children.prototype = {
      * @method toggleClass
      * @chainable
      *
-     * @param classname {String}      The classname to toggle on every elements
+     * @param classname {String}            The classname to toggle on every
+     *                                      elements
     */
     toggleClass: function(classname) {
         this.each(function(scope) {
@@ -718,8 +724,8 @@ a.dom.children.prototype = {
      * @method bind
      * @chainable
      *
-     * @param binding {String | Array}   The event/list to apply to
-     * @param fct {Function}             The handler to receive event
+     * @param binding {String | Array}      The event/list to apply to
+     * @param fct {Function}                The handler to receive event
     */
     bind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -743,8 +749,8 @@ a.dom.children.prototype = {
      * @method unbind
      * @chainable
      *
-     * @param binding {String | Array}   The event/list to remove
-     * @param fct {Function}             The handler of event
+     * @param binding {String | Array}      The event/list to remove
+     * @param fct {Function}                The handler of event
     */
     unbind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -769,7 +775,7 @@ a.dom.children.prototype = {
      * @method tag
      * @chainable
      *
-     * @param name {String}    The tag or list of tags to search
+     * @param name {String}                 The tag or list of tags to search
     */
     tag: function(name) {
         return this._perform(a.dom.tag, name);
@@ -781,9 +787,9 @@ a.dom.children.prototype = {
      * @method attr
      * @chainable
      *
-     * @param attribute {String}    The attribute or list of
-     *                              attributes to search
-     * @param value {String | null} The value to use, can be empty
+     * @param attribute {String}            The attribute or list of
+     *                                      attributes to search
+     * @param value {String | null}         The value to use, can be empty
     */
     attr: function(attribute, value) {
         return this._perform(a.dom.attr, attribute, value);
@@ -795,46 +801,46 @@ a.dom.children.prototype = {
      * @method attribute
      * @chainable
      *
-     * @param attribute {String}    The attribute to set
-     * @param value {String}        The value to get
+     * @param attribute {String}            The attribute to set
+     * @param value {String}                The value to get
     */
     attribute: function(attribute, value) {
-        var arrayAttribute = 
+        var attributes = 
             a.isString(attribute) ?   attribute.replace(/ /g,'').split(',')
                                   :   attribute;
 
         // Getter
         if(a.isUndefined(value)) {
-            var valueList   = [],
-                elementList = this.elementList,
-                i           = elementList.length;
+            var values    = [],
+                elements  = this.elementList,
+                i         = elements.length;
 
             while(i--) {
-                for(var j=0, l=arrayAttribute.length; j<l; ++j) {
+                var element = elements[i];
+                a.each(attributes, function(attr) {
                     try {
-                        var data = elementList[i]
-                                .getAttribute(arrayAttribute[j]);
-                        if(!a.isNone(data) && !a.contains(valueList, data)) {
-                            valueList.push(data);
+                        var data = element.getAttribute(attr);
+                        if(!a.isNone(data) && !a.contains(values, data)) {
+                            values.push(data);
                         }
                     } catch(ex) {}
-                }
+                });
             }
 
-            if(valueList.length < 2) {
-                return valueList.join('');
+            if(values.length < 2) {
+                return values.join('');
             } else {
-                return valueList;
+                return values;
             }
 
         // Setter
         } else {
             this.each(function() {
-                for(var j=0, l=arrayAttribute.length; j<l; ++j) {
+                a.each(attributes, function(attr) {
                     try {
-                        this.setAttribute(arrayAttribute[j], value);
+                        this.setAttribute(attr, value); 
                     } catch(ex) {}
-                }
+                }, this);
             });
             return this;
         }
@@ -846,8 +852,8 @@ a.dom.children.prototype = {
      * @method data
      * @chainable
      *
-     * @param attribute {String}    The attribute to set
-     * @param value {String}        The value to get
+     * @param attribute {String}            The attribute to set
+     * @param value {String}                The value to get
     */
     data: function(attribute, value) {
         return this.attribute('data-' + attribute, value);
@@ -859,8 +865,8 @@ a.dom.children.prototype = {
      * @method appstorm
      * @chainable
      *
-     * @param attribute {String}    The attribute to set
-     * @param value {String}        The value to get
+     * @param attribute {String}            The attribute to set
+     * @param value {String}                The value to get
     */
     appstorm: function(attribute, value) {
         // TODO: attribute does not handle ',' and array delimiter
@@ -877,20 +883,18 @@ a.dom.children.prototype = {
      * @chainable
     */
     parent: function() {
-        var elementList = this.elementList,
-            newList     = [],
-            i           = elementList.length;
+        var elements = this.elementList,
+            result   = [];
 
-        while(i--) {
-            var element = elementList[i].parentNode;
-            // We append only if parent is not already register
-            if(!a.contains(newList, element)) {
-                newList.push(element);
+        a.each(elements, function(element) {
+            var node = element.parentNode;
+            if(!a.contains(result, node)) {
+                result.push(node);
             }
-        }
+        });
 
-        this.elementList = newList;
-        this.length = newList.length;
+        this.elementList = result;
+        this.length = result.length;
 
         return this;
     },
@@ -901,7 +905,7 @@ a.dom.children.prototype = {
      * @method children
      * @chainable
      *
-     * @param types {Array | null}  The nodeTypes to keep (default: 3)
+     * @param types {Array | null}          The nodeTypes to keep (default: 3)
     */
     children: function(types) {
         var elementList = this.elementList,
@@ -915,14 +919,15 @@ a.dom.children.prototype = {
         }
 
         // Erasing previous list with new one
-        var flatArray = a.uniq(a.flatten(replaceList)),
-            j = flatArray.length;
-
-        while(j--) {
-            if(!a.contains(types, flatArray[j].nodeType)) {
-                flatArray.splice(j, 1);
+        var flatArray = a.remove(
+            a.uniq(a.flatten(replaceList)),
+            function(element) {
+                if(!a.contains(types, element.nodeType)) {
+                    return false;
+                }
+                return true;
             }
-        }
+        );
 
         this.elementList = flatArray;
         this.length = flatArray.length;
@@ -947,15 +952,16 @@ a.dom.children.prototype = {
             ));
         }
 
-        // Erasing previous list with new one
-        var flatArray = a.uniq(a.flatten(replaceList)),
-            j = flatArray.length;
+        // Erasing previous list with new one, remove wrong nodeType
+        var flatArray = a.remove(
+                a.uniq(a.flatten(replaceList)),
+                function(element) {
 
-        while(j--) {
-            if(flatArray[j].nodeType == 3) {
-                flatArray.splice(j, 1);
+            if(element.nodeType == 3) {
+                return false;
             }
-        }
+            return true;
+        });
 
         this.elementList = flatArray;
         this.length = flatArray.length;
@@ -969,16 +975,16 @@ a.dom.children.prototype = {
      * @method insertBefore
      * @chainable
      *
-     * @param element {DOMElement}  The element to insert
+     * @param element {DOMElement}          The element to insert
     */
     insertBefore: function(element) {
         var dom = a.dom.el(element),
             elements = dom.getElements();
 
         this.each(function() {
-            for(var i=0, l=elements.length; i<l; ++i) {
-                this.parentNode.insertBefore(elements[i], this);
-            }
+            a.each(elements, function(element) {
+                this.parentNode.insertBefore(element, this);
+            }, this);
         });
         return this;
     },
@@ -989,16 +995,16 @@ a.dom.children.prototype = {
      * @method insertAfter
      * @chainable
      *
-     * @param element {DOMElement}  The element to insert
+     * @param element {DOMElement}          The element to insert
     */
     insertAfter: function(element) {
         var dom = a.dom.el(element),
             elements = dom.getElements();
 
         this.each(function() {
-            for(var i=0, l=elements.length; i<l; ++i) {
-                this.parentNode.insertBefore(elements[i], this.nextSibling);
-            }
+            a.each(elements, function(element) {
+                this.parentNode.insertBefore(element, this.nextSibling);
+            }, this);
         });
         return this;
     },
@@ -1024,18 +1030,18 @@ a.dom.children.prototype = {
      * @method remove
      * @chainable
      *
-     * @param element {DOMElement}  The element to remove
+     * @param element {DOMElement}          The element to remove
     */
     remove: function(element) {
         var dom = a.dom.el(element),
             elements = dom.getElements();
 
         this.each(function() {
-            try {
-                for(var i=0, l=elements.length; i<l; ++i) {
-                    this.removeChild(elements[i]);
-                }
-            } catch(ex) {}
+            a.each(elements, function(element) {
+                try {
+                    this.removeChild(element);
+                } catch(ex) {}
+            }, this);
         });
         return this;
     },
@@ -1046,16 +1052,16 @@ a.dom.children.prototype = {
      * @method append
      * @chainable
      *
-     * @param element {DOMElement}  The element to append
+     * @param element {DOMElement}          The element to append
     */
     append: function(element) {
         var dom = a.dom.el(element),
             elements = dom.getElements();
 
         this.each(function() {
-            for(var i=0, l=elements.length; i<l; ++i) {
-                this.appendChild(elements[i]);
-            }
+            a.each(elements, function(element) {
+                this.appendChild(element);
+            }, this);
         });
         return this;
     },
@@ -1066,7 +1072,7 @@ a.dom.children.prototype = {
      * @method replace
      * @chainable
      *
-     * @param element {DOMElement}  The element to append
+     * @param element {DOMElement}          The element to append
     */
     replace: function(element) {
         this.empty();
@@ -1079,20 +1085,20 @@ a.dom.children.prototype = {
      * @method each
      * @chainable
      *
-     * @param fct {Function}        The function to apply to elements
+     * @param fct {Function}                The function to apply to elements
      * Other parameters are passed to every function call as arguments
     */
     each: function() {
         var list          = this.elementList,
-            argumentArray = Array.prototype.slice.call(arguments),
+            argumentArray = a.toArray(arguments),
             fct           = argumentArray[0],
             args          = argumentArray.slice(1);
 
         fct = a.isFunction(fct) ? fct : function() {};
-        for(var i=0, l=list.length; i<l; ++i) {
+        a.each(list, function(element) {
             // Calling element with this as element currently selected
-            fct.apply(list[i], args);
-        }
+            fct.apply(element, args);
+        });
         return this;
     }
 };
