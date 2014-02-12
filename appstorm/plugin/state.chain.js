@@ -255,7 +255,7 @@ a.state.chain = new function() {
     function getInclude(state, name, role) {
         var include  = state.include || [],
             tmp_role = name + '_' + role,
-            tmpRole  = name + role.charAt(0).toUpperCase() + role.slice(1),
+            tmpRole  = a.firstLetterUppercase(role, name),
             tmp_def  = name + '_default',
             tmpDef   = name + 'Default';
 
