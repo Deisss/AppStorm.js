@@ -52,9 +52,7 @@ a.parameter = {
         // and of course () and \ and /
         // var regexParameterExtracter =
         //     /\{\{(\s*[a-zA-Z0-9-_-\-]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
-        var regexParameterExtracter = /\{\{(\s*[a-zA-Z0-9-\--_]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
-            // trim
-            trimRegex = /^\s+|\s+$/g;
+        var regexParameterExtracter = /\{\{(\s*[a-zA-Z0-9-\--_]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi;
 
         var ex = !a.isNone(customRegex);
         if(ex) {
@@ -78,9 +76,9 @@ a.parameter = {
 
             // And now we trim to keep only content
             extractedParameters.push({
-                original:  match[0].replace(trimRegex, ''),
-                name:  separated[0].replace(trimRegex, ''),
-                regex: separated[1].replace(trimRegex, ''),
+                original:  a.trim(match[0]),
+                name:  a.trim(separated[0]),
+                regex: a.trim(separated[1]),
                 start: match['index']
             });
         }
