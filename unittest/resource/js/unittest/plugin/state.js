@@ -1152,3 +1152,72 @@ test('a.state.use', function() {
     strictEqual(a.isFunction(storedSubState.preLoad), true, 'Test preLoad');
     strictEqual(a.isFunction(storedSubState.postLoad), true, 'Test postLoad');
 });
+
+
+
+// Test system allow bind/unbind event
+test('a.state.load-bind', function() {
+    // Loader un bout d'html dans lequel ya 2 tag 'a'
+    // Sur le premier on bind la première, et le second un autre truc
+    // On deload, on retest, ca ne doit plus répondre au binding
+    stop();
+    expect(2);
+
+    var se = strictEqual;
+
+    var state = {
+        id:    'state-bind-unbind',
+        hash:  'unittest-state-bind-unbind',
+        entry: 'body',
+        type:  'append',
+
+        include: {
+            html: 'resource/data/state/bind-unbind.html'
+        },
+
+        bind: {
+            '#bind-unbind .first | click': function() {
+                se(this.className, 'first', 'Test first click');
+            },
+            '#bind-unbind .second | click': function() {
+                se(this.className, 'second', 'Test second click');
+            }
+        }
+    };
+
+    a.state.add(state);
+
+
+    // Now starting to proceed loader
+    setTimeout(function() {
+        window.location.href = '#unittest-state-bind-unbind';
+    }, 200);
+
+    setTimeout(function() {
+        // We test binding appear
+        var first  = document.querySelector('#bind-unbind .first'),
+            second = document.querySelector('#bind-unbind .second');
+
+        // We start unit test
+        first.click();
+        second.click();
+    }, 600);
+
+    // Old browser will need a little wait...
+    setTimeout(function() {
+        // We leave it, so system will unbind
+        window.location.href = '#';
+    }, 1000);
+
+    setTimeout(function() {
+        // We test binding appear
+        var first  = document.querySelector('#bind-unbind .first'),
+            second = document.querySelector('#bind-unbind .second');
+
+        // We start unit test (should do nothing as unbind raised on unload)
+        first.click();
+        second.click();
+    }, 1200);
+
+    setTimeout(start, 1400);
+});
