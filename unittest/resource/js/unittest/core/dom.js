@@ -282,7 +282,7 @@ test('a.dom.children.bind', function() {
     };
 
     var se = strictEqual,
-        st = start();
+        st = start;
 
     var click = function() {
         se(true, true, 'Test click has been binded');
