@@ -36,3 +36,14 @@ test('a.scope', function() {
 
     fct();
 });
+
+test('a.trim', function() {
+    strictEqual(a.trim('     something is good       '), 'something is good');
+    strictEqual(a.trim('	with tab'), 'with tab');
+});
+
+test('a.firstLetterUppercase', function() {
+    strictEqual(a.firstLetterUppercase('something', 'is'), 'isSomething');
+    strictEqual(a.firstLetterUppercase('something'), 'Something');
+    strictEqual(a.firstLetterUppercase('this is long'), 'This is long');
+});
