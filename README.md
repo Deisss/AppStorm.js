@@ -22,6 +22,16 @@ External Resources
   * [todolist client example](http://appstormjs.com/git/example/todo)
 
 
+How to Generate Minified File
+-----------------------------
+
+This project uses [Grunt](http://gruntjs.com/) to automate download of
+dependencies and generation of minified Javascript file.
+
+You will need [Node, NPM and Grunt](http://gruntjs.com/getting-started) to
+be installed, then simply invoking Grunt will download dependencies and
+generate minified file in appstorm/ directory.
+
 Licence & Credits
 -----------------
 

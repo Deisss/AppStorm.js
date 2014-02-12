@@ -1,0 +1,32 @@
+{
+  "name": "appstorm.js",
+  "version": "0.2.0",
+  "description": "AppStorm.JS is a powerful client-side Javascript framework to build fast, easy to read, and full featured web applications.",
+  "main": "Gruntfile.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "badcommandtobecorrected"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Deisss/AppStorm.js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Deisss/AppStorm.js/issues"
+  },
+  "homepage": "https://github.com/Deisss/AppStorm.js",
+  "devDependencies": {
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-qunit": "~0.4.0",
+    "grunt-bower-task": "~0.3.4",
+    "grunt-contrib-yuidoc": "~0.5.0"
+  }
+}

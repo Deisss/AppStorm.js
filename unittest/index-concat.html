@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <meta http-equiv="Content-Language" content="en" />
+        <!-- Run IE in current version (not compatibility) mode -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <!-- Apple iDevice support & Android device -->
+        <link href="../logo/asjs.png" rel="apple-touch-icon" />
+        <link href="../logo/appstormjs.png" rel="apple-touch-startup-image" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="default" name="apple-mobile-web-app-status-bar-style" />
+
+        <!-- Content information -->
+        <meta name="description" content="Unit Test tool for AppStorm.JS" />
+        <meta name="keywords" content="AppStorm.JS, AppStorm, App Storm, UnitTest, unit-test" />
+        <meta name="robots" content="index, follow, all" />
+        <title>AppStorm.JS - Unit Test</title>
+
+
+
+        <!-- Optional (recommanded) -->
+
+        <!-- Provide basic HTML5 feature for Internet Explorer -->
+        <!--[if lt IE 9]>
+            <script src="resource/js/vendor/html5shiv.js"></script>
+        <![endif]-->
+
+        <!-- QUnit unit test tool -->
+        <link href="resource/css/vendor/qunit-1.11.0.css" rel="stylesheet" type="text/css" />
+
+        <!-- Define here your custom CSS files : here an example with loading -->
+        <link href="resource/css/main.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <!-- represent a page -->
+        <div id="logo-container">
+            <img id="logo" src="../logo/appstormjs.png" alt="logo AppStorm.JS" />
+        </div>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
+
+
+
+
+
+
+
+
+
+
+        <!-- a.dom unit test elements -->
+        <div style='display:none'>
+            <!-- id test -->
+            <a id='a.dom.testid'>a.dom.testid</a>
+            <input type='text' id='a.dom.secondtestid' />
+
+            <!-- class and tag test -->
+            <a class='a.dom.testclass'></a>
+            <div id='a.dom.testtag'>
+                <a class='a.dom.testclass'></a>
+                <span>
+                    <i class='a.dom.testclass'></i>
+                    <a></a>
+                    <b class='a.dom.secondtestclass'></b>
+                </span>
+            </div>
+
+            <div id='a.dom.secondtesttag'>
+                <a></a>
+                <b></b>
+            </div>
+
+            <!-- attr test -->
+            <a data-attr-test='a.dom.testattr'></a>
+            <div id='a.dom.testidattr'>
+                <span data-attr-test='a.dom.testattr'></span>
+                <i data-attr-test='a.dom.secondtestattr'></i>
+            </div>
+
+            <!-- parent test -->
+            <div id='a.dom.children.parenttest'>
+                <a class='a.dom.children.parent'></a>
+                <a class='a.dom.children.parent'></a>
+            </div>
+
+            <!-- appstorm selector test -->
+            <div id='a.dom.children.appstorm'>
+                <a data-children-appstorm='super'></a>
+                <a a-children-appstorm='great'></a>
+                <a children-appstorm='system'></a>
+            </div>
+
+            <!-- Empty test -->
+            <div id='a.dom.children.empty'>
+                <a></a>
+                <span><i></i></span>
+                <div></div>
+            </div>
+
+            <!-- Insert test -->
+            <div>
+                <div id='a.dom.children.insert'></div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <!-- Script -->
+
+        <!-- QUnit unit test tool -->
+        <script src="resource/js/vendor/qunit-1.11.0.js"></script>
+        <script src="resource/js/vendor/qunit-testskip.js"></script>
+
+
+
+
+        <!-- AppStorm.JS -->
+
+        <!-- Required script used by AppStorm.JS (or needed to prevent unsupported element) -->
+        <script id="a-core" src="../appstorm/appstorm-handlebars.concat.js"></script>
+
+
+
+
+        <!-- Unit test - CORE -->
+        <script src="resource/js/unittest/core/a.js"></script>
+        <script src="resource/js/unittest/core/console.js"></script>
+        <script src="resource/js/unittest/core/json.js"></script>
+        <script src="resource/js/unittest/core/xml.js"></script>
+        <script src="resource/js/unittest/core/message.js"></script>
+        <script src="resource/js/unittest/core/environment.js"></script>
+        <script src="resource/js/unittest/core/timer.js"></script>
+        <script src="resource/js/unittest/core/ajax.js"></script>
+        <script src="resource/js/unittest/core/loader.js"></script>
+        <script src="resource/js/unittest/core/dom.js"></script>
+
+        <!-- Unit test - PLUGINS -->
+        <script src="resource/js/unittest/plugin/callback.js"></script>
+        <script src="resource/js/unittest/plugin/keyboard.js"></script>
+        <script src="resource/js/unittest/plugin/form.js"></script>
+        <script src="resource/js/unittest/plugin/storage.js"></script>
+        <script src="resource/js/unittest/plugin/language.js"></script>
+        <script src="resource/js/unittest/plugin/page.js"></script>
+        <script src="resource/js/unittest/plugin/state.helper.tree.js"></script>
+        <script src="resource/js/unittest/plugin/state.helper.parameter.js"></script>
+        <script src="resource/js/unittest/plugin/state.id.js"></script>
+        <script src="resource/js/unittest/plugin/state.type.js"></script>
+        <script src="resource/js/unittest/plugin/state.bug.js"></script>
+        <script src="resource/js/unittest/plugin/state.js"></script>
+        <script src="resource/js/unittest/plugin/binding.js"></script>
+
+        <!-- set AppStorm.JS in debug mode -->
+        <script>
+            a.environment.set("debug", true);
+            a.environment.set("verbose", 1);
+        </script>
+    </body>
+</html>

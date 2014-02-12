@@ -378,7 +378,7 @@ a.translate = a.i18n = (function() {
 
     // If storage is enabled, we try to get the stored language in the store
     if(storageSupported) {
-        var storedLanguage = a.storage.persistent.getItem('_app.language');
+        var storedLanguage = a.storage.persistent.get('_app.language');
 
         // If language do exist and is setted
         if(a.isString(storedLanguage) && storedLanguage.length > 0) {
