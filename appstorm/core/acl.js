@@ -62,6 +62,15 @@ a.acl = a.extend(new function() {
      * If one role is not listed here, and still used, it will be consider
      * as minimum role (less than all listed here).
      *
+     * Note: this function is quite important, as it register related
+     * handlebars helpers: if you create role ['admin', 'superAdmin'], it
+     * will automatically create handlebars helpers 'isAdmin' and
+     * 'isSuperAdmin', they will both accept a string as parameter, and work
+     * as a if: {{isSuperAdmin 'superAdmin'}} will work,
+     * {{isSuperAdmin 'superadmin'}} will work too (not case sensitive)
+     * Note also you can't pass an object: {{isSuperAdmin user}} will not work
+     * if user is not the role in string...
+     *
      * @method setRoleList
      *
      * @param roleList {Array}              The role list to store
@@ -69,6 +78,20 @@ a.acl = a.extend(new function() {
     this.setRoleList = function(roleList) {
         if(a.isArray(roleList)) {
             mem.set('list', roleList);
+
+            // We create related Handlebars helpers for every role
+            // Like you get a role 'adMin', it will create 'isAdMin' helper
+            a.each(roleList, function(role) {
+                var helper = a.firstLetterUppercase(role, 'is'),
+                    lower  = role.toLowerCase();
+
+                Handlebars.registerHelper(helper, function(value, options) {
+                    if(a.trim(value.toLowerCase()) === a.trim(lower)) {
+                        return options.fn(this);
+                    }
+                    return options.inverse(this);
+                });
+            });
         }
     };
 
