@@ -69,7 +69,7 @@ a.acl = a.extend(new function() {
      * as a if: {{isSuperAdmin 'superAdmin'}} will work,
      * {{isSuperAdmin 'superadmin'}} will work too (not case sensitive)
      * Note also you can't pass an object: {{isSuperAdmin user}} will not work
-     * if user is not the role in string...
+     * if user is not the role in string you want to check...
      *
      * @method setRoleList
      *
