@@ -587,7 +587,7 @@ a.dom.children.prototype = {
 
             for(var i=1, l=splitRule.length; i<l; ++i) {
                 var s = splitRule[i];
-                splitRule[i] = s.charAt(0).toUpperCase() + s.slice(1);
+                splitRule[i] = a.firstLetterUppercase(s);
             }
 
             rule = splitRule.join('');
