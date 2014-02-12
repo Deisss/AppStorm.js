@@ -247,8 +247,8 @@ a.template = {
         var d = document.createElement('div'),
             result = [];
         // Remove space before and after : the system fail in other case
-        // (why ?)
-        d.innerHTML  = html.replace(/^\s+|\s+$/g, '');
+        // (but why ?)
+        d.innerHTML  = a.trim(html);
 
         // We select sub children of text type or element type
         a.dom.el(d).children([1, 3]).each(function() {
