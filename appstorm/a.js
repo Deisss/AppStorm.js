@@ -99,13 +99,29 @@ a.isTrueObject = function isTrueObject(obj) {
  * @param str {String}                      The value to trim
  * @return {String}                         The trimmed value
 */
-a.trim = function(str) {
+a.trim = function trim(str) {
     // We allow both native and custom trim
     if (!String.prototype.trim) {
         return str.replace(/^\s+|\s+$/g, '');
     } else {
         return str.trim();
     }
+};
+
+
+/**
+ * Make the first letter of given string, uppercase.
+ *
+ * @method firstLetterUpperCase
+ *
+ * @param str {String}                      The string to apply transformation
+ * @param prefix {String}                   A prefix to apply aftre transform
+ * @return {String}                         The string with first letter in
+ *                                          uppercase
+*/
+a.firstLetterUppercase = function firstLetterUppercase(str, prefix) {
+    prefix = prefix || '';
+    return prefix + str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 
