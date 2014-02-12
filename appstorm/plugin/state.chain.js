@@ -474,13 +474,31 @@ a.state.chain = new function() {
     // LOAD: bind (HTML events)
     a.state.chain.add(true, 'bind', function bind() {
         // Use bind/binding to elements
-        var bindings = this.bind || this.bindings || this.events || null;
+        var bindings = this.bind || this.bindings || this.events || null,
+            entry    = a.dom.el(this.entry);
 
+        // TODO: if first element is only composed of ' ' (spaces)
+        // Then the entry himself is binded...
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
 
             if(split.length == 2) {
-                a.dom.query(split[0]).event.bind(split[1], fct);
+                var el     = a.trim(split[0]),
+                    action = a.trim(split[1]);
+
+                // If action is not empty (of course)
+                if(action) {
+                    // If el is empty: we bind directly on entry root
+                    if(!el) {
+                        entry.bind(action, fct);
+                    } else {
+                        a.dom.query(el, entry).bind(action, fct);
+                    }
+                }
+
+            // A single element: direct action on entry level
+            } else if(split.length == 1) {
+                entry.bind(action, fct);
             }
         });
 
@@ -516,13 +534,29 @@ a.state.chain = new function() {
     // UNLOAD: unbind (HTML events)
     a.state.chain.add(false, 'unbind', function unbind() {
         // Use bind/binding to elements
-        var bindings = this.bind || this.bindings || this.events || null;
+        var bindings = this.bind || this.bindings || this.events || null,
+            entry    = a.dom.el(this.entry);
 
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
 
             if(split.length == 2) {
-                a.dom.query(split[0]).event.unbind(split[1], fct);
+                var el     = a.trim(split[0]),
+                    action = a.trim(split[1]);
+
+                // If action is not empty (of course)
+                if(action) {
+                    // If el is empty: we bind directly on entry root
+                    if(!el) {
+                        entry.unbind(action, fct);
+                    } else {
+                        a.dom.query(el, entry).unbind(action, fct);
+                    }
+                }
+
+            // A single element: direct action on entry level
+            } else if(split.length == 1) {
+                entry.unbind(action, fct);
             }
         });
 
