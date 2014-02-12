@@ -715,7 +715,7 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Bind function to given event
+     * Bind element event to given function (like click, submit...).
      *
      * @method bind
      * @chainable
@@ -740,7 +740,7 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Unbind event to given function
+     * Unbind element event to given function (like click, submit...)
      *
      * @method unbind
      * @chainable
