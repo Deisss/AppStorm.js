@@ -31,16 +31,16 @@ a.loader = (function() {
     'use strict';
 
     // Store some cache here
-    var __cache     = [],
+    var internalCache = [],
         // Store the number of css files currently loading threw timer hack...
-        nCSS        = 0,
-        nJS         = 0,
-        htmlMethods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
+        nCSS          = 0,
+        nJS           = 0,
+        htmlMethods   = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 
     /**
      * Check the cache, and launch callback if uri is already listed in cache
      *
-     * @method __checkCache
+     * @method checkInternalCache
      * @private
      * @async
      *
@@ -49,14 +49,14 @@ a.loader = (function() {
      * @return {Boolean}                    True if it's already inside cache,
      *                                      and false in other case
     */
-    function __checkCache(uri, callback) {
+    function checkInternalCache(uri, callback) {
         // Search in cache
         if(a.isNone(uri)) {
             return false;
         }
 
-        for(var i=0, l=__cache.length; i<l; ++i) {
-            if(__cache[i] === uri) {
+        for(var i=0, l=internalCache.length; i<l; ++i) {
+            if(internalCache[i] === uri) {
                 // This exist in cache, we directly call callback
                 if(a.isFunction(callback)) {
                     callback();
@@ -71,25 +71,25 @@ a.loader = (function() {
     /**
      * Insert into cache if needed the uri
      *
-     * @method __populateCache
+     * @method populateInternalCache
      * @private
      *
      * @param uri {String}                  The path to access data
      * @param args {Object}                 The arguments to check if cache
      *                                      is specified and policy to use
     */
-    function __populateCache(uri, args) {
+    function populateInternalCache(uri, args) {
         // By default, we cache
         if(!a.isNone(args) && args.cache === false) {
             return;
         }
-        __cache.push(uri);
+        internalCache.push(uri);
     };
 
     /**
      * Append to header the given tag, used by JS and CSS loader especially
      *
-     * @method __appendToHeader
+     * @method appendElementToHeader
      * @private
      * @async
      *
@@ -103,7 +103,7 @@ a.loader = (function() {
      * @param error {Function | null}       The callback to raise in case
      *                                      of problem (never used)
     */
-    function __appendToHeader(el, options, callback, uri, args, error) {
+    function appendElementToHeader(el, options, callback, uri, args, error) {
         for(var i in options) {
             el.setAttribute(i, options[i]);
         }
@@ -125,7 +125,7 @@ a.loader = (function() {
             if(a.isFunction(callback)) {
                 callback(el);
             }
-            __populateCache(uri, args);
+            populateInternalCache(uri, args);
         };
 
         if(el.addEventListener) {
@@ -171,7 +171,7 @@ a.loader = (function() {
     /**
      * load some data threw AJAX
      *
-     * @method __ajaxLoader
+     * @method performAjaxLoading
      * @private
      * @async
      *
@@ -185,7 +185,7 @@ a.loader = (function() {
      * @param error {Function | null}       The callback to apply
      *                                      in case of error
     */
-    function __ajaxLoader(uri, callback, args, error) {
+    function performAjaxLoading(uri, callback, args, error) {
         var options = {
             url    : uri,   //Allowed type : any URL
             method : 'GET', //Allowed type : 'GET', 'POST'
@@ -221,7 +221,7 @@ a.loader = (function() {
             if(a.isFunction(callback)) {
                 callback(content, status);
             }
-            __populateCache(uri, args);
+            populateInternalCache(uri, args);
         };
 
         // Loading data
@@ -244,8 +244,8 @@ a.loader = (function() {
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        js : function(uri, callback, args, error) {
-            if(__checkCache(uri, callback)) {
+        js: function(uri, callback, args, error) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
@@ -270,7 +270,7 @@ a.loader = (function() {
             var type = (a.isTrueObject(args) && args.type) ? args.type
                         : 'text/javascript';
             a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
-            __appendToHeader(document.createElement('script'), {
+            appendElementToHeader(document.createElement('script'), {
                     type : type,
                     src : uri
                 }, callback, uri, args, error
@@ -304,7 +304,7 @@ a.loader = (function() {
             }
             args.header['accept'] = 'application/json, text/javascript';
 
-            __ajaxLoader(uri, callback, args, error);
+            performAjaxLoading(uri, callback, args, error);
         },
 
         /**
@@ -334,7 +334,7 @@ a.loader = (function() {
             }
             args.header['accept'] = 'application/xml, text/xml';
 
-            __ajaxLoader(uri, callback, args, error);
+            performAjaxLoading(uri, callback, args, error);
         },
 
         /**
@@ -352,12 +352,12 @@ a.loader = (function() {
          *                                   and cannot be changed)
         */
         css: function(uri, callback, args, error) {
-            if(__checkCache(uri, callback)) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
             a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
-            __appendToHeader(document.createElement('link'), {
+            appendElementToHeader(document.createElement('link'), {
                     rel  : 'stylesheet',
                     type : 'text/css',
                     href : uri
@@ -381,7 +381,7 @@ a.loader = (function() {
          *                                   and cannot be changed)
         */
         html: function(uri, callback, args, error) {
-            if(__checkCache(uri, callback)) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
@@ -401,7 +401,7 @@ a.loader = (function() {
                 args.header = {};
             }
             args.header['accept'] = 'text/html';
-            __ajaxLoader(uri, callback, args, error);
+            performAjaxLoading(uri, callback, args, error);
         },
 
         /**
@@ -431,7 +431,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(__checkCache(uri, callback)) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
@@ -488,7 +488,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(__checkCache(uri, callback)) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
@@ -522,7 +522,8 @@ a.loader = (function() {
          * @method silverlight
          * @async
          *
-         * @param uri {String}               The path for given xap files to load
+         * @param uri {String}               The path for given xap files to
+         *                                   load
          * @param callback {Function | null} The callback to call after
          *                                   loading success (NOTE: silverlight
          *                                   is not able to fire load event,
@@ -540,7 +541,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(__checkCache(uri, callback)) {
+            if(checkInternalCache(uri, callback)) {
                 return;
             }
 
@@ -589,7 +590,7 @@ a.loader = (function() {
          * @return {Array} The cache trace
         */
         trace: function() {
-            return __cache;
+            return internalCache;
         }
     };
 }());
