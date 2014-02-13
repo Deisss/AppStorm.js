@@ -472,7 +472,7 @@ a.state.chain = new function() {
     });
 
     // LOAD: bind (HTML events)
-    a.state.chain.add(true, 'bind', function bind() {
+    a.state.chain.add(true, 'bindDom', function bindDom() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || this.events || null,
             entry    = a.dom.el(this.entry);
@@ -503,6 +503,20 @@ a.state.chain = new function() {
         goToNextStep.apply(this, arguments);
     });
 
+    // LOAD: bind (keyboard events)
+    a.state.chain.add(true, 'bindKeyboard', function bindKeyboard() {
+        var bindings = this.keyboard || this.accelerator || null;
+
+        a.each(bindings, function(fct, query) {
+            // We allow multiple keyboard entry bindings on same line
+            var split = query.split('|');
+
+            a.each(split, function(keys) {
+                a.keyboard.bind(a.trim(keys), fct, this);
+            }, this);
+        }, this);
+    });
+
     // LOAD: postLoad
     a.state.chain.add(true, 'postLoad', function postLoad() {
         if(this.postLoad) {
@@ -529,8 +543,22 @@ a.state.chain = new function() {
         }
     });
 
+    // UNLOAD: unbind (keyboard events)
+    a.state.chain.add(false, 'unbindKeyboard', function unbindKeyboard() {
+        var bindings = this.keyboard || this.accelerator || null;
+
+        a.each(bindings, function(fct, query) {
+            // We allow multiple keyboard entry bindings on same line
+            var split = query.split('|');
+
+            a.each(split, function(keys) {
+                a.keyboard.unbind(a.trim(keys), fct);
+            }, this);
+        }, this);
+    });
+
     // UNLOAD: unbind (HTML events)
-    a.state.chain.add(false, 'unbind', function unbind() {
+    a.state.chain.add(false, 'unbindDom', function unbindDom() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || this.events || null,
             entry    = a.dom.el(this.entry);
