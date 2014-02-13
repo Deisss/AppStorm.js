@@ -11,28 +11,24 @@ test('a.route.enter', function() {
         st = start;
 
     // Dummy function to test entering route element
-    function checkRoute() {
-        se(a.hash.getHash(), 'unittest-route1', 'Test entering');
+    function checkRoute(hash) {
+        se(hash, 'unittest-route1', 'Test entering');
     };
 
     // Binding function to route
     a.route.bind('unittest-route1', checkRoute);
 
-    setTimeout(function() {
-        window.location.href = '#unittest-route1';
-    }, 200);
+    chain('unittest-route1', function() {
+        hashtag('unittest-noroute1');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#unittest-noroute1';
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
+    chain('unittest-route1', function() {
         a.route.unbind('unittest-route1', checkRoute);
         window.location.href = '#';
         st();
-    }, 1000);
+    }, 200);
+
+    hashtag('unittest-route1');
 });
 
 // Test leaving route system
@@ -44,28 +40,25 @@ test('a.route.leave', function() {
         st = start;
 
     // Dummy function to test leaving route element
-    function checkRoute() {
-        se(a.hash.getHash(), 'unittest-noroute2', 'Test leaving');
+    function checkRoute(hash) {
+        se(hash, 'unittest-route2', 'Test leaving');
     };
 
     // Binding function to route
     a.route.bind('unittest-route2', checkRoute, 'leave');
 
-    setTimeout(function() {
-        window.location.href = '#unittest-route2';
+    chain('unittest-route2', function() {
+        hashtag('unittest-noroute2');
+    });
+
+    chain('unittest-noroute2', function() {
+        a.route.unbind('unittest-route2', checkRoute, 'leave');
+        hashtag('');
+        st();
     }, 200);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#unittest-noroute2';
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
-        a.route.unbind('unittest-route2', checkRoute);
-        window.location.href = '#';
-        st();
-    }, 1000);
+    // Starting system
+    hashtag('unittest-route2');
 });
 
 // Test entering - otherwise system
@@ -84,21 +77,17 @@ test('a.route.enter-otherwise', function() {
     // Binding function to route
     a.route.otherwise(checkOtherwise);
 
-    setTimeout(function() {
-        window.location.href = '#unittest-route-otherwise1';
-    }, 200);
+    chain('unittest-route-otherwise1', function() {
+        hashtag('unittest-route-nootherwise1');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#unittest-route-nootherwise1';
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
-        a.route.otherwise(null);
+    chain('unittest-route-nootherwise1', function() {
+       a.route.otherwise(null);
         window.location.href = '#';
         st();
-    }, 1000);
+    }, 200);
+
+    hashtag('unittest-route-otherwise1');
 });
 
 // Test leaving - otherwise system
@@ -117,19 +106,15 @@ test('a.route.leaving-otherwise', function() {
     // Binding function to route
     a.route.otherwise(checkOtherwise, 'leave');
 
-    setTimeout(function() {
-        window.location.href = '#unittest-route-otherwise2';
-    }, 200);
+    chain('unittest-route-otherwise2', function() {
+        hashtag('unittest-route-nootherwise2');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#unittest-route-nootherwise2';
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
+    chain('unittest-route-nootherwise2', function() {
         a.route.otherwise(null, 'leave');
         window.location.href = '#';
         st();
-    }, 1000);
+    }, 200);
+
+    hashtag('unittest-route-otherwise2');
 });
