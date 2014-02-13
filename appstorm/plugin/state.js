@@ -556,6 +556,17 @@ a.state = new function() {
     };
 
     /**
+     * Get the full state list.
+     *
+     * @method tree
+     *
+     * @return {Array}                      The inner tree stored
+    */
+    this.tree = function() {
+        return tree;
+    };
+
+    /**
      * Load a state and needed parents from state id.
      *
      * @method load
