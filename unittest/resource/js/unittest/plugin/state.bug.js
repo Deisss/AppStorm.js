@@ -45,21 +45,17 @@ test('a.state.dualchildren', function() {
     a.state.add(tree);
 
     // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#unittest-dualchildren';
-    }, 200);
+    chain('unittest-dualchildren', function() {
+        hashtag('tmp');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#tmp';
-    }, 600);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('tmp', function() {
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 1000);
+    }, 200);
+
+    hashtag('unittest-dualchildren');
 });
 
 
