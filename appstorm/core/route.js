@@ -151,7 +151,7 @@ a.route = new function() {
             (function(index) {
                 setTimeout(function() {
                     var fct = storage[index];
-                    fct.call(null);
+                    fct.call(null, hash);
                 }, 0);
             })(i);
         }
@@ -159,7 +159,7 @@ a.route = new function() {
         if(!found) {
             var otherwise = mem.get(leaveOrEnterString + '.otherwise');
             if(otherwise) {
-                otherwise.call(null);
+                otherwise.call(null, hash);
             }
         }
     };
