@@ -16,19 +16,15 @@ test('a.hash', function() {
 
     a.hash.bind('change', check);
 
-    setTimeout(function() {
-        window.location.href = '#unittest1';
-    }, 200);
+    chain('unittest1', function() {
+        hashtag('unittest2');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#unittest2';
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
+    chain('unittest2', function() {
         a.hash.unbind('change', check);
         window.location.href = '#';
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('unittest1');
 });

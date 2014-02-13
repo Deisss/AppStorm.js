@@ -210,7 +210,8 @@ test('a.state.chain.loading', function() {
     var currentLoadingChain = a.state.chain.get('load'),
         result = a.pluck(currentLoadingChain, 'name').join(',');
     strictEqual(result,
-            'preLoad,title,include,converter,content,load,bind,postLoad',
+            'preLoad,title,include,converter,content,load,bindDom,' +
+                                        'bindKeyboard,postLoad',
                                                 'Test loading chain');
 });
 
@@ -218,6 +219,7 @@ test('a.state.chain.loading', function() {
 test('a.state.chain.unloading', function() {
     var currentUnloadingChain = a.state.chain.get('unload'),
         result = a.pluck(currentUnloadingChain, 'name').join(',');
-    strictEqual(result, 'preUnload,unbind,content,unload,postUnload',
+    strictEqual(result, 'preUnload,unbindKeyboard,unbindDom,content' +
+                                        ',unload,postUnload',
                                                 'Test unloading chain');
 });

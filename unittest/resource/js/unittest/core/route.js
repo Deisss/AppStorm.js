@@ -26,7 +26,7 @@ test('a.route.enter', function() {
         a.route.unbind('unittest-route1', checkRoute);
         window.location.href = '#';
         st();
-    }, 200);
+    }, 100);
 
     hashtag('unittest-route1');
 });
@@ -55,7 +55,7 @@ test('a.route.leave', function() {
         a.route.unbind('unittest-route2', checkRoute, 'leave');
         hashtag('');
         st();
-    }, 200);
+    }, 100);
 
     // Starting system
     hashtag('unittest-route2');
@@ -85,7 +85,7 @@ test('a.route.enter-otherwise', function() {
        a.route.otherwise(null);
         window.location.href = '#';
         st();
-    }, 200);
+    }, 100);
 
     hashtag('unittest-route-otherwise1');
 });
@@ -114,7 +114,7 @@ test('a.route.leaving-otherwise', function() {
         a.route.otherwise(null, 'leave');
         window.location.href = '#';
         st();
-    }, 200);
+    }, 100);
 
     hashtag('unittest-route-otherwise2');
 });

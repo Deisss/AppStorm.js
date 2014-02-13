@@ -9,7 +9,7 @@ module('plugin/keyboard.js');
  *        (you can found them on /unittest/vendor/mousetrap)
 */
 
-test('a.keyboard.addListener', function() {
+test('a.keyboard.bind', function() {
     stop();
     expect(1);
 
@@ -30,7 +30,7 @@ test('a.keyboard.addListener', function() {
     Mousetrap.trigger('a');
 });
 
-test('a.keyboard.removeListener', function() {
+test('a.keyboard.unbind', function() {
     stop();
     expect(2);
 

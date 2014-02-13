@@ -107,7 +107,8 @@
                 <div id='a.dom.children.insert'></div>
             </div>
         </div>
-
+        <!-- specific a.dom.state (binding) unit test -->
+        <a style='display:none' id='a-state-direct-entry-bind'></a>
 
 
 
@@ -127,15 +128,15 @@
 
 
         <!-- AppStorm.JS -->
-
-        <!-- Required script used by AppStorm.JS (or needed to prevent unsupported element) -->
-        <script id='a-core' src='../appstorm/appstorm-handlebars.min.js'></script>
+        <script id='a-core' src='../appstorm/appstorm.min.js'></script>
 
 
 
 
         <!-- Unit test - CORE -->
         <script src='resource/js/unittest/core/a.js'></script>
+        <script src='resource/js/unittest/core/acl.js'></script>
+        <script src='resource/js/unittest/core/mem.js'></script>
         <script src='resource/js/unittest/core/console.js'></script>
         <script src='resource/js/unittest/core/json.js'></script>
         <script src='resource/js/unittest/core/xml.js'></script>
@@ -145,6 +146,9 @@
         <script src='resource/js/unittest/core/ajax.js'></script>
         <script src='resource/js/unittest/core/loader.js'></script>
         <script src='resource/js/unittest/core/dom.js'></script>
+        <script src='resource/js/unittest/core/hash.js'></script>
+        <script src='resource/js/unittest/core/route.js'></script>
+        <script src='resource/js/unittest/core/parameter.js'></script>
 
         <!-- Unit test - PLUGINS -->
         <script src='resource/js/unittest/plugin/callback.js'></script>
@@ -152,13 +156,14 @@
         <script src='resource/js/unittest/plugin/form.js'></script>
         <script src='resource/js/unittest/plugin/storage.js'></script>
         <script src='resource/js/unittest/plugin/language.js'></script>
-        <script src='resource/js/unittest/plugin/page.js'></script>
-        <script src='resource/js/unittest/plugin/state.helper.tree.js'></script>
-        <script src='resource/js/unittest/plugin/state.helper.parameter.js'></script>
-        <script src='resource/js/unittest/plugin/state.id.js'></script>
-        <script src='resource/js/unittest/plugin/state.type.js'></script>
-        <script src='resource/js/unittest/plugin/state.bug.js'></script>
+        <script src='resource/js/unittest/plugin/template.js'></script>
+        <script src='resource/js/unittest/plugin/binding.js'></script>
+        <script src='resource/js/unittest/plugin/model.js'></script>
         <script src='resource/js/unittest/plugin/state.js'></script>
+        <script src='resource/js/unittest/plugin/state.id.js'></script>
+        <script src='resource/js/unittest/plugin/state.bug.js'></script>
+        <script src='resource/js/unittest/plugin/state.chain.js'></script>
+        <script src='resource/js/unittest/plugin/state.error.js'></script>
 
         <!-- set AppStorm.JS in debug mode -->
         <script>
