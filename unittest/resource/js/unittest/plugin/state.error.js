@@ -20,23 +20,20 @@ test('a.state.error', function() {
 
     a.state.add(test);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        a.message.bind('a.state.error', function(data) {
-            se(data.resource.indexOf('resource/data/notexist.json'), 0,
-                                                'Test data resource error');
-            se(data.status, 404, 'Test data response');
-        });
-        window.location.href = '#test-error';
-    }, 200);
+    a.message.bind('a.state.error', function(data) {
+        se(data.resource.indexOf('resource/data/notexist.json'), 0,
+                                            'Test data resource error');
+        se(data.status, 404, 'Test data response');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-error', function() {
         a.state.clear();
         a.message.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-error');
 });
 
 
@@ -60,24 +57,20 @@ test('a.state.error2', function() {
 
     a.state.add(test);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        a.message.bind('a.state.error', function(data) {
-            se(data.resource.indexOf('resource/data/notexist.html'), 0,
-                                                'Test html resource error');
-            se(data.status, 404, 'Test data response');
-        });
+    a.message.bind('a.state.error', function(data) {
+        se(data.resource.indexOf('resource/data/notexist.html'), 0,
+                                            'Test html resource error');
+        se(data.status, 404, 'Test data response');
+    });
 
-        window.location.href = '#test-error2';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-error2', function() {
         a.state.clear();
         a.message.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-error2');
 });
 
 
@@ -120,18 +113,14 @@ test('a.state.error-hash', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-error-hash', function() {
         a.state.clear();
         a.message.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-error-hash');
 });
 
 
@@ -162,18 +151,15 @@ test('a.state.error-hash2', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash2';
-    }, 200);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-error-hash2', function() {
         a.state.clear();
         a.message.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-error-hash2');
 });
 
 
@@ -210,16 +196,12 @@ test('a.state.error-hash3', function() {
         }
     });
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-error-hash3';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-error-hash3', function() {
         a.state.clear();
         a.message.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-error-hash3');
 });

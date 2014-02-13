@@ -33,22 +33,17 @@ test('a.state.hash-single-state', function() {
     a.state.add(main1);
     a.state.add(main2);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = "#astatemanager1";
-    }, 200);
+    chain('astatemanager1', function() {
+        hashtag('astatemanager2');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = "#astatemanager2";
-    }, 600);
-
-    // Restore sync state when ready
-    setTimeout(function() {
+    chain('astatemanager2', function() {
         window.location.href = "#";
         a.state.clear();
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('astatemanager1');
 });
 
 // Test hashexists
@@ -278,22 +273,18 @@ test('a.state-path', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager3';
-    }, 200);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#astatemanager4';
-    }, 600);
+    chain('astatemanager3', function() {
+        hashtag('astatemanager4');
+    });
 
-    // Restore sync state when ready
-    setTimeout(function() {
+    chain('astatemanager4', function() {
         window.location.href = '#';
         a.state.clear();
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('astatemanager3');
 });
 
 
@@ -341,17 +332,13 @@ test('a.state-load', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager5';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('astatemanager5', function() {
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('astatemanager5');
 });
 
 
@@ -399,21 +386,17 @@ test('a.state-unload', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager6';
-    }, 200);
+    chain('astatemanager6', function() {
+        hashtag('tmp_statemanager6');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#';
-    }, 600);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('tmp_statemanager6', function() {
         a.state.clear();
+        hashtag('');
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('astatemanager6');
 });
 
 
@@ -436,7 +419,7 @@ test('a.state-load-unload', function() {
             chain.next();
         },
         load : function(chain) {
-            se(1, 1, 'Test load, parent');
+            se(1, 1, 'Test load parent');
             chain.next();
         },
         preUnload : function(chain) {
@@ -466,25 +449,21 @@ test('a.state-load-unload', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager7';
-    }, 200);
+    chain('astatemanager7', function() {
+        hashtag('astatemanager8');
+    }, 100);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#astatemanager8';
-    }, 600);
+    chain('astatemanager8', function() {
+        hashtag('tmp_statemanager8');
+    }, 100);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#';
-    }, 1000);
-
-    setTimeout(function() {
+    chain('tmp_statemanager8', function() {
+        hashtag('');
         a.state.clear();
         st();
-    }, 1400);
+    }, 100);
+
+    hashtag('astatemanager7');
 });
 
 
@@ -517,21 +496,17 @@ test('a.state-notfired', function() {
     a.state.add(main1);
     a.state.add(main2);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager9';
-    }, 200);
+    chain('astatemanager9', function() {
+        hashtag('tmp_astatemanager9');
+    }, 100);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#';
-    }, 600);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('tmp_astatemanager9', function() {
+        hashtag('');
         a.state.clear();
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('astatemanager9');
 });
 
 
@@ -598,17 +573,13 @@ test('a.state-loader', function() {
 
     a.state.add(main);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager12';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('astatemanager12', function() {
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('astatemanager12');
 });
 
 
@@ -680,18 +651,13 @@ test('a.state-multiData', function() {
 
     a.state.add(tree);
 
-    // Now we load the part, and check chain html
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager13';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('astatemanager13', function() {
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('astatemanager13');
 });
 
 
@@ -713,19 +679,14 @@ test('a.state.begin-end', function() {
         se(data.value, 'astatemanager14', 'Test message end');
     });
 
-    // Now we load the part, and check chain html
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#astatemanager14';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('astatemanager14', function() {
         a.message.clear();
         a.state.clear();
         window.location.href = '#';
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('astatemanager14');
 });
 
 
@@ -762,17 +723,13 @@ test('a.state.html-parameter', function() {
 
     a.state.add(htmlParameter);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#html-parameter-ok';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('html-parameter-ok', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('html-parameter-ok');
 });
 
 
@@ -799,17 +756,13 @@ test('a.state.data-parameter', function() {
 
     a.state.add(htmlParameter);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#data-parameter-ok';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('data-parameter-ok', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('data-parameter-ok');
 });
 
 
@@ -849,17 +802,13 @@ test('a.state.data-converter-nodata', function() {
 
     a.state.add(test);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#data-converter-nodata';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('data-converter-nodata', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('data-converter-nodata');
 });
 
 
@@ -903,17 +852,13 @@ test('a.state.data-converter-append', function() {
 
     a.state.add(test);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#data-converter-append';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('data-converter-append', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('data-converter-append');
 });
 
 
@@ -977,16 +922,14 @@ test('a.state.data-cross-parameter', function() {
     a.state.add(test);
 
     // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#data-cross-parameter-9860-dataParent01';
-    }, 200);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('data-cross-parameter-9860-dataParent01', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('data-cross-parameter-9860-dataParent01');
 });
 
 
@@ -1010,19 +953,15 @@ test('a.state.title', function() {
 
     a.state.add(test);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#test-title-oktitle';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('test-title-oktitle', function() {
         se(document.title, 'test loading - oktitle', 'test title parameter');
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         document.title = previous;
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('test-title-oktitle');
 });
 
 
@@ -1059,17 +998,13 @@ test('a.state.underhash', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#welcome-aaaa';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('welcome-aaaa', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('welcome-aaaa');
 });
 
 
@@ -1102,17 +1037,13 @@ test('a.state.options-parameter', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#options-parameter-abcdef0';
-    }, 200);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('options-parameter-abcdef0', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 600);
+    }, 100);
+
+    hashtag('options-parameter-abcdef0');
 });
 
 
@@ -1190,13 +1121,7 @@ test('a.state.load-bind', function() {
 
     a.state.add(state);
 
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#unittest-state-bind-unbind';
-    }, 200);
-
-    setTimeout(function() {
+    chain('unittest-state-bind-unbind', function() {
         // We test binding appear
         var first  = document.querySelector('#bind-unbind .first'),
             second = document.querySelector('#bind-unbind .second');
@@ -1204,15 +1129,11 @@ test('a.state.load-bind', function() {
         // We start unit test
         first.click();
         second.click();
-    }, 600);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        // We leave it, so system will unbind
-        window.location.href = '#';
-    }, 1000);
+        hashtag('tmp_unittest-state-bind-unbind');
+    }, 100);
 
-    setTimeout(function() {
+    chain('tmp_unittest-state-bind-unbind', function() {
         // We test binding appear
         var first  = document.querySelector('#bind-unbind .first'),
             second = document.querySelector('#bind-unbind .second');
@@ -1220,12 +1141,17 @@ test('a.state.load-bind', function() {
         // We start unit test (should do nothing as unbind raised on unload)
         first.click();
         second.click();
-    }, 1200);
 
-    setTimeout(function() {
+        hashtag('tmp_tmp_unittest-state-bind-unbind');
+    }, 100);
+
+    chain('tmp_tmp_unittest-state-bind-unbind', function() {
         st();
         a.state.clear();
-    }, 1400);
+        hashtag('');
+    }, 100);
+
+    hashtag('unittest-state-bind-unbind');
 });
 
 
@@ -1259,36 +1185,27 @@ test('a.state.load-bind-entry', function() {
 
     a.state.add(state);
 
-
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#unittest-state-bind-unbind-entry';
-    }, 200);
-
-    setTimeout(function() {
+    chain('unittest-state-bind-unbind-entry', function() {
         // We test binding appear
         var entry = document.getElementById('a-state-direct-entry-bind');
 
         // We start unit test
         entry.click();
-    }, 600);
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        // We leave it, so system will unbind
-        window.location.href = '#';
-    }, 1000);
+        hashtag('tmp_unittest-state-bind-unbind-entry');
+    });
 
-    setTimeout(function() {
+    chain('tmp_unittest-state-bind-unbind-entry', function() {
         // We test binding appear
         var entry = document.getElementById('a-state-direct-entry-bind');
 
         // We start unit test (should do nothing)
         entry.click();
-    }, 1200);
 
-    setTimeout(function() {
+        hashtag('');
         a.state.clear();
         st();
-    }, 1400);
+    }, 100);
+
+    hashtag('unittest-state-bind-unbind-entry');
 });

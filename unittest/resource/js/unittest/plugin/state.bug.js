@@ -133,20 +133,15 @@ test('a.state.request-abort', function() {
     a.state.add(c);
     a.state.add(b);
 
-    // Now starting to proceed loader
-    setTimeout(function() {
-        window.location.href = '#request-abort-c';
-    }, 200);
+    chain('request-abort-c', function() {
+        hashtag('request-abort-b');
+    });
 
-    // Old browser will need a little wait...
-    setTimeout(function() {
-        window.location.href = '#request-abort-b';
-    }, 600);
-
-    // Old browser will need a little wait...
-    setTimeout(function() {
+    chain('request-abort-b', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 1000);
+    }, 100);
+
+    hashtag('request-abort-c');
 });
