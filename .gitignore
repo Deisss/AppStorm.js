@@ -1,5 +1,2 @@
-/compile
-/minify.bat
-/minify.sh
-/downloads
 /logo
+/node_modules
