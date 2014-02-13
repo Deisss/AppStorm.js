@@ -515,6 +515,8 @@ a.state.chain = new function() {
                 a.keyboard.bind(a.trim(keys), fct, this);
             }, this);
         }, this);
+
+        goToNextStep.apply(this, arguments);
     });
 
     // LOAD: postLoad
@@ -555,6 +557,8 @@ a.state.chain = new function() {
                 a.keyboard.unbind(a.trim(keys), fct);
             }, this);
         }, this);
+
+        goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: unbind (HTML events)
