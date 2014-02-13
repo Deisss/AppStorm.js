@@ -215,7 +215,7 @@ a.state = new function() {
                     parents = foundParentState(state);
 
                 // We are in regex mode
-                } else {
+                } else if(state._storm.isRegexHash) {
                     var reg = new RegExp(state._storm.hash, '');
                     if(reg.test(hash)) {
                         parents = foundParentState(state);
