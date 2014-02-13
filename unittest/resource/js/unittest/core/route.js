@@ -22,9 +22,9 @@ test('a.route.enter', function() {
         hashtag('unittest-noroute1');
     });
 
-    chain('unittest-route1', function() {
+    chain('unittest-noroute1', function() {
         a.route.unbind('unittest-route1', checkRoute);
-        window.location.href = '#';
+        hashtag('');
         st();
     }, 100);
 
