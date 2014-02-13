@@ -14,7 +14,7 @@ test('a.hash', function() {
         o(1==1);
     };
 
-    a.hash.bind('a.hash', check);
+    a.hash.bind('change', check);
 
     setTimeout(function() {
         window.location.href = '#unittest1';
@@ -27,7 +27,7 @@ test('a.hash', function() {
 
     // Restore sync state when ready
     setTimeout(function() {
-        a.hash.unbind('a.hash', check);
+        a.hash.unbind('change', check);
         window.location.href = '#';
         st();
     }, 1000);
