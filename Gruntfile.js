@@ -47,7 +47,7 @@ module.exports = function(grunt) {
           "appstorm/plugin/template.js",
           "appstorm/plugin/translate.js"
         ],
-        dest: 'appstorm/appstorm-handlebars.concat.js',
+        dest: 'appstorm/appstorm.concat.js',
         nonull: true,
       }
     },
@@ -58,20 +58,26 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'appstorm/appstorm-handlebars.min.js': ['<%= concat.dist.dest %>']
+          'appstorm/appstorm.min.js': ['<%= concat.dist.dest %>']
         }
       }
     },
 
     qunit: {
-      files: ['unittest/index.html'],
+      files: ['unittest/index-concat.html'],
       options: {
         force: true
       }
     },
 
     jshint: {
-      files: ['Gruntfile.js', 'appstorm/a.js', 'unittest/resource/js/unittest/core/**/*.js', 'unittest/resource/js/unittest/plugin/**/*.js', 'example'],
+      files: [
+        'Gruntfile.js',
+        'appstorm/a.js',
+        'unittest/resource/js/unittest/core/**/*.js',
+        'unittest/resource/js/unittest/plugin/**/*.js',
+        'example'
+      ],
       options: {
         // options here to override JSHint defaults
         globals: {
@@ -97,7 +103,7 @@ module.exports = function(grunt) {
           paths: 'appstorm',
           //themedir: 'path/to/custom/theme/', // What theme?
           outdir: 'appstorm/doc',
-          exclude: 'doc,vendor,<%= concat.dist.dest %>,appstorm/appstorm-handlebars.min.js'
+          exclude: 'doc,vendor,<%= concat.dist.dest %>,appstorm/appstorm.min.js'
         }
       }
     }
