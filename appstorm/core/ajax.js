@@ -175,7 +175,7 @@ a.ajax.prototype.send = function() {
     }
 
     //Creating the url with GET
-    var toSend = "";
+    var toSend = '';
 
     if(a.isString(this.params.data)) {
         toSend = this.params.data;
