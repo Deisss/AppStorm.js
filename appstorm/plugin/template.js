@@ -320,3 +320,24 @@ a.template = {
         });
     }
 };
+
+
+(function() {
+    // Replace type
+    a.state.type.add('replace', function replace(entry, content) {
+        if(content) {
+            a.template.replace(entry, content);
+        }
+    }, function(entry) {
+        // Nothing to do...
+    }, false);
+
+    // Append type
+    a.state.type.add('append', function append(entry, content) {
+        if(content) {
+            a.template.append(entry, content);
+        }
+    }, function(entry) {
+        // Nothing to do...
+    }, false);
+})();

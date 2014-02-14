@@ -1,4 +1,26 @@
-// Manipulate a.state loading and unloading chain
+/* ************************************************************************
+
+    License: MIT Licence
+
+    Dependencies : [
+        a.js
+        plugin/state.js
+    ]
+
+    Events : []
+
+    Description:
+        State loading/unloading sequence manager.
+
+************************************************************************ */
+
+/**
+ * State loading/unloading sequence manager.
+ *
+ * @class chain
+ * @static
+ * @namespace a.state
+*/
 a.state.chain = new function() {
     var loadingChain   = [],
         unloadingChain = [];
@@ -449,16 +471,25 @@ a.state.chain = new function() {
             // It's allowed to want to load content, but not use it...
             if(this.entry) {
                 var entry = a.dom.query(this.entry),
-                    type  = this.type || 'replace';
+                    type  = this.type || 'replace',
+                    obj   = a.state.type.get(type);
 
-                if(type == 'replace') {
-                    a.template.replace(entry, content);
-                } else if(type == 'append') {
-                    a.template.append(entry, content);
+                if(obj && a.isFunction(obj.input)) {
+
+                    if(obj.async) {
+                        var chain = a.last(args);
+                        // We delegate the chain continuation
+                        obj.input.call(this, entry, content, chain);
+                    } else {
+                       obj.input.call(this, entry, content);
+                       goToNextStep.apply(this, args);
+                    }
+
+                } else {
+                    // TODO: print error
+                    goToNextStep.apply(this, args);
                 }
             }
-
-            goToNextStep.apply(this, args);
         }, this));
     });
 
@@ -595,7 +626,8 @@ a.state.chain = new function() {
 
     // UNLOAD: content (unload HTML content)
     a.state.chain.add(false, 'content', function contentUnload() {
-        var startingPoint = null;
+        var startingPoint = null,
+            args = a.toArray(arguments);
 
         if(a.isFunction(this.entry)) {
             startingPoint = a.dom.el(this.entry());
@@ -604,6 +636,27 @@ a.state.chain = new function() {
         }
 
         if(startingPoint) {
+            var type  = this.type || 'replace',
+                obj   = a.state.type.get(type);
+
+            if(obj && a.isFunction(obj.output)) {
+                if(obj.async) {
+                    var chain = a.last(args);
+                    // We delegate the chain continuation
+                    obj.output.call(this, startingPoint, chain);
+                } else {
+                   obj.output.call(this, startingPoint);
+                   goToNextStep.apply(this, args);
+                }
+
+            } else {
+                // TODO: print error
+                goToNextStep.apply(this, args);
+            }
+        }
+
+        if(startingPoint) {
+
             // Replace: empty everything
             if(this.type == 'replace') {
                 startingPoint.empty();
