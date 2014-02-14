@@ -16,16 +16,18 @@ test('a.state.hash-single-state', function() {
         st = start;
 
     var main1 = {
-        hash : "astatemanager1",
+        hash : 'astatemanager1',
+        async: true,
         load : function(chain) {
-            se(1, 1, "Loading basic 1 succeed");
+            se(1, 1, 'Loading basic 1 succeed');
             chain.next();
         }
     };
     var main2 = {
-        hash : "astatemanager2",
+        hash : 'astatemanager2',
+        async: true,
         load : function(chain) {
-            se(1, 1, "Loading basic 2 succeed");
+            se(1, 1, 'Loading basic 2 succeed');
             chain.next();
         }
     };
@@ -252,18 +254,21 @@ test('a.state-path', function() {
         st = start;
 
     var tree = {
+        async: true,
         load : function(chain) {
             se(1, 1, 'Loading basic 1 succeed');
             chain.next();
         },
         children : [{
             hash : 'astatemanager3',
+            async: true,
             load : function(chain) {
                 se(1, 1, 'Loading basic 3 succeed');
                 chain.next();
             }
         },{
             hash : 'astatemanager4',
+            async: true,
             load : function(chain) {
                 se(1, 1, 'Loading basic 4 succeed');
                 chain.next();
@@ -301,6 +306,7 @@ test('a.state-load', function() {
         st = start;
 
     var tree = {
+        async: true,
         preLoad : function(chain) {
             se(1, 1, 'Test preLoad parent');
             chain.next();
@@ -315,6 +321,7 @@ test('a.state-load', function() {
         },
         children : [{
             hash : 'astatemanager5',
+            async: true,
             preLoad : function(chain) {
                 se(1, 1, 'Test preLoad child');
                 chain.next();
@@ -355,6 +362,7 @@ test('a.state-unload', function() {
         st = start;
 
     var tree = {
+        async: true,
         preUnload : function(chain) {
             se(1, 1, 'Test preUnload parent');
             chain.next();
@@ -369,6 +377,7 @@ test('a.state-unload', function() {
         },
         children : [{
             hash : 'astatemanager6',
+            async: true,
             preUnload : function(chain) {
                 se(1, 1, 'Test preUnload child');
                 chain.next();
@@ -414,6 +423,7 @@ test('a.state-load-unload', function() {
 
     var tree = {
         hash : 'astatemanager7',
+        async: true,
         preLoad : function(chain) {
             se(1, 1, 'Test preLoad parent');
             chain.next();
@@ -432,6 +442,7 @@ test('a.state-load-unload', function() {
         },
         children : [{
             hash : 'astatemanager8',
+            async: true,
             preLoad : function(chain) {
                 se(1, 1, 'Test preLoad child');
                 chain.next();
@@ -479,6 +490,7 @@ test('a.state-notfired', function() {
 
     var main1 = {
         hash : 'astatemanager9',
+        async: true,
         load : function(chain) {
             se(1, 1, 'Test load, main1');
             chain.next();
@@ -487,6 +499,7 @@ test('a.state-notfired', function() {
 
     var main2 = {
         hash : 'astatemanager10',
+        async: true,
         load : function(chain) {
             se(1, 1, 'Test load, main2');
             chain.next();
@@ -524,6 +537,7 @@ test('a.state-loader', function() {
 
     var main = {
         hash: 'astatemanager12',
+        async: true,
 
         entry: 'body',
         type:  'append',
@@ -598,6 +612,7 @@ test('a.state-multiData', function() {
 
     var tree = {
         hash : 'astatemanager13',
+        async: true,
 
         entry: 'body',
         type:  'append',
@@ -707,6 +722,7 @@ test('a.state.html-parameter', function() {
     var htmlParameter = {
         id : 'html-parameter',
         hash : 'html-parameter-{{param : [a-z]+}}',
+        async: true,
         entry: 'body',
         type:  'append',
 
@@ -783,6 +799,7 @@ test('a.state.data-converter-nodata', function() {
     var test = {
         id : 'data-converter-nodata',
         hash : 'data-converter-nodata',
+        async: true,
         entry: 'body',
         type:  'append',
         converter:function(data) {
@@ -828,6 +845,7 @@ test('a.state.data-converter-append', function() {
     var test = {
         id : 'data-converter-append',
         hash : 'data-converter-append',
+        async: true,
         entry: 'body',
         type:  'append',
 
@@ -878,6 +896,7 @@ test('a.state.data-cross-parameter', function() {
     var test = {
         id:    'data-cross-parameter',
         hash:  'data-cross-parameter-{{id: [0-9]+}}-{{parent: [a-zA-Z0-9]+}}',
+        async: true,
         entry: 'body',
         type:  'append',
 

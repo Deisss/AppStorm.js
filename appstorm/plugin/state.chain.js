@@ -160,6 +160,23 @@ a.state.chain = new function() {
     };
 
     /**
+     * Test if the given function should be run in async mode or not.
+     *
+     * @method testAsync
+     * @private
+     *
+     * @param async {Mixed}                 The value to test
+     * @param name {String}                 The chain name to test
+     * @return {Boolean}                    True if it should be run in async
+     *                                      mode, false in other cases
+    */
+    function testAsync(async, name) {
+        return (async === true || async === name || (
+            a.isArray(async) && a.contains(async, name)
+        ));
+    };
+
+    /**
      * Convert string to array element.
      *
      * @method stringToArray
@@ -299,13 +316,16 @@ a.state.chain = new function() {
 
     // LOAD: preLoad
     a.state.chain.add(true, 'preLoad', function preLoad() {
-        // TODO: update current state using a.state._currentState
         a.state._currentState = this;
         if(this.preLoad) {
-            this.preLoad.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'preLoad')) {
+                this.preLoad.apply(this, arguments);
+                return;
+            } else {
+                this.preLoad.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
 
     // LOAD: title
@@ -496,10 +516,14 @@ a.state.chain = new function() {
     // LOAD: load
     a.state.chain.add(true, 'load', function load() {
         if(this.load) {
-            this.load.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'load')) {
+                this.load.apply(this, arguments);
+                return;
+            } else {
+                this.load.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
 
     // LOAD: bind (HTML events)
@@ -553,12 +577,15 @@ a.state.chain = new function() {
     // LOAD: postLoad
     a.state.chain.add(true, 'postLoad', function postLoad() {
         if(this.postLoad) {
-            this.postLoad.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'postLoad')) {
+                this.postLoad.apply(this, arguments);
+                return;
+            } else {
+                this.postLoad.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
-
 
 
     /*
@@ -570,10 +597,14 @@ a.state.chain = new function() {
     // UNLOAD: preUnload
     a.state.chain.add(false, 'preUnload', function preUnload() {
         if(this.preUnload) {
-            this.preUnload.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'preUnload')) {
+                this.preUnload.apply(this, arguments);
+                return;
+            } else {
+                this.preUnload.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: unbind (keyboard events)
@@ -673,18 +704,26 @@ a.state.chain = new function() {
     // UNLOAD: unload
     a.state.chain.add(false, 'unload', function unload() {
         if(this.unload) {
-            this.unload.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'unload')) {
+                this.unload.apply(this, arguments);
+                return;
+            } else {
+                this.unload.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: postUnload
     a.state.chain.add(false, 'postUnload', function postUnload() {
         if(this.postUnload) {
-            this.postUnload.apply(this, arguments);
-        } else {
-            goToNextStep.apply(this, arguments);
+            if(testAsync(this.async, 'postUnload')) {
+                this.postUnload.apply(this, arguments);
+                return;
+            } else {
+                this.postUnload.call(this);
+            }
         }
+        goToNextStep.apply(this, arguments);
     });
 })();

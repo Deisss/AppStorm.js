@@ -19,6 +19,7 @@ test('a.state.dualchildren', function() {
         children : [
             {
                 hash : 'unittest-dualchildren',
+                async: true,
                 load : function(chain) {
                     se(1, 1, 'Test loading first child');
                     chain.next();
@@ -30,6 +31,7 @@ test('a.state.dualchildren', function() {
             },
             {
                 hash : 'unittest-dualchildren',
+                async: true,
                 load : function(chain) {
                     se(1, 1, 'Test loading second child');
                     chain.next();
@@ -71,6 +73,7 @@ test('a.state.parameter-passthrew', function() {
 
     var test = {
         id : 'testloadpassthrew',
+        async: true,
         data : {
             objId : '{{memory : test_objid}}'
         },
@@ -112,6 +115,7 @@ test('a.state.request-abort', function() {
     var b = {
         id : 'child-b',
         hash : 'request-abort-b',
+        async: true,
         preLoad : function(chain) {
             se(true, true, 'Arrive on time');
             chain.next();
@@ -121,6 +125,7 @@ test('a.state.request-abort', function() {
     var c = {
         id : 'child-c',
         hash : 'request-abort-c',
+        async: true,
         preLoad : function(chain) {
             a.timer.once(chain.error, null, 500);
         },
@@ -157,6 +162,7 @@ test('a.state.request-element', function() {
     var state = {
         id:    'root',
         hash:  'wall-list',
+        async: true,
         data: {
             commentList: 'resource/data/state/wall-list-unittest.json'
         },

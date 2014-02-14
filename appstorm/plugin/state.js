@@ -16,21 +16,32 @@ a.state = new function() {
 
     /*
         Algorithm :
-            1) We get id list to add, id list to delete, by selecting branch corresponding to hashtag searched.
+            1) We get id list to add, id list to delete, by selecting branch
+            corresponding to hashtag searched.
             We include the loadAfter system to sub-select needed elements
-            2) From thoose 2 arrays, we remove duplicate (because it means we will unload to reload just after)
+            
+            2) From thoose 2 arrays, we remove duplicate
+            (because it means we will unload to reload just after)
 
-            => This tab contains all id (from delete or add), which should be manage by system.
-            => The 2 object contains add list, or delete list, used with array you can found what you should add, what you should delete
+            => This tab contains all id (from delete or add), which should
+               be manage by system.
+            => The 2 object contains add list, or delete list, used with
+               array you can found what you should add, what you should delete
 
-            3) We start by deleting, in this case we must take the "highest" level, it means latest added children.
-            So we start by searching maximum children level, and we delete from that level, to root
+            3) We start by deleting, in this case we must take the "highest"
+               level, it means latest added children.
+            So we start by searching maximum children level, and we delete
+            from that level, to root
 
-            4) We build exactly the opposite : we need root setup before adding a children to it.
+            4) We build exactly the opposite : we need root setup
+               before adding a children to it.
             So we start from base level, and go up until latest children
 
-            => Now system unbuild delete, and rebuild add, and takes care to not unbuild something which don't need to.
-            Also, The system is hanble to run synchronously for going faster (unloading/loading item list of same level is done synchronously)
+            => Now system unbuild delete, and rebuild add, and takes care
+               to not unbuild something which don't need to.
+            Also, The system is hanble to run synchronously for going
+            faster (unloading/loading item list of same level is done
+            synchronously)
     */
 
     /**
