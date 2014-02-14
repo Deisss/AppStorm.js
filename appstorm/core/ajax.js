@@ -197,7 +197,7 @@ a.ajax.prototype.send = function() {
     //Catching the state change
     if(async === true) {
         // Scope helper
-        var scope = {
+        var requestScope = {
             success     : this.success,
             params      : this.params,
             error       : this.error,
@@ -206,28 +206,37 @@ a.ajax.prototype.send = function() {
         };
 
         this.request.onreadystatechange = function() {
-            var status = scope.request.status;
+            // In some cases, the requestScope may be invalid
+            // If user cancel the ajax request, so we use this try/catch
+            // To prevent this error.
+            var status = -1;
+            try {
+                status = requestScope.request.status;
+            } catch(e) {
+                return;
+            }
             // Any 200 status will be validated
-            if(scope.request.readyState === 4) {
+            if(requestScope.request.readyState === 4) {
                 var great = (status >= 200 && status < 400);
                 if(great) {
                     // Everything went fine
-                    scope.success(
-                        scope.parseResult(scope.params, scope.request),
+                    requestScope.success(
+                        requestScope.parseResult(requestScope.params,
+                                                    requestScope.request),
                         status
                     );
                 } else {
                     // An error occurs
-                    scope.error(url, status);
+                    requestScope.error(url, status);
                 }
 
                 // We send a result
                 a.message.dispatch("a.ajax", {
                     success : great,
                     status  : status,
-                    url     : scope.params.url,
-                    method  : scope.method,
-                    params  : scope.params
+                    url     : requestScope.params.url,
+                    method  : requestScope.method,
+                    params  : requestScope.params
                 });
             }
         };
