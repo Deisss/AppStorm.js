@@ -18,11 +18,11 @@ test('a.hash', function() {
 
     chain('unittest1', function() {
         hashtag('unittest2');
-    });
+    }, 100);
 
     chain('unittest2', function() {
         a.hash.unbind('change', check);
-        window.location.href = '#';
+        hashtag('');
         st();
     }, 100);
 

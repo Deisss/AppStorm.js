@@ -523,7 +523,10 @@ test('a.state-loader', function() {
         st = start;
 
     var main = {
-        hash : 'astatemanager12',
+        hash: 'astatemanager12',
+
+        entry: 'body',
+        type:  'append',
 
         include : {
             css :       './resource/data/state/test.css',
@@ -531,7 +534,7 @@ test('a.state-loader', function() {
             js :        './resource/data/state/test.js',
             translate : './resource/data/state/translate.json'
         },
-        postLoad : function(chain) {
+        postLoad: function(chain) {
             // Testing JS files has been loaded (the function included inside
             // Js file exist in page
             se(typeof(unittest_state_js), 'function',
@@ -575,9 +578,9 @@ test('a.state-loader', function() {
 
     chain('astatemanager12', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
-    }, 100);
+    }, 500);
 
     hashtag('astatemanager12');
 });
@@ -653,7 +656,7 @@ test('a.state-multiData', function() {
 
     chain('astatemanager13', function() {
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
     }, 100);
 
@@ -682,7 +685,7 @@ test('a.state.begin-end', function() {
     chain('astatemanager14', function() {
         a.message.clear();
         a.state.clear();
-        window.location.href = '#';
+        hashtag('');
         st();
     }, 100);
 

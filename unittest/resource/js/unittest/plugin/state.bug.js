@@ -145,3 +145,40 @@ test('a.state.request-abort', function() {
 
     hashtag('request-abort-c');
 });
+
+
+test('a.state.request-element', function() {
+    stop();
+    expect(4);
+
+    var se = strictEqual,
+        st = start;
+
+    var state = {
+        id:    'root',
+        hash:  'wall-list',
+        data: {
+            commentList: 'resource/data/state/wall-list-unittest.json'
+        },
+        converter: function(d) {
+            se(d.commentList.length, 3);
+            se(d.commentList[0].id, 1);
+            se(d.commentList[1].id, 23);
+            se(d.commentList[2].id, 20);
+        },
+        // Callbacks
+        postLoad: function(chain) {
+            chain.next();
+        }
+    };
+
+    a.state.add(state);
+
+    chain('wall-list', function() {
+        a.state.clear();
+        hashtag('');
+        st();
+    }, 100);
+
+    hashtag('wall-list');
+});
