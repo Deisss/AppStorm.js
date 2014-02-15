@@ -445,6 +445,14 @@ test('a.translate.translate-subelement', function() {
 });
 
 
+
+/*
+---------------------------------
+  BEHAVIOR RELATED
+---------------------------------
+*/
+
+
 // Simple easy tag tag elements translation
 test('a.translate.tag-element', function() {
     // We generate a new translate with <tag> inside
@@ -512,10 +520,14 @@ test('a.translate-tag-element-not-enough', function() {
     inside2.innerHTML = 'inside2';
     doc.appendChild(inside2);
 
+    var inside3 = document.createElement('a');
+    inside3.innerHTML = 'inside3';
+    doc.appendChild(inside3);
+
     a.translate.setLanguage('en', false);
     a.translate.translate(doc);
 
     strictEqual(doc.textContent,
-        'superb text inside1 split with many tags inside2',
+        'superb text inside1 split with many tags inside2inside3',
         'Test auto apply value');
 });
