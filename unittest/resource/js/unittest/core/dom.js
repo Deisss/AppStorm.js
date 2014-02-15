@@ -266,8 +266,7 @@ test('a.dom.children.toggleClass', function() {
 });
 
 // Test click system
-test('a.dom.children.bind', function() {
-    stop();
+asyncTest('a.dom.children.bind', function() {
     expect(1);
 
     // Internal function to fire click event
@@ -281,15 +280,12 @@ test('a.dom.children.bind', function() {
         }
     };
 
-    var se = strictEqual,
-        st = start;
-
     var click = function() {
-        se(true, true, 'Test click has been binded');
+        strictEqual(true, true, 'Test click has been binded');
 
         // Unbind and continue
         a.dom.id('a.dom.testid').unbind('click', click);
-        st();
+        start();
     };
 
     a.dom.id('a.dom.testid').bind('click', click);
@@ -299,8 +295,7 @@ test('a.dom.children.bind', function() {
 });
 
 // Test unbinding does work
-test('a.dom.children.unbind', function() {
-    stop();
+asyncTest('a.dom.children.unbind', function() {
     expect(1);
 
     // Internal function to fire click event
@@ -314,12 +309,9 @@ test('a.dom.children.unbind', function() {
         }
     };
 
-    var se = strictEqual,
-        st = start;
-
     var click = function() {
         alert('If you see this message it means unbind did not unbind...');
-        se(true, false, 'Test click should not be fired');
+        strictEqual(true, false, 'Test click should not be fired');
     };
 
     a.dom.id('a.dom.testid').bind('click', click);
@@ -330,9 +322,7 @@ test('a.dom.children.unbind', function() {
 
     strictEqual(true, true, 'Fake test');
 
-    a.timer.once(function() {
-        st();
-    }, null, 100);
+    setTimeout(start, 100);
 });
 
 // Test getting sub element by tag
@@ -386,8 +376,6 @@ test('a.dom.children.attribute', function() {
 
 // Quite the same as attribute, but with (data- used always before)
 test('a.dom.children.data', function() {
-    // Getter
-
     // Simple element
     var single = a.dom.id('a.dom.testidattr').tag('span')
             .data('attr-test');
@@ -577,8 +565,7 @@ test('a.dom.children.replace', function() {
 });
 
 // Test data each
-test('a.dom.children.each', function() {
-    stop();
+asyncTest('a.dom.children.each', function() {
     expect(8);
 
     var se = strictEqual,
@@ -594,12 +581,10 @@ test('a.dom.children.each', function() {
         } else {
             se(this.id, 'a.dom.children.parenttest', 'Test id');
         }
-        se(a, 1, 'Test first parameter');
-        se(b, 2, 'Test second parameter');
-        se(c, 'test', 'Test third parameter');
+        strictEqual(a, 1, 'Test first parameter');
+        strictEqual(b, 2, 'Test second parameter');
+        strictEqual(c, 'test', 'Test third parameter');
     }, 1, 2, 'test');
 
-    a.timer.once(function() {
-        st();
-    }, null, 50);
+    setTimeout(start, 50);
 });

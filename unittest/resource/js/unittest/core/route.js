@@ -2,17 +2,24 @@
 
 module('core/route.js');
 
-// Test entering route system
-test('a.route.enter', function() {
-    stop();
-    expect(1);
+testModuleStart('core/route.js', function() {
+    hashtag('');
+});
 
-    var se = strictEqual,
-        st = start;
+testModuleDone('core/route.js', function() {
+    hashtag('');
+});
+
+
+
+
+// Test entering route system
+asyncTest('a.route.enter', function() {
+    expect(1);
 
     // Dummy function to test entering route element
     function checkRoute(hash) {
-        se(hash, 'unittest-route1', 'Test entering');
+        strictEqual(hash, 'unittest-route1', 'Test entering');
     };
 
     // Binding function to route
@@ -24,24 +31,19 @@ test('a.route.enter', function() {
 
     chain('unittest-noroute1', function() {
         a.route.unbind('unittest-route1', checkRoute);
-        hashtag('');
-        st();
+        start();
     }, 100);
 
     hashtag('unittest-route1');
 });
 
 // Test leaving route system
-test('a.route.leave', function() {
-    stop();
+asyncTest('a.route.leave', function() {
     expect(1);
-
-    var se = strictEqual,
-        st = start;
 
     // Dummy function to test leaving route element
     function checkRoute(hash) {
-        se(hash, 'unittest-route2', 'Test leaving');
+        strictEqual(hash, 'unittest-route2', 'Test leaving');
     };
 
     // Binding function to route
@@ -53,8 +55,7 @@ test('a.route.leave', function() {
 
     chain('unittest-noroute2', function() {
         a.route.unbind('unittest-route2', checkRoute, 'leave');
-        hashtag('');
-        st();
+        start();
     }, 100);
 
     // Starting system
@@ -62,16 +63,12 @@ test('a.route.leave', function() {
 });
 
 // Test entering - otherwise system
-test('a.route.enter-otherwise', function() {
-    stop();
+asyncTest('a.route.enter-otherwise', function() {
     expect(2);
-
-    var se = strictEqual,
-        st = start;
 
     // Dummy function to test entering route element
     function checkOtherwise() {
-        se(1, 1, 'Test otherwise enter');
+        strictEqual(1, 1, 'Test otherwise enter');
     };
 
     // Binding function to route
@@ -83,24 +80,19 @@ test('a.route.enter-otherwise', function() {
 
     chain('unittest-route-nootherwise1', function() {
        a.route.otherwise(null);
-        window.location.href = '#';
-        st();
+        start();
     }, 100);
 
     hashtag('unittest-route-otherwise1');
 });
 
 // Test leaving - otherwise system
-test('a.route.leaving-otherwise', function() {
-    stop();
+asyncTest('a.route.leaving-otherwise', function() {
     expect(2);
-
-    var se = strictEqual,
-        st = start;
 
     // Dummy function to test leaving route element
     function checkOtherwise() {
-        se(1, 1, 'Test otherwise leaving');
+        strictEqual(1, 1, 'Test otherwise leaving');
     };
 
     // Binding function to route
@@ -112,8 +104,7 @@ test('a.route.leaving-otherwise', function() {
 
     chain('unittest-route-nootherwise2', function() {
         a.route.otherwise(null, 'leave');
-        window.location.href = '#';
-        st();
+        start();
     }, 100);
 
     hashtag('unittest-route-otherwise2');

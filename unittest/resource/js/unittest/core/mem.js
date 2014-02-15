@@ -2,6 +2,16 @@
 
 module('core/mem.js');
 
+testModuleDone('core/mem.js', function() {
+    var list = a.mem.list();
+
+    for(var i in list) {
+        a.mem.remove(i);
+    }
+});
+
+
+
 // Test mem system
 test('a.mem.default', function() {
     a.mem.set('some-test', 'hello');

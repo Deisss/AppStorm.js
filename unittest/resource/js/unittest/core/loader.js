@@ -3,14 +3,8 @@
 module('core/loader.js');
 
 // Testing loading js file threw 'script' tag
-test('a.loader.js', function() {
-    stop();
+asyncTest('a.loader.js', function() {
     expect(1);
-
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     /*
      * We load a JS file, on this file there is a function not registrated right now
@@ -18,8 +12,8 @@ test('a.loader.js', function() {
     */
 
     var success = function() {
-        se(true, true, 'JS file loading success');
-        st();
+        strictEqual(true, true, 'JS file loading success');
+        start();
     };
 
     // Loading file
@@ -29,13 +23,8 @@ test('a.loader.js', function() {
 });
 
 // Testing loading jsonp file threw 'script' tag
-test('a.loader.jsonp', function() {
-    stop();
+asyncTest('a.loader.jsonp', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     /*
      * JSONP is almost the same as JS, 
@@ -43,8 +32,8 @@ test('a.loader.jsonp', function() {
      * window scope (because it will be called from script directly)
     */
     window.unittest_load_jsonp = function(content) {
-        se(content.result, 'ok', 'JSONP file loading success');
-        st();
+        strictEqual(content.result, 'ok', 'JSONP file loading success');
+        start();
     };
 
     // Loading file
@@ -52,47 +41,35 @@ test('a.loader.jsonp', function() {
 });
 
 // Testing loading json file threw ajax mode
-test('a.loader.json', function() {
-    stop();
+asyncTest('a.loader.json', function() {
     expect(1);
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // Loading file
-    a.loader.json('./resource/data/loader/test.json', function(content, status) {
-        se(content.data, 'nice', 'JSON file loading success');
-        st();
+    a.loader.json('./resource/data/loader/test.json',
+    function(content, status) {
+        strictEqual(content.data, 'nice', 'JSON file loading success');
+        start();
     });
 });
 
 // Testing loading json file threw ajax mode
-test('a.loader.xml', function() {
-    stop();
+asyncTest('a.loader.xml', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // Loading file
     a.loader.xml('./resource/data/loader/test.xml', function(content, status) {
-        se(content.getElementsByTagName('bodyt')[0].childNodes[0].nodeValue, 'Content', 'Testing XML loading');
-        st();
+        strictEqual(content.getElementsByTagName('bodyt')[0].childNodes[0]
+                            .nodeValue, 'Content', 'Testing XML loading');
+        start();
     });
 });
 
 // Testing loading CSS files threw 'link' tag
-test('a.loader.css', function() {
-    stop();
+asyncTest('a.loader.css', function() {
     expect(1);
 
     // We create a dummy HTML tag, we load a specific CSS files
     // Then we check style apply correctly (the style comes from CSS files)
-
-    // Prevent scope change
-    var se = strictEqual, st = start;
 
     var div = document.createElement('div');
     div.style.display = 'none';
@@ -106,54 +83,46 @@ test('a.loader.css', function() {
 
     // Loading file
     a.loader.css('./resource/data/loader/test.css', function() {
-        var el = document.getElementById('unittest_load_css');
+        var el = document.getElementById('unittest_load_css'),
+            height = '';
 
-        var height = '';
-        if (el.currentStyle) {
-            height = el.currentStyle['height'];
-        } else if (window.getComputedStyle) {
-            height = document.defaultView.getComputedStyle(el,null).getPropertyValue('height');
-        }
-        se(height, '20px', 'Test CSS applies correctly');
-        st();
+        // We wait a little to be sure CSS is parsed by system
+        setTimeout(function() {
+            if (el.currentStyle) {
+                height = el.currentStyle['height'];
+            } else if (window.getComputedStyle) {
+                height = document.defaultView.getComputedStyle(el,null)
+                                        .getPropertyValue('height');
+            }
+
+            strictEqual(height, '20px', 'Test CSS applies correctly');
+            start();
+        }, 200);
     });
 });
 
 // Testing loading html files
-test('a.loader.html', function() {
-    stop();
+asyncTest('a.loader.html', function() {
     expect(1);
-
-    /*
-     * We just check content given
-    */
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // Loading file
     a.loader.html('./resource/data/loader/test.html', function(content) {
-        se(content, '<a>ok</a>', 'Test HTML applies correctly');
-        st();
+        strictEqual(content, '<a>ok</a>', 'Test HTML applies correctly');
+        start();
     });
 });
 
 // Testing loading JavaFX files
-/*test('a.loader.javafx', function() {
-    stop();
+/*asyncTest('a.loader.javafx', function() {
     expect(1);
 
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // Loading file
-    a.loader.javafx(a.url + 'vendor/storage/javafx/JavaFXStorage.jar', function() {
+    a.loader.javafx(a.url + 'vendor/storage/javafx/JavaFXStorage.jar',
+    function() {
         var t = document.getElementById('javafxstorage');
-        se(t.Packages.javafxstorage.localStorage.testData(), true, 'Test system is loaded');
-        st();
+        strictEqual(t.Packages.javafxstorage.localStorage.testData(),
+                                true, 'Test system is loaded');
+        start();
     }, {
         code : 'javafxstorage.Main',
         id : 'javafxstorage'
@@ -162,14 +131,8 @@ test('a.loader.html', function() {
 
 
 // Testing loading Flash files
-test('a.loader.flash', function() {
-    stop();
+asyncTest('a.loader.flash', function() {
     expect(1);
-
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // Append to root a div for recieving flash
     var root = document.createElement('div');
@@ -191,23 +154,18 @@ test('a.loader.flash', function() {
     };
 
     // Loading file
-    a.loader.flash(a.url + 'vendor/storage/flash/localStorage.swf', function(e) {
+    a.loader.flash(a.url + 'vendor/storage/flash/localStorage.swf',
+    function(e) {
         var el = document.getElementById(data.id);
-        se(el.testData(), true, 'Test system is loaded');
-        st();
+        strictEqual(el.testData(), true, 'Test system is loaded');
+        start();
     }, data);
 });
 
 
 // Testing loading Silverlight files
-test('a.loader.silverlight', function() {
-    stop();
+asyncTest('a.loader.silverlight', function() {
     expect(1);
-
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // Append to root a div for recieving silverlight
     var root = document.createElement('div');
@@ -228,9 +186,10 @@ test('a.loader.silverlight', function() {
     };
 
     // Loading file
-    a.loader.silverlight(a.url + 'vendor/storage/silverlight/silverlightStorage.xap', function(e) {
+    a.loader.silverlight(a.url +
+        'vendor/storage/silverlight/silverlightStorage.xap', function(e) {
         var el = document.getElementById(data.id);
-        se(el.Content.store.testData(), true, 'Test system is loaded');
-        st();
+        strictEqual(el.Content.store.testData(), true,'Test system is loaded');
+        start();
     }, data);
 });

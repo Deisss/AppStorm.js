@@ -8,13 +8,8 @@ module('core/ajax.js');
 ---------------------------------
 */
 // Test sending header and getting reply (may fail on some server due to PHP side limit)
-test('a.ajax.header', function() {
-    stop();
+asyncTest('a.ajax.header', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/header.php',
@@ -24,8 +19,8 @@ test('a.ajax.header', function() {
             unittest : 'youpi'
         }
     }, function(res){
-        se(res, 'youpi', 'Testing header passed threw request');
-        st();
+        strictEqual(res, 'youpi', 'Testing header passed threw request');
+        start();
     });
 
     // Starting and waiting reply
@@ -37,25 +32,19 @@ test('a.ajax.header', function() {
   ABORT RELATED
 ---------------------------------
 */
-test('a.ajax.abort', function() {
-    stop();
+asyncTest('a.ajax.abort', function() {
     expect(1);
-
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/abort.php',
         type : 'raw',
         cache : true
     }, function(){
-        se(false, true, 'The abort has not been used');
-        st();
+        strictEqual(false, true, 'The abort has not been used');
+        start();
     }, function() {
-        se(true, true, 'abort works');
-        st();
+        strictEqual(true, true, 'abort works');
+        start();
     });
 
     // Starting and waiting reply
@@ -70,8 +59,7 @@ test('a.ajax.abort', function() {
 ---------------------------------
 */
 // Usage of defaultOptions
-test('a.ajax.defaultOptions', function() {
-    stop();
+asyncTest('a.ajax.defaultOptions', function() {
     expect(2);
 
     // We setup same request as header one, but with defaultOptions
@@ -84,26 +72,22 @@ test('a.ajax.defaultOptions', function() {
         }
     });
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // Test url
-    strictEqual(a.getDefaultAjaxOptions().url, './resource/data/ajax/header.php', 'Test default options stored');
+    strictEqual(a.getDefaultAjaxOptions().url,
+            './resource/data/ajax/header.php', 'Test default options stored');
 
     var ajx = new a.ajax({}, function(res){
-        se(res, 'youpi', 'Testing header passed threw request');
+        strictEqual(res, 'youpi', 'Testing header passed threw request');
         // Now test is done => clear
         a.setDefaultAjaxOptions({});
-        st();
+        start();
     });
 
     // Starting and waiting reply
     ajx.send();
 });
 
-test('a.ajax.defaultOptions-mixed', function() {
-    stop();
+asyncTest('a.ajax.defaultOptions-mixed', function() {
     expect(2);
 
     // We setup same request as header one, but with defaultOptions
@@ -116,22 +100,20 @@ test('a.ajax.defaultOptions-mixed', function() {
         }
     });
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // Test url
-    strictEqual(a.getDefaultAjaxOptions().url, './resource/data/ajax/data.php', 'Test default options stored');
+    strictEqual(a.getDefaultAjaxOptions().url,
+            './resource/data/ajax/data.php', 'Test default options stored');
 
     var ajx = new a.ajax({
         data : {
             second : 'great'
         }
     }, function(res){
-        se(res, 'get=unittest|greatsecond|great', 'Testing data passed threw request (mixed between default and options)');
+        strictEqual(res, 'get=unittest|greatsecond|great',
+    'Testing data passed threw request (mixed between default and options)');
         // Now test is done => clear
         a.setDefaultAjaxOptions({});
-        st();
+        start();
     });
 
     // Starting and waiting reply
@@ -144,21 +126,16 @@ test('a.ajax.defaultOptions-mixed', function() {
 ---------------------------------
 */
 // Test JSON support
-test('a.ajax.json', function() {
-    stop();
+asyncTest('a.ajax.json', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/test.json',
         type : 'json',
         cache : true
     }, function(res){
-        se(res.note.body, 'Content', 'Testing JSON loading');
-        st();
+        strictEqual(res.note.body, 'Content', 'Testing JSON loading');
+        start();
     });
 
     // Starting and waiting reply
@@ -166,42 +143,35 @@ test('a.ajax.json', function() {
 });
 
 // test XML support
-test('a.ajax.xml', function() {
-    stop();
+asyncTest('a.ajax.xml', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/test.xml',
         type : 'xml',
         cache : true
     }, function(res){
-        se(res.getElementsByTagName('bodyt')[0].childNodes[0].nodeValue, 'Content', 'Testing XML loading');
-        st();
+        strictEqual(res.getElementsByTagName('bodyt')[0].childNodes[0]
+                        .nodeValue, 'Content', 'Testing XML loading');
+        start();
     });
+
     ajx.send();
 });
 
 // Test raw data (all other) support
-test('a.ajax.raw', function() {
-    stop();
+asyncTest('a.ajax.raw', function() {
     expect(2);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/test.raw',
         cache : true
     }, function(res){
         // Checking no parsing has been done (XML, then JSON)
-        se(typeof(res.getElementsByTagName), 'undefined', 'Testing raw data');
-        se(typeof(res.note), 'undefined', 'Testing raw data');
-        st();
+        strictEqual(typeof(res.getElementsByTagName), 
+                                        'undefined', 'Testing raw data');
+        strictEqual(typeof(res.note), 'undefined', 'Testing raw data');
+        start();
     });
     ajx.send();
 });
@@ -227,13 +197,8 @@ test('a.ajax.synchronous', function() {
 });
 
 // Test async request
-test('a.ajax.asynchronous', function() {
-    stop();
+asyncTest('a.ajax.asynchronous', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/index.php',
@@ -242,9 +207,10 @@ test('a.ajax.asynchronous', function() {
             'trypost' : 1
         }
     }, function(res){
-        se(res, 'post', 'Testing asynchronous POST');
-        st();
+        strictEqual(res, 'post', 'Testing asynchronous POST');
+        start();
     });
+
     ajx.send();
 });
 
@@ -259,7 +225,8 @@ test('a.ajax.asynchronous-problem', function() {
     });
     var res = ajx.send();
 
-    strictEqual(res, 'No return in async mode', 'Testing asynchronous used as synchrnous one give bad results');
+    strictEqual(res, 'No return in async mode',
+            'Testing asynchronous used as synchrnous one give bad results');
 });
 
 
@@ -270,72 +237,56 @@ test('a.ajax.asynchronous-problem', function() {
 ---------------------------------
 */
 // Test cache
-test('a.ajax.get-cache', function() {
-    stop();
+asyncTest('a.ajax.get-cache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php'
     }, function(res){
-        // All parameters are printed to output, here cachedisable should appears
-        se(res, 'get=cachedisable', 'Testing get cache');
-        st();
+        // All parameters are printed to output,
+        // here cachedisable should appears
+        strictEqual(res, 'get=cachedisable', 'Testing get cache');
+        start();
     });
+
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.get-nocache', function() {
-    stop();
+asyncTest('a.ajax.get-nocache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true
     }, function(res){
-        // All parameters are printed to output, empty string means no parameters where passed...
-        se(res, 'get=', 'Testing get no cache');
-        st();
+        // All parameters are printed to output,
+        // empty string means no parameters where passed...
+        strictEqual(res, 'get=', 'Testing get no cache');
+        start();
     });
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.post-cache', function() {
-    stop();
+asyncTest('a.ajax.post-cache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'POST'
     }, function(res){
-        // All parameters are printed to output, here cachedisable should appears
-        se(res, 'post=cachedisable', 'Testing post cache');
-        st();
+        // All parameters are printed to output,
+        // here cachedisable should appears
+        strictEqual(res, 'post=cachedisable', 'Testing post cache');
+        start();
     });
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.post-nocache', function() {
-    stop();
+asyncTest('a.ajax.post-nocache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
@@ -346,133 +297,114 @@ test('a.ajax.post-nocache', function() {
             ok : 'ok'
         }
     }, function(res){
-        // All parameters are printed to output, empty string means no parameters where passed...
-        se(res, 'post=ok', 'Testing post no cache');
-        st();
+        // All parameters are printed to output,
+        // empty string means no parameters where passed...
+        strictEqual(res, 'post=ok', 'Testing post no cache');
+        start();
     });
+
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.put-cache', function() {
-    stop();
+asyncTest('a.ajax.put-cache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'PUT'
     }, function(res){
-        // All parameters are printed to output, here cachedisable should appears
-        se(res, 'put=cachedisable', 'Testing put cache');
-        st();
+        // All parameters are printed to output,
+        // here cachedisable should appears
+        strictEqual(res, 'put=cachedisable', 'Testing put cache');
+        start();
     });
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.put-nocache', function() {
-    stop();
+asyncTest('a.ajax.put-nocache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'PUT'
     }, function(res){
-        // All parameters are printed to output, empty string means no parameters where passed...
-        se(res, 'put=', 'Testing put no cache');
-        st();
+        // All parameters are printed to output,
+        // empty string means no parameters where passed...
+        strictEqual(res, 'put=', 'Testing put no cache');
+        start();
     });
+
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.delete-cache', function() {
-    stop();
+asyncTest('a.ajax.delete-cache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'DELETE'
     }, function(res){
-        // All parameters are printed to output, here cachedisable should appears
-        se(res, 'delete=cachedisable', 'Testing delete cache');
-        st();
+        // All parameters are printed to output,
+        // here cachedisable should appears
+        strictEqual(res, 'delete=cachedisable', 'Testing delete cache');
+        start();
     });
+
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.delete-nocache', function() {
-    stop();
+asyncTest('a.ajax.delete-nocache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'DELETE'
     }, function(res){
-        // All parameters are printed to output, empty string means no parameters where passed...
-        se(res, 'delete=', 'Testing delete no cache');
-        st();
+        // All parameters are printed to output,
+        // empty string means no parameters where passed...
+        strictEqual(res, 'delete=', 'Testing delete no cache');
+        start();
     });
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.options-cache', function() {
-    stop();
+asyncTest('a.ajax.options-cache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'OPTIONS'
     }, function(res){
-        // All parameters are printed to output, here cachedisable should appears
-        se(res, 'options=cachedisable', 'Testing options cache');
-        st();
+        // All parameters are printed to output,
+        // here cachedisable should appears
+        strictEqual(res, 'options=cachedisable', 'Testing options cache');
+        start();
     });
     ajx.send();
 });
 
 // Test cache
-test('a.ajax.options-nocache', function() {
-    stop();
+asyncTest('a.ajax.options-nocache', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'OPTIONS'
     }, function(res){
-        // All parameters are printed to output, empty string means no parameters where passed...
-        se(res, 'options=', 'Testing options no cache');
-        st();
+        // All parameters are printed to output,
+        // empty string means no parameters where passed...
+        strictEqual(res, 'options=', 'Testing options no cache');
+        start();
     });
+
     ajx.send();
 });
 
@@ -483,13 +415,8 @@ test('a.ajax.options-nocache', function() {
 ---------------------------------
 */
 // Test HTTP mode
-test('a.ajax.get-single', function() {
-    stop();
+asyncTest('a.ajax.get-single', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -498,20 +425,16 @@ test('a.ajax.get-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        se(res, 'get=gettest|ok', 'Testing get parameter');
-        st();
+        strictEqual(res, 'get=gettest|ok', 'Testing get parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.get-multiple', function() {
-    stop();
+asyncTest('a.ajax.get-multiple', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -521,20 +444,16 @@ test('a.ajax.get-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        se(res, 'get=gettest|oksecondtest|oktoo', 'Testing get parameter');
-        st();
+        strictEqual(res, 'get=gettest|oksecondtest|oktoo',
+                                    'Testing get parameter');
+        start();
     });
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.post-single', function() {
-    stop();
+asyncTest('a.ajax.post-single', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -544,20 +463,16 @@ test('a.ajax.post-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        se(res, 'post=gettest|ok', 'Testing post parameter');
-        st();
+        strictEqual(res, 'post=gettest|ok', 'Testing post parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.post-multiple', function() {
-    stop();
+asyncTest('a.ajax.post-multiple', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -568,20 +483,17 @@ test('a.ajax.post-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        se(res, 'post=gettest|oksecondtest|oktoo', 'Testing post parameter');
-        st();
+        strictEqual(res, 'post=gettest|oksecondtest|oktoo',
+                                    'Testing post parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.put-single', function() {
-    stop();
+asyncTest('a.ajax.put-single', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -591,20 +503,16 @@ test('a.ajax.put-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        se(res, 'put=gettest|ok', 'Testing put parameter');
-        st();
+        strictEqual(res, 'put=gettest|ok', 'Testing put parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.put-multiple', function() {
-    stop();
+asyncTest('a.ajax.put-multiple', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -615,20 +523,17 @@ test('a.ajax.put-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        se(res, 'put=gettest|oksecondtest|oktoo', 'Testing put parameter');
-        st();
+        strictEqual(res, 'put=gettest|oksecondtest|oktoo',
+                                        'Testing put parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.delete-single', function() {
-    stop();
+asyncTest('a.ajax.delete-single', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -638,20 +543,16 @@ test('a.ajax.delete-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        se(res, 'delete=gettest|ok', 'Testing delete parameter');
-        st();
+        strictEqual(res, 'delete=gettest|ok', 'Testing delete parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.delete-multiple', function() {
-    stop();
+asyncTest('a.ajax.delete-multiple', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -662,20 +563,17 @@ test('a.ajax.delete-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        se(res, 'delete=gettest|oksecondtest|oktoo', 'Testing delete parameter');
-        st();
+        strictEqual(res, 'delete=gettest|oksecondtest|oktoo',
+                                            'Testing delete parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.options-single', function() {
-    stop();
+asyncTest('a.ajax.options-single', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -685,20 +583,16 @@ test('a.ajax.options-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        se(res, 'options=gettest|ok', 'Testing options parameter');
-        st();
+        strictEqual(res, 'options=gettest|ok', 'Testing options parameter');
+        start();
     });
+
     ajx.send();
 });
 
 // Test HTTP mode
-test('a.ajax.options-multiple', function() {
-    stop();
+asyncTest('a.ajax.options-multiple', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     var ajx = new a.ajax({
         url : './resource/data/ajax/data.php',
@@ -709,8 +603,10 @@ test('a.ajax.options-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        se(res, 'options=gettest|oksecondtest|oktoo', 'Testing options parameter');
-        st();
+        strictEqual(res, 'options=gettest|oksecondtest|oktoo',
+                                        'Testing options parameter');
+        start();
     });
+
     ajx.send();
 });

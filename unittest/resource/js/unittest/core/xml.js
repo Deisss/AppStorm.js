@@ -9,8 +9,10 @@ test('a.parser.xml.parse', function() {
 
     var doc = a.parser.xml.parse(xml);
 
-    strictEqual(doc.getElementsByTagName('something')[0].childNodes[0].nodeValue, 'ok', 'Test first xml value');
-    strictEqual(doc.getElementsByTagName('another')[0].childNodes[0].nodeValue, 'yatta', 'Test first xml value');
+    strictEqual(doc.getElementsByTagName('something')[0].childNodes[0]
+                                    .nodeValue, 'ok', 'Test first xml value');
+    strictEqual(doc.getElementsByTagName('another')[0].childNodes[0]
+                                .nodeValue, 'yatta', 'Test first xml value');
 });
 
 // Testing xml stringify

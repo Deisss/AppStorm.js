@@ -2,11 +2,19 @@
 
 module('core/console.js');
 
+testModuleDone('core/console.js', function() {
+    a.console.clear();
+});
+
+testModuleStart('core/console.js', function() {
+    a.console.clear();
+});
+
+
+
+
 // Testing console 'log' mode
 test('a.console.log', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.log('one log', null, false);
     a.console.log('second log', null, false);
     a.console.log('third log', null, false);
@@ -21,9 +29,6 @@ test('a.console.log', function() {
 
 // Testing console 'info' mode
 test('a.console.info', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.info('one information', null, false);
     a.console.info('second information', null, false);
     a.console.info('third information', null, false);
@@ -41,9 +46,6 @@ test('a.console.info', function() {
 
 // Testing console 'warning' mode
 test('a.console.warn', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.warn('one warning', null, false);
     a.console.warn('second warning', null, false);
     a.console.warn('third warning', null, false);
@@ -58,9 +60,6 @@ test('a.console.warn', function() {
 
 // Testing console 'error' mode
 test('a.console.error', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.error('one error', null, false);
     a.console.error('second error', null, false);
     a.console.error('third error', null, false);
@@ -75,9 +74,6 @@ test('a.console.error', function() {
 
 // Testing trace (console keep data...)
 test('a.console.trace', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.log('ok', null, false);
     a.console.log('ok2', null, false);
     a.console.log('ok3', null, false);
@@ -104,9 +100,6 @@ test('a.console.trace', function() {
 
 // Testing trace (console keep data...)
 test('a.console.trace-type', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.log('ok', null, false);
     a.console.log('ok2', null, false);
     a.console.log('ok3', null, false);
@@ -131,9 +124,6 @@ test('a.console.trace-type', function() {
 
 // Testing console clearing trace system
 test('a.console.clear', function() {
-    // Before testing, clear
-    a.console.clear();
-
     a.console.log('ok', null, false);
     a.console.warn('ok', null, false);
 

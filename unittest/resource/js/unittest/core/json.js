@@ -10,11 +10,15 @@ test('a.parser.json.parse', function() {
         fail1 = '{{{{';
 
     // Test working
-    deepEqual(a.parser.json.parse(json1), {ok : 'hello'}, 'Testing parsing simple json');
-    deepEqual(a.parser.json.parse(json2), {system : {ok : 'hello', second : 4}}, 'Testing parsing more complex json');
-    deepEqual(a.parser.json.parse(json3), ['a', 'b', 'c'], 'Testing parsing array');
+    deepEqual(a.parser.json.parse(json1), {ok : 'hello'},
+                                        'Testing parsing simple json');
+    deepEqual(a.parser.json.parse(json2), {system :
+            {ok : 'hello', second : 4}}, 'Testing parsing more complex json');
+    deepEqual(a.parser.json.parse(json3), ['a', 'b', 'c'],
+                                        'Testing parsing array');
     // Test fail
-    strictEqual(a.parser.json.parse(fail1), null, 'Testing wrong data give back a null value');
+    strictEqual(a.parser.json.parse(fail1), null,
+                                'Testing wrong data give back a null value');
 });
 
 // Test json stringify
@@ -36,9 +40,13 @@ test('a.parser.json.stringify', function() {
     mary.brother = john;
 
     // Test working
-    strictEqual(a.parser.json.stringify(obj1), '{"ok":"hello"}', 'Testing stringify simple object');
-    strictEqual(a.parser.json.stringify(obj2), '{"system":{"ok":"hello","second":4}}', 'Testing stringify more complex object');
+    strictEqual(a.parser.json.stringify(obj1),
+                        '{"ok":"hello"}', 'Testing stringify simple object');
+    strictEqual(a.parser.json.stringify(obj2),
+                        '{"system":{"ok":"hello","second":4}}',
+                        'Testing stringify more complex object');
     // Test fail (sending null value to replacer make it not working at all...
-    strictEqual(a.parser.json.stringify(john), '', 'Testing wrong data give empty string');
+    strictEqual(a.parser.json.stringify(john), '',
+                        'Testing wrong data give empty string');
 });
 

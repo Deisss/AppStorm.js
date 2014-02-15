@@ -2,34 +2,46 @@
 
 module('core/timer.js');
 
-// Test timer tick system
-test('a.timer.tick', function() {
-    stop();
-    expect(4);
-
+testModuleStart('core/timer.js', function() {
     a.timer.clear();
-    var se = strictEqual,
-        st = start;
+});
+
+testModuleDone('core/timer.js', function() {
+    a.timer.clear();
+});
+
+
+
+
+// Test timer tick system
+asyncTest('a.timer.tick', function() {
+    // We don't use expect as it can vary between 4 and 5 tick...
+    var tickCount = 0;
 
     var fct = function() {
-        se(true, true, 'tick');
+        strictEqual(true, true, 'tick');
+        tickCount++;
     };
     a.message.bind('a.timer.tick', fct);
 
     setTimeout(function() {
         a.message.unbind('a.timer.tick', fct);
-        st();
+
+        // The test can run between 4 and 5 tick (as setTimeout is not precise)
+        if(tickCount !== 4 && tickCount !== 5) {
+            // In this case, a problem occurs
+            ok(1==2, 'Test fail, it has to be between 4 and 5 asserts. ' +
+                'But instead it raise ' + tickCount + ' tests');
+        }
+
+        start();
     }, 200);
 });
 
 // Test add function
-test('a.timer.add-get', function() {
-    stop();
-    expect(5);
-
-    a.timer.clear();
-    var se = strictEqual,
-        st = start;
+asyncTest('a.timer.add-get', function() {
+    // We don't use expect as it can vary between 5 and 6 tick...
+    var tickCount = 3;
 
     // We test many timer
     var idNull = a.timer.add(null, null, 50);
@@ -39,47 +51,44 @@ test('a.timer.add-get', function() {
     strictEqual(elementNull.scope, null);
 
     var idElement = a.timer.add(function() {
-        se(true, true, 'function tick');
+        strictEqual(true, true, 'function tick');
+        tickCount++;
     }, null, 100);
 
     var elementElement = a.timer.get(idElement);
     strictEqual(elementElement.timeout, 100);
 
     setTimeout(function() {
-        a.timer.clear();
-        st();
+        // The test can run between 5 and 6 tick (as setTimeout is not precise)
+        if(tickCount !== 5 && tickCount !== 6) {
+            // In this case, a problem occurs
+            ok(1==2, 'Test fail, it has to be between 5 and 6 asserts. ' +
+                'But instead it raise ' + tickCount + ' tests');
+        }
+
+        start();
     }, 270);
 });
 
 // Test once function
-test('a.timer.once', function() {
-    stop();
+asyncTest('a.timer.once', function() {
     expect(1);
 
-    a.timer.clear();
-    var se = strictEqual,
-        st = start;
-
     a.timer.once(function() {
-        se(true, true, 'Test raise once');
+        strictEqual(true, true, 'Test raise once');
     }, null, 50);
 
-    setTimeout(function() {
-        a.timer.clear();
-        st();
-    }, 250);
+    setTimeout(start, 250);
 });
 
 // Test remove function
-test('a.timer.remove', function() {
-    stop();
+asyncTest('a.timer.remove', function() {
     expect(0);
 
     a.timer.clear();
-    var se = strictEqual;
 
     var id = a.timer.add(function() {
-        se(true, true, 'Test raise once');
+        strictEqual(true, true, 'Test raise once');
     }, null, 50);
 
     a.timer.remove(id);

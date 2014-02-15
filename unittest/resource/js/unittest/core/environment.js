@@ -2,6 +2,11 @@
 
 module('core/environment.js');
 
+testModuleDone('core/environment.js', function() {
+    a.environment.clear();
+});
+
+
 // Testing environment get/set and remove key from it
 test('a.environment.get-set-remove', function() {
     var env = a.environment;

@@ -2,16 +2,24 @@
 
 module('core/hash.js');
 
+testModuleStart('core/hash.js', function() {
+    hashtag('');
+});
+
+testModuleDone('core/hash.js', function() {
+    hashtag('');
+    a.hash.unbindAll('change');
+});
+
+
+
+
 // Start testing hash system
-test('a.hash', function() {
-    stop();
+asyncTest('a.hash', function() {
     expect(2);
 
-    var o = ok,
-        st = start;
-
     var check = function() {
-        o(1==1);
+        ok(1==1);
     };
 
     a.hash.bind('change', check);
@@ -20,11 +28,7 @@ test('a.hash', function() {
         hashtag('unittest2');
     }, 100);
 
-    chain('unittest2', function() {
-        a.hash.unbind('change', check);
-        hashtag('');
-        st();
-    }, 100);
+    chain('unittest2', start, 100);
 
     hashtag('unittest1');
 });

@@ -2,6 +2,14 @@
 
 module('a.js');
 
+testModuleDone('a.js', function() {
+    hashtag('');
+    a.setDefaultAjaxOptions({});
+});
+
+
+
+
 // Testing a found url...
 test('a.url', function() {
     ok(a.url !== '', 'Test url not empty');
@@ -27,11 +35,10 @@ test('a.isTrueObject', function() {
 test('a.scope', function() {
     var scope = {
         test: 'ok'
-    },
-        se = strictEqual;
+    };
 
     var fct = a.scope(function() {
-        se(this.test, 'ok', 'Test scope');
+        strictEqual(this.test, 'ok', 'Test scope');
     }, scope);
 
     fct();

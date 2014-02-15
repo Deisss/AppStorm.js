@@ -2,13 +2,19 @@
 
 module('core/message.js');
 
-// Testing bind function and dispatching event
-test('a.message.bind-dispatch', function() {
-    stop();
-    // We expect 2 times callback
-    expect(3);
-    // Clear before use
+testModuleStart('core/message.js', function() {
     a.message.clear();
+});
+
+testModuleDone('core/message.js', function() {
+    a.message.clear();
+});
+
+
+
+// Testing bind function and dispatching event
+asyncTest('a.message.bind-dispatch', function() {
+    expect(3);
 
     var callback = function() {
         ok(true, 'Checking callback response');
@@ -24,20 +30,16 @@ test('a.message.bind-dispatch', function() {
     a.message.bind('a.unittest', callback2);
     a.message.bind('a.unittest2', callback3);
 
-    start();
-
     // Now we have to start 2 events only
     a.message.dispatch('a.unittest');
     a.message.dispatch('a.unittest2');
+
+    setTimeout(start, 100);
 });
 
 // Testing unbind function
-test('a.message.unbind', function() {
-    stop();
-    // We expect 2 times callback
+asyncTest('a.message.unbind', function() {
     expect(2);
-    // Clear before use
-    a.message.clear();
 
     var callback = function() {
         ok(true, 'Checking callback response');
@@ -57,20 +59,16 @@ test('a.message.unbind', function() {
     a.message.unbind('a.unittest2', callback2);
     a.message.unbind('a.unittest2', callback3);
 
-    start();
-
     // Now we have to start 2 events only
     a.message.dispatch('a.unittest');
     a.message.dispatch('a.unittest2');
+
+    setTimeout(start, 100);
 });
 
 // Testing remove all listeners of the given type
-test('a.message.unbindAll', function() {
-    stop();
-    // We expect 2 times callback
+asyncTest('a.message.unbindAll', function() {
     expect(1);
-    // Clear before use
-    a.message.clear();
 
     var callback = function() {
         ok(true, 'Checking callback response');
@@ -89,19 +87,16 @@ test('a.message.unbindAll', function() {
     // Now we remove (only one will be remove, one is wrong here
     a.message.unbindAll('a.unittest');
 
-    start();
-
     // Now we have to start 2 events only
     a.message.dispatch('a.unittest');
     a.message.dispatch('a.unittest2');
+
+    setTimeout(start, 100);
 });
 
 // Testing message clearing
-test('a.message.clear', function() {
-    stop();
+asyncTest('a.message.clear', function() {
     expect(1);
-    // Clear before use
-    a.message.clear();
 
     // We add callback like normal
     var callback = function() {
@@ -117,8 +112,6 @@ test('a.message.clear', function() {
     // Now we clear
     a.message.clear();
 
-    start();
-
     var callback3 = function() {
         ok(true, 'Checking callback response');
     };
@@ -127,16 +120,14 @@ test('a.message.clear', function() {
     // Now we have to start 2 events only, only one callback will be fired
     a.message.dispatch('a.unittest');
     a.message.dispatch('a.unittest2');
+
+    setTimeout(start, 100);
 });
 
 
 // Testing eventListener does work with many sub object
-test('a.message.multiple-instance', function() {
-    stop();
+asyncTest('a.message.multiple-instance', function() {
     expect(5);
-    a.message.clear();
-
-    var se = strictEqual;
 
     var obj1 = function() {
         // Starting an object
@@ -170,22 +161,24 @@ test('a.message.multiple-instance', function() {
     var o2 = new obj2();
 
     o1.bind('obj.dispatch', function(data) {
-        se(data, 'obj1', 'Test obj1');
+        strictEqual(data, 'obj1', 'Test obj1');
     });
     o2.bind('obj.dispatch', function(data) {
-        se(data, 'obj2', 'Test obj2');
+        strictEqual(data, 'obj2', 'Test obj2');
     });
 
     o1.bind('obj1.clear', function() {
-        se(true, true, 'test clear');
+        strictEqual(true, true, 'test clear');
     });
     o2.bind('obj2.clear', function() {
-        se(true, true, 'test clear');
+        strictEqual(true, true, 'test clear');
     });
 
-    a.message.bind('a.message.clear', function() {
-        se(true, true, 'test clear');
-    });
+    function doClear() {
+        strictEqual(true, true, 'test clear');
+    };
+
+    a.message.bind('a.message.clear', doClear);
 
 
     //Start system
@@ -195,5 +188,8 @@ test('a.message.multiple-instance', function() {
     o2.clear();
     a.message.clear();
 
-    start();
+    setTimeout(function() {
+        a.message.unbind('a.message.clear', doClear);
+        start();
+    }, 100);
 });

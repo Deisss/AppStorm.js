@@ -182,8 +182,6 @@ test('a.parameter.removeParameterType', function() {
 
 // Test extracting elements from system
 test('a.parameter.extract-old-unittest', function() {
-    expect(26);
-
     var param1 = 
     'this is a string with {{type :    [a-zA-Z0-9]?}} and also {{id : .*  }}',
         param2 = 'another {{ example : \\d+}} and also {{this : a|b}}',
@@ -244,8 +242,6 @@ test('a.parameter.extract-old-unittest', function() {
 
 // Testing the replace content system
 test('a.parameter.replace-old-unittest', function() {
-    expect(8);
-
     var param1 =
     'this is a string with {{type :    [a-zA-Z0-9]?}} and also {{id : .*  }}',
         param2 = 'another {{ example : \\d+}} and also {{this : a|b}}',
@@ -306,8 +302,6 @@ test('a.parameter.replace-old-unittest', function() {
 
 // Testing extrapolate data from content
 test('a.parameter.extrapolate-old-unittest', function() {
-    expect(6);
-
     var t1 = [
             'This test need to be {{hash : type}} to be ' +
             'replaced but not {{everywhere}}',

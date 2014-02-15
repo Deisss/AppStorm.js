@@ -2,6 +2,16 @@
 
 module('core/acl.js');
 
+testModuleDone('core/acl.js', function() {
+    a.acl.unbindAll('change');
+    a.message.unbindAll('a.acl.change');
+
+    a.acl.setRoleList([]);
+    a.acl.setCurrentRole('');
+});
+
+
+
 // Test current role get and set
 test('a.acl.currentRole', function() {
     a.acl.setCurrentRole('super-something');
@@ -64,15 +74,11 @@ test('a.acl.refused', function() {
 
 
 // Test event based is well performed
-test('a.acl-event', function() {
-    stop();
+asyncTest('a.acl-event', function() {
     expect(2);
 
-    var se = strictEqual,
-        st = start;
-
     function testEvent(role) {
-        se(role, 'role-event-based');
+        strictEqual(role, 'role-event-based');
     };
 
     a.message.bind('a.acl.change', testEvent);
@@ -80,9 +86,5 @@ test('a.acl-event', function() {
 
     a.acl.setCurrentRole('role-event-based');
 
-    setTimeout(function() {
-        a.message.unbind('a.acl.change', testEvent);
-        a.acl.unbind('change', testEvent);
-        st();
-    }, 100);
+    setTimeout(start, 100);
 });
