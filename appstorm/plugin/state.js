@@ -3,13 +3,8 @@
 // dependencies: a.parameter, a.acl, a.hash
 
 // TODO: unit test state on acl changes (unit test the fact it's updated in every states)
-// TODO: create loadAsync: true/false and unloadAsync: true/false:
-        // manage the way the load/unload is done (if chain.next is needed or done on state.chain directly)
-        // Can be also a single string, or array of strings
-        // => unit test it
 // TODO: create uri:// and model:// to create kind of special system for hash, do that
 // only on add, like uri will trace all parents to find final url...
-// TODO: create the bootOnLoad
 a.state = new function() {
     var tree   = {},
         loaded = [];
