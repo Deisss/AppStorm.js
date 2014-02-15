@@ -40,12 +40,12 @@ asyncTest('a.template.get-notworking', function() {
 asyncTest('a.template.get-translation', function() {
     expect(2);
 
-    var userLanguage = a.language.getCurrent();
+    var userLanguage = a.translate.getLanguage();
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest', 'welcome',
+    a.translate.add('unittest', 'welcome',
             'The welcome page', false);
-    a.language.setCurrent('unittest', false);
+    a.translate.setLanguage('unittest', false);
 
     a.template.get('./resource/data/page.template/tmpl-translation.html', {},
         function(content) {
@@ -59,7 +59,7 @@ asyncTest('a.template.get-translation', function() {
                 'The welcome page', 'Test basic template loading');
 
             // Going back to default
-            a.language.setCurrent(userLanguage);
+            a.translate.setLanguage(userLanguage);
 
             start();
     });
@@ -97,14 +97,14 @@ asyncTest('a.template.get-complex', function() {
         ]
     };
 
-    var userLanguage = a.language.getCurrent();
+    var userLanguage = a.translate.getLanguage();
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest1', 'stooges',
+    a.translate.add('unittest1', 'stooges',
         'One of the member was {{name}}', false);
-    a.language.addSingleTranslation('unittest2', 'stooges',
+    a.translate.add('unittest2', 'stooges',
         'Other language said it was {{name}}', false);
-    a.language.setCurrent('unittest1', false);
+    a.translate.setLanguage('unittest1', false);
 
     a.template.get('./resource/data/page.template/tmpl-complex.html', data,
         function(content) {
@@ -118,10 +118,10 @@ asyncTest('a.template.get-complex', function() {
                 .nodeValue,
                 'One of the member was Larry', 'Test basic template loading');
 
-            a.language.setCurrent('unittest2', false);
+            a.translate.setLanguage('unittest2', false);
             // Manually translate because element is not existing in DOM,
             // only in memory
-            a.language.translate(content);
+            a.translate.translate(content);
 
             strictEqual(content.getElementsByTagName('a')[0].childNodes[0]
                 .nodeValue,
@@ -131,7 +131,7 @@ asyncTest('a.template.get-complex', function() {
             'Other language said it was Larry', 'Test basic template loading');
 
             // Going back to default
-            a.language.setCurrent(userLanguage);
+            a.translate.setLanguage(userLanguage);
 
             start();
     });
@@ -174,13 +174,13 @@ asyncTest('a.template.replace-translation', function() {
     el.style.display = 'none';
     document.body.appendChild(el);
 
-    var userLanguage = a.language.getCurrent(),
+    var userLanguage = a.translate.getLanguage(),
         result = document.getElementById(id);
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest', 'welcome', 'The welcome page',
+    a.translate.add('unittest', 'welcome', 'The welcome page',
             false);
-    a.language.setCurrent('unittest', false);
+    a.translate.setLanguage('unittest', false);
 
     a.template.get('./resource/data/page.template/tmpl-translation.html', {},
         function(content) {
@@ -189,7 +189,7 @@ asyncTest('a.template.replace-translation', function() {
                     .nodeValue,
                     'The welcome page', 'Test basic template loading');
                 // Going back to default
-                a.language.setCurrent(userLanguage);
+                a.translate.setLanguage(userLanguage);
 
                 start();
             });
@@ -215,14 +215,14 @@ asyncTest('a.template.replace-complex', function() {
     el.style.display = 'none';
     document.body.appendChild(el);
 
-    var userLanguage = a.language.getCurrent();
+    var userLanguage = a.translate.getLanguage();
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest1', 'stooges',
+    a.translate.add('unittest1', 'stooges',
         'One of the member was {{name}}', false);
-    a.language.addSingleTranslation('unittest2', 'stooges',
+    a.translate.add('unittest2', 'stooges',
         'Other language said it was {{name}}', false);
-    a.language.setCurrent('unittest1', false);
+    a.translate.setLanguage('unittest1', false);
 
     var result = document.getElementById(id);
 
@@ -236,10 +236,10 @@ asyncTest('a.template.replace-complex', function() {
                     .nodeValue,
                 'One of the member was Larry', 'Test basic template loading');
 
-                a.language.setCurrent('unittest2', false);
+                a.translate.setLanguage('unittest2', false);
                 // Manually translate because element is not existing in DOM,
                 // only in memory
-                a.language.translate();
+                a.translate.translate();
 
                 strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
@@ -251,7 +251,7 @@ asyncTest('a.template.replace-complex', function() {
                     'Test basic template loading');
 
                 // Going back to default
-                a.language.setCurrent(userLanguage);
+                a.translate.setLanguage(userLanguage);
                 start();
             });
     });
@@ -290,13 +290,13 @@ asyncTest('a.template.append-translation', function() {
     var id = 'a.template.replace-translation';
     var data = {};
 
-    var userLanguage = a.language.getCurrent();
+    var userLanguage = a.translate.getLanguage();
     var result = document.getElementById(id);
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest', 'welcome',
+    a.translate.add('unittest', 'welcome',
         'The welcome page', false);
-    a.language.setCurrent('unittest');
+    a.translate.setLanguage('unittest');
 
     a.template.get('./resource/data/page.template/tmpl-append.html', {},
         function(content) {
@@ -311,7 +311,7 @@ asyncTest('a.template.append-translation', function() {
                     'append', 'Test content append');
 
                 // Going back to default
-                a.language.setCurrent(userLanguage);
+                a.translate.setLanguage(userLanguage);
 
                 start();
             });
@@ -330,18 +330,18 @@ asyncTest('a.template.append-complex', function() {
         ]
     };
 
-    var userLanguage = a.language.getCurrent();
+    var userLanguage = a.translate.getLanguage();
 
     // Add translate, put good language
-    a.language.addSingleTranslation('unittest1', 'stooges',
+    a.translate.add('unittest1', 'stooges',
         'One of the member was {{name}}', false);
-    a.language.addSingleTranslation('unittest1', 'woot',
+    a.translate.add('unittest1', 'woot',
         'He study in {{label}}', false);
-    a.language.addSingleTranslation('unittest2', 'stooges',
+    a.translate.add('unittest2', 'stooges',
         'Other language said it was {{name}}', false);
-    a.language.addSingleTranslation('unittest2', 'woot',
+    a.translate.add('unittest2', 'woot',
         'Another stydy in {{label}}', false);
-    a.language.setCurrent('unittest1');
+    a.translate.setLanguage('unittest1');
 
     var result = document.getElementById(id);
 
@@ -363,10 +363,10 @@ asyncTest('a.template.append-complex', function() {
                     .childNodes[0].nodeValue, 'He study in Math',
                     'Test basic template loading');
 
-                a.language.setCurrent('unittest2');
+                a.translate.setLanguage('unittest2');
                 // Manually translate because element is not existing in DOM,
                 // only in memory
-                a.language.translate();
+                a.translate.translate();
 
                 strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
@@ -384,7 +384,7 @@ asyncTest('a.template.append-complex', function() {
                     'Test basic template loading');
 
                 // Going back to default
-                a.language.setCurrent(userLanguage);
+                a.translate.setLanguage(userLanguage);
 
                 start();
             });

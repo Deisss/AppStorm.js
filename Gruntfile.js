@@ -38,7 +38,7 @@ module.exports = function(grunt) {
           'appstorm/plugin/keyboard.js',
           'appstorm/plugin/callback.js',
           'appstorm/plugin/storage.js',
-          'appstorm/plugin/language.js',
+          'appstorm/plugin/translate.js',
           'appstorm/plugin/form.js',
           'appstorm/plugin/state.js',
           'appstorm/plugin/state.chain.js',
@@ -46,8 +46,7 @@ module.exports = function(grunt) {
           'appstorm/plugin/state.protocol.js',
           'appstorm/plugin/binding.js',
           'appstorm/plugin/model.js',
-          'appstorm/plugin/template.js',
-          'appstorm/plugin/translate.js'
+          'appstorm/plugin/template.js'
         ],
         dest: 'appstorm/appstorm.concat.js',
         nonull: true,

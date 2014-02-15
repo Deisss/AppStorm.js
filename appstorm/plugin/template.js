@@ -7,9 +7,7 @@
         core/console.js
         core/message.js
         plugin/callback.js
-        plugin/language.js (optional)
-
-        ** handlebars.js IS NEEDED AND IS EXTERNAL LIBRARY **
+        plugin/translate.js
     ]
 
     Events: [
@@ -292,11 +290,9 @@ a.template = {
         if(a.isTrueObject(h)) {
             el.append(h);
         }
-        if(!a.isNone(a.language)) {
-            a.each(el.getElements(), function(element) {
-                a.language.translate(element);
-            });
-        }
+        a.each(el.getElements(), function(element) {
+            a.translate.translate(element);
+        });
         if(a.isFunction(callback)) {
             callback(content);
         }

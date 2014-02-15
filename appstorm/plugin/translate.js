@@ -147,7 +147,7 @@ a.translate = a.i18n = (function() {
                 + ',a-' + defaultAttribute
                 + ',data-' + defaultAttribute;
 
-        var currentDictionnary = dictionnary[language];
+        var currentDictionnary = dictionnary[language] || {};
 
         var elements = el.attr(srch).getElements();
 
@@ -344,6 +344,9 @@ a.translate = a.i18n = (function() {
      *                                      string in case of problem
     */
     function get(key, variables, translate) {
+        if(!dictionnary[language]) {
+            return key;
+        }
         var tr = dictionnary[language][key] || null;
 
         if(a.isNull(tr)) {

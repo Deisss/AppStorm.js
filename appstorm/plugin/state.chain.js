@@ -375,7 +375,7 @@ a.state.chain = new function() {
             sync.addCallback(
                 generateDefaultLoader('json', url, function(content) {
                     a.each(content, function(translate, index) {
-                        a.language.addTranslation(index, translate, true);
+                        a.translate.add(index, translate, true);
                     });
                 })
             );

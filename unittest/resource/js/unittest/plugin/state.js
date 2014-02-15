@@ -555,8 +555,8 @@ test('a.state-loader', function() {
                     'Test JS file has been loaded');
 
             // Testing language translate
-            var tr1 = a.language.getTranslation('unittest-state1'),
-                tr2 = a.language.getTranslation('unittest-state2');
+            var tr1 = a.translate.getDictionnary('unittest-state1'),
+                tr2 = a.translate.getDictionnary('unittest-state2');
 
             se(tr1['hello'], 'nope', 'Test translate');
             se(tr1['second'], 'nope2', 'Test translate');

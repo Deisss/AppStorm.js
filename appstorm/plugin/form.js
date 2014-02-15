@@ -4,7 +4,7 @@
 
     Dependencies : [
         a.js
-        plugin/language.js (optional)
+        plugin/translate.js
     ]
 
     Events : []
@@ -98,7 +98,6 @@ a.form = (function() {
     */
     function getFieldList(dom) {
         // dom must be a a.dom element
-        console.log(dom);
         var elements = dom.tag(['input', 'textarea', 'select']).getElements();
 
         // We remove input who are not listed in typeList
@@ -154,12 +153,10 @@ a.form = (function() {
         }
 
         // Translate error if possible
-        if(!a.isNone(a.language)) {
-            error = a.language.getSingleTranslation(error, {
-                name:  name,
-                value: value
-            });
-        }
+        error = a.translate.get(error, {
+            name:  name,
+            value: value
+        });
 
         // Returning an object with all needed data inside
         return {
