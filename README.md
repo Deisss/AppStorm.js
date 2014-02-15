@@ -9,7 +9,6 @@ Project Structure
 This repository uses the following structure:
   * **appstorm**: AppStorm.JS core and plugin data
   * **example**: AppStorm.JS examples -including wiki examples-
-  * **logo**: AppStorm.JS logo
   * **unittest**: AppStorm.JS unit test
 
 
@@ -29,8 +28,7 @@ This project uses [Grunt](http://gruntjs.com/) to automate download of
 dependencies and generation of minified Javascript file.
 
 You will need [Node, NPM and Grunt](http://gruntjs.com/getting-started) to
-be installed, then simply invoking Grunt will download dependencies and
-generate minified file in appstorm/ directory.
+be installed, then simply invoking Grunt: ```grunt``` will download dependencies and generate minified file in appstorm/ directory.
 
 Licence & Credits
 -----------------
