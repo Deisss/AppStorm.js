@@ -443,3 +443,79 @@ test('a.translate.translate-subelement', function() {
     strictEqual(__extractDirectText(document.getElementById(id)),
                     'subelementcontent', 'test root element is translated');
 });
+
+
+// Simple easy tag tag elements translation
+test('a.translate.tag-element', function() {
+    // We generate a new translate with <tag> inside
+    a.translate.add('en', 'testtag',
+                    'superb text <tag> split with many <tag> tags');
+
+    var doc = document.createElement('a');
+    doc.setAttribute('data-tr', 'testtag');
+
+    var inside1 = document.createElement('a');
+    inside1.innerHTML = 'inside1';
+    doc.appendChild(inside1);
+
+    var inside2 = document.createElement('a');
+    inside2.innerHTML = 'inside2';
+    doc.appendChild(inside2);
+
+    a.translate.setLanguage('en', false);
+    a.translate.translate(doc);
+
+    strictEqual(doc.textContent,
+        'superb text inside1 split with many inside2 tags',
+        'Test auto apply value');
+});
+
+// Test when there is more <tag> elements than found into dom
+test('a.translate.tag-element-too-much', function() {
+    // We generate a new translate with <tag> inside
+    a.translate.add('en', 'testtag',
+                    'superb text <tag> split with <tag> many <tag> tags');
+
+    var doc = document.createElement('a');
+    doc.setAttribute('data-tr', 'testtag');
+
+    var inside1 = document.createElement('a');
+    inside1.innerHTML = 'inside1';
+    doc.appendChild(inside1);
+
+    var inside2 = document.createElement('a');
+    inside2.innerHTML = 'inside2';
+    doc.appendChild(inside2);
+
+    a.translate.setLanguage('en', false);
+    a.translate.translate(doc);
+
+    strictEqual(doc.textContent,
+        'superb text inside1 split with inside2 many  tags',
+        'Test auto apply value');
+});
+
+// Test when there is less <tag> elements than found into dom
+test('a.translate-tag-element-not-enough', function() {
+    // We generate a new translate with <tag> inside
+    a.translate.add('en', 'testtag',
+                    'superb text <tag> split with many tags ');
+
+    var doc = document.createElement('a');
+    doc.setAttribute('data-tr', 'testtag');
+
+    var inside1 = document.createElement('a');
+    inside1.innerHTML = 'inside1';
+    doc.appendChild(inside1);
+
+    var inside2 = document.createElement('a');
+    inside2.innerHTML = 'inside2';
+    doc.appendChild(inside2);
+
+    a.translate.setLanguage('en', false);
+    a.translate.translate(doc);
+
+    strictEqual(doc.textContent,
+        'superb text inside1 split with many tags inside2',
+        'Test auto apply value');
+});

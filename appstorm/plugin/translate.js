@@ -96,34 +96,34 @@ a.translate = a.i18n = (function() {
         } else {
             // We separate textnode and other elements using <tag> element
             var splittedTranslation = translation.split('<tag>'),
-                j = 0,
+                i = 0,
+                l = node.childNodes.length,
                 m = splittedTranslation.length;
 
-            for(var i=0, l=node.childNodes.length; i<l && j<m; ++i) {
+            // 1) We remove text node elements
+            for(; i<l; ++i) {
                 var el = node.childNodes[i];
-                if(el.nodeType == 3) {
-                    el.nodeValue = splittedTranslation[j];
-                    j++;
+                if(el && el.nodeType == 3) {
+                    el.parentNode.removeChild(el);
                 }
             }
 
-            // Some translation has not been pulled to element, so we append...
-            if(j != m) {
-                for(; j<m; ++j) {
+            i = 0;
+            a.dom.el(node).children().each(function() {
+                var tr   = splittedTranslation[i] || '',
+                    text = document.createTextNode(tr);
+                i++;
+
+                this.parentNode.insertBefore(text, this);
+            });
+
+            // We add latests elements to end
+            if(m > i) {
+                var j = m - i;
+                for(var j=0, k=(m-i); j<k; ++j) {
                     node.appendChild(
-                        document.createTextNode(splittedTranslation[j])
+                        document.createTextNode(splittedTranslation[i + j])
                     );
-                }
-            }
-
-            // Some part of childNodes elements has not been checked to keep
-            // or not, so we remove if needed (only nodeText)
-            if(i != l) {
-                while(l-- > i) {
-                    var el = node.childNodes[l];
-                    if(el.nodeType == 3) {
-                        node.removeChild(el);
-                    }
                 }
             }
         }
