@@ -69,7 +69,7 @@ a.storage = {
     printError: function(element, key) {
         if(key !== '_support_t') {
             a.console.log('a.storage.type.' + element +
-                '.get: unable to find key (' + key + ') in store', 2);
+                '.get: unable to find key (' + key + ') in store', 3);
         }
     },
 

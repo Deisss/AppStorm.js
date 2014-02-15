@@ -149,8 +149,20 @@ a.translate = a.i18n = (function() {
 
         var currentDictionnary = dictionnary[language];
 
+        var elements = el.attr(srch).getElements();
+
+        // Elements may have also the initial element itself
+       if(root.getAttribute && 
+            (
+                root.getAttribute(defaultAttribute) ||
+                root.getAttribute('a-' + defaultAttribute) ||
+                root.getAttribute('data-' + defaultAttribute)
+            )) {
+            elements.push(root);
+        }
+
         // Selecting only elements with tr/a-tr/data-tr html tag setted
-        el.attr(srch).each(function() {
+        a.dom.el(elements).each(function() {
             // Getting the searched key translate
             var key       = getAttr(this, defaultAttribute),
                 attribute = currentDictionnary[key] || '';
@@ -165,7 +177,7 @@ a.translate = a.i18n = (function() {
             // We got something like ['{{a}}', '{{b}}']
 
             // We remove '{{' and '}}'
-            var matches = a.match(foundVariables, function(value) {
+            var matches = a.map(foundVariables, function(value) {
                 return value.replace('{{', '').replace('}}', '');
             });
 
@@ -212,10 +224,20 @@ a.translate = a.i18n = (function() {
      *                                      current (default: yes)
     */
     function setLanguage(lang, update) {
-        language = lang;
+        if(!a.isString(lang) || !lang) {
+            a.console.error('a.translate.setLanguage: setting a non-string ' +
+                            'lang, or empty string, as default translate: ',
+                            'Test non-string value is refused', 1);
+        } else {
+            language = lang;
 
-        if(update !== false) {
-            i18n();
+            if(storageSupported) {
+                a.storage.persistent.set('app.language', language);
+            }
+
+            if(update !== false) {
+                i18n();
+            }
         }
     };
 
@@ -248,6 +270,8 @@ a.translate = a.i18n = (function() {
      * Register a new translation for given language.
      * After register is done, you can now use data-tr='{{hash}}' inside
      * HTML page to have corresponding translation.
+     * Note: you can use a quicker version add(lang, object, update)
+     * Where the object will be a key/value translate list for lang
      *
      * @method add
      *
@@ -261,6 +285,12 @@ a.translate = a.i18n = (function() {
      *                                      update or not document
     */
     function add(lang, hash, value, update) {
+        if(a.isTrueObject(hash)) {
+            a.each(hash, function(val, index) {
+                add(lang, index, val, update);
+            });
+            return;
+        }
         if(!dictionnary[lang]) {
             dictionnary[lang] = {};
         }
@@ -317,7 +347,7 @@ a.translate = a.i18n = (function() {
         var tr = dictionnary[language][key] || null;
 
         if(a.isNull(tr)) {
-            return '';
+            return key;
         }
 
         if(translate === false) {
@@ -375,10 +405,20 @@ a.translate = a.i18n = (function() {
     };
 
 
+    /**
+     * Erase dictionnary
+     *
+     * @method clearDictionnary
+    */
+    function clearDictionnary() {
+        dictionnary = {};
+    };
+
+
 
     // If storage is enabled, we try to get the stored language in the store
     if(storageSupported) {
-        var storedLanguage = a.storage.persistent.get('_app.language');
+        var storedLanguage = a.storage.persistent.get('app.language');
 
         // If language do exist and is setted
         if(a.isString(storedLanguage) && storedLanguage.length > 0) {
@@ -403,6 +443,7 @@ a.translate = a.i18n = (function() {
         getDictionnary:    getDictionnary,
 
         getGlobalVariable: getGlobalVariable,
+        addGlobalVariable: setGlobalVariable,
         setGlobalVariable: setGlobalVariable,
 
         add:            add,
@@ -412,6 +453,8 @@ a.translate = a.i18n = (function() {
         getTranslation: get,
 
         set:            set,
-        setTranslation: set
+        setTranslation: set,
+
+        clear: clearDictionnary
     };
 })();
