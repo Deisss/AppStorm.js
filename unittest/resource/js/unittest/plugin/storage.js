@@ -347,13 +347,8 @@ module('plugin/storage.js');
         str = 'some string',
         integ = 20;
 
-    test('a.storage.type.flash', function() {
-        stop();
+    asyncTest('a.storage.type.flash', function() {
         expect(8);
-
-        var qse = QUnit.strictEqual,
-            qde = QUnit.deepEqual,
-            qst = QUnit.start;
 
         fl.start(function() {
             // We test : object, array, string and integer
@@ -363,13 +358,13 @@ module('plugin/storage.js');
             fl.set('unittest_storage_integer', integ);
 
             // Set items
-            qde(fl.get('unittest_storage_object'), obj,
+            deepEqual(fl.get('unittest_storage_object'), obj,
                                                 'Test flash object storage');
-            qde(fl.get('unittest_storage_array'), arr,
+            deepEqual(fl.get('unittest_storage_array'), arr,
                                                 'Test flash array storage');
-            qse(fl.get('unittest_storage_string'), str,
+            strictEqual(fl.get('unittest_storage_string'), str,
                                                 'Test flash string storage');
-            qse(fl.get('unittest_storage_integer'), integ,
+            strictEqual(fl.get('unittest_storage_integer'), integ,
                                                 'Test flash integer storage');
 
             // Remove item
@@ -379,16 +374,16 @@ module('plugin/storage.js');
             fl.remove('unittest_storage_integer');
 
             // Test removed
-            qse(fl.get('unittest_storage_object'), null,
+            strictEqual(fl.get('unittest_storage_object'), null,
                                         'Test flash removed object storage');
-            qse(fl.get('unittest_storage_array'), null,
+            strictEqual(fl.get('unittest_storage_array'), null,
                                         'Test flash removed array storage');
-            qse(fl.get('unittest_storage_string'), null,
+            strictEqual(fl.get('unittest_storage_string'), null,
                                         'Test flash removed string storage');
-            qse(fl.get('unittest_storage_integer'), null,
+            strictEqual(fl.get('unittest_storage_integer'), null,
                                         'Test flash removed integer storage');
 
-            qst();
+            start();
         });
     });
 })();
@@ -408,13 +403,8 @@ module('plugin/storage.js');
         str = 'some string',
         integ = 20;
 
-    test('a.storage.type.silverlight', function() {
-        stop();
+    asyncTest('a.storage.type.silverlight', function() {
         expect(8);
-
-        var qse = QUnit.strictEqual,
-            qde = QUnit.deepEqual,
-            qst = QUnit.start;
 
         sl.start(function() {
             // We test : object, array, string and integer
@@ -424,13 +414,13 @@ module('plugin/storage.js');
             sl.set('unittest_storage_integer', integ);
 
             // Set items
-            qde(sl.get('unittest_storage_object'), obj,
+            deepEqual(sl.get('unittest_storage_object'), obj,
                                         'Test silverlight object storage');
-            qde(sl.get('unittest_storage_array'), arr,
+            deepEqual(sl.get('unittest_storage_array'), arr,
                                         'Test silverlight array storage');
-            qse(sl.get('unittest_storage_string'), str,
+            strictEqual(sl.get('unittest_storage_string'), str,
                                         'Test silverlight string storage');
-            qse(sl.get('unittest_storage_integer'), integ,
+            strictEqual(sl.get('unittest_storage_integer'), integ,
                                         'Test silverlight integer storage');
 
             // Remove item
@@ -440,16 +430,16 @@ module('plugin/storage.js');
             sl.remove('unittest_storage_integer');
 
             // Test removed
-            qse(sl.get('unittest_storage_object'), null,
+            strictEqual(sl.get('unittest_storage_object'), null,
                                 'Test silverlight removed object storage');
-            qse(sl.get('unittest_storage_array'), null,
+            strictEqual(sl.get('unittest_storage_array'), null,
                                 'Test silverlight removed array storage');
-            qse(sl.get('unittest_storage_string'), null,
+            strictEqual(sl.get('unittest_storage_string'), null,
                                 'Test silverlight removed string storage');
-            qse(sl.get('unittest_storage_integer'), null,
+            strictEqual(sl.get('unittest_storage_integer'), null,
                                 'Test silverlight removed integer storage');
 
-            qst();
+            start();
         });
     });
 })();
@@ -592,13 +582,8 @@ module('plugin/storage.js');
         str = 'some string',
         integ = 20;
 
-    test('a.storage.external', function() {
-        stop();
+    asyncTest('a.storage.external', function() {
         expect(8);
-
-        var qse = QUnit.strictEqual,
-            qde = QUnit.deepEqual,
-            qst = QUnit.start;
 
         ex.start(function() {
             // We test : object, array, string and integer
@@ -608,13 +593,13 @@ module('plugin/storage.js');
             ex.set('unittest_storage_integer', integ);
 
             // Set items
-            qde(ex.get('unittest_storage_object'), obj,
+            deepEqual(ex.get('unittest_storage_object'), obj,
                                         'Test silverlight object storage');
-            qde(ex.get('unittest_storage_array'), arr,
+            deepEqual(ex.get('unittest_storage_array'), arr,
                                         'Test silverlight array storage');
-            qse(ex.get('unittest_storage_string'), str,
+            strictEqual(ex.get('unittest_storage_string'), str,
                                         'Test silverlight string storage');
-            qse(ex.get('unittest_storage_integer'), integ,
+            strictEqual(ex.get('unittest_storage_integer'), integ,
                                         'Test silverlight integer storage');
 
             // Remove item
@@ -624,16 +609,16 @@ module('plugin/storage.js');
             ex.remove('unittest_storage_integer');
 
             // Test removed
-            qse(ex.get('unittest_storage_object'), null,
+            strictEqual(ex.get('unittest_storage_object'), null,
                                 'Test silverlight removed object storage');
-            qse(ex.get('unittest_storage_array'), null,
+            strictEqual(ex.get('unittest_storage_array'), null,
                                 'Test silverlight removed array storage');
-            qse(ex.get('unittest_storage_string'), null,
+            strictEqual(ex.get('unittest_storage_string'), null,
                                 'Test silverlight removed string storage');
-            qse(ex.get('unittest_storage_integer'), null,
+            strictEqual(ex.get('unittest_storage_integer'), null,
                                 'Test silverlight removed integer storage');
 
-            qst();
+            start();
         });
     });
 })();

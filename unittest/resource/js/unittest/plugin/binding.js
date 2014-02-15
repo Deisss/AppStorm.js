@@ -29,6 +29,7 @@ test('a.binding.registerInnerBind', function() {
 	p.innerHTML = 'This should {{handle}} as {{expected}} data';
 
 	var div = document.createElement('div');
+	div.style.display = 'none';
 	div.appendChild(p);
 
 	a.binding.registerInnerBind(div);

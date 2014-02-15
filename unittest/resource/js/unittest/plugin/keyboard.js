@@ -2,6 +2,11 @@
 
 module('plugin/keyboard.js');
 
+testModuleDone('plugin/keyboard.js', function() {
+    a.keyboard.clear();
+});
+
+
 /*
  * Note : because keyboard plugin is just a bind to Mousetrap,
  *        we just do one basic test nothing more.
@@ -9,18 +14,12 @@ module('plugin/keyboard.js');
  *        (you can found them on /unittest/vendor/mousetrap)
 */
 
-test('a.keyboard.bind', function() {
-    stop();
+asyncTest('a.keyboard.bind', function() {
     expect(1);
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     var callback = function() {
-        se(true, true, 'Event where fired as expected');
-        a.keyboard.reset();
-        st();
+        strictEqual(true, true, 'Event where fired as expected');
+        start();
     };
 
     a.keyboard.bind('a', callback);
@@ -30,16 +29,14 @@ test('a.keyboard.bind', function() {
     Mousetrap.trigger('a');
 });
 
-test('a.keyboard.unbind', function() {
-    stop();
+asyncTest('a.keyboard.unbind', function() {
     expect(2);
 
     // Prevent scope change
     var se = strictEqual;
 
     var callback = function() {
-        se(true, true, 'Event where fired as expected');
-        a.keyboard.reset();
+        strictEqual(true, true, 'Event where fired as expected');
     };
 
     a.keyboard.bind('a', callback);
@@ -53,9 +50,5 @@ test('a.keyboard.unbind', function() {
     Mousetrap.trigger('a');
     Mousetrap.trigger('c');
 
-    var st = start;
-    setTimeout(function() {
-        a.keyboard.reset();
-        st();
-    }, 250);
+    setTimeout(start, 100);
 });

@@ -9,8 +9,6 @@ module('plugin/form.js');
 */
 // Test default behavior
 test('a.form.get-default-test', function() {
-    expect(2);
-
     var id = 'a.form.get-default-test';
 
     // Main element
@@ -55,8 +53,6 @@ test('a.form.get-default-test', function() {
 
 // Test checkbox
 test('a.form.get-checkbox-test', function() {
-    expect(2);
-
     var id = 'a.form.get-checkbox-test';
 
     // Main element
@@ -92,8 +88,6 @@ test('a.form.get-checkbox-test', function() {
 
 // Test radio button group
 test('a.form.get-radio-test', function() {
-    expect(2);
-
     var id = 'a.form.get-radio-test';
 
     // Main element
@@ -136,8 +130,6 @@ test('a.form.get-radio-test', function() {
 
 // Test select, with or without option inside
 test('a.form.select-empty', function() {
-    expect(1);
-
     var id = 'a.form.select-empty';
 
     // Main element
@@ -159,9 +151,9 @@ test('a.form.select-empty', function() {
     // Test the system is not hang by not existing options
     strictEqual(test[id + '-content'], null, 'Test empty select');
 });
-test('a.form.select-single', function() {
-    expect(1);
 
+
+test('a.form.select-single', function() {
     var id = 'a.form.select-single';
 
     // Main element
@@ -187,9 +179,9 @@ test('a.form.select-single', function() {
     // Test the system is not hang by not existing options
     strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
-test('a.form.select-full', function() {
-    expect(1);
 
+
+test('a.form.select-full', function() {
     var id = 'a.form.select-full';
 
     // Main element
@@ -228,8 +220,6 @@ test('a.form.select-full', function() {
 */
 // Test a basic validate is working as expected
 test('a.form.validate-default-test', function() {
-    expect(2);
-
     var id = 'a.form.validate-default-test';
 
     // Main element

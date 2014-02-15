@@ -7,8 +7,7 @@ module('plugin/callback.js');
   SYNCHRONIZER RELATED
 ---------------------------------
 */
-test('a.callback.synchronizer-working', function() {
-    stop();
+asyncTest('a.callback.synchronizer-working', function() {
     expect(1);
 
     /*
@@ -20,15 +19,10 @@ test('a.callback.synchronizer-working', function() {
      * so 100ms < 200ms, the final callback have time to stop
     */
 
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // This timeout has to be removed by final callback,
     // or the test will fail (too much test)
     var time = setTimeout(function() {
-        se(true, true,
+        strictEqual(true, true,
             'The test fail : this event should be cancelled on time');
     }, 200);
 
@@ -38,9 +32,9 @@ test('a.callback.synchronizer-working', function() {
     };
     var finalCallback = function() {
         clearTimeout(time);
-        se(true, true,
+        strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        st();
+        start();
     };
 
     var sync = a.callback.synchronizer([
@@ -58,18 +52,13 @@ test('a.callback.synchronizer-working', function() {
 
 
 
-test('a.callback.synchronizer-error', function() {
-    stop();
+asyncTest('a.callback.synchronizer-error', function() {
     expect(1);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // This timeout has to be removed by final callback,
     // or the test will fail (too much test)
     var time = setTimeout(function() {
-        se(true, true,
+        strictEqual(true, true,
             'The test fail : this event should be cancelled on time');
     }, 200);
 
@@ -79,9 +68,9 @@ test('a.callback.synchronizer-error', function() {
     };
     var finalCallback = function() {
         clearTimeout(time);
-        se(true, true,
+        strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        st();
+        start();
     };
 
     // Now running system
@@ -99,8 +88,7 @@ test('a.callback.synchronizer-error', function() {
 
 
 
-test('a.callback.synchronizer-removecallback', function() {
-    stop();
+asyncTest('a.callback.synchronizer-removecallback', function() {
     expect(1);
 
     /*
@@ -110,10 +98,6 @@ test('a.callback.synchronizer-removecallback', function() {
      * which makes the system starting success function right before 50ms...
     */
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     // We will add 4 times this callback, then raise final callback
     var defaultCallback = function(result) {
         setTimeout(result.success, 100);
@@ -122,9 +106,9 @@ test('a.callback.synchronizer-removecallback', function() {
         result.success();
     };
     var finalCallback = function() {
-        se(true, true,
+        strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        st();
+        start();
     };
 
     // Now running system
@@ -144,18 +128,13 @@ test('a.callback.synchronizer-removecallback', function() {
 
 
 // We check that synchronizer, without any callback, raise success function
-test('a.callback.synchronizer-nocallback', function() {
-    stop();
+asyncTest('a.callback.synchronizer-nocallback', function() {
     expect(1);
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     var finalCallback = function() {
-        se(true, true,
+        strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        st();
+        start();
     };
 
     var sync = a.callback.synchronizer(null, finalCallback);
@@ -165,18 +144,13 @@ test('a.callback.synchronizer-nocallback', function() {
 
 
 // Sending data threw callback works
-test('a.callback.synchronizer-data', function() {
-    stop();
+asyncTest('a.callback.synchronizer-data', function() {
     expect(2);
 
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
-
     var finalCallback = function(result) {
-        se(result.getData('ok'), 'hello', 'The first stored data');
-        se(result.getData('ok2'), 'hello2', 'The second stored data');
-        st();
+        strictEqual(result.getData('ok'), 'hello', 'The first stored data');
+        strictEqual(result.getData('ok2'), 'hello2', 'The second stored data');
+        start();
     };
 
     var sync = a.callback.synchronizer(null, finalCallback);
@@ -196,43 +170,33 @@ test('a.callback.synchronizer-data', function() {
 
 
 // Test sending data threw start function
-test('a.callback.synchronizer-initial-data', function() {
-    stop();
+asyncTest('a.callback.synchronizer-initial-data', function() {
     expect(4);
 
-    var se = strictEqual,
-        st = start;
-
     function defaultCallback(arg1, arg2, result) {
-        se(arg1, 'ok');
-        se(arg2, 2);
+        strictEqual(arg1, 'ok');
+        strictEqual(arg2, 2);
         result.done();
     };
 
     var sync = a.callback.synchronizer([
         defaultCallback,
         defaultCallback
-    ], function() {
-        st();
-    });
+    ], start);
     sync.start('ok', 2);
 });
 
 // Test addCallback manually
-test('a.callback.synchronizer-addCallback', function() {
-    stop();
+asyncTest('a.callback.synchronizer-addCallback', function() {
     expect(5);
 
-    var se = ok,
-        st = start;
-
     function defaultCallback() {
-        se(true, true, 'Test default callback');
+        strictEqual(true, true, 'Test default callback');
         this.next();
     };
 
     function finalCallback() {
-        se(true, true, 'Test final callback');
+        strictEqual(true, true, 'Test final callback');
     };
 
     var sync1 = a.callback.synchronizer(),
@@ -250,25 +214,22 @@ test('a.callback.synchronizer-addCallback', function() {
     sync2.start();
 
     // Release unit test
-    setTimeout(st, 100);
+    setTimeout(start, 100);
 });
 
 
 // Test event success, error, start event
-test('a.callback.synchronizer-event', function() {
-    stop();
+asyncTest('a.callback.synchronizer-event', function() {
     expect(2);
 
-    var sync = a.callback.synchronizer(),
-        se = strictEqual,
-        st = start;
+    var sync = a.callback.synchronizer();
 
     sync.bind('start', function() {
-        se(true, true);
+        strictEqual(true, true);
     });
     sync.bind('success', function() {
-        se(true, true);
-        st();
+        strictEqual(true, true);
+        start();
     });
 
     sync.start();
@@ -277,16 +238,13 @@ test('a.callback.synchronizer-event', function() {
 
 
 // Test the result scope element
-test('a.callback.synchronizer-resultScope', function() {
-    stop();
+asyncTest('a.callback.synchronizer-resultScope', function() {
     expect(1);
 
     var sync = a.callback.synchronizer(null, function() {
-        se(this.ok, 'ok');
-        st();
-    }),
-        se = strictEqual,
-        st = start;
+        strictEqual(this.ok, 'ok');
+        start();
+    });
 
     sync.scope = {
         ok: 'not-ok'
@@ -312,23 +270,18 @@ test('a.callback.synchronizer-resultScope', function() {
 // we make sure any changes will broke the fact they are separated...
 // Se we run multiple instance of both,
 // and check they are running alone each of them
-test('a.callback.synchronizer-chainer', function() {
-    stop();
+asyncTest('a.callback.synchronizer-chainer', function() {
     expect(10);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // We will add 7 times this callback, two for each system and one alone
     var defaultCallback = function(result) {
         result = result || this;
-        se(true, true, 'Not final result ');
+        strictEqual(true, true, 'Not final result ');
         result.success();
     };
     // We add it 3 times : one of them will not have any success function
     var finalCallback = function() {
-        se(true, true,
+        strictEqual(true, true,
            'The test succeed : the system could stop event before final time');
     };
 
@@ -362,30 +315,23 @@ test('a.callback.synchronizer-chainer', function() {
     chain1.start();
     chain2.start();
 
-    setTimeout(function() {
-        st();
-    }, 200);
+    setTimeout(start, 150);
 });
 
 
 // This time, we do the same, but we include a scope change
-test('a.callback.synchronizer-chainer-with-scope', function() {
-    stop();
+asyncTest('a.callback.synchronizer-chainer-with-scope', function() {
     expect(10);
-
-    // Prevent scope change
-    var se = strictEqual,
-        st = start;
 
     // We will add 7 times this callback, two for each system and one alone
     var defaultCallback = function(result) {
         result = result || this;
-        se(true, true, 'Not final result ');
+        strictEqual(true, true, 'Not final result ');
         result.success();
     };
     // We add it 3 times : one of them will not have any success function
     var finalCallback = function() {
-        se(true, true,
+        strictEqual(true, true,
            'The test succeed : the system could stop event before final time');
     };
 
@@ -424,9 +370,7 @@ test('a.callback.synchronizer-chainer-with-scope', function() {
     chain2.scope = o;
     chain2.start();
 
-    setTimeout(function() {
-        st();
-    }, 200);
+    setTimeout(start, 150);
 });
 
 
@@ -438,19 +382,13 @@ test('a.callback.synchronizer-chainer-with-scope', function() {
 */
 
 
-test('a.callback.chainer-working', function() {
-    stop();
+asyncTest('a.callback.chainer-working', function() {
     expect(1);
 
     /*
      * The idea : we compare date between start and end time,
      * allowing to check elapsed time is correct (all run until end)
     */
-
-
-    // Prevent scope change
-    var se = ok,
-        st = start;
 
     var time = (new Date()).getTime();
 
@@ -465,9 +403,9 @@ test('a.callback.chainer-working', function() {
         var newTime = (new Date()).getTime();
         // Using timer is not extremely precise,
         // but will be around 400ms as expected
-        se(newTime - time > 300,
+        ok(newTime - time > 300,
                         'The system wait as expected chain to finish');
-        st();
+        start();
     };
 
     var chain = a.callback.chainer([
@@ -485,8 +423,7 @@ test('a.callback.chainer-working', function() {
 
 
 
-test('a.callback.chainer-error', function() {
-    stop();
+asyncTest('a.callback.chainer-error', function() {
     expect(1);
 
     /*
@@ -495,9 +432,7 @@ test('a.callback.chainer-error', function() {
     */
 
     // Prevent scope change
-    var se = ok,
-        st = start,
-        time = (new Date()).getTime();
+    var time = (new Date()).getTime();
 
     // We will add 4 times this callback, then raise final callback
     var defaultCallback = function() {
@@ -508,9 +443,9 @@ test('a.callback.chainer-error', function() {
     };
     var finalCallback = function() {
         var newTime = (new Date()).getTime();
-        se(newTime - time < 150,
+        ok(newTime - time < 150,
                         'The system wait as expected chain to finish');
-        st();
+        start();
     };
 
     var chain = a.callback.chainer([
@@ -528,30 +463,26 @@ test('a.callback.chainer-error', function() {
 
 
 // Test passing arguments
-test('a.callback.chainer-arguments', function() {
-    stop();
+asyncTest('a.callback.chainer-arguments', function() {
     expect(5);
 
-    var se = strictEqual,
-        st = start;
-
     function firstCallback(chain) {
-        se(true, true, 'First callback');
+        strictEqual(true, true, 'First callback');
         chain.setData('ok', 'yatta');
         // Passing a string to next element
         chain.next('something');
     };
 
     function secondCallback(str, chain) {
-        se(str, 'something', 'Test argument');
-        se(chain.getData('ok'), 'yatta', 'Arguments passed threw data');
+        strictEqual(str, 'something', 'Test argument');
+        strictEqual(chain.getData('ok'), 'yatta', 'Arguments passed threw data');
         chain.next('ok', 2);
     };
 
     function finalCallback(str1, int1, chain) {
-        se(str1, 'ok', 'Test arg1');
-        se(int1, 2, 'Test arg2');
-        st();
+        strictEqual(str1, 'ok', 'Test arg1');
+        strictEqual(int1, 2, 'Test arg2');
+        start();
     };
 
     var chain = a.callback.chainer(
@@ -561,20 +492,16 @@ test('a.callback.chainer-arguments', function() {
 
 
 // Test addCallback manually
-test('a.callback.chainer-addCallback', function() {
-    stop();
+asyncTest('a.callback.chainer-addCallback', function() {
     expect(5);
 
-    var se = ok,
-        st = start;
-
     function defaultCallback() {
-        se(true, true, 'Test default callback');
+        strictEqual(true, true, 'Test default callback');
         this.next();
     };
 
     function finalCallback() {
-        se(true, true, 'Test final callback');
+        strictEqual(true, true, 'Test final callback');
     };
 
     var chain1 = a.callback.chainer(),
@@ -592,13 +519,12 @@ test('a.callback.chainer-addCallback', function() {
     chain2.start();
 
     // Release unit test
-    setTimeout(st, 100);
+    setTimeout(start, 100);
 });
 
 
 
-test('a.callback.chainer-removeCallback', function() {
-    stop();
+asyncTest('a.callback.chainer-removeCallback', function() {
     expect(1);
 
     /*
@@ -607,9 +533,7 @@ test('a.callback.chainer-removeCallback', function() {
     */
 
     // Prevent scope change
-    var se = ok,
-        st = start,
-        time  = (new Date()).getTime();
+    var time = (new Date()).getTime();
 
     // We will add 4 times this callback, then raise final callback
     var defaultCallback = function() {
@@ -620,8 +544,8 @@ test('a.callback.chainer-removeCallback', function() {
     };
     var finalCallback = function() {
         var newTime = (new Date()).getTime();
-        se(newTime - time < 50, 'The system wait as expected chain to finish');
-        st();
+        ok(newTime - time < 50, 'The system wait as expected chain to finish');
+        start();
     };
 
     // Now running system
@@ -641,17 +565,12 @@ test('a.callback.chainer-removeCallback', function() {
 
 
 // We test that without callback, chainer start success directly
-test('a.callback.chainer-nocallback', function() {
-    stop();
+asyncTest('a.callback.chainer-nocallback', function() {
     expect(1);
 
-    // Prevent scope change
-    var se = ok,
-        st = start;
-
     var finalCallback = function() {
-        se(1==1, 'The system directly output result');
-        st();
+        ok(1==1, 'The system directly output result');
+        start();
     };
 
     // Now running system
@@ -661,18 +580,13 @@ test('a.callback.chainer-nocallback', function() {
 
 
 // Sending data threw callback works
-test('a.callback.chainer-data', function() {
-    stop();
+asyncTest('a.callback.chainer-data', function() {
     expect(3);
 
-    // Prevent scope change
-    var se = ok,
-        st = start;
-
     var finalCallback = function(obj) {
-        se(this.getData('ok'), 'hello', 'Test data stored');
-        se(this.data['ok2'], 'hello2', 'Test data stored');
-        st();
+        strictEqual(this.getData('ok'), 'hello', 'Test data stored');
+        strictEqual(this.data['ok2'], 'hello2', 'Test data stored');
+        start();
     };
 
     var chain = a.callback.chainer(null, finalCallback);
@@ -684,7 +598,7 @@ test('a.callback.chainer-data', function() {
 
     chain.addCallback(function() {
         this.setData('ok2', 'hello2', 'Test data');
-        se(this.getData('ok'), 'hello', 'The system send data');
+        strictEqual(this.getData('ok'), 'hello', 'The system send data');
         this.done();
     });
 
@@ -692,36 +606,30 @@ test('a.callback.chainer-data', function() {
     chain.start();
 });
 
-test('a.callback.chainer-event', function() {
-    stop();
+asyncTest('a.callback.chainer-event', function() {
     expect(2);
 
-    var chain = a.callback.chainer(),
-        se = strictEqual,
-        st = start;
+    var chain = a.callback.chainer();
 
     chain.bind('start', function() {
-        se(true, true);
+        strictEqual(true, true);
     });
     chain.bind('success', function() {
-        se(true, true);
-        st();
+        strictEqual(true, true);
+        start();
     });
 
     chain.start();
 });
 
 // Test result scope on chainer
-test('a.callback.chainer-resultScope', function() {
-    stop();
+asyncTest('a.callback.chainer-resultScope', function() {
     expect(1);
 
     var chain = a.callback.chainer(null, function() {
-        se(this.ok, 'ok');
-        st();
-    }),
-        se = strictEqual,
-        st = start;
+        strictEqual(this.ok, 'ok');
+        start();
+    });
 
     chain.scope = {
         ok: 'not-ok'
