@@ -1009,3 +1009,145 @@ asyncTest('a.state.load-bind-entry', function() {
 
     hashtag('unittest-state-bind-unbind-entry');
 });
+
+
+
+
+
+// Test the async parameter
+asyncTest('a.state.async-boolean', function() {
+    expect(4);
+
+    var asyncFalse = {
+        id: 'a.state.async-false',
+        hash: 'test-async-false',
+        async: false,
+        preLoad: function() {
+            strictEqual(1, 1, 'Test async false');
+        },
+        postLoad: function() {
+            strictEqual(1, 1, 'Test async false');
+        }
+    };
+
+    var asyncTrue = {
+        id: 'a.state.async-true',
+        hash: 'test-async-true',
+        async: true,
+        preLoad: function(chain) {
+            strictEqual(1, 1, 'Test async true');
+            chain.next();
+        },
+        postLoad: function(chain) {
+            strictEqual(1, 1, 'Test async true');
+            chain.next();
+        }
+    };
+
+    a.state.add([asyncTrue, asyncFalse]);
+
+    chain('test-async-true', start, 100);
+
+    chain('test-async-false', function() {
+        hashtag('test-async-true');
+    });
+
+    hashtag('test-async-false');
+});
+
+
+// Test async on a single string
+asyncTest('a.state.async-string', function() {
+    expect(6);
+
+    var asyncString1 = {
+        id: 'a.state.async-str1',
+        hash: 'test-async-str1',
+        async: 'load',
+        preLoad: function() {
+            strictEqual(1, 1, 'Test async str');
+        },
+        load: function(chain) {
+            strictEqual(1, 1, 'Test async str');
+            chain.next();
+        },
+        postLoad: function() {
+            strictEqual(1, 1, 'Test async str');
+        }
+    };
+
+    var asyncString2 = {
+        id: 'a.state.async-str2',
+        hash: 'test-async-str2',
+        async: 'postLoad',
+        preLoad: function() {
+            strictEqual(1, 1, 'Test async str');
+        },
+        load: function() {
+            strictEqual(1, 1, 'Test async str');
+        },
+        postLoad: function(chain) {
+            strictEqual(1, 1, 'Test async str');
+            setTimeout(chain.next, 100);
+        }
+    };
+
+    a.state.add([asyncString1, asyncString2]);
+
+    chain('test-async-str2', start, 200);
+
+    chain('test-async-str1', function() {
+        hashtag('test-async-str2');
+    });
+
+    hashtag('test-async-str1');
+});
+
+
+asyncTest('a.state.async-array', function() {
+    expect(6);
+
+    var asyncArray1 = {
+        id: 'a.state.async-arr1',
+        hash: 'test-async-arr1',
+        async: ['preLoad', 'load'],
+        preLoad: function(chain) {
+            strictEqual(1, 1, 'Test async array');
+            chain.next();
+        },
+        load: function(chain) {
+            strictEqual(1, 1, 'Test async array');
+            chain.next();
+        },
+        postLoad: function() {
+            strictEqual(1, 1, 'Test async array');
+        }
+    };
+
+    var asyncArray2 = {
+        id: 'a.state.async-arr2',
+        hash: 'test-async-arr2',
+        async: ['preLoad', 'postLoad'],
+        preLoad: function(chain) {
+            strictEqual(1, 1, 'Test async array');
+            chain.next();
+        },
+        load: function() {
+            strictEqual(1, 1, 'Test async array');
+        },
+        postLoad: function(chain) {
+            strictEqual(1, 1, 'Test async array');
+            setTimeout(chain.next, 100);
+        }
+    };
+
+    a.state.add([asyncArray1, asyncArray2]);
+
+    chain('test-async-arr2', start, 200);
+
+    chain('test-async-arr1', function() {
+        hashtag('test-async-arr2');
+    });
+
+    hashtag('test-async-arr1');
+});
