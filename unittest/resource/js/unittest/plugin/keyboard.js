@@ -32,9 +32,6 @@ asyncTest('a.keyboard.bind', function() {
 asyncTest('a.keyboard.unbind', function() {
     expect(2);
 
-    // Prevent scope change
-    var se = strictEqual;
-
     var callback = function() {
         strictEqual(true, true, 'Event where fired as expected');
     };

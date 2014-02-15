@@ -568,18 +568,15 @@ test('a.dom.children.replace', function() {
 asyncTest('a.dom.children.each', function() {
     expect(8);
 
-    var se = strictEqual,
-        st = start;
-
     // Test parameters
     a.dom.id([
             'a.dom.secondtesttag',
             'a.dom.children.parenttest'
     ]).each(function(a, b, c) {
         if(this.id == 'a.dom.secondtesttag') {
-            se(this.id, 'a.dom.secondtesttag', 'Test id');
+            strictEqual(this.id, 'a.dom.secondtesttag', 'Test id');
         } else {
-            se(this.id, 'a.dom.children.parenttest', 'Test id');
+            strictEqual(this.id, 'a.dom.children.parenttest', 'Test id');
         }
         strictEqual(a, 1, 'Test first parameter');
         strictEqual(b, 2, 'Test second parameter');

@@ -5,14 +5,8 @@ module('plugin/state.js');
 
 // In this unit test, we check 2 children, with same parent element,
 // and same hashtag, are both loaded not only one
-test('a.state.dualchildren', function() {
-    stop();
+asyncTest('a.state.dualchildren', function() {
     expect(4);
-
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         id : 'ok',
@@ -21,11 +15,11 @@ test('a.state.dualchildren', function() {
                 hash : 'unittest-dualchildren',
                 async: true,
                 load : function(chain) {
-                    se(1, 1, 'Test loading first child');
+                    strictEqual(1, 1, 'Test loading first child');
                     chain.next();
                 },
                 unload : function(chain) {
-                    se(1, 1, 'Test unloading first child');
+                    strictEqual(1, 1, 'Test unloading first child');
                     chain.next();
                 }
             },
@@ -33,11 +27,11 @@ test('a.state.dualchildren', function() {
                 hash : 'unittest-dualchildren',
                 async: true,
                 load : function(chain) {
-                    se(1, 1, 'Test loading second child');
+                    strictEqual(1, 1, 'Test loading second child');
                     chain.next();
                 },
                 unload : function(chain) {
-                    se(1, 1, 'Test unloading second child');
+                    strictEqual(1, 1, 'Test unloading second child');
                     chain.next();
                 }
             }
@@ -48,14 +42,10 @@ test('a.state.dualchildren', function() {
 
     // Now starting to proceed loader
     chain('unittest-dualchildren', function() {
-        hashtag('tmp');
+        hashtag('tmp_unittest-dualchildren');
     });
 
-    chain('tmp', function() {
-        a.state.clear();
-        window.location.href = '#';
-        st();
-    }, 200);
+    chain('tmp_unittest-dualchildren', start, 200);
 
     hashtag('unittest-dualchildren');
 });
@@ -63,13 +53,8 @@ test('a.state.dualchildren', function() {
 
 
 // Bug : passing data threw preLoad, load and postLoad
-test('a.state.parameter-passthrew', function() {
-    stop();
+asyncTest('a.state.parameter-passthrew', function() {
     expect(3);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'testloadpassthrew',
@@ -85,13 +70,14 @@ test('a.state.parameter-passthrew', function() {
             chain.next();
         },
         postLoad : function(chain) {
-            se(this.data['objId'], 'hello from data', 'test data pass');
-            se(this.data['plop'], 'hello from data', 'test data pass');
-            se(this.data['data2'], 'ok', 'test from postload');
+            strictEqual(this.data['objId'], 'hello from data',
+                                                            'test data pass');
+            strictEqual(this.data['plop'], 'hello from data',
+                                                            'test data pass');
+            strictEqual(this.data['data2'], 'ok', 'test from postload');
 
-            st();
-            a.state.clear();
             chain.next();
+            start();
         }
     };
     a.state.add(test);
@@ -104,20 +90,15 @@ test('a.state.parameter-passthrew', function() {
 
 // Bug : too long request, may make the system putting
 // content of #a while #b is already loading...
-test('a.state.request-abort', function() {
-    stop();
+asyncTest('a.state.request-abort', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var b = {
         id : 'child-b',
         hash : 'request-abort-b',
         async: true,
         preLoad : function(chain) {
-            se(true, true, 'Arrive on time');
+            strictEqual(true, true, 'Arrive on time');
             chain.next();
         }
     };
@@ -130,7 +111,7 @@ test('a.state.request-abort', function() {
             a.timer.once(chain.error, null, 500);
         },
         load : function(chain) {
-            se(false, true, 'should be cancelled');
+            strictEqual(false, true, 'should be cancelled');
             chain.next();
         }
     };
@@ -142,22 +123,14 @@ test('a.state.request-abort', function() {
         hashtag('request-abort-b');
     });
 
-    chain('request-abort-b', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('request-abort-b', start, 100);
 
     hashtag('request-abort-c');
 });
 
 
-test('a.state.request-element', function() {
-    stop();
+asyncTest('a.state.request-element', function() {
     expect(4);
-
-    var se = strictEqual,
-        st = start;
 
     var state = {
         id:    'root',
@@ -167,10 +140,10 @@ test('a.state.request-element', function() {
             commentList: 'resource/data/state/wall-list-unittest.json'
         },
         converter: function(d) {
-            se(d.commentList.length, 3);
-            se(d.commentList[0].id, 1);
-            se(d.commentList[1].id, 23);
-            se(d.commentList[2].id, 20);
+            strictEqual(d.commentList.length, 3);
+            strictEqual(d.commentList[0].id, 1);
+            strictEqual(d.commentList[1].id, 23);
+            strictEqual(d.commentList[2].id, 20);
         },
         // Callbacks
         postLoad: function(chain) {
@@ -180,11 +153,7 @@ test('a.state.request-element', function() {
 
     a.state.add(state);
 
-    chain('wall-list', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('wall-list', start, 100);
 
     hashtag('wall-list');
 });

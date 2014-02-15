@@ -4,13 +4,8 @@ module('plugin/state.js');
 
 
 // Test raising a 404 error does raise the chainer error function
-test('a.state.error', function() {
-    stop();
+asyncTest('a.state.error', function() {
     expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'test-error',
@@ -21,30 +16,20 @@ test('a.state.error', function() {
     a.state.add(test);
 
     a.message.bind('a.state.error', function(data) {
-        se(data.resource.indexOf('resource/data/notexist.json'), 0,
+        strictEqual(data.resource.indexOf('resource/data/notexist.json'), 0,
                                             'Test data resource error');
-        se(data.status, 404, 'Test data response');
+        strictEqual(data.status, 404, 'Test data response');
     });
 
-    chain('test-error', function() {
-        a.state.clear();
-        a.message.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('test-error', start, 100);
 
     hashtag('test-error');
 });
 
 
 // Test raising 404 on html
-test('a.state.error2', function() {
-    stop();
+asyncTest('a.state.error2', function() {
     expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'test-error2',
@@ -58,44 +43,35 @@ test('a.state.error2', function() {
     a.state.add(test);
 
     a.message.bind('a.state.error', function(data) {
-        se(data.resource.indexOf('resource/data/notexist.html'), 0,
+        strictEqual(data.resource.indexOf('resource/data/notexist.html'), 0,
                                             'Test html resource error');
-        se(data.status, 404, 'Test data response');
+        strictEqual(data.status, 404, 'Test data response');
     });
 
-    chain('test-error2', function() {
-        a.state.clear();
-        a.message.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('test-error2', start, 100);
 
     hashtag('test-error2');
 });
 
 
 // Test getting hashtag loaded on error appearing
-test('a.state.error-hash', function() {
-    stop();
+asyncTest('a.state.error-hash', function() {
     expect(4);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         id : 'errorhashroot',
 
         error: {
             _404: function(state, resource, status) {
-                se(true, true, 'Test 404 is found');
-                se(state, 'test-error-hash', 'Test 404 is raised by state');
-                se(resource.substring(0, 13), 'someunknowurl',
+                strictEqual(true, true, 'Test 404 is found');
+                strictEqual(state, 'test-error-hash',
+                                                'Test 404 is raised by state');
+                strictEqual(resource.substring(0, 13), 'someunknowurl',
                                                     'Test resourced handled');
-                se(status, 404, 'Test 404 error code');
+                strictEqual(status, 404, 'Test 404 error code');
             },
             _40x: function() {
-                se(true, false, 'Test 40x should not be raised here');
+                strictEqual(true, false, 'Test 40x should not be raised here');
             }
         },
 
@@ -105,7 +81,7 @@ test('a.state.error-hash', function() {
             data : 'someunknowurl',
             error: {
                 generic: function() {
-                    se(true, false, 'Test generic is not used');
+                    strictEqual(true, false, 'Test generic is not used');
                 }
             }
         }
@@ -113,25 +89,15 @@ test('a.state.error-hash', function() {
 
     a.state.add(tree);
 
-    chain('test-error-hash', function() {
-        a.state.clear();
-        a.message.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('test-error-hash', start, 100);
 
     hashtag('test-error-hash');
 });
 
 
 // Test getting hashtag loaded on error appearing
-test('a.state.error-hash2', function() {
-    stop();
+asyncTest('a.state.error-hash2', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         id : 'errorhashroot2',
@@ -143,7 +109,7 @@ test('a.state.error-hash2', function() {
 
             error: {
                 generic: function() {
-                    se(true, true, 'Test generic is raised');
+                    strictEqual(true, true, 'Test generic is raised');
                 }
             }
         }
@@ -152,25 +118,15 @@ test('a.state.error-hash2', function() {
     a.state.add(tree);
 
 
-    chain('test-error-hash2', function() {
-        a.state.clear();
-        a.message.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('test-error-hash2', start, 100);
 
     hashtag('test-error-hash2');
 });
 
 
 // Test getting hashtag loaded on error appearing
-test('a.state.error-hash3', function() {
-    stop();
+asyncTest('a.state.error-hash3', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         id : 'errorhashroot3',
@@ -192,16 +148,11 @@ test('a.state.error-hash3', function() {
         // Prevent a wrong catch bug, and does not make test unreliable
         // (as it will raise 0 event if nothing is found, stopping system)
         if(data.value === 'hash-error-404') {
-            se(data.value, 'hash-error-404', 'Test value is linked');
+            strictEqual(data.value, 'hash-error-404', 'Test value is linked');
         }
     });
 
-    chain('test-error-hash3', function() {
-        a.state.clear();
-        a.message.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('test-error-hash3', start, 100);
 
     hashtag('test-error-hash3');
 });

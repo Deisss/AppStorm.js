@@ -5,10 +5,6 @@ module('plugin/state.js');
 
 // Testing getById function
 test('a.state.get', function() {
-    expect(3);
-
-    a.state.clear();
-
     var element = {
         id : 'nowitisworking',
         hash : 'you'
@@ -25,17 +21,10 @@ test('a.state.get', function() {
 
     strictEqual(a.state.get('nowitisworking').hash, 'newone',
                                     'Test element can change');
-
-    // Clearing state
-    a.state.clear();
 });
 
 // Testing removeById function
 test('a.state.remove', function() {
-    expect(2);
-
-    a.state.clear();
-
     var element = {
         id : 'nowitisworking',
         hash : 'you'
@@ -54,7 +43,4 @@ test('a.state.remove', function() {
     // Now we remove dummy one...
     a.state.remove('something');
     a.state.remove(null);
-
-    // No error should appear on console...
-    a.state.clear();
 });

@@ -6,20 +6,30 @@
 
 module('plugin/state.js');
 
-// Start to check a single check hash change
-test('a.state.hash-single-state', function() {
-    stop();
-    expect(2);
+testModuleDone('plugin/state.js', function() {
+    a.message.clear();
     a.state.clear();
+    hashtag('');
+});
 
-    var se = strictEqual,
-        st = start;
+testModuleStart('plugin/state.js', function() {
+    a.state.clear();
+    hashtag('');
+});
+
+
+
+
+
+// Start to check a single check hash change
+asyncTest('a.state.hash-single-state', function() {
+    expect(2);
 
     var main1 = {
         hash : 'astatemanager1',
         async: true,
         load : function(chain) {
-            se(1, 1, 'Loading basic 1 succeed');
+            strictEqual(1, 1, 'Loading basic 1 succeed');
             chain.next();
         }
     };
@@ -27,7 +37,7 @@ test('a.state.hash-single-state', function() {
         hash : 'astatemanager2',
         async: true,
         load : function(chain) {
-            se(1, 1, 'Loading basic 2 succeed');
+            strictEqual(1, 1, 'Loading basic 2 succeed');
             chain.next();
         }
     };
@@ -39,19 +49,13 @@ test('a.state.hash-single-state', function() {
         hashtag('astatemanager2');
     });
 
-    chain('astatemanager2', function() {
-        window.location.href = "#";
-        a.state.clear();
-        st();
-    }, 100);
+    chain('astatemanager2', start, 100);
 
     hashtag('astatemanager1');
 });
 
 // Test hashexists
 test('a.state.hashExists', function() {
-    a.state.clear();
-
     // We add one existing hash
     var child1 = {
         hash : 'something-good'
@@ -75,25 +79,7 @@ test('a.state.hashExists', function() {
                                             'Testing parameter input');
     strictEqual(a.state.hashExists('ok-now-2'), false,
                                             'Testing parameter input');
-
-    a.state.clear();
 });
-
-test('a.state.clear', function() {
-    //TODO: do it
-    ok(1==1);
-});
-
-test('a.state.get', function() {
-    //TODO: do it
-    ok(1==1);
-});
-
-test('a.state.remove', function() {
-    //TODO: do it
-    ok(1==1);
-});
-
 
 
 
@@ -106,11 +92,6 @@ test('a.state.remove', function() {
 // State manager test
 // Testing add to function : testing parent add, children add
 test('a.state.add', function() {
-    expect(10);
-    a.state.clear();
-
-
-
     var testSingleChildren = {
         id : 'root',
         children : {
@@ -186,91 +167,36 @@ test('a.state.add', function() {
         root2 = a.state.get('root2');
     strictEqual(root1.id, 'root', 'Test root content');
     strictEqual(root2.id, 'root2', 'Test second root content');
-    a.state.clear();
 });
-
-// Testing adding with bootOnLoad does quickly load content
-/*test('a.state.add-bootOnLoad', function() {
-    stop();
-    // 3 : 3 files to load, if we have 4,
-    // it means load was called (should not happend)
-    expect(3);
-
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
-
-    var child = {
-        id : 'bootOnLoad',
-        bootOnLoad : true,
-
-        load : function(chain) {
-            // Should not be raised at that time
-            se(1, 1, 'The load function must not be called on bootOnLoad');
-            chain.next();
-        },
-
-        include : {
-            css :       'resource/data/state/bootOnLoad.css',
-            js :        'resource/data/state/bootOnLoad.js',
-            translate : 'resource/data/state/bootOnLoad.json',
-            html :      'resource/data/state/bootOnLoad.html'
-        }
-    };
-
-    // We add it, then check the loading process
-    a.state.add(child, function() {
-        // Here we use the cache trace, to check they were loaded as expected
-        var trace = a.loader.trace();
-        // We don't test html (not needed), got different behaviour
-        var searched = ['bootOnLoad.css', 'bootOnLoad.js', 'bootOnLoad.json'];
-
-        for(var i=0, l=searched.length; i<l; ++i) {
-            se(a.contains(trace, 'resource/data/state/' + searched[i]), true,
-                                        'Test file loaded : ' + searched[i]);
-        }
-
-        // Everything is done, we raise final start
-        st();
-    });
-
-    a.state.clear();
-});*/
 
 
 
 
 // Test a load and unload, with a state in common (a parent)
-test('a.state-path', function() {
-    stop();
+asyncTest('a.state-path', function() {
     // We expect 3 : one from parent1, and 2 from sub child, this is
     // because parent1 will be loaded only
     // at first time, because it is shared between main1, and main2 !
     expect(3);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         async: true,
         load : function(chain) {
-            se(1, 1, 'Loading basic 1 succeed');
+            strictEqual(1, 1, 'Loading basic 1 succeed');
             chain.next();
         },
         children : [{
             hash : 'astatemanager3',
             async: true,
             load : function(chain) {
-                se(1, 1, 'Loading basic 3 succeed');
+                strictEqual(1, 1, 'Loading basic 3 succeed');
                 chain.next();
             }
         },{
             hash : 'astatemanager4',
             async: true,
             load : function(chain) {
-                se(1, 1, 'Loading basic 4 succeed');
+                strictEqual(1, 1, 'Loading basic 4 succeed');
                 chain.next();
             }
         }]
@@ -283,11 +209,7 @@ test('a.state-path', function() {
         hashtag('astatemanager4');
     });
 
-    chain('astatemanager4', function() {
-        window.location.href = '#';
-        a.state.clear();
-        st();
-    }, 100);
+    chain('astatemanager4', start, 100);
 
     hashtag('astatemanager3');
 });
@@ -296,42 +218,37 @@ test('a.state-path', function() {
 
 
 // Test full load chain process
-test('a.state-load', function() {
-    stop();
+asyncTest('a.state-load', function() {
     // We expect the 6 : 3 from parent, 3 from children
     expect(6);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         async: true,
         preLoad : function(chain) {
-            se(1, 1, 'Test preLoad parent');
+            strictEqual(1, 1, 'Test preLoad parent');
             chain.next();
         },
         load : function(chain) {
-            se(1, 1, 'Test load parent');
+            strictEqual(1, 1, 'Test load parent');
             chain.next();
         },
         postLoad : function(chain) {
-            se(1, 1, 'Test postLoad parent');
+            strictEqual(1, 1, 'Test postLoad parent');
             chain.next();
         },
         children : [{
             hash : 'astatemanager5',
             async: true,
             preLoad : function(chain) {
-                se(1, 1, 'Test preLoad child');
+                strictEqual(1, 1, 'Test preLoad child');
                 chain.next();
             },
             load : function(chain) {
-                se(1, 1, 'Test load child');
+                strictEqual(1, 1, 'Test load child');
                 chain.next();
             },
             postLoad : function(chain) {
-                se(1, 1, 'Test postLoad child');
+                strictEqual(1, 1, 'Test postLoad child');
                 chain.next();
             },
         }]
@@ -339,11 +256,7 @@ test('a.state-load', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager5', function() {
-        a.state.clear();
-        window.location.href = '#';
-        st();
-    }, 100);
+    chain('astatemanager5', start, 100);
 
     hashtag('astatemanager5');
 });
@@ -352,42 +265,37 @@ test('a.state-load', function() {
 
 
 // Test full unload chain process
-test('a.state-unload', function() {
-    stop();
+asyncTest('a.state-unload', function() {
     // We expect the 6 : 3 from parent, 3 from children
     expect(6);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         async: true,
         preUnload : function(chain) {
-            se(1, 1, 'Test preUnload parent');
+            strictEqual(1, 1, 'Test preUnload parent');
             chain.next();
         },
         unload : function(chain) {
-            se(1, 1, 'Test unload parent');
+            strictEqual(1, 1, 'Test unload parent');
             chain.next();
         },
         postUnload : function(chain) {
-            se(1, 1, 'Test postUnload parent');
+            strictEqual(1, 1, 'Test postUnload parent');
             chain.next();
         },
         children : [{
             hash : 'astatemanager6',
             async: true,
             preUnload : function(chain) {
-                se(1, 1, 'Test preUnload child');
+                strictEqual(1, 1, 'Test preUnload child');
                 chain.next();
             },
             unload : function(chain) {
-                se(1, 1, 'Test unload child');
+                strictEqual(1, 1, 'Test unload child');
                 chain.next();
             },
             postUnload : function(chain) {
-                se(1, 1, 'Test postUnload child');
+                strictEqual(1, 1, 'Test postUnload child');
                 chain.next();
             },
         }]
@@ -399,11 +307,7 @@ test('a.state-unload', function() {
         hashtag('tmp_statemanager6');
     });
 
-    chain('tmp_statemanager6', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('tmp_statemanager6', start, 100);
 
     hashtag('astatemanager6');
 });
@@ -411,48 +315,43 @@ test('a.state-unload', function() {
 
 
 // Testing both some load, and some unload
-test('a.state-load-unload', function() {
-    stop();
+asyncTest('a.state-load-unload', function() {
     // We expect the 7 : 2 from parent at load, 2 from children at load,
     // 3 from parent and children on unload
     expect(7);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         hash : 'astatemanager7',
         async: true,
         preLoad : function(chain) {
-            se(1, 1, 'Test preLoad parent');
+            strictEqual(1, 1, 'Test preLoad parent');
             chain.next();
         },
         load : function(chain) {
-            se(1, 1, 'Test load parent');
+            strictEqual(1, 1, 'Test load parent');
             chain.next();
         },
         preUnload : function(chain) {
-            se(1, 1, 'Test preUnload parent');
+            strictEqual(1, 1, 'Test preUnload parent');
             chain.next();
         },
         postUnload : function(chain) {
-            se(1, 1, 'Test postUnload parent');
+            strictEqual(1, 1, 'Test postUnload parent');
             chain.next();
         },
         children : [{
             hash : 'astatemanager8',
             async: true,
             preLoad : function(chain) {
-                se(1, 1, 'Test preLoad child');
+                strictEqual(1, 1, 'Test preLoad child');
                 chain.next();
             },
             load : function(chain) {
-                se(1, 1, 'Test load child');
+                strictEqual(1, 1, 'Test load child');
                 chain.next();
             },
             postUnload : function(chain) {
-                se(1, 1, 'Test postUnload child');
+                strictEqual(1, 1, 'Test postUnload child');
                 chain.next();
             }
         }]
@@ -468,11 +367,7 @@ test('a.state-load-unload', function() {
         hashtag('tmp_statemanager8');
     }, 100);
 
-    chain('tmp_statemanager8', function() {
-        hashtag('');
-        a.state.clear();
-        st();
-    }, 100);
+    chain('tmp_statemanager8', start, 100);
 
     hashtag('astatemanager7');
 });
@@ -480,19 +375,14 @@ test('a.state-load-unload', function() {
 
 
 // Test hashtag not fired if state is not linked to this hashtag
-test('a.state-notfired', function() {
-    stop();
+asyncTest('a.state-notfired', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var main1 = {
         hash : 'astatemanager9',
         async: true,
         load : function(chain) {
-            se(1, 1, 'Test load, main1');
+            strictEqual(1, 1, 'Test load, main1');
             chain.next();
         }
     };
@@ -501,7 +391,7 @@ test('a.state-notfired', function() {
         hash : 'astatemanager10',
         async: true,
         load : function(chain) {
-            se(1, 1, 'Test load, main2');
+            strictEqual(1, 1, 'Test load, main2');
             chain.next();
         }
     };
@@ -513,11 +403,7 @@ test('a.state-notfired', function() {
         hashtag('tmp_astatemanager9');
     }, 100);
 
-    chain('tmp_astatemanager9', function() {
-        hashtag('');
-        a.state.clear();
-        st();
-    }, 100);
+    chain('tmp_astatemanager9', start, 100);
 
     hashtag('astatemanager9');
 });
@@ -526,14 +412,9 @@ test('a.state-notfired', function() {
 
 // TODO : be able to test translate, css, and html loaded
 // Test loading HTML, CSS, JS, and translate
-test('a.state-loader', function() {
-    stop();
+asyncTest('a.state-loader', function() {
     // Many test are done to check everything was loaded as expected
     expect(7);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var main = {
         hash: 'astatemanager12',
@@ -551,17 +432,17 @@ test('a.state-loader', function() {
         postLoad: function(chain) {
             // Testing JS files has been loaded (the function included inside
             // Js file exist in page
-            se(typeof(unittest_state_js), 'function',
+            strictEqual(typeof(unittest_state_js), 'function',
                     'Test JS file has been loaded');
 
             // Testing language translate
             var tr1 = a.translate.getDictionnary('unittest-state1'),
                 tr2 = a.translate.getDictionnary('unittest-state2');
 
-            se(tr1['hello'], 'nope', 'Test translate');
-            se(tr1['second'], 'nope2', 'Test translate');
-            se(tr2['hello'], 'word', 'Test translate');
-            se(tr2['second'], 'hy', 'Test translate');
+            strictEqual(tr1['hello'], 'nope', 'Test translate');
+            strictEqual(tr1['second'], 'nope2', 'Test translate');
+            strictEqual(tr2['hello'], 'word', 'Test translate');
+            strictEqual(tr2['second'], 'hy', 'Test translate');
 
             // Testing CSS loading
             var div = document.createElement('div');
@@ -577,12 +458,12 @@ test('a.state-loader', function() {
             var height = (div.currentStyle) ? div.currentStyle['height'] :
                     document.defaultView.getComputedStyle(div,null)
                     .getPropertyValue('height');
-            se(height, '20px', 'Test CSS applies correctly');
+            strictEqual(height, '20px', 'Test CSS applies correctly');
 
             // Test HTML (test mustache got the file loaded)
             var uriHTML = './resource/data/state/test.html';
             var hash = 'a_tmpl_' + uriHTML.replace(/[^a-zA-Z0-9]/g, '_');
-            se(typeof(a.template._tmpl[hash]), 'string',
+            strictEqual(typeof(a.template._tmpl[hash]), 'string',
                 'Test the template has been registred as available template');
             chain.next();
         }
@@ -590,25 +471,15 @@ test('a.state-loader', function() {
 
     a.state.add(main);
 
-    chain('astatemanager12', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 500);
+    chain('astatemanager12', start, 500);
 
     hashtag('astatemanager12');
 });
 
 
 // Test loading multiple data and send that to html as expected
-test('a.state-multiData', function() {
-    stop();
+asyncTest('a.state-multiData', function() {
     expect(7);
-
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var tree = {
         hash : 'astatemanager13',
@@ -634,8 +505,9 @@ test('a.state-multiData', function() {
             var user1 = document.getElementById('multidata-userlist4-result');
             var user2 = document.getElementById('multidata-userlist5-result');
 
-            se(user1.innerHTML.toLowerCase(), 'george', 'Test first user');
-            se(user2.innerHTML.toLowerCase(), 'christophe', 
+            strictEqual(user1.innerHTML.toLowerCase(), 'george',
+                                                        'Test first user');
+            strictEqual(user2.innerHTML.toLowerCase(), 'christophe', 
                                                         'Test second user');
 
             // ProjectList test
@@ -644,23 +516,24 @@ test('a.state-multiData', function() {
             var project2 = document
                         .getElementById('multidata-projectlist300-result');
 
-            se(project1.innerHTML.toLowerCase(), 'project 1',
+            strictEqual(project1.innerHTML.toLowerCase(), 'project 1',
                                                     'Test first project');
-            se(project2.innerHTML.toLowerCase(), 'superb project',
+            strictEqual(project2.innerHTML.toLowerCase(), 'superb project',
                                                     'Test second project');
 
             // Testing object loading
             var myself1 = document
                         .getElementById('multidata-myself-id-result');
-            se(myself1.innerHTML.toLowerCase(), '30', 'Test user id');
+            strictEqual(myself1.innerHTML.toLowerCase(), '30', 'Test user id');
 
             var myself2 = document
                         .getElementById('multidata-myself-firstname-result');
-            se(myself2.innerHTML.toLowerCase(), 'js', 'Test user firstname');
+            strictEqual(myself2.innerHTML.toLowerCase(), 'js',
+                                                    'Test user firstname');
 
             var myself3 = document
                         .getElementById('multidata-myself-lastname-result');
-            se(myself3.innerHTML.toLowerCase(), 'appstorm',
+            strictEqual(myself3.innerHTML.toLowerCase(), 'appstorm',
                                                     'Test user lastname');
 
             chain.next();
@@ -669,11 +542,7 @@ test('a.state-multiData', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager13', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('astatemanager13', start, 100);
 
     hashtag('astatemanager13');
 });
@@ -682,27 +551,17 @@ test('a.state-multiData', function() {
 
 
 // Test event begin and end before and after loading a state
-test('a.state.begin-end', function() {
-    stop();
+asyncTest('a.state.begin-end', function() {
     expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     a.message.bind('a.state.begin', function(data) {
-        se(data.value, 'astatemanager14', 'Test message begin');
+        strictEqual(data.value, 'astatemanager14', 'Test message begin');
     });
     a.message.bind('a.state.end', function(data) {
-        se(data.value, 'astatemanager14', 'Test message end');
+        strictEqual(data.value, 'astatemanager14', 'Test message end');
     });
 
-    chain('astatemanager14', function() {
-        a.message.clear();
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('astatemanager14', start, 100);
 
     hashtag('astatemanager14');
 });
@@ -711,13 +570,8 @@ test('a.state.begin-end', function() {
 
 
 // Test to send parameter into html loading
-test('a.state.html-parameter', function() {
-    stop();
+asyncTest('a.state.html-parameter', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var htmlParameter = {
         id : 'html-parameter',
@@ -734,7 +588,7 @@ test('a.state.html-parameter', function() {
         // and check content
         load : function(chain) {
             var loaded = document.getElementById('html-parameter-loaded');
-            se(loaded.innerHTML.toLowerCase(), 'ok',
+            strictEqual(loaded.innerHTML.toLowerCase(), 'ok',
                                 'Test loading html with parameters');
             chain.next();
         }
@@ -742,11 +596,7 @@ test('a.state.html-parameter', function() {
 
     a.state.add(htmlParameter);
 
-    chain('html-parameter-ok', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('html-parameter-ok', start, 100);
 
     hashtag('html-parameter-ok');
 });
@@ -754,13 +604,8 @@ test('a.state.html-parameter', function() {
 
 
 // Test adding parameter inside data url
-test('a.state.data-parameter', function() {
-    stop();
+asyncTest('a.state.data-parameter', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var htmlParameter = {
         id : 'data-parameter',
@@ -769,17 +614,13 @@ test('a.state.data-parameter', function() {
         data : 'resource/data/state/data-parameter-{{param}}.json',
 
         converter : function(data) {
-            se(data.ok, 'ok', 'Test loading data with parameters');
+            strictEqual(data.ok, 'ok', 'Test loading data with parameters');
         }
     };
 
     a.state.add(htmlParameter);
 
-    chain('data-parameter-ok', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('data-parameter-ok', start, 100);
 
     hashtag('data-parameter-ok');
 });
@@ -788,13 +629,8 @@ test('a.state.data-parameter', function() {
 
 
 // Test converter function behaviour on no data loaded
-test('a.state.data-converter-nodata', function() {
-    stop();
+asyncTest('a.state.data-converter-nodata', function() {
     expect(1);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'data-converter-nodata',
@@ -814,7 +650,7 @@ test('a.state.data-converter-nodata', function() {
         load : function(chain) {
             var loaded = document
                         .getElementById('data-converter-nodata-loaded');
-            se(loaded.innerHTML.toLowerCase(), 'converted',
+            strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
                                             'Test loading data converter');
             chain.next();
         }
@@ -822,11 +658,7 @@ test('a.state.data-converter-nodata', function() {
 
     a.state.add(test);
 
-    chain('data-converter-nodata', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('data-converter-nodata', start, 100);
 
     hashtag('data-converter-nodata');
 });
@@ -834,13 +666,8 @@ test('a.state.data-converter-nodata', function() {
 
 
 // Test converter function behaviour with loaded data
-test('a.state.data-converter-append', function() {
-    stop();
+asyncTest('a.state.data-converter-append', function() {
     expect(2);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'data-converter-append',
@@ -861,11 +688,11 @@ test('a.state.data-converter-append', function() {
         load : function(chain) {
             var loaded = document
                             .getElementById('data-converter-append-loaded');
-            se(loaded.innerHTML.toLowerCase(), 'converted',
+            strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
                                             'Test loading data converter');
             var second = document
                     .getElementById('data-converter-append-another-loaded');
-            se(second.innerHTML.toLowerCase(), 'chain',
+            strictEqual(second.innerHTML.toLowerCase(), 'chain',
                                         'Test append loading data converter');
             chain.next();
         }
@@ -873,11 +700,7 @@ test('a.state.data-converter-append', function() {
 
     a.state.add(test);
 
-    chain('data-converter-append', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('data-converter-append', start, 100);
 
     hashtag('data-converter-append');
 });
@@ -885,13 +708,8 @@ test('a.state.data-converter-append', function() {
 
 
 // Test binding parameters to data
-test('a.state.data-cross-parameter', function() {
-    stop();
+asyncTest('a.state.data-cross-parameter', function() {
     expect(4);
-    a.state.clear();
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id:    'data-cross-parameter',
@@ -915,20 +733,22 @@ test('a.state.data-cross-parameter', function() {
         // Test content has been loaded with parameter modification
         load : function(chain) {
             var id = document.getElementById('data-cross-parameter-id');
-            se(id.innerHTML, '9860', 'Test data cross parameter');
+            strictEqual(id.innerHTML, '9860', 'Test data cross parameter');
 
             var parent = document
                         .getElementById('data-cross-parameter-parent');
-            se(parent.innerHTML, 'dataParent01',
+            strictEqual(parent.innerHTML, 'dataParent01',
                                                 'Test data cross parameter');
 
             var memComplexA = document
                     .getElementById('data-cross-parameter-mem-complex-a');
-            se(memComplexA.innerHTML, 'b', 'Test data cross parameter');
+            strictEqual(memComplexA.innerHTML, 'b',
+                                                'Test data cross parameter');
 
             var memComplexC = document
                     .getElementById('data-cross-parameter-mem-complex-c');
-            se(memComplexC.innerHTML, 'd', 'Test data cross parameter');
+            strictEqual(memComplexC.innerHTML, 'd',
+                                                'Test data cross parameter');
 
             // Continue
             chain.next();
@@ -945,11 +765,7 @@ test('a.state.data-cross-parameter', function() {
 
     // Now starting to proceed loader
 
-    chain('data-cross-parameter-9860-dataParent01', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('data-cross-parameter-9860-dataParent01', start, 100);
 
     hashtag('data-cross-parameter-9860-dataParent01');
 });
@@ -957,15 +773,10 @@ test('a.state.data-cross-parameter', function() {
 
 
 // Test title with hashtag parameters
-test('a.state.title', function() {
-    stop();
+asyncTest('a.state.title', function() {
     expect(1);
-    a.state.clear();
 
     var previous = document.title;
-
-    var se = strictEqual,
-        st = start;
 
     var test = {
         id : 'test-title',
@@ -976,11 +787,10 @@ test('a.state.title', function() {
     a.state.add(test);
 
     chain('test-title-oktitle', function() {
-        se(document.title, 'test loading - oktitle', 'test title parameter');
-        a.state.clear();
-        hashtag('');
+        strictEqual(document.title, 'test loading - oktitle',
+                                        'test title parameter');
         document.title = previous;
-        st();
+        start();
     }, 100);
 
     hashtag('test-title-oktitle');
@@ -989,13 +799,8 @@ test('a.state.title', function() {
 
 // Two hashtag : one in the parent, one in the children
 // Only the children is correctly parsed (speed gain)
-test('a.state.underhash', function() {
-    stop();
+asyncTest('a.state.underhash', function() {
     expect(2);
-    a.state.clear();
-
-    var st = start,
-        se = strictEqual;
 
     var tree = {
         id : 'root',
@@ -1004,7 +809,7 @@ test('a.state.underhash', function() {
             id : '{{user}}'
         },
         converter : function(data) {
-            se(data.id, '{{user}}', 'Test user is not parsed tag');
+            strictEqual(data.id, '{{user}}', 'Test user is not parsed tag');
         },
         children : {
             id : 'sub',
@@ -1013,31 +818,22 @@ test('a.state.underhash', function() {
                 id : '{{user}}'
             },
             converter : function(data) {
-                se(data.id, 'aaaa', 'Test user is parsed into child');
+                strictEqual(data.id, 'aaaa', 'Test user is parsed into child');
             }
         }
     };
 
     a.state.add(tree);
 
-    chain('welcome-aaaa', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('welcome-aaaa', start, 100);
 
     hashtag('welcome-aaaa');
 });
 
 
 // Test options url
-test('a.state.options-parameter', function() {
-    stop();
+asyncTest('a.state.options-parameter', function() {
     expect(1);
-    a.state.clear();
-
-    var st = start,
-        se = strictEqual;
 
     var tree = {
         id : 'root',
@@ -1053,17 +849,14 @@ test('a.state.options-parameter', function() {
             }
         },
         converter : function(data) {
-            se(data.user, 'abcdef0', 'Test content transmitted threw system');
+            strictEqual(data.user, 'abcdef0',
+                                    'Test content transmitted threw system');
         }
     };
 
     a.state.add(tree);
 
-    chain('options-parameter-abcdef0', function() {
-        a.state.clear();
-        hashtag('');
-        st();
-    }, 100);
+    chain('options-parameter-abcdef0', start, 100);
 
     hashtag('options-parameter-abcdef0');
 });
@@ -1109,17 +902,12 @@ test('a.state.use', function() {
 
 
 // Test system allow bind/unbind event
-test('a.state.load-bind', function() {
+asyncTest('a.state.load-bind', function() {
     // We create a binding
     // Test binding is working
     // Unload state
     // Test binding is not working
-    stop();
     expect(2);
-    a.state.clear();
-
-    var st = start,
-        se = strictEqual;
 
     var state = {
         id:    'state-bind-unbind',
@@ -1133,10 +921,10 @@ test('a.state.load-bind', function() {
 
         bind: {
             '#bind-unbind .first | click': function() {
-                se(this.className, 'first', 'Test first click');
+                strictEqual(this.className, 'first', 'Test first click');
             },
             '#bind-unbind .second | click': function() {
-                se(this.className, 'second', 'Test second click');
+                strictEqual(this.className, 'second', 'Test second click');
             }
         }
     };
@@ -1167,11 +955,7 @@ test('a.state.load-bind', function() {
         hashtag('tmp_tmp_unittest-state-bind-unbind');
     }, 100);
 
-    chain('tmp_tmp_unittest-state-bind-unbind', function() {
-        st();
-        a.state.clear();
-        hashtag('');
-    }, 100);
+    chain('tmp_tmp_unittest-state-bind-unbind', start, 100);
 
     hashtag('unittest-state-bind-unbind');
 });
@@ -1180,17 +964,12 @@ test('a.state.load-bind', function() {
 
 
 // Test system allow bind/unbind event ON the entry directly
-test('a.state.load-bind-entry', function() {
+asyncTest('a.state.load-bind-entry', function() {
     // We create a binding
     // Test binding is working
     // Unload state
     // Test binding is not working
-    stop();
     expect(1);
-    a.state.clear();
-
-    var st = start,
-        se = strictEqual;
 
     var state = {
         id:    'state-bind-unbind-entry',
@@ -1200,7 +979,8 @@ test('a.state.load-bind-entry', function() {
 
         bind: {
             'click': function() {
-                se(this.id, 'a-state-direct-entry-bind', 'Test id click');
+                strictEqual(this.id, 'a-state-direct-entry-bind',
+                                                        'Test id click');
             }
         }
     };
@@ -1224,9 +1004,7 @@ test('a.state.load-bind-entry', function() {
         // We start unit test (should do nothing)
         entry.click();
 
-        hashtag('');
-        a.state.clear();
-        st();
+        start();
     }, 100);
 
     hashtag('unittest-state-bind-unbind-entry');

@@ -135,12 +135,8 @@ test('a.model.property-transform', function() {
 });
 
 // Test property event
-test('a.model.property-event', function() {
-    stop();
+asyncTest('a.model.property-event', function() {
     expect(2);
-
-    var se = strictEqual,
-        st = start;
 
     var unittest = a.model('unittest', {
         evt: {
@@ -153,10 +149,10 @@ test('a.model.property-event', function() {
 
     function eventMatcher(data) {
         if(data.value == 'something') {
-            se(data.value, 'something', 'Test something value');
+            strictEqual(data.value, 'something', 'Test something value');
         } else {
-            se(data.value, 'ok', 'Test ok value');
-            st();
+            strictEqual(data.value, 'ok', 'Test ok value');
+            start();
         }
     };
 
@@ -170,19 +166,15 @@ test('a.model.property-event', function() {
 });
 
 // Test property apply
-test('a.model.property-apply', function() {
-    stop();
+asyncTest('a.model.property-apply', function() {
     expect(1);
-
-    var se = strictEqual,
-        st = start;
 
     var unittest = a.model('unittest', {
         app: {
             init: 'another',
             apply: function(value, old) {
-                se(value, 'ok');
-                st();
+                strictEqual(value, 'ok');
+                start();
             }
         }
     });
