@@ -88,7 +88,7 @@ a.state = new function() {
         }
 
         // Nothing found
-        return found;
+        return null;
     };
 
     /**
