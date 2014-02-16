@@ -212,7 +212,7 @@ a.state.chain = new function() {
                     extra(data);
                 }
                 chain.next();
-            });
+            }, a.scope(chain.error, this));
         };
     };
 
@@ -270,8 +270,7 @@ a.state.chain = new function() {
                     }
                     chain.next();
 
-                // TODO: create error
-                }, null);
+                }, a.scope(chain.error, state));
 
                 // Starting and waiting reply
                 request.send();
@@ -316,7 +315,6 @@ a.state.chain = new function() {
 
     // LOAD: preLoad
     a.state.chain.add(true, 'preLoad', function preLoad() {
-        a.state._currentState = this;
         if(this.preLoad) {
             if(testAsync(this.async, 'preLoad')) {
                 this.preLoad.apply(this, arguments);
@@ -342,15 +340,17 @@ a.state.chain = new function() {
     a.state.chain.add(true, 'include', function include() {
         var hash     = a.hash.getHash(),
             internal = this.hash,
-            args     = arguments;
+            args     = arguments,
+            chain    = a.last(args),
+            state    = this;
 
         // Load files, and bring html using entry/type
-        // TODO: take arguments to get arguments to pass threw next function
-        // and success/fail
-        // TODO: do error function
         var sync     = a.callback.synchronizer(null, a.scope(function() {
             goToNextStep.apply(this, args);
-        }, this), null),
+        }, this), function() {
+            a.state._errorState = state;
+            chain.error.apply(this, arguments);
+        }),
             role     = a.acl.getCurrentRole(),
             partials = (this.include && this.include.partials) ? 
                             this.include.partials : [];
@@ -362,24 +362,25 @@ a.state.chain = new function() {
 
         // Loading CSS
         a.each(css, function(url) {
-            sync.addCallback(generateDefaultLoader('css', url));
-        });
+            sync.addCallback(generateDefaultLoader.call(this, 'css', url));
+        }, this);
 
         // Loading JS
         a.each(js, function(url) {
-            sync.addCallback(generateDefaultLoader('js', url));
-        });
+            sync.addCallback(generateDefaultLoader.call(this, 'js', url));
+        }, this);
 
         // Loading translate
         a.each(tr, function(url) {
             sync.addCallback(
-                generateDefaultLoader('json', url, function(content) {
+                generateDefaultLoader.call(this, 'json', url,
+                function(content) {
                     a.each(content, function(translate, index) {
                         a.translate.add(index, translate, true);
                     });
                 })
             );
-        });
+        }, this);
 
         // Loading data
         var differenceData = null;
@@ -399,6 +400,7 @@ a.state.chain = new function() {
             };
         }
 
+        // The data is not a single string but rather a multi load system
         if(a.isTrueObject(this.data)) {
             // We are in single-data mode
             if('url' in this.data && 'options' in this.data) {
@@ -427,9 +429,8 @@ a.state.chain = new function() {
                 }
             }
         } else {
-            // TODO: change dat
-            alert('error');
-            // TODO: error
+            a.console.error('a.state.chain:include: The state ' + this.id +
+                            ' is not valid (data is not a valid system)', 1);
         }
 
 

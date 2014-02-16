@@ -1151,3 +1151,60 @@ asyncTest('a.state.async-array', function() {
 
     hashtag('test-async-arr1');
 });
+
+
+// Test how the state react regarding acl changes
+asyncTest('a.state.acl-change', function() {
+    expect(3);
+
+    var state = {
+        id: 'state-acl-change',
+        hash: 'state-acl-chang{{el: [a-z]?}}',
+        acl: {
+            allowed: 'acl-change2'
+        },
+        preLoad: function() {
+            strictEqual(1, 1, 'Acl has been updated as expected');
+        }
+    };
+
+    a.acl.setCurrentRole('acl-change');
+    a.state.add(state);
+
+    // We test acl value
+    strictEqual(state._storm.acl, false, 'Value is not ready');
+
+    // Even if state can respond to bot state, only
+    // the second will raise as the acl has been modified
+    chain('state-acl-change', function() {
+        a.acl.setCurrentRole('acl-change2');
+        setTimeout(function() {
+            strictEqual(state._storm.acl, true, 'Value has been updated');
+        }, 100);
+        setTimeout(function() {
+            hashtag('state-acl-changz');
+        }, 200);
+       
+    });
+
+    chain('state-acl-changz', function() {
+            a.acl.setCurrentRole('');
+            start();
+    }, 200);
+
+    hashtag('state-acl-change');
+});
+
+
+// TODO: do that unit test
+asyncTest('a.state.acl-minimum', function() {
+    start();
+});
+
+asyncTest('a.state.acl-minimum', function() {
+    start();
+});
+
+asyncTest('a.state.acl-refused', function() {
+    start();
+});

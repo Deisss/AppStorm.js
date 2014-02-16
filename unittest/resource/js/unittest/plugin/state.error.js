@@ -144,7 +144,7 @@ asyncTest('a.state.error-hash3', function() {
 
     a.state.add(tree);
 
-    a.message.bind('a.page.event.hash', function(data) {
+    a.hash.bind('change', function(data) {
         // Prevent a wrong catch bug, and does not make test unreliable
         // (as it will raise 0 event if nothing is found, stopping system)
         if(data.value === 'hash-error-404') {

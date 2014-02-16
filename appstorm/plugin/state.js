@@ -39,6 +39,58 @@ a.state = new function() {
             synchronously)
     */
 
+
+    /**
+     * Get the error associated to a given status error and state
+     *
+     * @method getError
+     * @private
+     *
+     * @param state {Object}                The state related
+     * @param status {Integer}              The status error code to retrieve
+     * @return {Mixed}                      Any revelant data...
+    */
+    function getError(state, status) {
+        var id = state.id;
+        // Convert to str
+        status = '_' + status;
+
+        // Handle all request check (we can specify _404, _40x,
+        // _4xx, generic...)
+        var possibleErrorsMarker = [
+            status,
+            status.substring(0, status.length - 1) + 'x',
+            status.substring(0, status.length - 2) + 'xx',
+            'generic',
+            '_generic'
+        ];
+
+
+        // We search the good marker to use
+        for(var i=0, l=possibleErrorsMarker.length; i<l; ++i) {
+            // Search allow to get the parent and so one
+            var search = state,
+            // Marker is the current searched marker
+                marker = possibleErrorsMarker[i];
+
+            // While we found parent, we try
+            while(!a.isNull(search)) {
+                // We found the error we were searching for...
+                if(!a.isNone(search.error)
+                    && !a.isNone(search.error[marker])){
+                    return search.error[marker];
+
+                // We don't find, we get the parent
+                } else {
+                    search = search.parent || null;
+                }
+            }
+        }
+
+        // Nothing found
+        return found;
+    };
+
     /**
      * Handle errors reporting during state load/unload.
      *
@@ -49,7 +101,8 @@ a.state = new function() {
      * @param status {String}               The error status (like 404)
     */
     function raiseError(resource, status) {
-        var report = {};
+        var report = {},
+            state  = a.state._errorState;
 
         if(!a.isNone(resource)) {
             report.resource = resource;
@@ -59,8 +112,7 @@ a.state = new function() {
         }
 
         // Get the error
-        // TODO: create __errorState
-        var raiseError = a.state.__getError(__errorState, status);
+        var raiseError = getError(state, status);
 
         // Raising global message
         // TODO: make state able to send requests, and make THIS as state
@@ -73,7 +125,7 @@ a.state = new function() {
                 window.location.href = '#' + raiseError;
 
             } else if(a.isFunction(raiseError)) {
-                raiseError(__errorState.id, resource, status);
+                raiseError(state.id, resource, status);
 
             // No handler to catch error, we raise an error on console
             } else {
@@ -132,8 +184,10 @@ a.state = new function() {
 
         a.each(states, function(state) {
             sync.addCallback(function() {
-                performSingleState(loadOrUnload, state, this.next, this.error,
-                                                                        sync);
+                // We bind to this the scope of next and error to not have
+                // Scope change as the sync allow that...
+                performSingleState(loadOrUnload, state,
+                    a.scope(this.next, this), a.scope(this.error, this), sync);
             });
         });
 
@@ -354,26 +408,29 @@ a.state = new function() {
             return true;
         }
 
-        // TODO: unit test this, especially the acl maximum test
         var acl = state.acl || {};
 
-        // Test minimum
-        if(a.isNumber(acl.minimum) && a.acl.isRefused(acl.minimum, role)) {
-            return false;
-        }
-
-        // Test maximum
-        if(a.isNumber(acl.maximum) && a.acl.isRefused(role, acl.maximum)) {
+        // Test minimum & maximum
+        if(
+            (a.isNumber(acl.minimum) && a.acl.isRefused(acl.minimum, role)) ||
+            (a.isNumber(acl.maximum) && a.acl.isRefused(role, acl.maximum))
+        ) {
             return false;
         }
 
         // Test allowed
-        if(a.isArray(acl.allowed) && !a.contains(acl.allowed, role)) {
+        if(
+            (a.isString(acl.allowed) && acl.allowed !== role) ||
+            (a.isArray(acl.allowed) && !a.contains(acl.allowed, role))
+        ) {
             return false;
         }
 
         // Test refused
-        if(a.isArray(acl.refused) && a.contains(acl.refused, role)) {
+        if(
+            (a.isString(acl.refused) && acl.refused === role) ||
+            (a.isArray(acl.refused) && a.contains(acl.refused, role))
+        ) {
             return false;
         }
 
@@ -513,7 +570,9 @@ a.state = new function() {
         // We create a clone of initial state (to not alter the original copy)
         // and replace all elements found in extendState into the state copy,
         // exactly what we want !
-        this.add(a.extend(a.deepClone(state), extendState));
+        if(state) {
+            this.add(a.extend(a.deepClone(state), extendState));
+        }
     };
 
     // Alias
@@ -584,11 +643,10 @@ a.state = new function() {
 
         if(state) {
             // We search all parents related
-            var states = foundParentState(state);
-
-            // From currently setted state, we remove elements
-            // who don't need to load
-            var difference = a.difference(states, loaded);
+            var states     = foundParentState(state),
+                // From currently setted state, we remove elements
+                // who don't need to load
+                difference = a.difference(states, loaded);
 
             // Difference
             performLoadChanges(difference, function() {
@@ -620,7 +678,6 @@ a.state = new function() {
         }
     };
 
-    // test hash exist
     /**
      * Test a hash is existing into states.
      *
@@ -633,4 +690,12 @@ a.state = new function() {
         var states = a.flatten(foundHashState(hash));
         return (states.length > 0);
     };
+
+    /**
+     * Store the latest failing state
+     * @property _errorState
+     * @type Object
+     * @default null
+    */
+    this._errorState = null;
 };
