@@ -4,17 +4,16 @@
 // TODO: bootOnLoad => reactivate
 // TODO: event for every state loaded has been deleted, maybe corret that ?
 
-module('plugin/state.js');
-
-testModuleDone('plugin/state.js', function() {
-    a.message.clear();
-    a.state.clear();
-    hashtag('');
-});
-
-testModuleStart('plugin/state.js', function() {
-    a.state.clear();
-    hashtag('');
+module('plugin/state.js', {
+    setup: function() {
+        a.state.clear();
+        hashtag('');
+    },
+    teardown: function() {
+        a.message.clear();
+        a.state.clear();
+        hashtag('');
+    }
 });
 
 

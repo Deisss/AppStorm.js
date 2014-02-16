@@ -1,9 +1,9 @@
 // Unit test for a.keyboard (plugin)
 
-module('plugin/keyboard.js');
-
-testModuleDone('plugin/keyboard.js', function() {
-    a.keyboard.clear();
+module('plugin/keyboard.js', {
+    teardown: function() {
+        a.keyboard.clear();
+    }
 });
 
 

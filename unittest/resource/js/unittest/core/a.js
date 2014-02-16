@@ -1,10 +1,10 @@
 // Unit test for a (the tiny part at beginning only)
 
-module('a.js');
-
-testModuleDone('a.js', function() {
-    hashtag('');
-    a.setDefaultAjaxOptions({});
+module('a.js', {
+    teardown: function() {
+        hashtag('');
+        a.setDefaultAjaxOptions({});
+    }
 });
 
 

@@ -1,9 +1,9 @@
 // Unit test for a.environment
 
-module('core/environment.js');
-
-testModuleDone('core/environment.js', function() {
-    a.environment.clear();
+module('core/environment.js', {
+    teardown: function() {
+        a.environment.clear();
+    }
 });
 
 

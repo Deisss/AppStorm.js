@@ -1,13 +1,12 @@
 // Unit test for a.timer
 
-module('core/timer.js');
-
-testModuleStart('core/timer.js', function() {
-    a.timer.clear();
-});
-
-testModuleDone('core/timer.js', function() {
-    a.timer.clear();
+module('core/timer.js', {
+    setup: function() {
+        a.timer.clear();
+    },
+    teardown: function() {
+        a.timer.clear();
+    }
 });
 
 

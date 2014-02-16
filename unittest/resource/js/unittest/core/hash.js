@@ -1,14 +1,13 @@
 // Unit test for a.hash
 
-module('core/hash.js');
-
-testModuleStart('core/hash.js', function() {
-    hashtag('');
-});
-
-testModuleDone('core/hash.js', function() {
-    hashtag('');
-    a.hash.unbindAll('change');
+module('core/hash.js', {
+    setup: function() {
+        hashtag('');
+    },
+    teardown: function() {
+        hashtag('');
+        a.hash.unbindAll('change');
+    }
 });
 
 

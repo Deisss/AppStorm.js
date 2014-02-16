@@ -1,10 +1,10 @@
 // Unit test for a.translate (plugin)
 
-module('plugin/translate.js');
-
-testModuleDone('plugin/translate.js', function() {
-    a.console.clear();
-    a.translate.clear();
+module('plugin/translate.js', {
+    teardown: function() {
+        a.console.clear();
+        a.translate.clear();
+    }
 });
 
 

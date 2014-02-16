@@ -1,15 +1,13 @@
 // Unit test for a.message (and in the same time eventEmitter)
 
-module('core/message.js');
-
-testModuleStart('core/message.js', function() {
-    a.message.clear();
+module('core/message.js', {
+    setup: function() {
+        a.message.clear();
+    },
+    teardown: function() {
+        a.message.clear();
+    }
 });
-
-testModuleDone('core/message.js', function() {
-    a.message.clear();
-});
-
 
 
 // Testing bind function and dispatching event

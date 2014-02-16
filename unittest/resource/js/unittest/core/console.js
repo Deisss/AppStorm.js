@@ -1,13 +1,12 @@
 // Unit test for a.console
 
-module('core/console.js');
-
-testModuleDone('core/console.js', function() {
-    a.console.clear();
-});
-
-testModuleStart('core/console.js', function() {
-    a.console.clear();
+module('core/console.js', {
+    setup: function() {
+        a.console.clear();
+    },
+    teardown: function() {
+        a.console.clear();
+    }
 });
 
 

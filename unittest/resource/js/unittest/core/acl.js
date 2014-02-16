@@ -1,15 +1,14 @@
 // Unit test for a.acl
 
-module('core/acl.js');
+module('core/acl.js', {
+    teardown: function() {
+        a.acl.unbindAll('change');
+        a.message.unbindAll('a.acl.change');
 
-testModuleDone('core/acl.js', function() {
-    a.acl.unbindAll('change');
-    a.message.unbindAll('a.acl.change');
-
-    a.acl.setRoleList([]);
-    a.acl.setCurrentRole('');
+        a.acl.setRoleList([]);
+        a.acl.setCurrentRole('');
+    }
 });
-
 
 
 // Test current role get and set

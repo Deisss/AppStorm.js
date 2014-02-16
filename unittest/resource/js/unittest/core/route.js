@@ -1,13 +1,12 @@
 // Unit test for a.route
 
-module('core/route.js');
-
-testModuleStart('core/route.js', function() {
-    hashtag('');
-});
-
-testModuleDone('core/route.js', function() {
-    hashtag('');
+module('core/route.js', {
+    setup: function() {
+        hashtag('');
+    },
+    teardown: function() {
+        hashtag('');
+    }
 });
 
 

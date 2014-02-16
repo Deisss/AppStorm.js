@@ -1,15 +1,14 @@
 // Unit test for a.mem
 
-module('core/mem.js');
+module('core/mem.js', {
+    teardown: function() {
+        var list = a.mem.list();
 
-testModuleDone('core/mem.js', function() {
-    var list = a.mem.list();
-
-    for(var i in list) {
-        a.mem.remove(i);
+        for(var i in list) {
+            a.mem.remove(i);
+        }
     }
 });
-
 
 
 // Test mem system
