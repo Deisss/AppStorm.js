@@ -245,6 +245,9 @@ a.state.chain = new function() {
             // original content (false at the end)
             parsedUrl = a.parameter.extrapolate(url, hash, internal, false);
 
+        // Sometimes options can arrive null
+        options = a.isTrueObject(options) ? options: {};
+
         parseDataOption(options, hash, internal);
 
         return function(chain) {
