@@ -242,7 +242,7 @@ a.template = {
          *   this problem does not exist here anymore as it will
          *   not affect other children...
         */
-        var d = document.createElement('div'),
+        var d      = document.createElement('div'),
             result = [];
         // Remove space before and after : the system fail in other case
         // (but why ?)
@@ -287,6 +287,7 @@ a.template = {
     append: function(el, content, callback) {
         el = a.dom.el(el);
         var h = this.htmlToDom(content);
+
         if(a.isTrueObject(h)) {
             el.append(h);
         }
@@ -320,20 +321,20 @@ a.template = {
 
 (function() {
     // Replace type
-    a.state.type.add('replace', function replace(entry, content) {
+    a.state.type.add('replace', function replace(entry, content, chain) {
         if(content) {
-            a.template.replace(entry, content);
+            a.template.replace(entry, content, chain.next);
         }
-    }, function(entry) {
-        // Nothing to do...
-    }, false);
+    }, function(entry, chain) {
+        chain.next();
+    }, true);
 
     // Append type
-    a.state.type.add('append', function append(entry, content) {
+    a.state.type.add('append', function append(entry, content, chain) {
         if(content) {
-            a.template.append(entry, content);
+            a.template.append(entry, content, chain.next);
         }
-    }, function(entry) {
-        // Nothing to do...
-    }, false);
+    }, function(entry, chain) {
+        chain.next();
+    }, true);
 })();

@@ -477,7 +477,7 @@ a.state.chain = new function() {
     });
 
     // LOAD: content (insert HTML content)
-    a.state.chain.add(true, 'content', function contentLoad() {
+    a.state.chain.add(true, 'contentLoad', function contentLoad() {
         var args = arguments;
 
         // There is no html to load, we skip
@@ -499,7 +499,6 @@ a.state.chain = new function() {
                     obj   = a.state.type.get(type);
 
                 if(obj && a.isFunction(obj.input)) {
-
                     if(obj.async) {
                         var chain = a.last(args);
                         // We delegate the chain continuation
@@ -660,7 +659,7 @@ a.state.chain = new function() {
     });
 
     // UNLOAD: content (unload HTML content)
-    a.state.chain.add(false, 'content', function contentUnload() {
+    a.state.chain.add(false, 'contentUnload', function contentUnload() {
         var startingPoint = null,
             args = a.toArray(arguments);
 
@@ -687,18 +686,6 @@ a.state.chain = new function() {
             } else {
                 // TODO: print error
                 goToNextStep.apply(this, args);
-            }
-        }
-
-        if(startingPoint) {
-
-            // Replace: empty everything
-            if(this.type == 'replace') {
-                startingPoint.empty();
-
-            // Hide: do CSS hide
-            } else if(this.type == 'hide') {
-                startingPoint.css('display', 'none');
             }
         }
 
