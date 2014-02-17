@@ -122,12 +122,25 @@ a.route = new function() {
      * @method go
      *
      * @param hash {String}                 The hashtag to navigate to
+     * @param parameters {Object}           Any parameters to give to state
+     *                                      system as temp data. This is an
+     *                                      equivalent to a.state.inject func.
     */
-    this.go = function(hash) {
+    this.go = function(hash, parameters) {
+        if(parameters) {
+            a.state.inject(parameters);
+        }
         if(hash) {
             window.location.href = '#' + hash;
         }
     };
+
+    // Aliases
+    this.href     = this.go;
+    this.ref      = this.go;
+    this.hash     = this.go;
+    this.hashtag  = this.go;
+    this.navigate = this.go;
 
     /**
      * Apply change to hash on enter or leave position.

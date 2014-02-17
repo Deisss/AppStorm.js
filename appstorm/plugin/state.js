@@ -357,6 +357,9 @@ a.state = new function() {
         // TODO: bind eventEmitter from this instead
         a.message.dispatch('a.state.begin', data);
 
+        // Remove error state
+        a.state._errorState = null;
+
         // Using a.uniq will remove all double states found
         var currentHash  = data.value,
             previousHash = data.old,
@@ -400,6 +403,8 @@ a.state = new function() {
                                         .concat(loadingIntersection);
 
             performLoadChanges(loadingIntersection, function() {
+                // We clear inject, and raise event
+                a.state._inject = {};
                 a.message.dispatch('a.state.end', data);
             });
         });
@@ -736,10 +741,60 @@ a.state = new function() {
     };
 
     /**
+     * Inject an object to given to next state.
+     *
+     * @method inject
+     *
+     * @param obj {Object}                  The object key/value to add to
+     *                                      existing base
+    */
+    this.inject = function(obj) {
+        if(a.isNull(this._inject)) {
+            this._inject = {};
+        }
+
+        // Now we extend inject with new elements
+        if(a.isTrueObject(obj)) {
+            this._inject = a.assign(this._inject, obj);
+        }
+    };
+
+    /**
      * Store the latest failing state
      * @property _errorState
      * @type Object
      * @default null
     */
     this._errorState = null;
+
+    /**
+     * Injected elements for next state
+     * @property _inject
+     * @type Object
+     * @default null
+    */
+    this._inject     = {};
 };
+
+
+
+
+
+
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    // Get injected elements
+    Handlebars.registerHelper('inject', function(key) {
+        return new Handlebars.SafeString(a.state._inject[key] || null);
+    });
+
+    a.parameter.addParameterType('inject',  function(value) {
+        return a.state._inject[key] || null;
+    });
+})();

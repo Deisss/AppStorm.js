@@ -1309,3 +1309,29 @@ asyncTest('a.state.acl-refused', function() {
 
     hashtag('a.state.acl-refuseda');
 });
+
+
+
+// Test the inject parameters system
+asyncTest('a.state.inject', function() {
+    expect(1);
+
+    var state = {
+        id: 'a.state.inject-test',
+        hash: 'a.state.inject-test',
+        data: {
+            el: '{{inject: ok}}'
+        },
+        converter: function(data) {
+            strictEqual(data.el, 'something');
+        }
+    };
+
+    a.state.add(state);
+
+    chain('a.state.inject-test', start, 100);
+
+    a.route.hash('a.state.inject-test', {
+        ok: 'something'
+    });
+});
