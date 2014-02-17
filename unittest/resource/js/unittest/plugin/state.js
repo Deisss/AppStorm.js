@@ -10,9 +10,10 @@ module('plugin/state.js', {
         hashtag('');
     },
     teardown: function() {
-        a.message.clear();
         a.state.clear();
+        a.message.clear();
         hashtag('');
+        a.acl.clear();
     }
 });
 
@@ -1195,15 +1196,120 @@ asyncTest('a.state.acl-change', function() {
 });
 
 
-// TODO: do that unit test
+// Setup a minimum role for acl
 asyncTest('a.state.acl-minimum', function() {
-    start();
+    expect(1);
+
+    var minimum = {
+        id: 'acl-minimum-change',
+        hash: 'a.state.acl-minimum{{el: [a-z]?}}',
+        acl: {
+            minimum: 'admin'
+        },
+
+        postLoad: function() {
+            strictEqual(a.acl.getCurrentRole(), 'admin', 'ACL unit test');
+        }
+    };
+
+    // State will be refused by default
+    a.acl.setRoleList(['user', 'admin']);
+    a.acl.setCurrentRole('user');
+
+    // We add the state, the minimum will be performed
+    a.state.add(minimum);
+
+    chain('a.state.acl-minimuma', function() {
+        a.acl.setCurrentRole('admin');
+        setTimeout(function() {
+            hashtag('a.state.acl-minimumb');
+        }, 100);
+    });
+
+    chain('a.state.acl-minimumb', start, 100);
+
+    hashtag('a.state.acl-minimuma');
 });
 
-asyncTest('a.state.acl-minimum', function() {
-    start();
+// Define a maximum step
+asyncTest('a.state.acl-maximum', function() {
+    expect(1);
+
+    var maximum = {
+        id: 'acl-maximum-change',
+        hash: 'a.state.acl-maximum{{el: [a-z]?}}',
+        acl: {
+            maximum: 'user'
+        },
+
+        postLoad: function() {
+            strictEqual(a.acl.getCurrentRole(), 'user', 'ACL unit test');
+        }
+    };
+
+    // State will be refused by default
+    a.acl.setRoleList(['user', 'admin']);
+    a.acl.setCurrentRole('user');
+
+    // We add the state, the maximum will be performed
+    a.state.add(maximum);
+
+    chain('a.state.acl-maximuma', function() {
+        a.acl.setCurrentRole('admin');
+        setTimeout(function() {
+            hashtag('a.state.acl-maximumb');
+        }, 100);
+    });
+
+    chain('a.state.acl-maximumb', start, 100);
+
+    hashtag('a.state.acl-maximuma');
 });
 
+// Any element is accepted, except the one defined in refused
 asyncTest('a.state.acl-refused', function() {
-    start();
+    expect(2);
+
+    var refused = {
+        id: 'acl-refused-change',
+        hash: 'a.state.acl-refused{{el: [a-z]?}}',
+        acl: {
+            refused: 'leader'
+        },
+        postLoad: function() {
+            var role = a.acl.getCurrentRole();
+            // Thoose two role are allowed
+            if(role == 'user') {
+                strictEqual(role, 'user', 'User passed');
+            } else if(role == 'admin') {
+                strictEqual(role, 'admin', 'Admin passed');
+            } else {
+                strictEqual(role, false, 'Leader SHOULD NOT pass');
+            }
+        }
+    };
+
+    a.acl.setRoleList(['user', 'leader', 'admin']);
+    a.acl.setCurrentRole('user');
+
+    // We add the state, the refused will not be performed
+    a.state.add(refused);
+
+    chain('a.state.acl-refuseda', function() {
+        a.acl.setCurrentRole('leader');
+        setTimeout(function() {
+            hashtag('a.state.acl-refusedb');
+        }, 100);
+    });
+
+    chain('a.state.acl-refusedb', function() {
+        a.acl.setCurrentRole('admin');
+        setTimeout(function() {
+            hashtag('a.state.acl-refusedc');
+        }, 100);
+    });
+
+    chain('a.state.acl-refusedc', start, 100);
+
+    hashtag('a.state.acl-refuseda');
 });

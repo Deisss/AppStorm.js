@@ -412,8 +412,8 @@ a.state = new function() {
 
         // Test minimum & maximum
         if(
-            (a.isNumber(acl.minimum) && a.acl.isRefused(acl.minimum, role)) ||
-            (a.isNumber(acl.maximum) && a.acl.isRefused(role, acl.maximum))
+            (a.isString(acl.minimum) && a.acl.isRefused(acl.minimum, role)) ||
+            (a.isString(acl.maximum) && a.acl.isRefused(role, acl.maximum))
         ) {
             return false;
         }
@@ -524,6 +524,20 @@ a.state = new function() {
 
         // Parsing hash element
         if(state.hash && a.isString(state.hash)) {
+            // First of all: we get the protocol loader
+            var protocol = a.state.protocol.tester(state.hash);
+
+            // The protocol exist, we can parse it
+            if(protocol) {
+                // We get the related function extracter
+                var type = a.state.protocol.get(protocol);
+                // The system exist, we can apply transformation
+                if(a.isTrueObject(type)) {
+                    // We apply converter to get the final good hash
+                    state.hash = type.fn(state);
+                }
+            }
+
             state._storm.isRegexHash = false;
             if(state.hash.indexOf('{{') >= 0
                     && state.hash.indexOf('}}') >= 0) {

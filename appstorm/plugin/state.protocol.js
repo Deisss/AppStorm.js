@@ -26,18 +26,29 @@
 a.state.protocol = new function() {
     var mem = a.mem.getInstance('app.state.protocol');
 
-    this.add = function(name, isDefault, fct) {
-        if(a.isFunction(isDefault)) {
-            mem.set(name, {
-                isDefault: false,
-                fn:        isDefault
-            });
-        } else {
-            mem.set(name, {
-                isDefault: isDefault,
-                fn:        fct
-            });
-        }
+    /**
+     * Add a new function as protocol available one.
+     *
+     * @method add
+     *
+     * @param name {String}                 The protocol name, like uri will
+     *                                      produce uri:// protocol into your
+     *                                      state
+     * @param fct {Function}                The function to use when such a
+     *                                      protocol is found
+     * @param isDefault {Boolean | null}    If it's the default (no need to 
+     *                                      set uri:// in front) or not.
+     *                                      Note: only one default can be set
+     *                                      And it's by default url (already
+     *                                      setted)
+    */
+    this.add = function(name, fct, isDefault) {
+        isDefault = (isDefault === true) ? true : false;
+
+        mem.set(name, {
+            isDefault: isDefault,
+            fn:        fct
+        });
     };
 
     /**
@@ -47,7 +58,9 @@ a.state.protocol = new function() {
      *
      * @param name {String}                 The protocol name to delete
     */
-    this.remove = mem.remove;
+    this.remove = function(name) {
+        mem.remove(name);
+    };
 
     /**
      * Get from store the given protocol
@@ -56,7 +69,9 @@ a.state.protocol = new function() {
      *
      * @param name {String}                 The protocol to get
     */
-    this.get = mem.get;
+    this.get = function(name) {
+        return mem.get(name);
+    };
 
     /**
      * Test the given hash and found the related protocol
@@ -71,7 +86,11 @@ a.state.protocol = new function() {
      *                                      object
     */
     this.tester = function(hash) {
-        var protocols = this.list(),
+        if(a.isNone(hash)) {
+            return null;
+        }
+
+        var protocols = mem.list(),
             isDefaultFirstName = null;
 
         for(var name in protocols) {
@@ -88,49 +107,72 @@ a.state.protocol = new function() {
             }
         }
 
-        // Return null if isDefaultFirstName is still empty
-        return isDefaultFirstName ? isDefaultFirstName : null;
+        // If we got a prototype of request 'like uri://', but the selected
+        // name is not ok, we send back null instead
+        var type = /^([a-zA-Z0-9\-\_]*):\/\//i,
+            res  = type.exec(hash);
+
+        // We found a typed prototype
+        if(res && res[1] !== isDefaultFirstName) {
+            return null;
+        }
+
+        return isDefaultFirstName;
     };
 };
 
 
 (function() {
-    /*
-    * Utilisation:
-    *  sur un state.add
-    *    checker le hashtag, s'il est pas vide et définit, alors:
-    *    on l'envoi sur protocol.tester, pour récup le nom
-    *    ensuite on get le protocole
-    *    enfin on applique la fct du protocol qui va nous donner la bonne url
-    */
-
-    a.state.protocol.add('url', true, function() {
-        var hash = this.hash;
-        if(hash.indexOf('url://')) {
+    // Define the most basic case, using direct hashtag
+    a.state.protocol.add('url', function(state) {
+        var hash = state.hash || null;
+        if(hash && hash.indexOf('url://') === 0) {
             return hash.substring(6);
         }
         return hash;
-    });
+    }, true);
 
-    a.state.protocol.add('uri', false, function() {
-        /*
-         * Va chercher le parent, et renvoi le résultat depuis les parents & co
-         * Permet de créer des trucs à la jersey like...
-        */
-
-        var hash = this.hash;
-        if(hash.indexOf('uri://')) {
+    // Define a parent related url where you get use of parent to define
+    // the given hashtag final url...
+    a.state.protocol.add('uri', function(state) {
+        var hash = state.hash || '';
+        if(hash && hash.indexOf('uri://') === 0) {
             hash = hash.substring(6);
         }
 
-        // Now we search all parents to find the final hashtag
-        // TODO: search all parents to get it
-    });
+        var search = state.parent;
 
-    a.state.protocol.add('model', false, function() {
-        /*
-        * Prend l'url d'un modèle en fonction de son nom
-        * Genre model://name:request
-        */
-    });
+        while(!a.isNone(search)) {
+            // Search is defined, we use it !
+            if(search.hash) {
+                var parentType = a.state.protocol.tester(search.hash);
+
+                // Parent type is defined, we extract data from
+                if(!a.isNull(parentType)) {
+                    var type = a.state.protocol.get(parentType),
+                        result = type.fn(search);
+
+                    hash = result + '/' + hash;
+
+                    // In any case, we stop as calling type.fn will already
+                    // do parents of parents...
+                    break;
+                }
+            }
+
+            // Still no hash to show, we continue...
+            search = search.parent;
+        }
+
+        return hash;
+    }, false);
+
+    // Get the url from the given model element
+    // You must provide 'model://name:uri' where name is the model name
+    // and uri the resources url you're trying to use...
+    a.state.protocol.add('model', function(state) {
+        // TODO: make model instance by using a.modelManager
+        // From that model, get the request
+        // As the user has to submit model://name:uri
+    }, false);
 })();

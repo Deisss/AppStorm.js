@@ -112,8 +112,8 @@ a.acl = a.extend(new function() {
      *
      * @method isAllowed
      *
-     * @param minimumRole {Boolean}         The minimum role to check
-     * @param currentRole {Boolean | null}  The current role, if undefined, it
+     * @param minimumRole {String}          The minimum role to check
+     * @param currentRole {String | null}   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
@@ -150,8 +150,8 @@ a.acl = a.extend(new function() {
      *
      * @method isRefused
      *
-     * @param minimumRole {Boolean}         The minimum role to check
-     * @param currentRole {Boolean | null}  The current role, if undefined, it
+     * @param minimumRole {String}          The minimum role to check
+     * @param currentRole {String | null}   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
@@ -159,6 +159,16 @@ a.acl = a.extend(new function() {
     this.isRefused = function(minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
     };
+
+    /**
+     * Clear the full ACL rules
+     *
+     * @method clear
+    */
+    this.clear = function() {
+        mem.clear();
+    };
+
 }, new a.eventEmitter('a.acl'));
 
 
