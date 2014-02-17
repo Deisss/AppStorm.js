@@ -375,14 +375,21 @@ a.state = new function() {
         var topState = [];
 
         a.each(foundState, function(arrayState) {
+            // For every top state, if they are appearing into loaded/unloading
+            // But not into unloadingIntersection, we apply them
             if(arrayState.length > 0) {
-                topState.push(arrayState[0]);
+                var top = a.first(arrayState);
+
+                if(a.contains(unloading, top) &&
+                    !a.contains(unloadingIntersection, top)) {
+                    topState.push(arrayState[0]);
+                }
             }
         });
 
         // Now we got the topState populated, we can add it:
         unloadingIntersection = a.union(unloadingIntersection, topState);
-        loadingIntersection   = a.union(loadingIntersection, topState);
+        loadingIntersection   = a.union(loadingIntersection,   topState);
 
 
 
