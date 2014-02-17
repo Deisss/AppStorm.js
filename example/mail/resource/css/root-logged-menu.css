@@ -1,33 +1,33 @@
 #root-logged-menu .menu {
-	margin-top:20px;
+    margin-top:20px;
 }
 
 #root-logged-menu .menu li {
-	display:inline;
-	list-style:none;
-	padding:10px 20px;
+    display:inline;
+    list-style:none;
+    padding:10px 20px;
 }
 
 #root-logged-menu .menu li a {
-	color:#888;
-	text-decoration:none;
-	/* hack IE7 */
-	*line-height:30px;
+    color:#888;
+    text-decoration:none;
+    /* hack IE7 */
+    *line-height:30px;
 }
 
 #root-logged-menu .menu li a:hover {
-	text-decoration:underline;
+    text-decoration:underline;
 }
 
 #root-logged-menu .menu .new {
-	cursor:pointer;
+    cursor:pointer;
 }
 
 #root-logged-menu .menu .active {
-	background:#78bbce;
-	font-weight:bold;
+    background:#78bbce;
+    font-weight:bold;
 }
 
 #root-logged-menu .menu .active a {
-	color:white;
+    color:white;
 }

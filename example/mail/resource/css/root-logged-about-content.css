@@ -8,19 +8,19 @@
 #root-logged-about-content p {
     left: 50%;
     margin-left: -300px;
-	width:600px;
+    width:600px;
     top: 400px;
-	position:absolute;
-	font-size:1.0em;
-	text-align:justify;
+    position:absolute;
+    font-size:1.0em;
+    text-align:justify;
 }
 
 #root-logged-about-content p a {
-	font-size:1.1em;
-	text-decoration:none;
-	color:#78BBCE;
+    font-size:1.1em;
+    text-decoration:none;
+    color:#78BBCE;
 }
 
 #root-logged-about-content p a:hover {
-	text-decoration:underline;
+    text-decoration:underline;
 }

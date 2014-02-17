@@ -1,11 +1,11 @@
 body {
-	font-family:verdana,helvetica,arial,sans-serif;
+    font-family:verdana,helvetica,arial,sans-serif;
 }
 
 #root-notlogged-content {
-	position:absolute;top:50%;height:120px;margin-top:-60px;text-align:center;width:100%;
-	color:#999;font-weight:bold;padding:20px 0px;border-top:1px solid #CCC;border-bottom:1px solid #CCC;
-	background: #2C3E50;
+    position:absolute;top:50%;height:120px;margin-top:-60px;text-align:center;width:100%;
+    color:#999;font-weight:bold;padding:20px 0px;border-top:1px solid #CCC;border-bottom:1px solid #CCC;
+    background: #2C3E50;
 }
 #root-notlogged img.logo {
     left: 50%;
