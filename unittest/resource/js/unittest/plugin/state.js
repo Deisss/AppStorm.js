@@ -6,7 +6,6 @@
 
 module('plugin/state.js', {
     setup: function() {
-        a.state.clear();
         hashtag('');
     },
     teardown: function() {
@@ -1187,10 +1186,7 @@ asyncTest('a.state.acl-change', function() {
        
     });
 
-    chain('state-acl-changz', function() {
-            a.acl.setCurrentRole('');
-            start();
-    }, 200);
+    chain('state-acl-changz', start, 200);
 
     hashtag('state-acl-change');
 });
