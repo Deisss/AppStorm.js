@@ -209,6 +209,19 @@ a.modelPooler.createInstance = function(name) {
 };
 
 
+/**
+ * Delete an existing instance.
+ *
+ * @method deleteInstance
+ *
+ * @param instance {Object}                 The instance to delete
+*/
+a.modelPooler.deleteInstance = function(instance) {
+    if(a.isTrueObject(instance) && instance.uid) {
+        a.modelManager.remove(instance.uid);
+    }
+};
+
 
 
 

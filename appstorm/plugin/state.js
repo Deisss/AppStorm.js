@@ -2,9 +2,6 @@
 
 // dependencies: a.parameter, a.acl, a.hash
 
-// TODO: unit test state on acl changes (unit test the fact it's updated in every states)
-// TODO: create uri:// and model:// to create kind of special system for hash, do that
-// only on add, like uri will trace all parents to find final url...
 a.state = new function() {
     var tree   = {},
         loaded = [];
@@ -362,12 +359,32 @@ a.state = new function() {
 
         // Using a.uniq will remove all double states found
         var currentHash  = data.value,
-            previousHash = data.old;
-            loading      = a.uniq(a.flatten(foundHashState(currentHash))),
+            previousHash = data.old,
+            foundState   = foundHashState(currentHash),
+            loading      = a.uniq(a.flatten(foundState)),
             unloading    = loaded,
         // Only keep difference between (= state allowed to load/unload)
             loadingIntersection   = a.difference(loading, unloading),
             unloadingIntersection = a.difference(unloading, loading);
+
+
+
+        // Now we need to extract from foundState the top state:
+        // The states who need to be refresh no matter what changes has
+        // been done
+        var topState = [];
+
+        a.each(foundState, function(arrayState) {
+            if(arrayState.length > 0) {
+                topState.push(arrayState[0]);
+            }
+        });
+
+        // Now we got the topState populated, we can add it:
+        unloadingIntersection = a.union(unloadingIntersection, topState);
+        loadingIntersection   = a.union(loadingIntersection, topState);
+
+
 
         // Perform the unload/load process
         performUnloadChanges(unloadingIntersection, function() {
@@ -661,6 +678,12 @@ a.state = new function() {
                 // From currently setted state, we remove elements
                 // who don't need to load
                 difference = a.difference(states, loaded);
+
+            // As the load allow to multi-load existing state
+            // If difference is empty, we still load the uppest state
+            if(difference.length <= 0) {
+                difference = [state];
+            }
 
             // Difference
             performLoadChanges(difference, function() {
