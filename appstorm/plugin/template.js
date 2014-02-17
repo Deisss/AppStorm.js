@@ -323,7 +323,9 @@ a.template = {
     // Replace type
     a.state.type.add('replace', function replace(entry, content, chain) {
         if(content) {
-            a.template.replace(entry, content, chain.next);
+            a.template.replace(entry, content, function() {
+                chain.next();
+            });
         }
     }, function(entry, chain) {
         chain.next();
@@ -332,7 +334,9 @@ a.template = {
     // Append type
     a.state.type.add('append', function append(entry, content, chain) {
         if(content) {
-            a.template.append(entry, content, chain.next);
+            a.template.append(entry, content, function() {
+                chain.next();
+            });
         }
     }, function(entry, chain) {
         chain.next();
