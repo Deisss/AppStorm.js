@@ -1,10 +1,17 @@
 // Unit test for a.model (plugin)
 
-module('plugin/model.js');
+module('plugin/model.js', {
+    setup: function() {
+
+    },
+    teardown: function() {
+        a.modelManager.clear();
+    }
+});
 
 // Test nullable properties
 test('a.model.property-nullable', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-nullable', {
         testnullable: {
             nullable: true,
             init: 'ok'
@@ -26,7 +33,7 @@ test('a.model.property-nullable', function() {
 
 // Test init properties
 test('a.model.property-init', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-prop-init', {
         testinit: {
             init: 'ok'
         }
@@ -45,9 +52,10 @@ test('a.model.property-init', function() {
     strictEqual(unit.get('testinit'), 'ok', 'Test clear init');
 });
 
+
 // Test property needed
 test('a.model.property-needed', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-needed', {
         need: {
             needed: true,
             init: 'ok'
@@ -70,7 +78,7 @@ test('a.model.property-needed', function() {
 
 // Test property check
 test('a.model.property-check', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-check', {
         testcheck: {
             init: 'ok',
             check: 'String'
@@ -90,7 +98,7 @@ test('a.model.property-check', function() {
 
 // Test property validate
 test('a.model.property-validate', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-validate', {
         testvalidate: {
             init: 'ok',
             validate: function(value, old) {
@@ -114,7 +122,7 @@ test('a.model.property-validate', function() {
 
 // Test property transform
 test('a.model.property-transform', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-transform', {
         testtransform: {
             init: 'ok',
             transform: function piou(value, old) {
@@ -138,7 +146,7 @@ test('a.model.property-transform', function() {
 asyncTest('a.model.property-event', function() {
     expect(2);
 
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-event', {
         evt: {
             init: 'another',
             event: 'super'
@@ -169,7 +177,7 @@ asyncTest('a.model.property-event', function() {
 asyncTest('a.model.property-apply', function() {
     expect(1);
 
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-apply', {
         app: {
             init: 'another',
             apply: function(value, old) {
@@ -189,7 +197,7 @@ asyncTest('a.model.property-apply', function() {
 
 // Test list function
 test('a.model.list', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-list', {
         A: {
             init: 'ok'
         },
@@ -206,7 +214,7 @@ test('a.model.list', function() {
 
 // Test has function
 test('a.model.has', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-has', {
         A: {
             init: 'ok'
         },
@@ -224,7 +232,7 @@ test('a.model.has', function() {
 
 // Test init function
 test('a.model.init', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-init', {
         testA: {
             init: 'ok'
         },
@@ -264,7 +272,7 @@ test('a.model.init', function() {
 
 // Test jsons function
 test('a.model.json', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-json', {
         testA: {
             init: 'something'
         },
@@ -289,7 +297,7 @@ test('a.model.json', function() {
 
 // Test snapshot function
 test('a.model.snapshot', function() {
-    var unittest = a.model('unittest', {
+    var unittest = a.model('unittest-snapshot', {
         snap: {
             needed: true,
             init: 'ok'
