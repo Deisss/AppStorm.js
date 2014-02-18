@@ -131,6 +131,15 @@ a.modelManager = {
     },
 
     /**
+     * Remove all existing model from store
+     *
+     * @method clear
+    */
+    clear: function() {
+        this._store.clear();
+    },
+
+    /**
      * Get all models related to a given namespace. For example, if you create
      * a.model('user'), this function helps to find all *user* model created.
      *
