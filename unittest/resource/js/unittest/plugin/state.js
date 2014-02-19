@@ -1335,3 +1335,31 @@ asyncTest('a.state.inject', function() {
         ok: 'something'
     });
 });
+
+
+// Testing to loadAfter functionnality
+asyncTest('a.state.load-after', function() {
+    expect(2);
+
+    var parent = {
+        id: 'a.state.loadafter-parent',
+        hash: 'a.state.loadafter',
+        loadAfter: 'a.state.loadafter-child',
+        postLoad: function() {
+            strictEqual(true, true);
+        }
+    };
+
+    var child = {
+        id: 'a.state.loadafter-child',
+        postLoad: function() {
+            strictEqual(true, true);
+        }
+    };
+
+    a.state.add([parent, child]);
+
+    chain('a.state.loadafter', start, 200);
+
+    hashtag('a.state.loadafter');
+});

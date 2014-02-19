@@ -394,14 +394,13 @@ a.state = new function() {
         unloadingIntersection = a.union(unloadingIntersection, topState);
         loadingIntersection   = a.union(loadingIntersection,   topState);
 
-
+        // We remove unloaded elements and add new elements
+        // We do it right now to prevent some unwanted loading
+        loaded = a.difference(loaded, unloadingIntersection)
+                                    .concat(loadingIntersection);
 
         // Perform the unload/load process
         performUnloadChanges(unloadingIntersection, function() {
-            // We remove unloaded elements and add new elements
-            loaded = a.difference(loaded, unloadingIntersection)
-                                        .concat(loadingIntersection);
-
             performLoadChanges(loadingIntersection, function() {
                 // We clear inject, and raise event
                 a.state._inject = {};
@@ -485,6 +484,8 @@ a.state = new function() {
     // Bind events from other elements
     a.hash.bind('change', performHashChange);
     a.acl.bind('change', performAclChange);
+    // TODO: if user call unbindAll for any of both above
+    // We have to be able to prevent such problem by re-bind it...
 
 
 
@@ -794,7 +795,7 @@ a.state = new function() {
         return new Handlebars.SafeString(a.state._inject[key] || null);
     });
 
-    a.parameter.addParameterType('inject',  function(value) {
+    a.parameter.addParameterType('inject',  function(key) {
         return a.state._inject[key] || null;
     });
 })();

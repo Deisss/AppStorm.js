@@ -129,6 +129,7 @@ asyncTest('a.state.request-abort', function() {
 });
 
 
+// Simple elements to load as sub elements into data
 asyncTest('a.state.request-element', function() {
     expect(4);
 
@@ -156,4 +157,38 @@ asyncTest('a.state.request-element', function() {
     chain('wall-list', start, 100);
 
     hashtag('wall-list');
+});
+
+
+// Bug: sometimes, doing a a.state.load while a state is loading
+// can cause something close to infinite loop (but stop at a point)
+// Hanging lots of loads on server side, for nothing...
+asyncTest('a.state.chain-load', function() {
+    expect(2);
+
+    var state = {
+        id: 'a.state.chain-load',
+        hash: 'a.state.chain-load',
+        preLoad: function() {
+            strictEqual(true, true);
+            // Applying load from parent state can hang out state
+            a.state.load('a.state.chain-load-sub');
+        },
+        children: [{
+            id: 'a.state.chain-load-sub',
+            postLoad: function() {
+                strictEqual(true, true);
+            }
+        }]
+    };
+
+    a.state.add(state);
+
+    // We exit
+    chain('a.state.chain-load', function() {
+        hashtag('');
+        start();
+    }, 200);
+
+    hashtag('a.state.chain-load');
 });

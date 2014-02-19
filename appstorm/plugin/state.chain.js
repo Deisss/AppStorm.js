@@ -590,6 +590,21 @@ a.state.chain = new function() {
         goToNextStep.apply(this, arguments);
     });
 
+    // LOAD: loadAfter: launch state after this one is loaded
+    a.state.chain.add(true, 'loadAfter', function loadAfter() {
+        if(this.loadAfter) {
+            var after = this.loadAfter;
+            if(a.isArray(after)) {
+                a.each(after, function(state) {
+                    a.state.load(state);
+                });
+            } else if(a.isString(after) || a.isNumber(after)) {
+                a.state.load(after);
+            }
+        }
+        goToNextStep.apply(this, arguments);
+    });
+
 
     /*
     ----------------------------------
