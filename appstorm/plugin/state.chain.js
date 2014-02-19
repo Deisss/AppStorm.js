@@ -478,7 +478,8 @@ a.state.chain = new function() {
 
     // LOAD: content (insert HTML content)
     a.state.chain.add(true, 'contentLoad', function contentLoad() {
-        var args = arguments;
+        var args  = a.toArray(arguments),
+            chain = a.last(args);
 
         // There is no html to load, we skip
         if(!this._storm.html) {
@@ -488,19 +489,18 @@ a.state.chain = new function() {
 
         a.template.get(this._storm.html, this.data, a.scope(
         function(content) {
-            // TODO: do translate here before converting !
-            // TODO: publish content here into DOM using entry/type
-            // TODO: be able to use here the fact an entry can be function
+            // User can also define their custom function directly into state
+            if(a.isFunction(this.type)) {
+                // We call the function, and give the chain to system
+                this.type.call(this, entry, content, chain);
 
-            // It's allowed to want to load content, but not use it...
-            if(this.entry) {
+            } else if(this.entry) {
                 var entry = a.dom.query(this.entry),
                     type  = this.type || 'replace',
                     obj   = a.state.type.get(type);
 
                 if(obj && a.isFunction(obj.input)) {
                     if(obj.async) {
-                        var chain = a.last(args);
                         // We delegate the chain continuation
                         obj.input.call(this, entry, content, chain);
                     } else {

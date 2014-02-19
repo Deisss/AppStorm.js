@@ -192,3 +192,61 @@ asyncTest('a.state.chain-load', function() {
 
     hashtag('a.state.chain-load');
 });
+
+
+// Loading many child while root is not finished to load
+// Can hang application
+asyncTest('a.state.chain-load-with-url', function() {
+    expect(6);
+
+    var wall = [{
+        id: 'root',
+        // Data
+        data: {
+            commentList: 'resource/data/state/commentlist.json'
+        },
+        async: true,
+        converter: function(data) {
+            data.user = {id: 1};
+        },
+        // Callbacks
+        postLoad: function(chain) {
+            // Check post type
+            var loadByWallType = function(comment, user) {
+                return (comment.user_id == user.id) ? 'mine' : 'friend';
+            };
+            // Load good state
+            var d = this.data;
+            for(var i=0, l=d.commentList.length; i<l; ++i) {
+                var child = loadByWallType(d.commentList[i], d.user);
+                a.state.load(child);
+            }
+
+            strictEqual(true, true, 'Load root parent');
+
+            chain.next();
+        },
+        // Children
+        children: [{
+            id:       'mine',
+            async:    true,
+            postLoad: function(chain) {
+                strictEqual(true, true, 'Load mine child');
+                chain.next();
+            }
+        },
+        {
+            id:       'friend',
+            async:    true,
+            postLoad: function(chain) {
+                strictEqual(true, true, 'load friend child');
+                chain.next();
+            }
+        }]
+    }];
+
+    a.state.add(wall);
+    a.state.load('root');
+
+    setTimeout(start, 200);
+});

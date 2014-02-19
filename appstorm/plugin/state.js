@@ -698,11 +698,10 @@ a.state = new function() {
                 difference = [state];
             }
 
+            loaded = loaded.concat(difference);
+
             // Difference
-            performLoadChanges(difference, function() {
-                // We update loaded from this elements
-                loaded = loaded.concat(difference);
-            });
+            performLoadChanges(difference);
         }
     };
 
