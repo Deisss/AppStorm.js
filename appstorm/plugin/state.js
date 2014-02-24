@@ -400,13 +400,15 @@ a.state = new function() {
                                     .concat(loadingIntersection);
 
         // Perform the unload/load process
-        performUnloadChanges(unloadingIntersection, function() {
-            performLoadChanges(loadingIntersection, function() {
-                // We clear inject, and raise event
-                a.state._inject = {};
-                a.message.dispatch('a.state.end', data);
+        setTimeout(function() {
+            performUnloadChanges(unloadingIntersection, function() {
+                performLoadChanges(loadingIntersection, function() {
+                    // We clear inject, and raise event
+                    a.state._inject = {};
+                    a.message.dispatch('a.state.end', data);
+                });
             });
-        });
+        }, 0);
     };
 
 
@@ -701,7 +703,9 @@ a.state = new function() {
             loaded = loaded.concat(difference);
 
             // Difference
-            performLoadChanges(difference);
+            setTimeout(function() {
+                performLoadChanges(difference);
+            }, 0);
         }
     };
 
