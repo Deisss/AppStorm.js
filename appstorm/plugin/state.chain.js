@@ -532,7 +532,7 @@ a.state.chain = new function() {
     // LOAD: bind (HTML events)
     a.state.chain.add(true, 'bindDom', function bindDom() {
         // Use bind/binding to elements
-        var bindings = this.bind || this.bindings || this.events || null,
+        var bindings = this.bind || this.bindings || null,
             entry    = a.dom.el(this.entry);
 
         a.each(bindings, function(fct, query) {
@@ -560,6 +560,29 @@ a.state.chain = new function() {
 
         goToNextStep.apply(this, arguments);
     });
+
+    // Load: bind (GLOBAL HTML events)
+    a.state.chain.add(true, 'bindGlobalDom', function bindGlobalDom() {
+        // Use bind/binding to elements
+        var bindings = this.globalBind || this.globalBindings || null;
+
+        a.each(bindings, function(fct, query) {
+            var split = query.split('|');
+
+            if(split.length == 2) {
+                var el     = a.trim(split[0]),
+                    action = a.trim(split[1]);
+
+                // If action is not empty (of course)
+                if(action) {
+                    a.dom.query(el).bind(action, fct);
+                }
+            }
+        });
+
+        goToNextStep.apply(this, arguments);
+    });
+
 
     // LOAD: bind (keyboard events)
     a.state.chain.add(true, 'bindKeyboard', function bindKeyboard() {
@@ -641,10 +664,34 @@ a.state.chain = new function() {
         goToNextStep.apply(this, arguments);
     });
 
+    // Load: unbind (GLOBAL HTML events)
+    a.state.chain.add(false, 'unbindGlobalDom', function unbindGlobalDom() {
+        // Use bind/binding to elements
+        var bindings = this.globalBind || this.globalBindings || null;
+
+        a.each(bindings, function(fct, query) {
+            var split = query.split('|');
+
+            if(split.length == 2) {
+                var el     = a.trim(split[0]),
+                    action = a.trim(split[1]);
+
+                // If action is not empty (of course)
+                if(action) {
+                    a.dom.query(el).unbind(action, fct);
+                }
+
+            // A single element: direct action on entry level
+            }
+        });
+
+        goToNextStep.apply(this, arguments);
+    });
+
     // UNLOAD: unbind (HTML events)
     a.state.chain.add(false, 'unbindDom', function unbindDom() {
         // Use bind/binding to elements
-        var bindings = this.bind || this.bindings || this.events || null,
+        var bindings = this.bind || this.bindings || null,
             entry    = a.dom.el(this.entry);
 
         a.each(bindings, function(fct, query) {
