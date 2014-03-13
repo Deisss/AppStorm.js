@@ -143,6 +143,13 @@ a.route = new function() {
     this.navigate = this.go;
 
     /**
+     * Allow to go back one time into history 
+    */
+    this.back = function() {
+        window.history.back();
+    };
+
+    /**
      * Apply change to hash on enter or leave position.
      *
      * @method callApplyHashChange
