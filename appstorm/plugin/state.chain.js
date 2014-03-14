@@ -160,6 +160,25 @@ a.state.chain = new function() {
     };
 
     /**
+     * Get the related state entry
+     *
+     * @method getEntry
+     * @private
+     *
+     * @return {String}                     The dom found
+    */
+    function getEntry() {
+        var el = this.entry || this.target || this.el || this.dom || null;
+
+        if(a.isFunction(el)) {
+            return el.call(this);
+        }
+
+        // Regular string
+        return el;
+    }
+
+    /**
      * Test if the given function should be run in async mode or not.
      *
      * @method testAsync
@@ -489,22 +508,24 @@ a.state.chain = new function() {
 
         a.template.get(this._storm.html, this.data, a.scope(
         function(content) {
+            var entry = getEntry.call(this);
+
             // User can also define their custom function directly into state
             if(a.isFunction(this.type)) {
                 // We call the function, and give the chain to system
                 this.type.call(this, entry, content, chain);
 
-            } else if(this.entry) {
-                var entry = a.dom.query(this.entry),
+            } else if(entry) {
+                var el    = a.dom.query(entry),
                     type  = this.type || 'replace',
                     obj   = a.state.type.get(type);
 
                 if(obj && a.isFunction(obj.input)) {
                     if(obj.async) {
                         // We delegate the chain continuation
-                        obj.input.call(this, entry, content, chain);
+                        obj.input.call(this, el, content, chain);
                     } else {
-                       obj.input.call(this, entry, content);
+                       obj.input.call(this, el, content);
                        goToNextStep.apply(this, args);
                     }
 
@@ -533,7 +554,7 @@ a.state.chain = new function() {
     a.state.chain.add(true, 'bindDom', function bindDom() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || null,
-            entry    = a.dom.el(this.entry);
+            entry    = a.dom.el(getEntry.call(this));
 
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
@@ -692,7 +713,7 @@ a.state.chain = new function() {
     a.state.chain.add(false, 'unbindDom', function unbindDom() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || null,
-            entry    = a.dom.el(this.entry);
+            entry    = a.dom.el(getEntry.call(this));
 
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
@@ -723,12 +744,13 @@ a.state.chain = new function() {
     // UNLOAD: content (unload HTML content)
     a.state.chain.add(false, 'contentUnload', function contentUnload() {
         var startingPoint = null,
-            args = a.toArray(arguments);
+            entry = getEntry.call(this),
+            args  = a.toArray(arguments);
 
-        if(a.isFunction(this.entry)) {
-            startingPoint = a.dom.el(this.entry());
-        } else if(a.isString(this.entry)) {
-            startingPoint = a.dom.query(this.entry);
+        if(a.isFunction(entry)) {
+            startingPoint = a.dom.el(entry());
+        } else if(a.isString(entry)) {
+            startingPoint = a.dom.query(entry);
         }
 
         if(startingPoint) {
