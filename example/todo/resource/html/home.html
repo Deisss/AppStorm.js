@@ -1,21 +1,21 @@
-<div id="todo">
-	<img class="logo" src="../../logo/appstormjs.png" alt="logo AppStorm.JS" />
-	<div class="content">
-		<!-- See language plugin -->
-		<p class="disclaimer" data-tr="disclaimer"></p>
+<div id='todo'>
+    <img class='logo' src='../../logo/appstormjs.png' alt='logo AppStorm.JS' />
+    <div class='content'>
+        <!-- See language plugin -->
+        <p class='disclaimer' data-tr='disclaimer'></p>
 
-		<!-- Adding a TODO to existing list -->
-		<form onsubmit="todoAdd();return false;">
-			<br /><br />
-			<label for="new-todo" data-tr="add-todo"></label><br />
-			<input type="text" name="new-todo" id="new-todo" /><input type="submit" data-tr="add-todo-submit" />
-		</form>
+        <!-- Adding a TODO to existing list -->
+        <form onsubmit='todoAdd();return false;'>
+            <br /><br />
+            <label for='new-todo' data-tr='add-todo'></label><br />
+            <input type='text' name='new-todo' id='new-todo' /><input type='submit' data-tr='add-todo-submit' />
+        </form>
 
-		<div class="todolist-wrapper">
-			<a data-tr="existing-todo"></a>
-			<input type="text" name="filter-todo" id="filter-todo" onkeyup="a.state.forceReloadById('todolist');" value="{{filter}}" />
-			<div class="clear"></div>
-			<div id="todolist"></div>
-		</div>
-	</div>
+        <div class='todolist-wrapper'>
+            <a data-tr='existing-todo'></a>
+            <input type='text' name='filter-todo' id='filter-todo' onkeyup='a.state.forceReloadById("todolist");' value='{{filter}}' />
+            <div class='clear'></div>
+            <div id='todolist'></div>
+        </div>
+    </div>
 </div>

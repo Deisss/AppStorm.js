@@ -29,13 +29,13 @@
 #todo input[type="checkbox"]{margin-right:15px}
 
 @media screen and (max-width: 960px) {
-	#menu-lang{display:none}
-	#todo{width:100%}
-	#todo .logo{margin:0px}
-	#todo li input[type="text"]{width:50%}
-	#todo .disclaimer{display:none}
+    #menu-lang{display:none}
+    #todo{width:100%}
+    #todo .logo{margin:0px}
+    #todo li input[type="text"]{width:50%}
+    #todo .disclaimer{display:none}
 }
 
 @media screen and (max-width: 600px) {
-	#todo .logo{width:100%}
+    #todo .logo{width:100%}
 }

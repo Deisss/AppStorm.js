@@ -74,8 +74,10 @@ a.eventEmitter.prototype = {
      * @param scope {Object | null}         The scope to bind to function
      * @param once {Boolean | null}         If we should start it only once or
      *                                      not
+     * @param clear {Boolean | null}        If the current bind can be clear or
+     *                                      not (you still can use unbind)
     */
-    bind: function(type, fn, scope, once) {
+    bind: function(type, fn, scope, once, clear) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
             var msg = '.bind: the type cannot be bind (type: ' + type + ')';
@@ -93,6 +95,9 @@ a.eventEmitter.prototype = {
         if(once !== true) {
             once = false;
         }
+        if(clear !== false) {
+            clear = true;
+        }
 
         // Create a new array for the given type
         if(a.isUndefined(this.eventList[type])) {
@@ -102,7 +107,8 @@ a.eventEmitter.prototype = {
         this.eventList[type].push({
             fct:   fn,
             scope: scope || null,
-            once:  once
+            once:  once,
+            clear: clear
         });
 
         // Dispatch event
@@ -120,9 +126,11 @@ a.eventEmitter.prototype = {
      * @param type {String}                 The event type
      * @param fn {Function}                 The function to bind to event
      * @param scope {Object | null}         The scope to bind to function
+     * @param clear {Boolean | null}        If the current bind can be clear or
+     *                                      not (you still can use unbind)
     */
-    bindOnce: function(type, fn, scope) {
-        this.bind(type, fn, scope, true);
+    bindOnce: function(type, fn, scope, clear) {
+        this.bind(type, fn, scope, true, clear);
     },
 
     /**
@@ -165,7 +173,7 @@ a.eventEmitter.prototype = {
         });
 
         // We clear unused list type
-        this.clearEventType(type);
+        this.clearEventType();
     },
 
     /**
@@ -177,11 +185,18 @@ a.eventEmitter.prototype = {
     */
     unbindAll: function(type) {
         if(!a.isNone(this.eventList[type])) {
-            this.eventList[type] = [];
+            var events = this.eventList[type],
+                i = events.length;
 
-            // We clear unused list type
-            this.clearEventType(type);
+            while(i--) {
+                if(events[i].clear === true) {
+                    events.splice(i, 1);
+                }
+            }
         }
+
+        // We clear unused list type
+        this.clearEventType();
     },
 
     /**
@@ -194,7 +209,7 @@ a.eventEmitter.prototype = {
 
         for(var i in this.eventList) {
             if(i !== c) {
-                delete this.eventList[i];
+                this.unbindAll(i);
             }
         }
 

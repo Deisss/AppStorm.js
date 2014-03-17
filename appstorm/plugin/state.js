@@ -484,8 +484,8 @@ a.state = new function() {
 
 
     // Bind events from other elements
-    a.hash.bind('change', performHashChange);
-    a.acl.bind('change', performAclChange);
+    a.hash.bind('change', performHashChange, null, false, false);
+    a.acl.bind('change', performAclChange, null, false, false);
     // TODO: if user call unbindAll for any of both above
     // We have to be able to prevent such problem by re-bind it...
 

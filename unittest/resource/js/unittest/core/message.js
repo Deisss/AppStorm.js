@@ -191,3 +191,27 @@ asyncTest('a.message.multiple-instance', function() {
         start();
     }, 100);
 });
+
+// It's possible to bind, an unbindable function
+// Except unbind function
+asyncTest('a.message.stop-clear', function() {
+    expect(1);
+
+    function doesSupportUnbindAll() {
+        strictEqual(1, 1, 'Test');
+        start();
+    };
+
+    function doesNotSupportUnbindAll() {
+        strictEqual(0, 1, 'Wrong test');
+    };
+
+    a.message.bind('try-unbindAll', doesSupportUnbindAll, null, false, false);
+    a.message.bind('try-unbindAll', doesNotSupportUnbindAll);
+
+    // We try to remove everything
+    a.message.unbindAll('try-unbindAll');
+    a.message.clear();
+
+    a.message.dispatch('try-unbindAll');
+});
