@@ -576,8 +576,12 @@ a.state = new function() {
                 state._storm.isRegexHash = true;
             }
 
-            // Making it strict catch
-            state._storm.hash = '^' + a.parameter.convert(state.hash) + '$';
+            state._storm.hash = a.parameter.convert(state.hash);
+
+            // Making it strict catch for regex one
+            if(state._storm.isRegexHash) {
+                state._storm.hash = '^' + state._storm.hash + '$';
+            }
         }
 
         // Applying acl
