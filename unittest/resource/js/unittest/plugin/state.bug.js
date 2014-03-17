@@ -250,3 +250,68 @@ asyncTest('a.state.chain-load-with-url', function() {
 
     setTimeout(start, 200);
 });
+
+
+
+// On new AppStorm v0.2.0, we found that loading
+// too many times a state create a bug
+// due to cache system which get override by tmp data...
+// This test is here to check that behavior does not come back.
+asyncTest('a.state.chain-triple-load', function() {
+    expect(8);
+
+    var state1 = {
+        id: 'ok',
+        hash: '/chain-triple-load/{{id: [a-fA-F0-9]+}}',
+        data: {
+            custom: '{{id}}'
+        },
+        postLoad: function() {
+            var current = this.data.custom,
+                original = this._storm.data.custom;
+
+            console.log('t1');
+            console.log(this);
+
+            strictEqual(current, 'abcdef', 'Test load current value');
+            strictEqual(original, '{{id}}', 'Test load original value');
+        }
+    };
+
+    var state2 = {
+        id: 'ok2',
+        hash: '/chain-triple-unload/{{id: [a-fA-F0-9]+}}',
+        data: {
+            sub: '{{id}}'
+        },
+        postLoad: function() {
+            var current = this.data.sub,
+                original = this._storm.data.sub;
+
+            console.log('t2');
+            console.log(this);
+
+            strictEqual(current, 'abcdef', 'Test unload current value');
+            strictEqual(original, '{{id}}', 'Test unload original value');
+        }
+    };
+
+    a.state.add([state1, state2]);
+
+    // Loading/unloading many times
+    chain('/chain-triple-load/abcdef', function() {
+        chain('/chain-triple-unload/abcdef', function() {
+            chain('/chain-triple-load/abcdef', function() {
+                chain('/chain-triple-unload/abcdef', function() {
+                    hashtag('');
+                    start();
+                }, 200);
+                hashtag('/chain-triple-unload/abcdef')
+            }, 200);
+            hashtag('/chain-triple-load/abcdef')
+        }, 200);
+        hashtag('/chain-triple-unload/abcdef');
+    }, 200);
+
+    hashtag('/chain-triple-load/abcdef');
+});
