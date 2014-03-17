@@ -273,7 +273,7 @@ a.state = new function() {
 
                 // We are in regex mode
                 } else if(state._storm.isRegexHash) {
-                    var reg = new RegExp(state._storm.hash, '');
+                    var reg = new RegExp(state._storm.hash, 'g');
                     if(reg.test(hash)) {
                         parents = foundParentState(state);
                     }

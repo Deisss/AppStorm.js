@@ -389,18 +389,44 @@ a.modelInstance.prototype = {
     },
 
     /**
+     * Convert model to a simple json object like
+     *
+     * @method toObject
+     *
+     * @return {Object}                     The result object
+    */
+    toObject: function() {
+        var obj = {};
+        for(var property in this.properties) {
+            obj[property] = this.get(property);
+        }
+        return obj;
+    },
+
+    /**
+     * From a JSON object like, fill this model with element found
+     *
+     * @method fromObject
+     *
+     * @param data {Object}                 The input data
+    */
+    fromObject: function(data) {
+        for(var property in this.properties) {
+            if(property in data) {
+                this.properties[property]['value'] = data[property];
+            }
+        }
+    },
+
+    /**
      * Convert model to JSON data
      *
      * @method toJSON
      *
-     * @return {Object}                     The serialized JSON model
+     * @return {String}                     The serialized JSON model
     */
     toJSON: function() {
-        var json = {};
-        for(var property in this.properties) {
-            json[property] = this.get(property);
-        }
-        return a.parser.json.stringify(json);
+        return a.parser.json.stringify(this.toObject());
     },
 
     /**
@@ -414,11 +440,7 @@ a.modelInstance.prototype = {
         if(a.isString(data) && data.length > 0) {
             data = a.parser.json.parse(data);
         }
-        for(var property in this.properties) {
-            if(property in data) {
-                this.properties[property]['value'] = data[property];
-            }
-        }
+        this.fromObject(data);
     },
 
     /**
