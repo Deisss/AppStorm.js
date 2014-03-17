@@ -375,3 +375,11 @@ test('a.parameter.extrapolate-complex-old-unittest', function() {
     strictEqual(result, 'http://localhost/Bugs/project/' +
             '51cc10cd9b2b60ec50897d99/bug/51cc10cd9b2b60ec50897d96');
 });
+
+// Same hash test as appstorm does into state plugin
+test('a.parameter.hash', function() {
+    var reg = new RegExp('/dashboard/group/([a-fA-F0-9]+)', 'g');
+
+    strictEqual(reg.test('/dashboard/group/aaaa'), true);
+    strictEqual(reg.test('/dashboard/group/create'), false);
+});
