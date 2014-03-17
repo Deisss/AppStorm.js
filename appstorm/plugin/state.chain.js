@@ -409,8 +409,8 @@ a.state.chain = new function() {
         if(a.isArray(this._storm.data) || a.isTrueObject(this._storm.data)) {
             differenceData = a.differenceObject(this.data, this._storm.data);
         }
-        this.data = this._storm.data;
-        this.options = this._storm.options || {type: 'json'};
+        this.data = a.deepClone(this._storm.data);
+        this.options = a.deepClone(this._storm.options) || {type: 'json'};
 
         // TODO: support for calling function in data parameters
 
