@@ -188,5 +188,5 @@ a.route = new function() {
     a.hash.bind('change', function(data) {
         callApplyHashChange(data.value, 'enter');
         callApplyHashChange(data.old,   'leave');
-    });
+    }, null, false, false);
 };
