@@ -192,6 +192,29 @@ a.modelPooler = a.mem.getInstance('app.model.type');
  *                                          if model name is not defined
 */
 a.modelPooler.createInstance = function(name) {
+    var model = this.createTemporaryInstance(name);
+
+    if(!a.isNull(model)) {
+        // Adding model to modelManager system
+        a.modelManager.set(model);
+    }
+
+    return model;
+};
+
+
+/**
+ * Simple function to generate new instance from a base. This instance is not
+ * stored into a.modelManager.
+ * NOTE: this function should not be used, please use createInstance instead.
+ *
+ * @method createInstance
+ *
+ * @param name {String}                     The model type we want to create
+ * @return {Object | null}                  The model instance created, or null
+ *                                          if model name is not defined
+*/
+a.modelPooler.createTemporaryInstance = function(name) {
     var instanceType = this.get(name);
 
     if(!instanceType) {
@@ -210,12 +233,9 @@ a.modelPooler.createInstance = function(name) {
     // Resetting model
     model.init();
 
-    // Adding model to modelManager system
-    a.modelManager.set(model);
-
     // Returning freshly created model
     return model;
-};
+}
 
 
 /**
