@@ -378,34 +378,124 @@ a.dom = {
 
 
 
+/**
+ * Unified event system for DOM element (to have always the same behavior
+ * between all browser)
+*/
+a.dom.event = function(e) {
+    e = e || window.event;
+    this.target        = e.target || e.srcElement;
+    this.currentTarget = e.currentTarget || null;
+    this.type          = e.type;
 
+    // Multiple binding to never loose original event
+    this._e            = e;
+    this.event         = e;
+    this.originalEvent = e;
+};
+
+/**
+ * Event prototype
+*/
+a.dom.event.prototype = {
+    /**
+     * Stop event propagation
+    */
+    stopPropagation: function() {
+        var e = this.originalEvent;
+        if(e.stopPropagation) {
+            e.stopPropagation();
+        } else {
+            e.cancelBubble = true;
+        }
+    },
+
+    /**
+     * Prevent default behavior
+    */
+    preventDefault: function() {
+        var e = this.originalEvent;
+        if(e.preventDefault) {
+          e.preventDefault();
+        }
+        e.returnValue = false;
+    }
+}
+
+
+/**
+ * Generic function to use for converting event to appstorm event type
+ *
+ * @method eventBinder
+ *
+ * @param fn {Function}                     The function to encaps
+ * @return {Function}                       The binded function
+*/
+a.dom.eventBinder = function(fn) {
+    return function(e) {
+        if(a.isFunction(fn)) {
+            fn(new a.dom.event(e));
+        }
+    };
+};
 
 
 /**
  * Abstract layer for binding event with DOM
 */
-a.dom.event = new function() {
+a.dom.eventListener = new function() {
+    var store = [];
+
+    // Add binder between true event and function catch
+    function addListener(el, type, fn) {
+        var binder = new a.dom.eventBinder(fn);
+        store.push({
+            el:   el,
+            type: type,
+            fn:   fn,
+            bn:   binder
+        });
+        return binder;
+    };
+
+    // Destroy stored binder reference
+    function removeListener(el, type, fn) {
+        var s = store,
+            i = s.length,
+            binder = null;
+        while(i--) {
+            var evt = s[i];
+            if(evt.fn === fn && evt.el === el && evt.type === type) {
+                binder = evt.bn;
+                s.splice(i, 1);
+                break;
+            }
+        }
+        return binder;
+    };
+
     // New browser
     function addEventListener(el, type, fn) {
-        el.addEventListener(type, fn, false);
+        el.addEventListener(type,    addListener(el, type, fn),    false);
     };
     function removeEventListener(el, type, fn) {
-        el.removeEventListener(type, fn, false);
+        el.removeEventListener(type, removeListener(el, type, fn), false);
     };
 
     // IE
     function attachEvent(el, type, fn) {
-        el.attachEvent('on' + type, fn);
+        el.attachEvent('on' + type, addListener(el, type, fn));
     };
     function detachEvent(el, type, fn) {
-        el.detachEvent('on' + type, fn);
+        el.detachEvent('on' + type, removeListener(el, type, fn));
     };
 
     // Old Browsers
     function rawBindEvent(el, type, fn) {
-        el['on' + type] = fn;
+        el['on' + type] = addListener(el, type, fn);
     };
     function rawUnbindEvent(el, type, fn) {
+        removeListener(el, type, fn);
         el['on' + type] = null;
     };
 
@@ -732,7 +822,7 @@ a.dom.children.prototype = {
                 continue;
             }
             this.each(function(evt) {
-                a.dom.event.bind(this, evt, fct);
+                a.dom.eventListener.bind(this, evt, fct);
             }, bindList[i].toLowerCase());
         }
 
@@ -758,7 +848,7 @@ a.dom.children.prototype = {
             }
 
             this.each(function(evt) {
-                a.dom.event.unbind(this, evt, fct);
+                a.dom.eventListener.unbind(this, evt, fct);
             }, bindList[i].toLowerCase());
         }
 
