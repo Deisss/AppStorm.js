@@ -195,7 +195,7 @@ a.form = (function() {
             while(i--) {
                 var input = inputList[i];
 
-                var name  = getFieldKey(input),
+                var name  = a.trim(getFieldKey(input)),
                     value = getFieldValue(input);
 
                 // We don't continue if we don't find any data on element
@@ -216,7 +216,16 @@ a.form = (function() {
                 }
 
                 if(parse) {
-                    outputList[name] = (value === '') ? null : value;
+                    // Name is a multiple value one (using [] at the end)
+                    if(name.substr(name.length - 2) === '[]') {
+                        if(!a.isArray(outputList[name])) {
+                            outputList[name] = [];
+                        }
+                        value = (value) ? null : value;
+                        outputList[name].push(value);
+                    } else {
+                       outputList[name] = (value) ? null : value; 
+                   }
                 }
             };
 
