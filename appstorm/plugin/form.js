@@ -221,10 +221,10 @@ a.form = (function() {
                         if(!a.isArray(outputList[name])) {
                             outputList[name] = [];
                         }
-                        value = (value) ? null : value;
+                        value = (value) ? value: null;
                         outputList[name].push(value);
                     } else {
-                       outputList[name] = (value) ? null : value; 
+                       outputList[name] = (value) ? value: null;
                    }
                 }
             };
