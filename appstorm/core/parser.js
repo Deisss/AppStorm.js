@@ -78,12 +78,13 @@ a.parser = {
          * @return {String}              A JSON parsed string, or an empty
          *                               string if the parsing fails
         */
-        stringify: function(value) {
+        stringify: function() {
             try {
-                return JSON.stringify(value);
+                return JSON.stringify.apply(null, arguments);
             } catch(e) {
                 var unable = 'a.parser.json.stringify: ' +
-                             'unable to stringify (value: ' + value + ')';
+                             'unable to stringify (value: ' +
+                             arguments.toString() + ')';
                 a.console.error(unable, 1);
                 // Debug stack trace in case of debug mode
                 if(a.environment.get('debug')) {
