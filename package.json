@@ -1,6 +1,6 @@
 {
   "name": "appstorm.js",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "AppStorm.JS is a powerful client-side Javascript framework to build fast, easy to read, and full featured web applications.",
   "main": "Gruntfile.js",
   "directories": {
