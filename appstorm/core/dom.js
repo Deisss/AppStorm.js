@@ -429,12 +429,17 @@ a.dom.event.prototype = {
  * @method eventBinder
  *
  * @param fn {Function}                     The function to encaps
+ * @param scope {Object | null}             The scope to apply if possible
  * @return {Function}                       The binded function
 */
-a.dom.eventBinder = function(fn) {
+a.dom.eventBinder = function(fn, scope) {
     return function(e) {
         if(a.isFunction(fn)) {
-            fn(new a.dom.event(e));
+            if(a.isObject(scope)) {
+                fn.call(scope, new a.dom.event(e));
+            } else {
+                fn.call(null, new a.dom.event(e));
+            }
         }
     };
 };
@@ -447,8 +452,8 @@ a.dom.eventListener = new function() {
     var store = [];
 
     // Add binder between true event and function catch
-    function addListener(el, type, fn) {
-        var binder = new a.dom.eventBinder(fn);
+    function addListener(el, type, fn, scope) {
+        var binder = new a.dom.eventBinder(fn, scope || null);
         store.push({
             el:   el,
             type: type,
@@ -475,24 +480,24 @@ a.dom.eventListener = new function() {
     };
 
     // New browser
-    function addEventListener(el, type, fn) {
-        el.addEventListener(type,    addListener(el, type, fn),    false);
+    function addEventListener(el, type, fn, scope) {
+        el.addEventListener(type,    addListener(el, type, fn, scope), false);
     };
     function removeEventListener(el, type, fn) {
         el.removeEventListener(type, removeListener(el, type, fn), false);
     };
 
     // IE
-    function attachEvent(el, type, fn) {
-        el.attachEvent('on' + type, addListener(el, type, fn));
+    function attachEvent(el, type, fn, scope) {
+        el.attachEvent('on' + type, addListener(el, type, fn, scope));
     };
     function detachEvent(el, type, fn) {
         el.detachEvent('on' + type, removeListener(el, type, fn));
     };
 
     // Old Browsers
-    function rawBindEvent(el, type, fn) {
-        el['on' + type] = addListener(el, type, fn);
+    function rawBindEvent(el, type, fn, scope) {
+        el['on' + type] = addListener(el, type, fn, scope);
     };
     function rawUnbindEvent(el, type, fn) {
         removeListener(el, type, fn);
@@ -812,8 +817,9 @@ a.dom.children.prototype = {
      *
      * @param binding {String | Array}      The event/list to apply to
      * @param fct {Function}                The handler to receive event
+     * @param scope {Object | null}         The scope to apply
     */
-    bind: function(binding, fct) {
+    bind: function(binding, fct, scope) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
             i        = bindList.length;
 
@@ -822,7 +828,7 @@ a.dom.children.prototype = {
                 continue;
             }
             this.each(function(evt) {
-                a.dom.eventListener.bind(this, evt, fct);
+                a.dom.eventListener.bind(this, evt, fct, scope);
             }, bindList[i].toLowerCase());
         }
 
