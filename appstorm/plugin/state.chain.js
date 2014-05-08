@@ -375,7 +375,7 @@ a.state.chain = new function() {
         }),
             role     = a.acl.getCurrentRole(),
             partials = (this.include && this.include.partials) ? 
-                            this.include.partials : [];
+                            this.include.partials : {};
 
         var css  = getInclude(this, 'css',       role),
             js   = getInclude(this, 'js',        role),
@@ -554,6 +554,7 @@ a.state.chain = new function() {
     a.state.chain.add(true, 'bindDom', function bindDom() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || null,
+            state    = this,
             entry    = a.dom.el(getEntry.call(this));
 
         a.each(bindings, function(fct, query) {
@@ -567,15 +568,15 @@ a.state.chain = new function() {
                 if(action) {
                     // If el is empty: we bind directly on entry root
                     if(!el) {
-                        entry.bind(action, fct);
+                        entry.bind(action, fct, state);
                     } else {
-                        a.dom.query(el, entry).bind(action, fct);
+                        a.dom.query(el, entry).bind(action, fct, state);
                     }
                 }
 
             // A single element: direct action on entry level
             } else if(split.length == 1) {
-                entry.bind(a.trim(split[0]), fct);
+                entry.bind(a.trim(split[0]), fct, state);
             }
         });
 
@@ -585,7 +586,8 @@ a.state.chain = new function() {
     // Load: bind (GLOBAL HTML events)
     a.state.chain.add(true, 'bindGlobalDom', function bindGlobalDom() {
         // Use bind/binding to elements
-        var bindings = this.globalBind || this.globalBindings || null;
+        var bindings = this.globalBind || this.globalBindings || null,
+            state    = this;
 
         a.each(bindings, function(fct, query) {
             var split = query.split('|');
@@ -596,7 +598,7 @@ a.state.chain = new function() {
 
                 // If action is not empty (of course)
                 if(action) {
-                    a.dom.query(el).bind(action, fct);
+                    a.dom.query(el).bind(action, fct, state);
                 }
             }
         });
