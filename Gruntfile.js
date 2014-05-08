@@ -34,6 +34,7 @@ module.exports = function(grunt) {
           'appstorm/core/route.js',
           'appstorm/core/parameter.js',
           'appstorm/core/acl.js',
+          'appstorm/core/mock.js',
 
           'appstorm/plugin/keyboard.js',
           'appstorm/plugin/callback.js',
