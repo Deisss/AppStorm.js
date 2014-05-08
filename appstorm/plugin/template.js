@@ -84,7 +84,9 @@ a.template = {
 
         if(a.isString(partialsStore[name])) {
             a.console.log(fctName +': loading ' + name + ' from cache', 3);
-            return partialsStore[name];
+            if(a.isFunction(callback)) {
+                callback(name, partialsStore[name]);
+            }
         }
 
         if(options && options.noloading == true) {
