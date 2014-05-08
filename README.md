@@ -1,10 +1,8 @@
-AppStorm.JS
-===========
+# AppStorm.JS
 
 AppStorm.JS is a powerful client-side Javascript framework to build fast, easy to read, and full featured web application.
 
-Project Structure
------------------
+## Project Structure
 
 This repository uses the following structure:
   * **appstorm**: AppStorm.JS core and plugin data
@@ -12,8 +10,7 @@ This repository uses the following structure:
   * **unittest**: AppStorm.JS unit test
 
 
-External Resources
-------------------
+## External Resources
 
   * [website](http://appstormjs.com)
   * [wiki](http://appstormjs.com/wiki)
@@ -21,8 +18,7 @@ External Resources
   * [todolist client example](http://appstormjs.com/git/example/todo)
 
 
-How to Generate Minified File
------------------------------
+## How to Generate Minified File
 
 This project uses [Grunt](http://gruntjs.com/) to automate download of
 dependencies and generation of minified Javascript file.
@@ -30,8 +26,7 @@ dependencies and generation of minified Javascript file.
 You will need [Node, NPM and Grunt](http://gruntjs.com/getting-started) to
 be installed, then simply invoking Grunt: ```grunt``` will download dependencies and generate minified file in appstorm/ directory.
 
-Licence & Credits
------------------
+## Licence & Credits
 
 AppStorm.JS is licenced under MIT Licence.
 
