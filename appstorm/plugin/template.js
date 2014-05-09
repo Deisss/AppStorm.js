@@ -84,12 +84,11 @@ a.template = {
 
         if(a.isString(partialsStore[name])) {
             a.console.log(fctName +': loading ' + name + ' from cache', 3);
+
             if(a.isFunction(callback)) {
                 callback(name, partialsStore[name]);
             }
-        }
-
-        if(options && options.noloading == true) {
+        } else if(options && options.noloading == true) {
             a.console.log(fctName +': loading ' + name + ' from parameter', 3);
             partialsStore[name] = uri;
             handler.registerPartial(name, uri);
