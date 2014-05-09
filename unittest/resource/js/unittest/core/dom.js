@@ -294,6 +294,40 @@ asyncTest('a.dom.children.bind', function() {
     eventFire(a.dom.id('a.dom.testid').get(0), 'click');
 });
 
+// Test click system with binding
+asyncTest('a.dom.children.bindWithScope', function() {
+    expect(2);
+
+    // Internal function to fire click event
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    };
+
+    var click = function() {
+        strictEqual(true, true, 'Test click has been binded');
+        strictEqual(this.something, 'great', 'Test scope binding');
+
+        // Unbind and continue
+        a.dom.id('a.dom.testid').unbind('click', click);
+        start();
+    };
+
+    var scope = {
+        something: 'great'
+    };
+
+    a.dom.id('a.dom.testid').bind('click', click, scope);
+
+    // Fake a click
+    eventFire(a.dom.id('a.dom.testid').get(0), 'click');
+});
+
 // Test unbinding does work
 asyncTest('a.dom.children.unbind', function() {
     expect(1);
