@@ -1,8 +1,11 @@
 // Unit test for a.mock
 
 module('core/mock.js', {
+    setup: function() {
+        a.mock.clear();
+    },
     teardown: function() {
-        a.mock._mock = [];
+        a.mock.clear();
     }
 });
 
