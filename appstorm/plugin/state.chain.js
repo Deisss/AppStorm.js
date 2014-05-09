@@ -270,6 +270,22 @@ a.state.chain = new function() {
         parseDataOption(options, hash, internal);
 
         return function(chain) {
+            var method = (options.method) ? options.method : 'GET',
+                mockResult = a.mock.get(method, url);
+
+            // We test mock support before sending to ajax.
+            // As we have to support 'raw' requests
+            // If we got something, we skip the request.
+            if(mockResult !== null) {
+                if(a.isNone(name)) {
+                    state.data = mockResult;
+                } else {
+                    state.data[name] = mockResult;
+                }
+                chain.next();
+                return;
+            }
+
             // We are not in URL mode as suggest url mode
             if(a.isString(initContent) && initContent.indexOf('{{') === 0
             && initContent.indexOf('}}') === (initContent.length - 2)) {
@@ -279,6 +295,7 @@ a.state.chain = new function() {
                     state.data[name] = parsedUrl;
                 }
                 chain.next();
+                return;
 
             // We need to get url
             } else {
