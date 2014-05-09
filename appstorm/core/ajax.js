@@ -164,6 +164,27 @@ a.ajax.prototype.abort = function() {
 a.ajax.prototype.send = function() {
     var method = this.params.method.toUpperCase();
 
+    // Skip request in some case, due to mock object (first test)
+    var mockResult = a.mock.get(method, this.params.url);
+    if(mockResult !== null) {
+        var params = this.params;
+
+        // We send a result
+        a.message.dispatch('a.ajax', {
+            success : true,
+            status  : 200,
+            url     : params.url,
+            method  : method,
+            params  : params
+        });
+
+        // Directly call success function
+        this.success(mockResult, 200);
+
+        // We don't proceed request
+        return;
+    }
+
     //Creating a cached or not version
     if(this.params.cache === false) {
         // Generate a unique random number
@@ -231,7 +252,7 @@ a.ajax.prototype.send = function() {
                 }
 
                 // We send a result
-                a.message.dispatch("a.ajax", {
+                a.message.dispatch('a.ajax', {
                     success : great,
                     status  : status,
                     url     : requestScope.params.url,
@@ -266,7 +287,30 @@ a.ajax.prototype.send = function() {
         );
     }
 
-    this.request.send(toSend);
+    // Skip request in some case, due to mock object (second test)
+    mockResult = a.mock.get(method, this.params.url);
+    if(mockResult !== null) {
+        var params = this.params;
+
+        // We send a result
+        a.message.dispatch('a.ajax', {
+            success : true,
+            status  : 200,
+            url     : params.url,
+            method  : method,
+            params  : params
+        });
+
+        // Directly call success function
+        this.success(mockResult, 200);
+
+        // We don't proceed request
+        return;
+
+    // We proceed normal ajax request
+    } else {
+        this.request.send(toSend);
+    }
 
     return (async === false) ?
             this.parseResult(this.params, this.request) :
