@@ -34,6 +34,15 @@ a.mock = {
     _mock: [],
 
     /**
+     * Rollback to default content (nothing)
+     *
+     * @method clear
+    */
+    clear: function() {
+        a.mock._mock = [];
+    },
+
+    /**
      * Add a new mock to system
      *
      * @method add
