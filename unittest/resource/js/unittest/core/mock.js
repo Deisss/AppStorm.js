@@ -38,12 +38,6 @@ test('a.mock.get', function() {
     strictEqual(second, '1.0.3');
 });
 
-test('a.mock.get-variable', function() {
-    // TEST passing variables into URL for example is acceptable
-    // currently not the case.
-    // Like api/version/{version} and api/version/0.2 are acceptable compare
-});
-
 test('a.mock.merge', function() {
     a.mock.add('GET', 'user', {
         id: 4,
@@ -105,4 +99,29 @@ test('a.mock.map', function() {
     strictEqual(result.session.post[0], 'url/complex/somehow');
     strictEqual(result.users.post[0], 'user');
     strictEqual(result.user.get[0], 'user');
+});
+
+asyncTest('a.mock.ajax', function() {
+    expect(3);
+
+    a.mock.add('GET', 'user', {
+        id: 4,
+        login: 'hello'
+    });
+
+    var request = new a.ajax({
+        method: 'GET',
+        url: 'user',
+        type: 'json'
+
+    // Success function to test
+    }, function(content, status) {
+        strictEqual(status, 200);
+        strictEqual(content.id, 4);
+        strictEqual(content.login, 'hello');
+        start();
+    });
+
+    // Starting system
+    request.send();
 });
