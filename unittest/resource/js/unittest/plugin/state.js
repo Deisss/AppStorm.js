@@ -11,6 +11,7 @@ module('plugin/state.js', {
     teardown: function() {
         a.state.clear();
         a.message.clear();
+        a.mock.clear();
         hashtag('');
         a.acl.clear();
     }
@@ -1362,4 +1363,34 @@ asyncTest('a.state.load-after', function() {
     chain('a.state.loadafter', start, 200);
 
     hashtag('a.state.loadafter');
+});
+
+// Unit test the raw mock support for faking server with not-parsed requests
+asyncTest('a.state.data-mock', function() {
+    expect(2);
+
+    a.mock.add('GET', 'something/{{important}}', {
+        version: '1.0.2'
+    });
+
+    // Test correctly setted
+    strictEqual(a.mock.get('GET', 'something/{{important}}').version, '1.0.2');
+
+    var state = {
+        id: 'a.state.data-mock',
+        hash: 'a.state.data-mock-{{important: [a-fA-F0-9]+}}',
+        data: {
+            content: {
+                url: 'something/{{important}}',
+                method: 'GET'
+            }
+        },
+        converter: function(data) {
+            strictEqual(data.content.version, '1.0.2');
+        }
+    };
+
+    a.state.add(state);
+    chain('a.state.data-mock-abcdef', start, 200);
+    hashtag('a.state.data-mock-abcdef');
 });
