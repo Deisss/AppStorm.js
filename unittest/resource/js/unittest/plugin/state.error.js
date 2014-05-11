@@ -21,7 +21,10 @@ asyncTest('a.state.error', function() {
         strictEqual(data.status, 404, 'Test data response');
     });
 
-    chain('test-error', start, 100);
+    chain('test-error', function() {
+        hashtag('');
+        start();
+    }, 100);
 
     hashtag('test-error');
 });
@@ -48,7 +51,10 @@ asyncTest('a.state.error2', function() {
         strictEqual(data.status, 404, 'Test data response');
     });
 
-    chain('test-error2', start, 100);
+    chain('test-error2', function() {
+        hashtag('');
+        start();
+    }, 100);
 
     hashtag('test-error2');
 });
@@ -89,7 +95,10 @@ asyncTest('a.state.error-hash', function() {
 
     a.state.add(tree);
 
-    chain('test-error-hash', start, 100);
+    chain('test-error-hash', function() {
+        hashtag('');
+        start();
+    }, 100);
 
     hashtag('test-error-hash');
 });
@@ -118,7 +127,10 @@ asyncTest('a.state.error-hash2', function() {
     a.state.add(tree);
 
 
-    chain('test-error-hash2', start, 100);
+    chain('test-error-hash2', function() {
+        hashtag('');
+        start();
+    }, 100);
 
     hashtag('test-error-hash2');
 });
@@ -152,7 +164,40 @@ asyncTest('a.state.error-hash3', function() {
         }
     });
 
-    chain('test-error-hash3', start, 100);
+    chain('test-error-hash3', function() {
+        hashtag('');
+        start();
+    }, 100);
 
     hashtag('test-error-hash3');
+});
+
+
+// Test an error with empty error content to catch it
+asyncTest('a.state.error-empty', function() {
+    expect(1);
+
+    a.console.clear();
+
+    var state = {
+        id: 'error-empty-hash',
+        hash: 'a.state.error-empty',
+        data: 'someunknowurl4'
+    };
+
+    a.state.add(state);
+
+    chain('a.state.error-empty', function() {
+        // We expect a message on console.error saying 'an error has not been
+        // handled'
+        var trace = a.console.trace('error');
+        strictEqual(trace[0], 'a.state.raiseError: an error occurs, but no ' +
+                                'error function/hash inside the state ' +
+                                'where existing to handle it. ' +
+                                'Please check your error handler (status: ' +
+                                '404, state id: error-empty-hash)');
+        hashtag('');
+        start();
+    }, 100);
+    hashtag('a.state.error-empty');
 });
