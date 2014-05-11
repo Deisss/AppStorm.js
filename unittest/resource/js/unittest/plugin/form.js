@@ -272,6 +272,33 @@ test('a.form.get-input-array', function() {
     strictEqual(test[id + '-content[]'][1], 'second');
 });
 
+// Testing the custom tag attribute data-name to override the a.form way of
+// finding field name
+test('a.form.custom-attribute', function() {
+    var id = 'a.form.custom-attribute';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // input element
+    var i = document.createElement('input');
+    i.name = id + '-content';
+    i.type = 'text';
+    i.value = 'something';
+    i.setAttribute('data-name', id + '-custom-data');
+    f.appendChild(i);
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    strictEqual(test[id + '-custom-data'], 'something', 'Test custom tag');
+});
+
 /*
 ---------------------------------
   VALIDATE TEST
