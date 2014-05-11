@@ -50,14 +50,19 @@ a.form = (function() {
     */
     function getFieldKey(e) {
         var el   = a.dom.el(e),
+            name = el.data('name');
+
+        if(a.isNone(name) || name == '') {
             name = el.attribute('name');
 
-        // Search the good attribute in case of problem
-        if(a.isNone(name) || name === '') {
-            name = el.attribute('id');
-            // Should never appear... But we provide it in case of trouble
+            // Search the good attribute in case of problem
             if(a.isNone(name) || name === '') {
-                name = el.attribute('class');
+                name = el.attribute('id');
+
+                // Should never appear... But we provide it in case of trouble
+                if(a.isNone(name) || name === '') {
+                    name = el.attribute('class');
+                }
             }
         }
 
