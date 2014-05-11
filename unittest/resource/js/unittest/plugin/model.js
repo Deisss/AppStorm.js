@@ -358,6 +358,34 @@ test('a.modelManager', function() {
 });
 
 
+// Unit test multiple model management
+asyncTest('a.model.model-multiple', function() {
+    expect(4);
+
+    var unittest = a.model('unittest-multiple', {
+        id: {
+            init: 0,
+            event: 'yatta'
+        }
+    });
+
+    var unittest1 = new unittest(),
+        unittest2 = new unittest();
+
+    unittest1.bind('yatta', function(data) {
+        strictEqual(data.value, 5, 'Testing data update 1');
+        strictEqual(unittest1.get('id'), 5, 'Testing model update 1');
+    });
+    unittest2.bind('yatta', function(data) {
+        strictEqual(data.value, 6, 'Testing data update 2');
+        strictEqual(unittest2.get('id'), 6, 'Testing model update 2');
+        start();
+    });
+
+    unittest1.set('id', 5);
+    unittest2.set('id', 6);
+});
+
 
 test('a.model.validates', function() {
     ok(1==1);
