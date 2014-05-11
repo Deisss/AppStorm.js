@@ -120,6 +120,28 @@ a.hash = new function() {
     }
 
 
+    /**
+     * Fake the hashtag change (can be usefull sometimes), it really apply
+     * hash change, but does not change the browser hashtag.
+     *
+     * @method fake
+     *
+     * @param currentHash {String}          The hash to fake
+    */
+    this.fake = function(currentHash) {
+        if(previousHash != currentHash) {
+            registerNewHash(currentHash);
+            // Dispatch event
+            var eventObject = {
+                value: currentHash,
+                old:   previousHash
+            };
+            that.dispatch('change', eventObject);
+            a.message.dispatch('a.hash.change', eventObject);
+        }
+        previousHash = currentHash;
+        store.set('previous', previousHash);
+    };
 
     /**
      * Retrieve the current system hash

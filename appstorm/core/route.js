@@ -143,6 +143,26 @@ a.route = new function() {
     this.navigate = this.go;
 
     /**
+     * This function act like the go/href/ref/hash/hashtag/navigate function,
+     * but fake it (hash in browser does not really change).
+     *
+     * @method fake
+     *
+     * @param hash {String}                 The hashtag to navigate to
+     * @param parameters {Object}           Any parameters to give to state
+     *                                      system as temp data. This is an
+     *                                      equivalent to a.state.inject func.
+    */
+    this.fake = function(hash, parameters) {
+        if(parameters) {
+            a.state.inject(parameters);
+        }
+        if(hash) {
+            a.hash.fake(hash);
+        }
+    };
+
+    /**
      * Allow to go back one time into history 
     */
     this.back = function() {
