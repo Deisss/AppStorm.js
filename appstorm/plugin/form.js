@@ -211,6 +211,9 @@ a.form = (function() {
                     if(input.checked) {
                         parse = true;
                     }
+                } else if(!a.isNone(input) && input.type === 'checkbox') {
+                    parse = false;
+                    outputList[name] = (input.checked) ? true: false;
                 } else {
                     parse = true;
                 }
