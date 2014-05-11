@@ -416,6 +416,41 @@ asyncTest('a.template.partial', function() {
     });
 });
 
+// Test multiple partials loading (many times)
+// Prevent a bug appearing (callback not called in some cases)
+asyncTest('a.template.partial-multiple', function() {
+    expect(6);
+
+
+    a.template.partial(
+        'testpartial',
+        './resource/data/page.template/tmpl-partial.html',
+        function(name, uri) {
+            strictEqual(name, 'testpartial', 'Test template name');
+            strictEqual(uri, "<a id='test-partial'>hello</a>",
+                'test template content');
+
+            a.template.partial(
+                'testpartial',
+                './resource/data/page.template/tmpl-partial.html',
+                function(name, uri) {
+                    strictEqual(name, 'testpartial', 'Test template name');
+                    strictEqual(uri, "<a id='test-partial'>hello</a>",
+                        'test template content');
+
+                    a.template.partial(
+                        'testpartial',
+                        './resource/data/page.template/tmpl-partial.html',
+                        function(name, uri) {
+                            strictEqual(name, 'testpartial', 'Test template name');
+                            strictEqual(uri, "<a id='test-partial'>hello</a>",
+                                'test template content');
+                            start();
+                    });
+            });
+    });
+});
+
 
 // Bug : using innerHTML remove onclick on sibbling children
 // We do a workaround for that, but we have to be sure it will never come back
