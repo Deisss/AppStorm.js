@@ -109,7 +109,11 @@ a.state = new function() {
         }
 
         // Get the error
-        var raiseError = getError(state, status);
+        var raiseError   = getError(state, status),
+            messageError = 'a.state.raiseError: an error occurs, but ' +
+                           'no error where existing to handle it. Please ' +
+                           'check your error handler (status: ' + status +
+                           ', state id: ' + state.id + ')';
 
         // Raising global message
         // TODO: make state able to send requests, and make THIS as state
@@ -117,7 +121,6 @@ a.state = new function() {
         a.message.dispatch('a.state.error', report);
 
         if(raiseError) {
-            // TODO: make documentation how to create a proper error state
             if(a.isString(raiseError)) {
                 window.location.href = '#' + raiseError;
 
@@ -126,11 +129,12 @@ a.state = new function() {
 
             // No handler to catch error, we raise an error on console
             } else {
-                a.console.error('a.state.raiseError: an error occurs, but ' +
-                            'no error where existing to handle it. Please ' +
-                            'check your error handler (status: ' + status +
-                            ', state id: ' + __errorState.id + ')', 1);
+                a.console.error(messageError, 1);
             }
+
+        // Nothing exist, we alert user
+        } else {
+            a.console.error(messageError, 1);
         }
     };
 
