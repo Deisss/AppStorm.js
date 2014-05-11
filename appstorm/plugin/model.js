@@ -55,16 +55,27 @@ TODO:
 a.model = function(name, properties, requests) {
     // Only allow new name (already existing name just give already existing
     // model definition)
-    if(!a.modelPooler.get(name)) {
-        a.modelPooler.set(name, {
-            properties: properties,
-            requests: requests
-        });
-    }
+    if(a.isString(name)) {
+        if(!a.modelPooler.get(name)) {
+            a.modelPooler.set(name, {
+                properties: properties,
+                requests: requests
+            });
 
-    return function() {
-        return a.modelPooler.createInstance(name);
-    };
+            // We return a function embed to create new instance
+            // from variable
+            return function() {
+                return a.modelPooler.createInstance(name);
+            };
+        } else {
+            // We directly create a new model
+            return a.modelPooler.createInstance(name);
+        }
+
+    // Name is a search query system
+    } else if(a.isTrueObject(name)) {
+        return a.modelPooler.searchInstance(name);
+    }
 };
 
 
@@ -150,6 +161,10 @@ a.modelManager = {
      *                                      related to this name
     */
     getByName: function(name) {
+        if(!name || !a.isString(name)) {
+            return [];
+        }
+
         var result = [];
 
         a.each(this._store.list(), function(element) {
@@ -191,7 +206,7 @@ a.modelPooler = a.mem.getInstance('app.model.type');
  * @return {Object | null}                  The model instance created, or null
  *                                          if model name is not defined
 */
-a.modelPooler.createInstance = function(name) {
+a.modelPooler.createInstance = function createInstance(name) {
     var model = this.createTemporaryInstance(name);
 
     if(!a.isNull(model)) {
@@ -214,7 +229,8 @@ a.modelPooler.createInstance = function(name) {
  * @return {Object | null}                  The model instance created, or null
  *                                          if model name is not defined
 */
-a.modelPooler.createTemporaryInstance = function(name) {
+a.modelPooler.createTemporaryInstance =
+                                    function createTemporaryInstance(name) {
     var instanceType = this.get(name);
 
     if(!instanceType) {
@@ -235,7 +251,43 @@ a.modelPooler.createTemporaryInstance = function(name) {
 
     // Returning freshly created model
     return model;
-}
+};
+
+/**
+ * From a given query, get back the existing stored model
+ *
+ * @method searchInstance
+ *
+ * @param query {Object}                    The query to search inside
+ * @return {a.modelInstance | null}         The single instance found,
+ *                                          or a list of instances, or null
+*/
+a.modelPooler.searchInstance = function searchInstance(query) {
+    var models = a.modelManager.getByName(query.name);
+
+    // We remove the query.name
+    delete query.name;
+
+    for(var key in query) {
+        var value = query[key],
+            i = models.length;
+
+        while(i--) {
+            var model = models[i];
+            // The model is not related to searched value
+            if(model.get(key) !== value) {
+                models.splice(i, 1);
+            }
+        }
+    }
+
+    if(models.length == 0) {
+        return null;
+    } else if(models.length == 1) {
+        return models[0];
+    }
+    return models;
+};
 
 
 /**
@@ -291,11 +343,11 @@ a.modelInstance = function(name, properties, requests) {
     this.nid        = name + '-' + this.uid;
 
     if(a.isTrueObject(properties)) {
-        this.properties = properties;
+        this.properties = a.deepClone(properties);
     }
 
     if(a.isTrueObject(requests)) {
-        this.requests = requests;
+        this.requests = a.deepClone(requests);
     }
 }
 
