@@ -190,12 +190,18 @@ asyncTest('a.state.error-empty', function() {
     chain('a.state.error-empty', function() {
         // We expect a message on console.error saying 'an error has not been
         // handled'
-        var trace = a.console.trace('error');
-        strictEqual(trace[0], 'a.state.raiseError: an error occurs, but no ' +
+        var trace = a.console.trace('error'),
+            error = trace[0];
+
+        // We remove the last part of url to get it more easy to test
+        error = error.replace(/\?cachedisable\=rnd\_\d+/g, '');
+
+        strictEqual(error, 'a.state.raiseError: an error occurs, but no ' +
                                 'error function/hash inside the state ' +
                                 'where existing to handle it. ' +
-                                'Please check your error handler (status: ' +
-                                '404, state id: error-empty-hash)');
+                                'Please check your error handler (state-id: ' +
+                                'error-empty-hash, status: 404, ' +
+                                'resource: someunknowurl4)');
         hashtag('');
         start();
     }, 100);
