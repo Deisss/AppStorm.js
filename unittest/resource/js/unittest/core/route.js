@@ -108,3 +108,20 @@ asyncTest('a.route.leaving-otherwise', function() {
 
     hashtag('unittest-route-otherwise2');
 });
+
+
+asyncTest('a.route.fake', function() {
+    expect(1);
+
+
+    // Dummy function to test entering route element
+    function checkRoute(hash) {
+        strictEqual(hash, 'unittest-route3', 'Test entering');
+        a.route.unbind('unittest-route3', checkRoute);
+        start();
+    };
+
+    // Binding function to route
+    a.route.bind('unittest-route3', checkRoute);
+    a.route.fake('unittest-route3');
+});
