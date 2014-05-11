@@ -113,8 +113,9 @@ a.state = new function() {
             messageError = 'a.state.raiseError: an error occurs, but ' +
                            'no error function/hash inside the state '+
                            'where existing to handle it. Please ' +
-                           'check your error handler (status: ' + status +
-                           ', state id: ' + state.id + ')';
+                           'check your error handler (state-id: ' + state.id +
+                           ', status: ' + status +
+                           ', resource: ' + resource + ')';
 
         // Raising global message
         // TODO: make state able to send requests, and make THIS as state
