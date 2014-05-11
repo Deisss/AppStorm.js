@@ -1394,3 +1394,29 @@ asyncTest('a.state.data-mock', function() {
     chain('a.state.data-mock-abcdef', start, 200);
     hashtag('a.state.data-mock-abcdef');
 });
+
+
+// Test the new capacities for entry/el/dom to use a function instead of a string
+asyncTest('a.state.entry-function', function() {
+    expect(2);
+
+    var state = {
+        id: 'a.state.entry-function',
+        hash: 'a.state.entry-function',
+        entry: function() {
+            return 'something-is-working';
+        },
+        type: function(entry, content, chain) {
+            strictEqual(entry, 'something-is-working');
+            strictEqual(content, "<a style='display:none'>I'm loaded threw state</a>");
+            chain.next();
+        },
+        include : {
+            html : './resource/data/state/test.html'
+        },
+    };
+
+    a.state.add(state);
+    chain('a.state.entry-function', start, 200);
+    hashtag('a.state.entry-function');
+});
