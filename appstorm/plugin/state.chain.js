@@ -176,7 +176,7 @@ a.state.chain = new function() {
 
         // Regular string
         return el;
-    }
+    };
 
     /**
      * Test if the given function should be run in async mode or not.
