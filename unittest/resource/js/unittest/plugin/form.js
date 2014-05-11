@@ -213,6 +213,65 @@ test('a.form.select-full', function() {
     strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
 
+// Test a simple blank input
+test('a.form.get-blank', function() {
+    var id = 'a.form.get-blank';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // input element
+    var i = document.createElement('input');
+    i.name = id + '-content';
+    i.type = 'text';
+    f.appendChild(i);
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    strictEqual(test[id + '-content'], null, 'Test empty content gives blank');
+});
+
+// Testing that input with a name using [] is treated as an array not
+// a single value
+test('a.form.get-input-array', function() {
+    var id = 'a.form.get-input-array';
+
+    // Main element
+    var f = document.createElement('form');
+    f.id = id;
+    f.style.display = 'none';
+    f.onsubmit=function(){return false;}
+
+    // input element
+    var first = document.createElement('input');
+    first.name = id + '-content[]';
+    first.type = 'text';
+    first.value = 'first';
+    f.appendChild(first);
+
+    // input element
+    var second = document.createElement('input');
+    second.name = id + '-content[]';
+    second.type = 'text';
+    second.value = 'second';
+    f.appendChild(second);
+
+    // Register element on dom
+    document.body.appendChild(f);
+
+    var test = a.form.get(document.getElementById(id));
+
+    strictEqual(a.isArray(test[id + '-content[]']), true);
+    strictEqual(test[id + '-content[]'][0], 'first');
+    strictEqual(test[id + '-content[]'][1], 'second');
+});
+
 /*
 ---------------------------------
   VALIDATE TEST
