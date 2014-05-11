@@ -111,7 +111,8 @@ a.state = new function() {
         // Get the error
         var raiseError   = getError(state, status),
             messageError = 'a.state.raiseError: an error occurs, but ' +
-                           'no error where existing to handle it. Please ' +
+                           'no error function/hash inside the state '+
+                           'where existing to handle it. Please ' +
                            'check your error handler (status: ' + status +
                            ', state id: ' + state.id + ')';
 
