@@ -235,6 +235,16 @@ a.state.chain = new function() {
         };
     };
 
+    /**
+     * Extract from data parameters to bind
+     *
+     * @method parseDataOption
+     * @private
+     *
+     * @param options {Object}              The object data to use
+     * @param hash {String}                 The hash to extract content from
+     * @param internal {Object}             Internal content to use for binding
+    */
     function parseDataOption(options, hash, internal) {
         a.each(options, function(option, key) {
             if(a.isTrueObject(option)) {
@@ -262,7 +272,11 @@ a.state.chain = new function() {
             internal  = state.hash || '',
             // In this case we don't want the string escape, so we ask for
             // original content (false at the end)
+            parsedUrl = null;
+
+        if(a.isString(url)) {
             parsedUrl = a.parameter.extrapolate(url, hash, internal, false);
+        }
 
         // Sometimes options can arrive null
         options = a.isTrueObject(options) ? options: {};
@@ -296,6 +310,39 @@ a.state.chain = new function() {
                 }
                 chain.next();
                 return;
+
+            // We are in function mode: we let user define what to do
+            // with data. The chain.next is embeded into another object
+            // to deliver the response to AppStorm.JS
+            } else if(a.isFunction(initContent)) {
+                // Custom object to change the 'next' function
+                var customDone  = function(result) {
+                        if(a.isNone(name)) {
+                            state.data = result;
+                        } else {
+                            state.data[name] = result;
+                        }
+
+                        // We rollback to previous before continue
+                        // In other case we will create problem...
+                        chain.next();
+                    };
+
+                // We need to create a custom object
+                // to handle a specific done/next function
+                var customChain = {
+                    next:    customDone,
+                    done:    customDone,
+                    success: customDone,
+                    fail:    chain.fail,
+                    error:   chain.error,
+                    stop:    chain.stop,
+                    setData: chain.setData,
+                    getData: chain.getData
+                };
+
+                // We call the function and pass the new 'chain' element
+                initContent.call(state, customChain);
 
             // We need to get url
             } else {
@@ -429,8 +476,6 @@ a.state.chain = new function() {
         this.data = a.deepClone(this._storm.data);
         this.options = a.deepClone(this._storm.options) || {type: 'json'};
 
-        // TODO: support for calling function in data parameters
-
         // This case is converted into {url/options} one
         if(a.isString(this.data)) {
             this.data = {
@@ -467,6 +512,8 @@ a.state.chain = new function() {
                     }, this);
                 }
             }
+        } else if(a.isFunction(this.data)) {
+            sync.addCallback(generateDataLoader(this, null, this.data, null));
         } else {
             a.console.error('a.state.chain:include: The state ' + this.id +
                             ' is not valid (data is not a valid system)', 1);
