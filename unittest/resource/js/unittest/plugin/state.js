@@ -1265,7 +1265,7 @@ asyncTest('a.state.acl-maximum', function() {
 asyncTest('a.state.acl-refused', function() {
     expect(2);
 
-    var refused = {
+    var state = {
         id: 'acl-refused-change',
         hash: 'a.state.acl-refused{{el: [a-z]?}}',
         acl: {
@@ -1288,21 +1288,21 @@ asyncTest('a.state.acl-refused', function() {
     a.acl.setCurrentRole('user');
 
     // We add the state, the refused will not be performed
-    a.state.add(refused);
+    a.state.add(state);
 
     chain('a.state.acl-refuseda', function() {
         a.acl.setCurrentRole('leader');
         setTimeout(function() {
             hashtag('a.state.acl-refusedb');
         }, 100);
-    });
+    }, 100);
 
     chain('a.state.acl-refusedb', function() {
         a.acl.setCurrentRole('admin');
         setTimeout(function() {
             hashtag('a.state.acl-refusedc');
         }, 100);
-    });
+    }, 100);
 
     chain('a.state.acl-refusedc', start, 100);
 
