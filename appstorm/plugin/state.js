@@ -279,8 +279,9 @@ a.state = new function() {
 
                 // We are in regex mode
                 } else if(state._storm.isRegexHash) {
-                    var reg = new RegExp(state._storm.hash, 'g');
-                    if(reg.test(hash)) {
+                    // We use the regex stored into system directly
+                    // (faster to not re-create all regex everytime)
+                    if(state._storm.regex.test(hash)) {
                         parents = foundParentState(state);
                     }
                 }
@@ -586,7 +587,9 @@ a.state = new function() {
 
             // Making it strict catch for regex one
             if(state._storm.isRegexHash) {
-                state._storm.hash = '^' + state._storm.hash + '$';
+                var tmpHash = '^' + state._storm.hash + '$';
+                state._storm.hash = tmpHash;
+                state._storm.regex = new RegExp(tmpHash, 'g');
             }
         }
 
