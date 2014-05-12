@@ -1509,3 +1509,21 @@ asyncTest('a.state.data-function3', function() {
     chain('a.state.data-function3', start, 200);
     hashtag('a.state.data-function3');
 });
+
+// Testing usage parameters
+asyncTest('a.state.parameters', function() {
+    expect(2);
+
+    var state = {
+        id: 'a.state.parameters',
+        hash: '/something/{{interest: [a-zA-Z0-9]+}}/with/{{content: \\d+}}',
+        preLoad: function() {
+            strictEqual(this.parameters.interest, 'gettinggood01');
+            strictEqual(this.parameters.content, '13');
+        }
+    };
+
+    a.state.add(state);
+    chain('/something/gettinggood01/with/13', start, 200);
+    hashtag('/something/gettinggood01/with/13');
+});
