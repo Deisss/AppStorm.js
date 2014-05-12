@@ -920,11 +920,11 @@ asyncTest('a.state.load-bind', function() {
         },
 
         bind: {
-            '#bind-unbind .first | click': function() {
-                strictEqual(this.className, 'first', 'Test first click');
+            '#bind-unbind .first | click': function(e) {
+                strictEqual(e.target.className, 'first', 'Test first click');
             },
-            '#bind-unbind .second | click': function() {
-                strictEqual(this.className, 'second', 'Test second click');
+            '#bind-unbind .second | click': function(e) {
+                strictEqual(e.target.className, 'second', 'Test second click');
             }
         }
     };
@@ -978,8 +978,8 @@ asyncTest('a.state.load-bind-entry', function() {
         type:  'append',
 
         bind: {
-            'click': function() {
-                strictEqual(this.id, 'a-state-direct-entry-bind',
+            'click': function(e) {
+                strictEqual(e.target.id, 'a-state-direct-entry-bind',
                                                         'Test id click');
             }
         }
