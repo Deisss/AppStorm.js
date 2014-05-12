@@ -1231,13 +1231,12 @@ asyncTest('a.state.acl-minimum', function() {
 asyncTest('a.state.acl-maximum', function() {
     expect(1);
 
-    var maximum = {
+    var state = {
         id: 'acl-maximum-change',
         hash: 'a.state.acl-maximum{{el: [a-z]?}}',
         acl: {
             maximum: 'user'
         },
-
         postLoad: function() {
             strictEqual(a.acl.getCurrentRole(), 'user', 'ACL unit test');
         }
@@ -1248,14 +1247,14 @@ asyncTest('a.state.acl-maximum', function() {
     a.acl.setCurrentRole('user');
 
     // We add the state, the maximum will be performed
-    a.state.add(maximum);
+    a.state.add(state);
 
     chain('a.state.acl-maximuma', function() {
         a.acl.setCurrentRole('admin');
         setTimeout(function() {
             hashtag('a.state.acl-maximumb');
         }, 100);
-    });
+    }, 100);
 
     chain('a.state.acl-maximumb', start, 100);
 
