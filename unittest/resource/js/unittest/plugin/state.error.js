@@ -7,21 +7,24 @@ module('plugin/state.js');
 asyncTest('a.state.error', function() {
     expect(2);
 
-    var test = {
+    var state = {
         id : 'test-error',
         hash : 'test-error',
         data : 'resource/data/notexist.json'
     };
 
-    a.state.add(test);
+    a.state.add(state);
 
-    a.message.bind('a.state.error', function(data) {
+    function testMessageRaise(data) {
         strictEqual(data.resource.indexOf('resource/data/notexist.json'), 0,
                                             'Test data resource error');
         strictEqual(data.status, 404, 'Test data response');
-    });
+    };
+
+    a.message.bind('a.state.error', testMessageRaise);
 
     chain('test-error', function() {
+        a.message.unbind('a.state.error', testMessageRaise);
         hashtag('');
         start();
     }, 100);
@@ -45,13 +48,16 @@ asyncTest('a.state.error2', function() {
 
     a.state.add(test);
 
-    a.message.bind('a.state.error', function(data) {
+    function testMessageRaise(data) {
         strictEqual(data.resource.indexOf('resource/data/notexist.html'), 0,
                                             'Test html resource error');
         strictEqual(data.status, 404, 'Test data response');
-    });
+    }
+
+    a.message.bind('a.state.error', testMessageRaise);
 
     chain('test-error2', function() {
+        a.message.unbind('a.state.error', testMessageRaise);
         hashtag('');
         start();
     }, 100);
@@ -156,15 +162,18 @@ asyncTest('a.state.error-hash3', function() {
 
     a.state.add(tree);
 
-    a.hash.bind('change', function(data) {
+    function hashRaise(data) {
         // Prevent a wrong catch bug, and does not make test unreliable
         // (as it will raise 0 event if nothing is found, stopping system)
         if(data.value === 'hash-error-404') {
             strictEqual(data.value, 'hash-error-404', 'Test value is linked');
         }
-    });
+    };
+
+    a.hash.bind('change', hashRaise);
 
     chain('test-error-hash3', function() {
+        a.hash.unbind('change', hashRaise);
         hashtag('');
         start();
     }, 100);
