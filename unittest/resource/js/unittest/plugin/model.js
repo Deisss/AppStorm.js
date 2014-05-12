@@ -292,7 +292,35 @@ test('a.model.json', function() {
 
     var alternative = second.toJSON();
 
-    strictEqual(json, '{"testA":"another","testB":"great"}', 'Test second');
+    strictEqual(alternative, '{"testA":"another","testB":"great"}', 'Test second');
+});
+
+// Test Object output
+test('a.model.object', function() {
+    var unittest = a.model('unittest-object', {
+        testA: {
+            init: 'something'
+        },
+        testB: {
+            init: 'great'
+        }
+    });
+
+    var unit = new unittest();
+    unit.set('testA', 'another');
+    var obj1 = unit.toObject();
+
+
+    strictEqual(obj1.testA, 'another', 'Test first Object');
+    strictEqual(obj1.testB, 'great', 'Test first Object');
+
+    var second = new unittest();
+    second.fromObject(obj1);
+
+    var obj2 = second.toObject();
+
+    strictEqual(obj2.testA, 'another', 'Test second Object');
+    strictEqual(obj2.testB, 'great', 'Test second Object');
 });
 
 // Test snapshot function
