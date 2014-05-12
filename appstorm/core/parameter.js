@@ -131,6 +131,42 @@ a.parameter = {
 
 
     /**
+     * From a given list provided by extract functions, get the related
+     * values and bring the new object with, for every regex, the corresponding
+     * values.
+     *
+     * @method getValues
+     *
+     * @param input {String}                The input value to extract data
+     *                                      from
+     * @param internal {String}             The original string regex
+     * @param extract {Object}              The extracted object
+     * @return {Object}                     The extracted object with values
+     *                                      found
+    */
+    getValues: function(input, internal, extract) {
+        var i = extract.length,
+            working = '' + internal;
+
+        // We create a huge -global- request matcher
+        while(i--) {
+            working = this.replace(working, extract[i]);
+        }
+
+        // We make a global extraction
+        var regex      = new RegExp('^' + working + '$', 'gi'),
+            match      = regex.exec(input);
+
+        // Index start at 1, because 0 is the full sentence (unhelpfull here)
+        for(var j=1, l=match.length; j<l; ++j) {
+            extract[j-1].value = match[j];
+        }
+
+        return extract;
+    },
+
+
+    /**
      * Replace inside a given input, the parameters found in internal,
      * by value found in hash.
      * Example:
