@@ -273,22 +273,27 @@ a.state = new function() {
             if(state._storm.hash && a.isString(state._storm.hash)) {
                 var parents = [];
 
-                // We are in non-regex mode
-                if(!state._storm.isRegexHash && state._storm.hash == hash) {
-                    parents = foundParentState(state);
-
                 // We are in regex mode
-                } else if(state._storm.isRegexHash) {
+                if(state._storm.isRegexHash) {
                     // We use the regex stored into system directly
                     // (faster to not re-create all regex everytime)
                     if(state._storm.regex.test(hash)) {
+                        parents = foundParentState(state);
+                    }
+                // We are in non-regex mode
+                // Note: DO NOT PUT ELSE IF here
+                } else {
+                    if(state._storm.hash == hash) {
                         parents = foundParentState(state);
                     }
                 }
 
                 // Test ACL at the end
                 if(testAcl(parents)) {
-                   result.push(parents); 
+                    result.push(parents); 
+                } else {
+                    a.console.log('a.state.foundHashState: acl has been ' +
+                                'refused for state id ' + state.id, 3);
                 }
             }
         }
@@ -376,8 +381,6 @@ a.state = new function() {
         // Only keep difference between (= state allowed to load/unload)
             loadingIntersection   = a.difference(loading, unloading),
             unloadingIntersection = a.difference(unloading, loading);
-
-
 
         // Now we need to extract from foundState the top state:
         // The states who need to be refresh no matter what changes has
@@ -492,7 +495,16 @@ a.state = new function() {
 
     // Bind events from other elements
     a.hash.bind('change', performHashChange, null, false, false);
-    a.acl.bind('change', performAclChange, null, false, false);
+    a.acl.bind('change', function(role) {
+        performAclChange(role);
+        // For a unknow reason
+        // this helps to refresh hash path finding...
+        // (prevent a bug)
+        performHashChange({
+            value: a.hash.getHash(),
+            old: a.hash.getPreviousHash()
+        });
+    }, null, false, false);
 
 
 

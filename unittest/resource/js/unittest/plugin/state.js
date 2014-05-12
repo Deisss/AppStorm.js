@@ -941,7 +941,7 @@ asyncTest('a.state.load-bind', function() {
         second.click();
 
         hashtag('tmp_unittest-state-bind-unbind');
-    }, 100);
+    }, 200);
 
     chain('tmp_unittest-state-bind-unbind', function() {
         // We test binding appear
@@ -953,7 +953,7 @@ asyncTest('a.state.load-bind', function() {
         second.click();
 
         hashtag('tmp_tmp_unittest-state-bind-unbind');
-    }, 100);
+    }, 200);
 
     chain('tmp_tmp_unittest-state-bind-unbind', start, 100);
 
@@ -995,7 +995,7 @@ asyncTest('a.state.load-bind-entry', function() {
         entry.click();
 
         hashtag('tmp_unittest-state-bind-unbind-entry');
-    }, 100);
+    }, 200);
 
     chain('tmp_unittest-state-bind-unbind-entry', function() {
         // We test binding appear
@@ -1005,7 +1005,7 @@ asyncTest('a.state.load-bind-entry', function() {
         entry.click();
 
         start();
-    }, 100);
+    }, 200);
 
     hashtag('unittest-state-bind-unbind-entry');
 });
@@ -1197,13 +1197,12 @@ asyncTest('a.state.acl-change', function() {
 asyncTest('a.state.acl-minimum', function() {
     expect(1);
 
-    var minimum = {
+    var state = {
         id: 'acl-minimum-change',
         hash: 'a.state.acl-minimum{{el: [a-z]?}}',
         acl: {
             minimum: 'admin'
         },
-
         postLoad: function() {
             strictEqual(a.acl.getCurrentRole(), 'admin', 'ACL unit test');
         }
@@ -1214,14 +1213,14 @@ asyncTest('a.state.acl-minimum', function() {
     a.acl.setCurrentRole('user');
 
     // We add the state, the minimum will be performed
-    a.state.add(minimum);
+    a.state.add(state);
 
     chain('a.state.acl-minimuma', function() {
         a.acl.setCurrentRole('admin');
         setTimeout(function() {
             hashtag('a.state.acl-minimumb');
         }, 100);
-    });
+    }, 100);
 
     chain('a.state.acl-minimumb', start, 100);
 
