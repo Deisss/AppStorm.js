@@ -677,6 +677,8 @@ a.state = new function() {
     this.clear = function() {
         tree = {};
         loaded = [];
+        this._errorState = null;
+        this._inject = {};
     };
 
     /**
