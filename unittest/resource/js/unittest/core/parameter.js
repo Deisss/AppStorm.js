@@ -178,8 +178,6 @@ test('a.parameter.removeParameterType', function() {
 
 
 
-
-
 // Test extracting elements from system
 test('a.parameter.extract-old-unittest', function() {
     var param1 = 
@@ -384,3 +382,42 @@ test('a.parameter.hash', function() {
     strictEqual(reg.test('/dashboard/group/create'), false);
     strictEqual(reg.test('/dashboard/group/aaaa/bbb'), false);
 });
+
+
+
+
+
+
+// Test parameter getValues
+test('a.parameter.getValues-begin', function() {
+    var begin = '{{super: [a-f0-9]+}}/something';
+    var extrapolate = a.parameter.extract(begin);
+    var test = a.parameter.getValues('abcdef19/something', begin, extrapolate);
+
+    strictEqual(test[0].name, 'super');
+    strictEqual(test[0].value, 'abcdef19');
+});
+
+// Test parameter getValues
+test('a.parameter.getValues-simple', function() {
+    var end = '/dashboard/{{another: \\d+}}';
+    var extrapolate = a.parameter.extract(end);
+
+    var test = a.parameter.getValues('/dashboard/134', end, extrapolate);
+
+    strictEqual(test[0].name, 'another');
+    strictEqual(test[0].value, '134');
+});
+
+// Test parameter getValues
+test('a.parameter.getValues-complex', function() {
+    var test = '/dashboard/{{groupId: [a-fA-F0-9]+}}/note/{{noteId: \\w+}}';
+    var extrapolate = a.parameter.extract(test);
+    var test = a.parameter.getValues('/dashboard/ab12/note/hello', test, extrapolate);
+
+    strictEqual(test[0].name, 'groupId');
+    strictEqual(test[0].value, 'ab12');
+    strictEqual(test[1].name, 'noteId');
+    strictEqual(test[1].value, 'hello');
+});
+
