@@ -619,3 +619,35 @@ asyncTest('a.dom.children.each', function() {
 
     setTimeout(start, 50);
 });
+
+// Test event binding and prevent-default
+asyncTest('a.dom.event-prevent', function() {
+    expect(1);
+
+    // Internal function to fire click event
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    };
+
+    var click = function(e) {
+        strictEqual(e.target.id, 'a.dom.testid', 'Test click has been binded');
+        e.preventDefault();
+    };
+
+    a.dom.id('a.dom.testid').bind('click', click);
+
+    // Fake a click
+    eventFire(a.dom.id('a.dom.testid').get(0), 'click');
+
+    // Timeout to release test
+    setTimeout(function() {
+        a.dom.id('a.dom.testid').unbind('click', click);
+        start();
+    }, 200);
+});
