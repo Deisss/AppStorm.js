@@ -995,7 +995,7 @@ asyncTest('a.state.load-bind-entry', function() {
         entry.click();
 
         hashtag('tmp_unittest-state-bind-unbind-entry');
-    });
+    }, 100);
 
     chain('tmp_unittest-state-bind-unbind-entry', function() {
         // We test binding appear
