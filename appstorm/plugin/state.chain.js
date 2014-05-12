@@ -398,6 +398,27 @@ a.state.chain = new function() {
         return converted;
     };
 
+    // LOAD: add parameters
+    a.state.chain.add(true, 'loadParameters', function loadParameters() {
+        try {
+            // First we extract content from base
+            var extracted = a.parameter.extract(this.hash),
+                // Second we registerParameter
+                values = a.parameter.getValues(a.hash.getHash(),
+                                            this.hash, extracted),
+                // We convert values object into usable one for parameters
+                i = values.length,
+                result = {};
+
+            while(i--) {
+                result[values[i].name] = values[i].value;
+            }
+
+            // Applying parameters
+            this.parameters = result;
+        } catch(e){}
+        goToNextStep.apply(this, arguments);
+    });
 
     // LOAD: preLoad
     a.state.chain.add(true, 'preLoad', function preLoad() {
@@ -414,7 +435,6 @@ a.state.chain = new function() {
 
     // LOAD: title
     a.state.chain.add(true, 'title', function title() {
-        // TODO: extrapolate parameters from state
         if(this.title) {
             document.title = a.parameter.extrapolate(
                         this.title, a.hash.getHash(), this.hash);
@@ -865,6 +885,15 @@ a.state.chain = new function() {
                 this.postUnload.call(this);
             }
         }
+        goToNextStep.apply(this, arguments);
+    });
+
+    // UNLOAD: remove parameters previously created
+    a.state.chain.add(true, 'removeParameters', function loadParameters() {
+        try {
+            // Applying parameters
+            delete this.parameters;
+        } catch(e){}
         goToNextStep.apply(this, arguments);
     });
 })();
