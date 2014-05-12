@@ -270,9 +270,6 @@ asyncTest('a.state.chain-triple-load', function() {
             var current = this.data.custom,
                 original = this._storm.data.custom;
 
-            console.log('t1');
-            console.log(this);
-
             strictEqual(current, 'abcdef', 'Test load current value');
             strictEqual(original, '{{id}}', 'Test load original value');
         }
@@ -287,9 +284,6 @@ asyncTest('a.state.chain-triple-load', function() {
         postLoad: function() {
             var current = this.data.sub,
                 original = this._storm.data.sub;
-
-            console.log('t2');
-            console.log(this);
 
             strictEqual(current, 'abcdef', 'Test unload current value');
             strictEqual(original, '{{id}}', 'Test unload original value');
