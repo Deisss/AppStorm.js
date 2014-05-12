@@ -104,7 +104,7 @@ asyncTest('a.state.error-hash', function() {
     chain('test-error-hash', function() {
         hashtag('');
         start();
-    }, 100);
+    }, 200);
 
     hashtag('test-error-hash');
 });

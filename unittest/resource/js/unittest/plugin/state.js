@@ -1418,3 +1418,94 @@ asyncTest('a.state.entry-function', function() {
     chain('a.state.entry-function', start, 200);
     hashtag('a.state.entry-function');
 });
+
+
+// Test data as a function instead of string/object
+asyncTest('a.state.data-function', function() {
+    expect(1);
+
+    var state = {
+        id: 'a.state.data-function',
+        hash: 'a.state.data-function',
+        data: function(chain) {
+            chain.next('i got something');
+        },
+        include : {
+            html : './resource/data/state/test.html'
+        },
+        converter: function(data) {
+            strictEqual(data, 'i got something');
+        }
+    };
+
+    a.state.add(state);
+    chain('a.state.data-function', start, 200);
+    hashtag('a.state.data-function');
+});
+
+// Little bit more complex data test
+asyncTest('a.state.data-function2', function() {
+    expect(1);
+
+    var state = {
+        id: 'a.state.data-function2',
+        hash: 'a.state.data-function2',
+        data: function(chain) {
+            var request = new a.ajax({
+                url: 'resource/data/state/data-parameter-ok.json',
+                type: 'json'
+            }, function(result) {
+                chain.next(result);
+            });
+            request.send();
+        },
+        include : {
+            html : './resource/data/state/test.html'
+        },
+        converter: function(data) {
+            strictEqual(data.ok, 'ok');
+        }
+    };
+
+    a.state.add(state);
+    chain('a.state.data-function2', start, 200);
+    hashtag('a.state.data-function2');
+});
+
+// More complex data structure, mixing many things at a time
+asyncTest('a.state.data-function3', function() {
+    expect(2);
+
+    a.storage.memory.set('something', 'other ok');
+
+    var state = {
+        id: 'a.state.data-function3',
+        hash: 'a.state.data-function3',
+        data: {
+            id: '{{memory: something}}',
+            content: function(chain) {
+                var request = new a.ajax({
+                    url: 'resource/data/state/data-parameter-ok.json',
+                    type: 'json'
+                }, function(result) {
+                    chain.next(result);
+                });
+                request.send();
+            }
+        },
+        include : {
+            html : './resource/data/state/test.html'
+        },
+        converter: function(data) {
+            strictEqual(data.id, 'other ok');
+            strictEqual(data.content.ok, 'ok');
+        },
+        postLoad: function() {
+            a.storage.memory.remove('something');
+        }
+    };
+
+    a.state.add(state);
+    chain('a.state.data-function3', start, 200);
+    hashtag('a.state.data-function3');
+});
