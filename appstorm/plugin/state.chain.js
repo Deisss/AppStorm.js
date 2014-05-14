@@ -827,6 +827,19 @@ a.state.chain = new function() {
         goToNextStep.apply(this, arguments);
     });
 
+    // UNLOAD: unload
+    a.state.chain.add(false, 'unload', function unload() {
+        if(this.unload) {
+            if(testAsync(this.async, 'unload')) {
+                this.unload.apply(this, arguments);
+                return;
+            } else {
+                this.unload.call(this);
+            }
+        }
+        goToNextStep.apply(this, arguments);
+    });
+
     // UNLOAD: content (unload HTML content)
     a.state.chain.add(false, 'contentUnload', function contentUnload() {
         var startingPoint = null,
@@ -859,19 +872,6 @@ a.state.chain = new function() {
             }
         }
 
-        goToNextStep.apply(this, arguments);
-    });
-
-    // UNLOAD: unload
-    a.state.chain.add(false, 'unload', function unload() {
-        if(this.unload) {
-            if(testAsync(this.async, 'unload')) {
-                this.unload.apply(this, arguments);
-                return;
-            } else {
-                this.unload.call(this);
-            }
-        }
         goToNextStep.apply(this, arguments);
     });
 
