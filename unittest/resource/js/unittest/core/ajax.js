@@ -120,6 +120,90 @@ asyncTest('a.ajax.defaultOptions-mixed', function() {
     ajx.send();
 });
 
+
+/*
+---------------------------------
+  TEMPLATE RELATED
+---------------------------------
+*/
+asyncTest('a.ajax.template', function() {
+    expect(2);
+
+    a.setTemplateAjaxOptions('easy', {
+        url : './resource/data/ajax/data.php',
+        type : 'raw',
+        cache : true,
+        data : {
+            unittest : 'great'
+        }
+    });
+
+    // Test url
+    strictEqual(a.getTemplateAjaxOptions('easy').url,
+            './resource/data/ajax/data.php', 'Test default options stored');
+
+    var ajx = new a.ajax({
+        template: 'easy',
+        data : {
+            second : 'great'
+        }
+    }, function(res){
+        strictEqual(res, 'get=unittest|greatsecond|great',
+    'Testing data passed threw request (mixed between default and options)');
+        // Now test is done => clear
+        a.setTemplateAjaxOptions('easy', {});
+        start();
+    });
+
+    // Starting and waiting reply
+    ajx.send();
+});
+
+asyncTest('a.ajax.template-mixed', function() {
+    expect(3);
+
+    a.setTemplateAjaxOptions('easy2', {
+        url : './resource/data/ajax/data.php',
+        type : 'raw',
+        cache : true,
+        data : {
+            unittest : 'great'
+        }
+    });
+
+    a.setTemplateAjaxOptions('easy3', {
+        data: {
+            unittest2:'great2',
+            // Override
+            second: 'awesome'
+        }
+    });
+
+    // Test url
+    strictEqual(a.getTemplateAjaxOptions('easy2').url,
+            './resource/data/ajax/data.php', 'Test easy2 url stored');
+    strictEqual(a.getTemplateAjaxOptions('easy3').data.second,
+            'awesome', 'Test easy3 data stored');
+
+    var ajx = new a.ajax({
+        template: ['easy2', 'easy3'],
+        data : {
+            second : 'great'
+        }
+    }, function(res){
+        strictEqual(res, 'get=unittest|greatunittest2|great2second|great',
+    'Testing data passed threw request (mixed between default and options)');
+        // Now test is done => clear
+        a.setTemplateAjaxOptions('easy2', {});
+        a.setTemplateAjaxOptions('easy3', {});
+        start();
+    });
+
+    // Starting and waiting reply
+    ajx.send();
+});
+
+
 /*
 ---------------------------------
   TYPE RELATED (JSON, XML, ...)
