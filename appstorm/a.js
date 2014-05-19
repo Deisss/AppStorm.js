@@ -18,15 +18,6 @@
  * Bind AppStorm.JS to underscore
 */
 window.appstorm = window.a = _.noConflict();
-
-
-/**
- * Store default ajax options
- *
- * @private
-*/
-a._defaultAjaxOptions = {};
-
 /**
  * The core url (for vendor loading)
  *
@@ -237,7 +228,6 @@ a.extend = function extend(object, source, guard) {
 a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
     if(a.isTrueObject(options)) {
         a.mem.set('app.ajax.default', options);
-        this._defaultAjaxOptions = options;
     }
 };
 
@@ -250,7 +240,33 @@ a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
  * @return {Object}                         The default ajax options setted
 */
 a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
-    return this._defaultAjaxOptions;
+    return a.mem.get('app.ajax.default') || {};
+};
+
+/**
+ * Define an ajax template to use for the given request
+ *
+ * @method setTemplateAjaxOptions
+ *
+ * @param name {String}                     The template name to define
+ * @param options {Object}                  The options linked to template
+*/
+a.setTemplateAjaxOptions = function setTemplateAjaxOptions(name, options) {
+    if(name && a.isTrueObject(options)) {
+        a.mem.set('app.ajax.template.' + name, options);
+    }
+};
+
+/**
+ * Get an existing template rearding it's name
+ *
+ * @method getTemplateAjaxOptions
+ *
+ * @param name {String}                     The template name to retrieve
+ * @return {Object | null}                  The resulting object content
+*/
+a.getTemplateAjaxOptions = function getTemplateAjaxOptions(name) {
+    return a.mem.get('app.ajax.template.' + name);
 };
 
 /*

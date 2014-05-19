@@ -44,7 +44,22 @@
 a.ajax = function(options, success, error) {
     'use strict';
 
-    var dp = a.getDefaultAjaxOptions();
+    var templates = [a.getDefaultAjaxOptions()];
+
+    // Transforming single element into array
+    if(a.isString(options.template) && options.template) {
+        options.template = [options.template];
+    }
+
+    // Parsing array of templates
+    if(a.isArray(options.template)) {
+        for(var i=0, l=options.template.length; i<l; ++i) {
+            var tmpl = a.getTemplateAjaxOptions(options.template[i]);
+            if(a.isTrueObject(tmpl)) {
+                templates.push(tmpl);
+            }
+        }
+    }
 
     this.params = {
         url    : '',      // Allowed type : any URL
@@ -61,10 +76,15 @@ a.ajax = function(options, success, error) {
         if(p === 'data' || p === 'header') {
             continue;
         }
+
         // We check given options are same type (from specific request)
-        if(p in dp && typeof(dp[p]) === typeof(this.params[p])) {
-            this.params[p] = dp[p];
+        for(var i=0, l=templates.length; i<l; ++i) {
+            var tmpl = templates[i];
+            if(p in tmpl && typeof(tmpl[p]) === typeof(this.params[p])) {
+                this.params[p] = tmpl[p];
+            }
         }
+
         // We check given options are same type (from specific request)
         if(p in options && typeof(options[p]) === typeof(this.params[p])) {
             this.params[p] = options[p];
@@ -72,14 +92,19 @@ a.ajax = function(options, success, error) {
     }
 
     // Now we take care of special case of data and header
-    if(a.isTrueObject(dp.data)) {
-        for(var d in dp.data) {
-            this.params.data[d] = dp.data[d];
+    for(var i=0, l=templates.length; i<l; ++i) {
+        var tmpl = templates[i];
+
+        if(a.isTrueObject(tmpl.data)) {
+            for(var d in tmpl.data) {
+                this.params.data[d] = tmpl.data[d];
+            }
         }
-    }
-    if(a.isTrueObject(dp.header)) {
-        for(var h in dp.header) {
-            this.params.header[h] = dp.header[h];
+
+        if(a.isTrueObject(tmpl.header)) {
+            for(var h in tmpl.header) {
+                this.params.header[h] = tmpl.header[h];
+            }
         }
     }
 
