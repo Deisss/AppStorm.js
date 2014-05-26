@@ -407,8 +407,16 @@ a.modelInstance.prototype = {
 
             // NULLABLE TEST || CHECK TEST || VALIDATE TEST
             if(
+                // Detect null not allowed
                     ( property['nullable'] === false && a.isNone(value) )
-                ||  ( a.isString(check) && check.toLowerCase() !== typeof(value) )
+                ||  
+                    (
+                        // Detect basic element type (string, boolean, ...) check error
+                           ( a.isString(check) && check.toLowerCase() !== typeof(value) )
+                        // Detect model check error (we do allow complex type)
+                        && (value instanceof a.modelInstance && check !== value.name)
+                    )
+                // Detect function validate error
                 ||  (a.isFunction(validate) && validate(value, old) !== true)
             ) {
                 return;
