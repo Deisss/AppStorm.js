@@ -96,6 +96,35 @@ test('a.model.property-check', function() {
     strictEqual(unit.get('testcheck'), 'get', 'Test thrid value not setted');
 });
 
+// Test property check, for a model (a model include a model)
+test('a.model.property-check-model', function() {
+    var child = a.model('unittest-check-child', {
+        test: {
+            init: 'ok',
+            check: 'String',
+            validate: function(value) {
+                strictEqual(value, 'piou');
+            }
+        }
+    });
+
+    var parent = a.model('unittest-check-parent', {
+        sub: {
+            check: 'unittest-check-child'
+        }
+    });
+
+    // We create a new parent, and check validation is raised on child
+    // element
+    var c = new parent(),
+        d = new child();
+
+    c.set('sub', d);
+
+    // Set element raise the validate method
+    c.get('sub').set('test', 'piou');
+});
+
 // Test property validate
 test('a.model.property-validate', function() {
     var unittest = a.model('unittest-validate', {
