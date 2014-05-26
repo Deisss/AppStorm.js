@@ -263,10 +263,17 @@ a.modelPooler.createTemporaryInstance =
  *                                          or a list of instances, or null
 */
 a.modelPooler.searchInstance = function searchInstance(query) {
-    var models = a.modelManager.getByName(query.name);
+    var models = a.modelManager.getByName(query.modelName || query.model ||
+                                          query.name);
 
-    // We remove the query.name
-    delete query.name;
+    // We remove the first searched element
+    if(query.modelName) {
+        delete query.modelName;
+    } else if(query.model) {
+        delete query.model;
+    } else if(query.name) {
+        delete query.name;
+    }
 
     for(var key in query) {
         var value = query[key],
