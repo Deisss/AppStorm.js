@@ -444,6 +444,45 @@ asyncTest('a.model.model-multiple', function() {
 });
 
 
+// Test modelManager searchInstance function
+test('a.model.searchInstance', function() {
+    var unittest = a.model('unittest-searchInstance', {
+        id: {
+            check: 'number'
+        },
+        name: {
+            init: 'piou'
+        },
+        val: {
+            init: 5
+        }
+    });
+
+    var test1 = new unittest(),
+        test2 = new unittest();
+
+    test1.set('id', 3);
+    test1.set('name', 'ok');
+
+    test2.set('id', 20);
+    test2.set('val', 12);
+    test2.set('name', 'something');
+
+    var getTest1 = a.model({
+            model: 'unittest-searchInstance',
+            name: 'ok'
+        }),
+        getTest2 = a.model({
+            model: 'unittest-searchInstance',
+            name: 'something',
+            val: 12
+        });
+
+    strictEqual(getTest1.get('id'), 3);
+    strictEqual(getTest2.get('id'), 20);
+});
+
+
 test('a.model.validates', function() {
     ok(1==1);
 });
