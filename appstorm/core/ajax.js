@@ -341,3 +341,22 @@ a.ajax.prototype.send = function() {
             this.parseResult(this.params, this.request) :
             'No return in async mode';
 };
+
+
+(function() {
+    // Some basic template to use
+    a.setTemplateAjaxOptions('json', {
+        type: 'json',
+        header: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    });
+    a.setTemplateAjaxOptions('xml', {
+        type: 'xml',
+        header: {
+            'Content-Type': 'application/xml',
+            'Accept': 'application/xml'
+        }
+    })
+})();
