@@ -79,18 +79,19 @@ a.keyboard = (function(mt) {
                     originalEvent: e
                 };
 
+            var result = true;
             while(i--) {
                 var fn  = bindArray[i].fct,
                     scp = bindArray[i].scope;
 
-                // We cut the toolchain to make it 'event ready'
-                // This allow to skip waiting long time functions
-                setTimeout(
-                    function() {
-                        fn.call(scp, evtObject);
-                    }
-                , 0);
+                // We don't apply a timeout here to catch return value
+                var tmp = fn.call(scp, evtObject);
+                if(tmp === false) {
+                    result = false;
+                }
             }
+
+            return result;
         };
     };
 

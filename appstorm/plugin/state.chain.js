@@ -696,12 +696,12 @@ a.state.chain = new function() {
         var bindings = this.keyboard || this.accelerator || null;
 
         a.each(bindings, function(fct, query) {
-            // We allow multiple keyboard entry bindings on same line
-            var split = query.split('|');
+            // We keyboard binding with key type press selection
+            var split = query.split('|'),
+                key = a.trim(split[0]),
+                type = split[1] ? a.trim(split[1]): null;
 
-            a.each(split, function(keys) {
-                a.keyboard.bind(a.trim(keys), fct, this);
-            }, this);
+            a.keyboard.bind(key, fct, this, type);
         }, this);
 
         goToNextStep.apply(this, arguments);
@@ -760,12 +760,11 @@ a.state.chain = new function() {
         var bindings = this.keyboard || this.accelerator || null;
 
         a.each(bindings, function(fct, query) {
-            // We allow multiple keyboard entry bindings on same line
-            var split = query.split('|');
+            var split = query.split('|'),
+                key = a.trim(split[0]),
+                type = split[1] ? a.trim(split[1]): null;
 
-            a.each(split, function(keys) {
-                a.keyboard.unbind(a.trim(keys), fct);
-            }, this);
+            a.keyboard.unbind(key, fct, type);
         }, this);
 
         goToNextStep.apply(this, arguments);
