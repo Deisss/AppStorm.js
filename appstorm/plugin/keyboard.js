@@ -184,6 +184,19 @@ a.keyboard = (function(mt) {
             },
 
             /**
+             * Fake a keyboard key press
+             *
+             * @method trigger
+             *
+             * @param keys {String | Array} The list of keys/single key to
+             *                              trigger
+             * @param action {String}       The action (like keypress, keyup)
+            */
+            trigger: function(keys, action) {
+                mt.trigger(keys, action);
+            },
+
+            /**
              * Reset all bindings
              *
              * @method reset
