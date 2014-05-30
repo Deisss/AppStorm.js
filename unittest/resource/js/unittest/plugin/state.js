@@ -1527,3 +1527,51 @@ asyncTest('a.state.parameters', function() {
     chain('/something/gettinggood01/with/13', start, 200);
     hashtag('/something/gettinggood01/with/13');
 });
+
+// Keyboard test
+asyncTest('a.state.keyboard-bindings', function() {
+    expect(6);
+
+    a.state.add({
+        id: 'a.state.keyboard-bindings',
+        hash: 'a.state.keyboard-bindings',
+        keyboard: {
+            'a': function() {
+                strictEqual(true, true);
+            },
+            'b:keypress': function() {
+                strictEqual(true, true);
+            },
+            'c|d:keyup': function() {
+                strictEqual(true, true);
+            },
+            'e:keypress|f:keydown': function() {
+                strictEqual(true, true);
+            }
+        },
+        postLoad: function() {
+            // Test trigger is working
+            a.keyboard.trigger('a', 'keypress');
+            a.keyboard.trigger('b', 'keypress');
+            a.keyboard.trigger('c', 'keypress');
+            a.keyboard.trigger('d', 'keyup');
+            a.keyboard.trigger('e', 'keypress');
+            a.keyboard.trigger('f', 'keydown');
+        },
+        postUnload: function() {
+            // Test trigger does not work (unbind is done)
+            a.keyboard.trigger('a', 'keypress');
+            a.keyboard.trigger('b', 'keypress');
+            a.keyboard.trigger('c', 'keypress');
+            a.keyboard.trigger('d', 'keyup');
+            a.keyboard.trigger('e', 'keypress');
+            a.keyboard.trigger('f', 'keydown');
+        }
+    });
+
+    chain('a.state.keyboard-bindings', function() {
+        hashtag('a.state.keyboard-unbind');
+    }, 200);
+    chain('a.state.keyboard-unbind', start, 200);
+    hashtag('a.state.keyboard-bindings');
+});
