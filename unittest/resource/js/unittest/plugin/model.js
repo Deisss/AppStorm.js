@@ -149,6 +149,33 @@ test('a.model.property-validate', function() {
     strictEqual(unit.get('testvalidate'), 'something', 'Test accepted');
 });
 
+// Test property pattern
+test('a.model.property-pattern', function() {
+    var test = a.model('unittest-pattern', {
+        name: {
+            init: 'hello',
+            check: 'string',
+            pattern: '^[a-zA-Z0-9]+$'
+        }
+    });
+    
+    var instance = new test();
+
+    strictEqual(instance.get('name'), 'hello');
+
+    instance.set('name', '__');
+    // Refused by pattern
+    strictEqual(instance.get('name'), 'hello');
+
+    instance.set('name', 'abcd09');
+    // Allowed by pattern
+    strictEqual(instance.get('name'), 'abcd09');
+
+    instance.set('name', 'abcd09-');
+    // Refused by pattern
+    strictEqual(instance.get('name'), 'abcd09');
+});
+
 // Test property transform
 test('a.model.property-transform', function() {
     var unittest = a.model('unittest-transform', {
