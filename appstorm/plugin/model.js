@@ -405,6 +405,7 @@ a.modelInstance.prototype = {
             var check     = property['check'],
                 apply     = property['apply'],
                 eventName = property['event'],
+                pattern   = property['pattern'],
                 transform = property['transform'],
                 validate  = property['validate'],
                 old       = property['value'];
@@ -412,20 +413,31 @@ a.modelInstance.prototype = {
             // TRANSFORM
             value = a.isFunction(transform) ? transform(value, old) : value;
 
-            // NULLABLE TEST || CHECK TEST || VALIDATE TEST
+            // NULLABLE TEST
+            if(property['nullable'] === false && a.isNone(value)) {
+                return;
+            }
+
+            // CHECK TEST
             if(
-                // Detect null not allowed
-                    ( property['nullable'] === false && a.isNone(value) )
-                ||  
-                    (
-                        // Detect basic element type (string, boolean, ...) check error
-                           ( a.isString(check) && check.toLowerCase() !== typeof(value) )
-                        // Detect model check error (we do allow complex type)
-                        && (value instanceof a.modelInstance && check !== value.name)
-                    )
-                // Detect function validate error
-                ||  (a.isFunction(validate) && validate(value, old) !== true)
+                // Detect basic element type (string, boolean, ...) check error
+                    ( a.isString(check) && check.toLowerCase() !== typeof(value) )
+                // Detect model check error (we do allow complex sub type)
+                &&  ( value instanceof a.modelInstance && check !== value.name   )
             ) {
+                return;
+            }
+
+            // PATTERN TEST
+            if(!a.isNone(value) && a.isString(pattern) && pattern) {
+                var reg = new RegExp(pattern, 'g');
+                if(!reg.test(value)) {
+                    return;
+                }
+            }
+
+            // VALIDATE TEST
+            if(a.isFunction(validate) && validate(value, old) !== true) {
                 return;
             }
 
