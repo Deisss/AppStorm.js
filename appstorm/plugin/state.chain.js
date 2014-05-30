@@ -697,11 +697,20 @@ a.state.chain = new function() {
 
         a.each(bindings, function(fct, query) {
             // We keyboard binding with key type press selection
-            var split = query.split('|'),
-                key = a.trim(split[0]),
-                type = split[1] ? a.trim(split[1]): null;
+            var split = query.split('|');
 
-            a.keyboard.bind(key, fct, this, type);
+            a.each(split, function(content) {
+                var evt  = content.split(':'),
+                    key  = a.trim(evt[0]),
+                    type = evt[1] ? a.trim(evt[1]): 'keypress';
+
+                type = type.toLowerCase();
+                if(type!='keypress' && type!='keydown' && type!='keyup') {
+                    type = 'keypress';
+                }
+
+                a.keyboard.bind(key, fct, this, type);
+            }, this);
         }, this);
 
         goToNextStep.apply(this, arguments);
@@ -760,11 +769,21 @@ a.state.chain = new function() {
         var bindings = this.keyboard || this.accelerator || null;
 
         a.each(bindings, function(fct, query) {
-            var split = query.split('|'),
-                key = a.trim(split[0]),
-                type = split[1] ? a.trim(split[1]): null;
+            // We keyboard binding with key type press selection
+            var split = query.split('|');
 
-            a.keyboard.unbind(key, fct, type);
+            a.each(split, function(content) {
+                var evt  = content.split(':'),
+                    key  = a.trim(evt[0]),
+                    type = evt[1] ? a.trim(evt[1]): 'keypress';
+
+                type = type.toLowerCase();
+                if(type!='keypress' && type!='keydown' && type!='keyup') {
+                    type = 'keypress';
+                }
+
+                a.keyboard.unbind(key, fct, type);
+            }, this);
         }, this);
 
         goToNextStep.apply(this, arguments);
