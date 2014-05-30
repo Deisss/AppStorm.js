@@ -269,7 +269,6 @@ a.form = (function() {
             var inputList    = getFieldList(dom),
                 // Store all errors appearing
                 errorList    = [],
-                // TODO : after todos are ended, remove this...
                 allowedTypes = ['number', 'range', 'text', 'search',
                                         'url', 'email', 'password',
                                         'color', 'checkbox',
