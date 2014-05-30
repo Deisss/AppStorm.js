@@ -51,15 +51,33 @@ a.keyboard = (function(mt) {
      * @method generateKeyBinding
      * @private
      *
-     * @private key {String}            The key to bind
+     * @param key {String}              The key to bind (with type)
      * @return {Function}               A function to catch key event and
      *                                  dispatch
     */
     function generateKeyBinding(key) {
         return function globalKeyboardBinding(e) {
-            // TODO: pass e in args
             var bindArray = mem.get(key) || [],
-                i = bindArray.length;
+                i = bindArray.length,
+                evtObject = {
+                    stopPropagation: function() {
+                        if(e.stopPropagation) {
+                            e.stopPropagation();
+                        } else {
+                            e.cancelBubble = true;
+                        }
+                    },
+                    preventDefault: function() {
+                        if(e.preventDefault) {
+                            e.preventDefault();
+                        } else {
+                            e.returnValue = false;
+                        }
+                    },
+                    _e: e,
+                    event: e,
+                    originalEvent: e
+                };
 
             while(i--) {
                 var fn  = bindArray[i].fct,
@@ -69,7 +87,7 @@ a.keyboard = (function(mt) {
                 // This allow to skip waiting long time functions
                 setTimeout(
                     function() {
-                        fn.call(scp, e);
+                        fn.call(scp, evtObject);
                     }
                 , 0);
             }
@@ -98,26 +116,32 @@ a.keyboard = (function(mt) {
              *
              * @param key {String}           The key/keylist to bind
              * @param fn {Function}          The function to bind
-             * @param scope {Object || null} The scope to apply when binding
+             * @param scope {Object | null}  The scope to apply when binding
+             * @param type {String | null}   The type like 'keydown', 'keyup'..
+             *                               default: keypress
             */
-            bind: function(key, fn, scope) {
+            bind: function(key, fn, scope, type) {
                 if(!key || !a.isFunction(fn)) {
                     return;
                 }
 
-                var bindArray = mem.get(key) || [];
+                // Selecting the right type
+                type = (a.isString(type) && type) ? type: 'keypress';
+
+                var finalKey = type + '.' + key,
+                    bindArray = mem.get(finalKey) || [];
 
                 bindArray.push({
                     fct: fn,
                     scope: scope || mt
                 });
 
-                mem.set(key, bindArray);
+                mem.set(finalKey, bindArray);
 
                 // This is the first entry, start to watch the key binding
                 if(bindArray.length == 1) {
-                    var globalCatcher = generateKeyBinding(key);
-                    mt.bind(key, globalCatcher);
+                    var globalCatcher = generateKeyBinding(finalKey);
+                    mt.bind(key, globalCatcher, type);
                 }
             },
 
@@ -128,13 +152,19 @@ a.keyboard = (function(mt) {
              *
              * @param key {String}          The key/keylist to unbind
              * @param fn {Function}         The function to unbind
+             * @param type {String | null}   The type like 'keydown', 'keyup'..
+             *                               default: keypress
             */
-            unbind: function(key, fn) {
+            unbind: function(key, fn, type) {
                 if(!a.isFunction(fn)) {
                     return;
                 }
 
-                var bindArray = mem.get(key);
+                // Selecting the right type
+                type = (a.isString(type) && type) ? type: 'keypress';
+
+                var finalKey = type + '.' + key,
+                    bindArray = mem.get(finalKey) || [];
 
                 if(bindArray) {
                     var i = bindArray.length;
@@ -146,8 +176,8 @@ a.keyboard = (function(mt) {
 
                     // There is no binding anymore, we stop binding
                     if(bindArray.length == 0) {
-                        mem.remove(key);
-                        mt.unbind(key);
+                        mem.remove(finalKey);
+                        mt.unbind(key, type);
                     }
                 }
             },
