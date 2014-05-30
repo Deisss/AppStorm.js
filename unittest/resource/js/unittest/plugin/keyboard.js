@@ -15,18 +15,23 @@ module('plugin/keyboard.js', {
 */
 
 asyncTest('a.keyboard.bind', function() {
-    expect(1);
+    expect(3);
 
-    var callback = function() {
+    var callback = function(e) {
         strictEqual(true, true, 'Event where fired as expected');
-        start();
     };
 
     a.keyboard.bind('a', callback);
+    a.keyboard.bind('a', callback, 'keydown');
+    a.keyboard.bind('a', callback, 'keyup');
     a.keyboard.bind('c', callback);
+    a.keyboard.bind('c', callback, 'keydown');
+    a.keyboard.bind('c', callback, 'keyup');
 
     // Now launching mousetrap trigger (only one of two callback should pass)
-    Mousetrap.trigger('a');
+    Mousetrap.trigger('a', 'keypress');
+
+    setTimeout(start, 100);
 });
 
 asyncTest('a.keyboard.unbind', function() {
@@ -40,12 +45,12 @@ asyncTest('a.keyboard.unbind', function() {
     a.keyboard.bind('c', callback);
 
     // Now launching mousetrap trigger (only one of two callback should pass)
-    Mousetrap.trigger('a');
+    Mousetrap.trigger('a', 'keypress');
 
     a.keyboard.unbind('a', callback);
 
-    Mousetrap.trigger('a');
-    Mousetrap.trigger('c');
+    Mousetrap.trigger('a', 'keypress');
+    Mousetrap.trigger('c', 'keypress');
 
     setTimeout(start, 100);
 });
