@@ -125,6 +125,68 @@ test('a.model.property-check-model', function() {
     c.get('sub').set('test', 'piou');
 });
 
+// Test property check, for a list of values
+test('a.model.property-check-array', function() {
+    var unittest = a.model('unittest-check-array', {
+        testcheck: {
+            init: 'ok',
+            check: ['a', 'yeah', 'okay']
+        }
+    });
+
+    var unit = new unittest();
+
+    strictEqual(unit.get('testcheck'), 'ok', 'Test init value');
+
+    unit.set('testcheck', 'get');
+    strictEqual(unit.get('testcheck'), 'ok', 'Test still init value');
+
+    unit.set('testcheck', 'yeah');
+    strictEqual(unit.get('testcheck'), 'yeah', 'Test second value');
+
+    unit.set('testcheck', 'a');
+    strictEqual(unit.get('testcheck'), 'a', 'Test thrid value');
+
+    unit.set('testcheck', 'yup');
+    strictEqual(unit.get('testcheck'), 'a', 'Test still thrid value');
+
+    unit.set('testcheck', 'okay');
+    strictEqual(unit.get('testcheck'), 'okay', 'Test fourth value');
+});
+
+// Test property check, for a list of values
+test('a.model.property-check-object', function() {
+    var unittest = a.model('unittest-check-object', {
+        testcheck: {
+            init: 'ok',
+            check: {
+                'a': 'something great',
+                'yeah': 'another',
+                'okay': 'still good'
+            }
+        }
+    });
+
+    var unit = new unittest();
+
+    strictEqual(unit.get('testcheck'), 'ok', 'Test init value');
+
+    unit.set('testcheck', 'get');
+    strictEqual(unit.get('testcheck'), 'ok', 'Test still init value');
+
+    unit.set('testcheck', 'yeah');
+    strictEqual(unit.get('testcheck'), 'yeah', 'Test second value');
+
+    unit.set('testcheck', 'a');
+    strictEqual(unit.get('testcheck'), 'a', 'Test thrid value');
+
+    unit.set('testcheck', 'yup');
+    strictEqual(unit.get('testcheck'), 'a', 'Test still thrid value');
+
+    unit.set('testcheck', 'okay');
+    strictEqual(unit.get('testcheck'), 'okay', 'Test fourth value');
+});
+
 // Test property validate
 test('a.model.property-validate', function() {
     var unittest = a.model('unittest-validate', {

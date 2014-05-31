@@ -442,14 +442,29 @@ a.modelInstance.prototype = {
                 return;
             }
 
-            // CHECK TEST
-            if(
-                // Detect basic element type (string, boolean, ...) check error
-                    ( a.isString(check) && check.toLowerCase() !== typeof(value) )
-                // Detect model check error (we do allow complex sub type)
-                &&  ( value instanceof a.modelInstance && check !== value.name   )
-            ) {
-                return;
+            // CHECK TEST - basic typeof test
+            // CHECK TEST - model check error (we do allow complex sub type)
+            if(a.isString(check)) {
+                var instance = value instanceof a.modelInstance;
+                if(instance && check !== value.name) {
+                    return;
+                } else if(!instance && check.toLowerCase() !== typeof(value)) {
+                    return;
+                }
+
+            // CHECK TEST - array of values
+            // Note: don't mix if...
+            } else if(a.isArray(check)) {
+                if(!a.contains(check, value)) {
+                    return;
+                }
+
+            // CHECK TEST - key in object
+            // Note: don't mix if...
+            } else if(a.isTrueObject(check)) {
+                if(!a.has(check, value)) {
+                    return;
+                }
             }
 
             // PATTERN TEST
