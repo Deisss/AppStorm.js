@@ -51,15 +51,18 @@ TODO:
  *                                          model.
  * @param requests {Object}                 The server side associated requests
  *                                          to manipulate the model, save it...
+ * @param forms {Object}                    The rendering configuration to use
+ *                                          in association with requests
 */
-a.model = function(name, properties, requests) {
+a.model = function(name, properties, requests, forms) {
     // Only allow new name (already existing name just give already existing
     // model definition)
     if(a.isString(name)) {
         if(!a.modelPooler.get(name)) {
             a.modelPooler.set(name, {
                 properties: properties,
-                requests: requests
+                requests: requests,
+                forms: forms
             });
 
             // We return a function embed to create new instance
@@ -241,7 +244,8 @@ a.modelPooler.createTemporaryInstance =
             new a.modelInstance(
                 name,
                 a.clone(instanceType.properties),
-                a.clone(instanceType.requests)
+                a.clone(instanceType.requests),
+                a.clone(instanceType.forms)
             ),
             new a.eventEmitter('a.model')
         );
@@ -338,12 +342,15 @@ a.modelPooler.deleteInstance = function(instance) {
  *                                          model.
  * @param requests {Object}                 The server side associated requests
  *                                          to manipulate the model, save it...
+ * @param forms {Object}                    The rendering configuration to use
+ *                                          in association with requests
 */
-a.modelInstance = function(name, properties, requests) {
+a.modelInstance = function(name, properties, requests, forms) {
     this.name = name || '';
     this.properties = {};
     this.snapshot   = {};
     this.requests   = {};
+    this.forms      = {};
 
     // Internal unique id tracer
     this.uid        = a.uniqueId();
@@ -355,6 +362,10 @@ a.modelInstance = function(name, properties, requests) {
 
     if(a.isTrueObject(requests)) {
         this.requests = a.deepClone(requests);
+    }
+
+    if(a.isTrueObject(forms)) {
+        this.forms = a.deepClone(forms);
     }
 }
 
@@ -372,6 +383,19 @@ a.modelInstance.prototype = {
     get: function(key) {
         var p = this.properties[key];
         return p ? p['value'] : null;
+    },
+
+    /**
+     * Get a single property type.
+     *
+     * @method type
+     *
+     * @param key {String}                  The property key
+     * @return {Object}                     The property type found, or null
+    */
+    type: function(key) {
+        var p = this.properties[key];
+        return p ? p['type'] : null;
     },
 
     /**
@@ -616,9 +640,10 @@ a.modelInstance.prototype = {
     /**
      * Get one of the associated model request.
      *
-     * @param request
+     * @method request
      *
      * @param name {String}                 The request name to get
+     * @return {Object | null}              The request base found
     */
     request: function(name) {
         // TODO: here we take the existing request, and create a ready to use
@@ -630,6 +655,18 @@ a.modelInstance.prototype = {
         output.url    = input.url;
 
         return output;
+    },
+
+    /**
+     * Get one of the associated model form.
+     *
+     * @method form
+     *
+     * @param name {String}                 The form name to get
+     * @return {Object | null}              The form found
+    */
+    form: function(name) {
+        return this.forms[name] || {};
     }
 };
 
