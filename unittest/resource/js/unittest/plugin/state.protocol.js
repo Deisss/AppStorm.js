@@ -20,11 +20,15 @@ test('a.state.protocol-tester', function() {
 // Simple test url does work
 test('a.state.protocol-url', function() {
     var simple = {
-        hash: 'superhash'
+        hash: [
+            'superhash'
+        ]
     };
 
     var prefix = {
-        hash: 'url://anotherone'
+        hash: [
+            'url://anotherone'
+        ]
     };
 
     var none = {
@@ -34,9 +38,9 @@ test('a.state.protocol-url', function() {
     // They must all response that url is the good choice
     var url = a.state.protocol.get('url');
 
-    strictEqual(url.fn(simple), 'superhash');
-    strictEqual(url.fn(prefix), 'anotherone');
-    strictEqual(url.fn(none), null);
+    strictEqual(url.fn(simple, 0), 'superhash');
+    strictEqual(url.fn(prefix, 0), 'anotherone');
+    strictEqual(url.fn(none, 0), null);
 });
 
 
@@ -45,47 +49,63 @@ test('a.state.protocol-uri', function() {
 
     // First test
     var simple = {
-        hash: 'uri://superuri',
+        hash: [
+            'uri://superuri'
+        ],
 
         parent: {
-            hash: 'uri://ok'
+            hash: [
+                'uri://ok'
+            ]
         }
     };
 
     var uri = a.state.protocol.get('uri');
 
-    strictEqual(uri.fn(simple), 'ok/superuri');
+    strictEqual(uri.fn(simple, 0), 'ok/superuri');
 
 
     // Second test
     var lessSimple = {
-        hash: 'uri://superuri',
+        hash: [
+            'uri://superuri'
+        ],
 
         parent: {
-            hash: 'uri://ok',
+            hash: [
+                'uri://ok'
+            ],
 
             parent: {
-                hash: 'uri://another'
+                hash: [
+                    'uri://another'
+                ]
             }
         }
     };
 
-    strictEqual(uri.fn(lessSimple), 'another/ok/superuri');
+    strictEqual(uri.fn(lessSimple, 0), 'another/ok/superuri');
 
 
     // Third test
     var complex = {
-        hash: 'uri://superuri',
+        hash: [
+            'uri://superuri'
+        ],
 
         parent: {
             // This one is in url, it should stop here
-            hash: 'superb',
+            hash: [
+                'superb'
+            ],
 
             parent: {
-                hash: 'uri://if-you-see-it-its-problem'
+                hash: [
+                    'uri://if-you-see-it-its-problem'
+                ]
             }
         }
     };
 
-    strictEqual(uri.fn(complex), 'superb/superuri');
+    strictEqual(uri.fn(complex, 0), 'superb/superuri');
 });

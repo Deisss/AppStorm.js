@@ -886,7 +886,8 @@ test('a.state.use', function() {
 
     // Now we test the current init-state element
     strictEqual(storedInitialState.id, 'init-state', 'Test id');
-    strictEqual(storedInitialState._storm.hash, 'init-state', 'Test hash');
+    strictEqual(storedInitialState._storm.hash[0].hash, 'init-state',
+                                                                'Test hash');
     strictEqual(a.isFunction(storedInitialState.preLoad), true,
                                                             'Test preLoad');
     strictEqual(a.isFunction(storedInitialState.postLoad), false,
@@ -894,7 +895,7 @@ test('a.state.use', function() {
 
     // We test the duplicate element
     strictEqual(storedSubState.id, 'sub-state', 'Test id');
-    strictEqual(storedSubState._storm.hash, 'init-state', 'Test hash');
+    strictEqual(storedSubState._storm.hash[0].hash, 'init-state', 'Test hash');
     strictEqual(a.isFunction(storedSubState.preLoad), true, 'Test preLoad');
     strictEqual(a.isFunction(storedSubState.postLoad), true, 'Test postLoad');
 });
