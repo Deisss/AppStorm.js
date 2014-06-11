@@ -269,19 +269,21 @@ a.state.chain = new function() {
         var initContent = a.isNone(name) ?
                             state._storm.data : state._storm.data[name],
             hash      = a.hash.getHash(),
-            internal  = state.hash || '',
+            internal  = state.hash || [''],
             // In this case we don't want the string escape, so we ask for
             // original content (false at the end)
             parsedUrl = null;
 
-        if(a.isString(url)) {
-            parsedUrl = a.parameter.extrapolate(url, hash, internal, false);
-        }
-
         // Sometimes options can arrive null
         options = a.isTrueObject(options) ? options: {};
 
-        parseDataOption(options, hash, internal);
+        if(a.isString(url)) {
+            for(var i=0, l=internal.length; i<l; ++i) {
+                parsedUrl = a.parameter.extrapolate(url, hash,
+                                                internal[i], false);
+                parseDataOption(options, hash, internal[i]);
+            }
+        }
 
         return function(chain) {
             var method = (options.method) ? options.method : 'GET',
@@ -388,30 +390,68 @@ a.state.chain = new function() {
                         include[name]    || [];
 
         var converted = stringToArray(selected),
+            hashs = getValidHash(state),
             i = converted.length;
 
         while(i--) {
-            converted[i] = a.parameter.extrapolate(
-                        converted[i], a.hash.getHash(), state.hash);
+            for(var j=0, l=hashs.length; j<l; ++j) {
+                converted[i] = a.parameter.extrapolate(
+                        converted[i], a.hash.getHash(), hashs[j]);
+            }
         }
 
         return converted;
     };
 
+    /**
+     * From a list of possible hash values, get only the currently in use hash
+     *
+     * @method getValidHash
+     * @private
+     *
+     * @param state {Object}                The state object to use
+     * @return {Array}                      The list of hash currently OK
+    */
+    function getValidHash(state) {
+        var hash = a.hash.getHash(),
+            hashs = state.hash || [],
+            result = [];
+
+        for(var i=0, l=hashs.length; i<l; ++i) {
+            var stateHash = state.hash[i],
+                stateStore = state._storm.hash[i];
+
+            if(stateStore.isRegexHash) {
+                stateStore.regex.lastIndex=0;
+                if(stateStore.regex.test(hash)) {
+                    result.push(stateHash);
+                }
+            } else {
+                if(stateHash === hash) {
+                    result.push(stateHash);
+                }
+            }
+        }
+
+        return result;
+    };
+
     // LOAD: add parameters
     a.state.chain.add(true, 'loadParameters', function loadParameters() {
         try {
-            // First we extract content from base
-            var extracted = a.parameter.extract(this.hash),
-                // Second we registerParameter
-                values = a.parameter.getValues(a.hash.getHash(),
-                                            this.hash, extracted),
-                // We convert values object into usable one for parameters
-                i = values.length,
-                result = {};
+            var result = {},
+                hashs  = getValidHash(this),
+                hash   = a.hash.getHash();
 
-            while(i--) {
-                result[values[i].name] = values[i].value;
+            // Doing the load parameter for every possible hash
+            for(var i=0, l=hashs.length; i<l; ++i) {
+                var extracted = a.parameter.extract(hashs[i]),
+                    values = a.parameter.getValues(hash, hashs[i], extracted),
+                    j = values.length;
+
+                while(j--) {
+                    result[values[j].name] = values[j].value;
+                }
             }
 
             // Applying parameters
@@ -436,8 +476,11 @@ a.state.chain = new function() {
     // LOAD: title
     a.state.chain.add(true, 'title', function title() {
         if(this.title) {
-            document.title = a.parameter.extrapolate(
-                        this.title, a.hash.getHash(), this.hash);
+            var hashs = getValidHash(this);
+            for(var i=0, l=hashs.length; i<l; ++i) {
+                document.title = a.parameter.extrapolate(
+                            this.title, a.hash.getHash(), hashs[i]);
+            }
         }
         goToNextStep.apply(this, arguments);
     });
@@ -445,7 +488,7 @@ a.state.chain = new function() {
     // LOAD: include (insert included elements into DOM)
     a.state.chain.add(true, 'include', function include() {
         var hash     = a.hash.getHash(),
-            internal = this.hash,
+            internal = getValidHash(this),
             args     = arguments,
             chain    = a.last(args),
             state    = this;
@@ -551,7 +594,9 @@ a.state.chain = new function() {
                 return;
             }
 
-            url = a.parameter.extrapolate(url, hash, internal);
+            for(var i=0, l=internal.length; i<l; ++i) {
+                url = a.parameter.extrapolate(url, hash, internal[i]);
+            }
             this._storm.html = url;
             a.template.get(url, {}, chain.next, chain.error);
         }, this));

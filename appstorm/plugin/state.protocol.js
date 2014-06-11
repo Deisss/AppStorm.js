@@ -124,8 +124,8 @@ a.state.protocol = new function() {
 
 (function() {
     // Define the most basic case, using direct hashtag
-    a.state.protocol.add('url', function(state) {
-        var hash = state.hash || null;
+    a.state.protocol.add('url', function(state, index) {
+        var hash = (a.isArray(state.hash)) ? state.hash[index]: null;
         if(hash && hash.indexOf('url://') === 0) {
             return hash.substring(6);
         }
@@ -134,8 +134,8 @@ a.state.protocol = new function() {
 
     // Define a parent related url where you get use of parent to define
     // the given hashtag final url...
-    a.state.protocol.add('uri', function(state) {
-        var hash = state.hash || '';
+    a.state.protocol.add('uri', function(state, index) {
+        var hash = (a.isArray(state.hash)) ? state.hash[index]: '';
         if(hash && hash.indexOf('uri://') === 0) {
             hash = hash.substring(6);
         }
@@ -145,17 +145,26 @@ a.state.protocol = new function() {
         while(!a.isNone(search)) {
             // Search is defined, we use it !
             if(search.hash) {
-                var parentType = a.state.protocol.tester(search.hash);
+                var found = false;
+                for(var i=0, l=search.hash.length; i<l; ++i) {
+                    var parentType = a.state.protocol.tester(search.hash[i]);
 
-                // Parent type is defined, we extract data from
-                if(!a.isNull(parentType)) {
-                    var type = a.state.protocol.get(parentType),
-                        result = type.fn(search);
+                    // Parent type is defined, we extract data from
+                    if(!a.isNull(parentType)) {
+                        var type = a.state.protocol.get(parentType),
+                            result = type.fn(search, i);
 
-                    hash = result + '/' + hash;
+                        hash = result + '/' + hash;
 
-                    // In any case, we stop as calling type.fn will already
-                    // do parents of parents...
+                        // In any case, we stop as calling type.fn will already
+                        // do parents of parents...
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Double exit
+                if(found) {
                     break;
                 }
             }
@@ -170,7 +179,7 @@ a.state.protocol = new function() {
     // Get the url from the given model element
     // You must provide 'model://name:uri' where name is the model name
     // and uri the resources url you're trying to use...
-    a.state.protocol.add('model', function(state) {
+    a.state.protocol.add('model', function(state, index) {
         // TODO: make model instance by using a.modelManager
         // From that model, get the request
         // As the user has to submit model://name:uri

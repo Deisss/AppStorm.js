@@ -270,21 +270,26 @@ a.state = new function() {
         for(var i in tree) {
             var state = tree[i];
 
-            if(state._storm.hash && a.isString(state._storm.hash)) {
+            if(state._storm.hash && a.isArray(state._storm.hash)) {
                 var parents = [];
+                for(var j=0, l=state._storm.hash.length; j<l; ++j) {
+                    var store = state._storm.hash[j];
 
-                // We are in regex mode
-                if(state._storm.isRegexHash) {
-                    // We use the regex stored into system directly
-                    // (faster to not re-create all regex everytime)
-                    if(state._storm.regex.test(hash)) {
-                        parents = foundParentState(state);
-                    }
-                // We are in non-regex mode
-                // Note: DO NOT PUT ELSE IF here
-                } else {
-                    if(state._storm.hash == hash) {
-                        parents = foundParentState(state);
+                    if(store.isRegexHash) {
+                        store.regex.lastIndex=0;
+                        if(store.regex.test(hash)) {
+                            parents = foundParentState(state);
+                            // We stop, we found match
+                            break;
+                        }
+                    // We are in non-regex mode
+                    // Note: DO NOT PUT ELSE IF here
+                    } else {
+                        if(store.hash == hash) {
+                            parents = foundParentState(state);
+                            // We stop, we found match
+                            break;
+                        }
                     }
                 }
 
@@ -500,10 +505,11 @@ a.state = new function() {
         // For a unknow reason
         // this helps to refresh hash path finding...
         // (prevent a bug)
-        performHashChange({
+        // Seems to be resolved...
+        /*performHashChange({
             value: a.hash.getHash(),
             old: a.hash.getPreviousHash()
-        });
+        });*/
     }, null, false, false);
 
 
@@ -571,35 +577,47 @@ a.state = new function() {
         state._storm.data    = state.data || {};
         state._storm.options = state.options || null;
 
-        // Parsing hash element
+        // We convert into array of values
         if(state.hash && a.isString(state.hash)) {
-            // First of all: we get the protocol loader
-            var protocol = a.state.protocol.tester(state.hash);
+            state.hash = [state.hash];
+        }
 
-            // The protocol exist, we can parse it
-            if(protocol) {
-                // We get the related function extracter
-                var type = a.state.protocol.get(protocol);
-                // The system exist, we can apply transformation
-                if(a.isTrueObject(type)) {
-                    // We apply converter to get the final good hash
-                    state.hash = type.fn(state);
+        // Every hash are parsed and checked
+        if(state.hash && a.isArray(state.hash)) {
+            state._storm.hash = [];
+            for(var i=0, l=state.hash.length; i<l; ++i) {
+                var hash = state.hash[i];
+                // First of all: we get the protocol loader
+                var protocol = a.state.protocol.tester(hash);
+
+                // The protocol exist, we can parse it
+                if(protocol) {
+                    // We get the related function extracter
+                    var type = a.state.protocol.get(protocol);
+                    // The system exist, we can apply transformation
+                    if(a.isTrueObject(type)) {
+                        // We apply converter to get the final good hash
+                        hash = type.fn(state, i);
+                    }
                 }
-            }
 
-            state._storm.isRegexHash = false;
-            if(state.hash.indexOf('{{') >= 0
-                    && state.hash.indexOf('}}') >= 0) {
-                state._storm.isRegexHash = true;
-            }
+                var store = {
+                    isRegexHash: false,
+                    regex: null,
+                    hash: a.parameter.convert(hash)
+                };
 
-            state._storm.hash = a.parameter.convert(state.hash);
+                if(hash.indexOf('{{') >= 0 && hash.indexOf('}}') >= 0) {
+                    store.isRegexHash = true;
+                }
 
-            // Making it strict catch for regex one
-            if(state._storm.isRegexHash) {
-                var tmpHash = '^' + state._storm.hash + '$';
-                state._storm.hash = tmpHash;
-                state._storm.regex = new RegExp(tmpHash, 'g');
+                // Making it strict catch for regex one
+                if(store.isRegexHash) {
+                    store.hash = '^' + store.hash + '$';
+                    store.regex = new RegExp(store.hash, 'g');
+                }
+
+                state._storm.hash.push(store);
             }
         }
 
