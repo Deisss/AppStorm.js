@@ -907,7 +907,7 @@ a.state.chain = new function() {
     });
 
     // UNLOAD: remove parameters previously created
-    a.state.chain.add(true, 'removeParameters', function loadParameters() {
+    a.state.chain.add(false, 'removeParameters', function loadParameters() {
         try {
             // Applying parameters
             delete this.parameters;
