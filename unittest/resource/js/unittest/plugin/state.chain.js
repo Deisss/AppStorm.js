@@ -19,8 +19,9 @@ test('a.state.chain-add-before', function() {
     strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'unittest-add-before', 'Test name inserted');
-    strictEqual(result[1].name, 'preLoad', 'Test original chain name');
+    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    strictEqual(result[1].name, 'unittest-add-before', 'Test name inserted');
+    strictEqual(result[2].name, 'preLoad', 'Test original chain name');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-before');
@@ -44,8 +45,8 @@ test('a.state.chain.add-before2', function() {
     strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'preLoad', 'Test original chain name');
-    strictEqual(result[2].name, 'unittest-add-before', 'Test name inserted');
+    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    strictEqual(result[3].name, 'unittest-add-before', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-before');
@@ -69,8 +70,9 @@ test('a.state.chain-add-after', function() {
     strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'preLoad', 'Test original chain name');
-    strictEqual(result[1].name, 'unittest-add-after', 'Test name inserted');
+    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    strictEqual(result[1].name, 'preLoad', 'Test original chain name');
+    strictEqual(result[2].name, 'unittest-add-after', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-after');
@@ -94,10 +96,11 @@ test('a.state.chain-add-after2', function() {
     strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'preLoad', 'Test original chain name');
-    strictEqual(result[1].name, 'title', 'Test original chain name');
-    strictEqual(result[2].name, 'include', 'Test original chain name');
-    strictEqual(result[3].name, 'unittest-add-after', 'Test name inserted');
+    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    strictEqual(result[1].name, 'preLoad', 'Test original chain name');
+    strictEqual(result[2].name, 'title', 'Test original chain name');
+    strictEqual(result[3].name, 'include', 'Test original chain name');
+    strictEqual(result[4].name, 'unittest-add-after', 'Test name inserted')
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-after');
@@ -210,7 +213,8 @@ test('a.state.chain.loading', function() {
     var currentLoadingChain = a.state.chain.get('load'),
         result = a.pluck(currentLoadingChain, 'name').join(',');
     strictEqual(result,
-            'preLoad,title,include,converter,contentLoad,load,bindDom,' +
+            'loadParameters,preLoad,title,include,converter,contentLoad,load,'+
+                                        'bindDom,' +
                                         'bindGlobalDom,bindKeyboard,postLoad' +
                                         ',loadAfter',
                                                 'Test loading chain');
@@ -221,7 +225,8 @@ test('a.state.chain.unloading', function() {
     var currentUnloadingChain = a.state.chain.get('unload'),
         result = a.pluck(currentUnloadingChain, 'name').join(',');
     strictEqual(result, 'preUnload,unbindKeyboard,unbindGlobalDom,' +
-                                        'unbindDom,contentUnload' +
-                                        ',unload,postUnload',
+                                        'unbindDom,unload' +
+                                        ',contentUnload,postUnload,'+
+                                        'removeParameters',
                                                 'Test unloading chain');
 });
