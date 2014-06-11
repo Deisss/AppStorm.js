@@ -1576,3 +1576,35 @@ asyncTest('a.state.keyboard-bindings', function() {
     chain('a.state.keyboard-unbind', start, 200);
     hashtag('a.state.keyboard-bindings');
 });
+
+
+// Testing multiple hash response
+asyncTest('a.state.multiple-hash', function() {
+    expect(4);
+
+    a.state.add({
+        id: 'a.state.multiple-hash',
+        hash: [
+            'a.state.multiple-hash{{num: \\d+}}',
+            'a.state.multiple-hash{{let: [a-z]+}}'
+        ],
+        postLoad: function() {
+            strictEqual(a.size(this.parameters), 1);
+
+            if(this.parameters.num) {
+                strictEqual(this.parameters.num, '2');
+            } else {
+                strictEqual(this.parameters.let, 'a');
+            }
+        }
+    });
+
+    chain('a.state.multiple-hasha', function() {
+        hashtag('a.state.NO-multiple-hash');
+    }, 200);
+    chain('a.state.NO-multiple-hash', function() {
+        hashtag('a.state.multiple-hash2');
+    }, 200);
+    chain('a.state.multiple-hash2', start, 200);
+    hashtag('a.state.multiple-hasha');
+});
