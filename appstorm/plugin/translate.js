@@ -70,7 +70,8 @@ a.translate = a.i18n = (function() {
 
         // We are on a submit/reset button
         if(node.nodeName == 'INPUT') {
-            if(node.type == 'submit' || node.type == 'reset') {
+            var type = node.type;
+            if(type == 'submit' || type == 'reset' || type == 'button') {
                 node.value = translation;
             } else {
                 try {
