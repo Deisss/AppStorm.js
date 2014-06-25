@@ -36,7 +36,6 @@ a.state = new function() {
             synchronously)
     */
 
-
     /**
      * Get the error associated to a given status error and state
      *
@@ -48,6 +47,11 @@ a.state = new function() {
      * @return {Mixed}                      Any revelant data...
     */
     function getError(state, status) {
+        if(!state) {
+            a.console.error('A state error has occurs, ' +
+                            'with no state linked to it...', 1);
+            a.console.error(a.getStackTrace(), 1);
+        }
         var id = state.id;
         // Convert to str
         status = '_' + status;
@@ -417,11 +421,13 @@ a.state = new function() {
         // Perform the unload/load process
         setTimeout(function() {
             performUnloadChanges(unloadingIntersection, function() {
-                performLoadChanges(loadingIntersection, function() {
-                    // We clear inject, and raise event
-                    a.state._inject = {};
-                    a.message.dispatch('a.state.end', data);
-                });
+                setTimeout(function() {
+                    performLoadChanges(loadingIntersection, function() {
+                        // We clear inject, and raise event
+                        a.state._inject = {};
+                        a.message.dispatch('a.state.end', data);
+                    });
+                }, 0);
             });
         }, 0);
     };
