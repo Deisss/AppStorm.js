@@ -358,5 +358,16 @@ a.ajax.prototype.send = function() {
             'Content-Type': 'application/xml',
             'Accept': 'application/xml'
         }
-    })
+    });
+
+    // Creating http verb
+    var verbs = ['POST', 'PUT', 'GET', 'DELETE', 'HEAD', 'OPTIONS',
+                 'CONNECT', 'TRACE', 'PATCH'];
+    for(var i=0, l=verbs.length; i<l; ++i) {
+        (function(verb) {
+            a.setTemplateAjaxOptions(verb, {
+                method: verb
+            });
+        })(verbs[i]);
+    }
 })();
