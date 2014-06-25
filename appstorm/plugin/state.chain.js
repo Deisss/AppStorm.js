@@ -161,6 +161,7 @@ a.state.chain = new function() {
 
     /**
      * Get the related state entry
+     * Note: angular plugin also use this function, so apply change to it also
      *
      * @method getEntry
      * @private
@@ -438,6 +439,8 @@ a.state.chain = new function() {
 
     // LOAD: add parameters
     a.state.chain.add(true, 'loadParameters', function loadParameters() {
+        //a.console.log('loading');
+        //a.console.log(this);
         try {
             var result = {},
                 hashs  = getValidHash(this),
@@ -798,6 +801,8 @@ a.state.chain = new function() {
 
     // UNLOAD: preUnload
     a.state.chain.add(false, 'preUnload', function preUnload() {
+        //a.console.log('unloading');
+        //a.console.log(this);
         if(this.preUnload) {
             if(testAsync(this.async, 'preUnload')) {
                 this.preUnload.apply(this, arguments);
