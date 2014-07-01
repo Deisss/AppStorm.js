@@ -607,7 +607,11 @@ a.state.chain = new function() {
         // Loading partials
         a.each(partials, function(uri, name) {
             sync.addCallback(function(chain) {
-                a.template.partial(name, uri, chain.next, chain.error);
+                a.template.partial(name, uri, function() {
+                    chain.next();
+                }, function() {
+                    chain.error();
+                });
             });
         });
 
