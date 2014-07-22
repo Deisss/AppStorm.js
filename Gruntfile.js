@@ -24,6 +24,7 @@ module.exports = function(grunt) {
           'appstorm/core/mem.js',
           'appstorm/core/environment.js',
           'appstorm/core/console.js',
+          'appstorm/core/debugger.js',
           'appstorm/core/message.js',
           'appstorm/core/parser.js',
           'appstorm/core/timer.js',
