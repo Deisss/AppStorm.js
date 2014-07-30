@@ -434,6 +434,7 @@ a.modelInstance.prototype = {
                 validate  = property['validate'],
                 old       = property['value'];
 
+
             // TRANSFORM
             value = a.isFunction(transform) ? transform(value, old) : value;
 
@@ -445,10 +446,18 @@ a.modelInstance.prototype = {
             // CHECK TEST - basic typeof test
             // CHECK TEST - model check error (we do allow complex sub type)
             if(a.isString(check)) {
+
+                // Little hack to prevent wrong typeof check
+                check = check.toLowerCase();
+                if(check === 'integer' || check === 'float'
+                    || check === 'double') {
+                    check = 'number';
+                }
+
                 var instance = value instanceof a.modelInstance;
                 if(instance && check !== value.name) {
                     return;
-                } else if(!instance && check.toLowerCase() !== typeof(value)) {
+                } else if(!instance && check !== typeof(value)) {
                     return;
                 }
 
