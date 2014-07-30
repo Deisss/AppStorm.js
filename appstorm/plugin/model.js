@@ -536,7 +536,23 @@ a.modelInstance.prototype = {
     toObject: function() {
         var obj = {};
         for(var property in this.properties) {
-            obj[property] = this.get(property);
+            var result = this.get(property);
+            if(result instanceof a.modelInstance) {
+                obj[property] = result.toObject();
+            } else if(a.isArray(result)) {
+                var content = [];
+                for(var i=0, l=result.length; i<l; ++i) {
+                    var element = result[i];
+                    if(element instanceof a.modelInstance) {
+                        content.push(element.toObject());
+                    } else {
+                        content.push(element);
+                    }
+                }
+                obj[property] = content;
+            } else {
+                obj[property] = result;
+            }
         }
         return obj;
     },
