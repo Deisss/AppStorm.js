@@ -761,6 +761,44 @@ a.state = new function() {
     };
 
     /**
+     * Reload a state
+     *
+     * @method reload
+     *
+     * @param id {String}                   The state id to reload
+    */
+    this.reload = function(id) {
+        var state = this.get(id);
+
+        if(state) {
+            // We search all parents related
+            var states     = foundParentState(state),
+                // From currently setted state, we remove elements
+                // who don't need to load
+                difference = a.difference(states, loaded);
+
+            // As the load allow to multi-load existing state
+            // If difference is empty, we still load the uppest state
+            if(difference.length <= 0) {
+                difference = [state];
+            }
+
+            loaded = loaded.concat(difference);
+
+            // Difference
+        // Perform the unload/load process
+            setTimeout(function() {
+                performUnloadChanges(difference, function() {
+                    setTimeout(function() {
+                        performLoadChanges(difference);
+                    }, 0);
+                });
+            }, 0);
+
+        }
+    };
+
+    /**
      * Unload a state and needed parents from state id.
      *
      * @method unload
