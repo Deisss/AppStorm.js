@@ -7,7 +7,11 @@ test('a.state.chain-add-before', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add before 'preLoad'
-    a.state.chain.add(true, 'unittest-add-before', function(chain) {
+    a.state.chain.add(true, 'unittest-add-before',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         before: 'preLoad'
@@ -33,7 +37,11 @@ test('a.state.chain.add-before2', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add before 'include'
-    a.state.chain.add(true, 'unittest-add-before', function(chain) {
+    a.state.chain.add(true, 'unittest-add-before',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         before: 'include'
@@ -58,7 +66,11 @@ test('a.state.chain-add-after', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add after 'preLoad'
-    a.state.chain.add(true, 'unittest-add-after', function(chain) {
+    a.state.chain.add(true, 'unittest-add-after',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         after: 'preLoad'
@@ -84,7 +96,11 @@ test('a.state.chain-add-after2', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add after 'include'
-    a.state.chain.add(true, 'unittest-add-after', function(chain) {
+    a.state.chain.add(true, 'unittest-add-after',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         after: 'include'
@@ -112,7 +128,11 @@ test('a.state.chain-add-position', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add after position 3
-    a.state.chain.add(true, 'unittest-add-position', function(chain) {
+    a.state.chain.add(true, 'unittest-add-position',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         position: 3
@@ -136,7 +156,11 @@ test('a.state.chain-add-position-negative', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add before anything else
-    a.state.chain.add(true, 'unittest-add-position', function(chain) {
+    a.state.chain.add(true, 'unittest-add-position',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         position: -1
@@ -160,7 +184,11 @@ test('a.state.chain-add-position-toobig', function() {
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
     // We add after everything
-    a.state.chain.add(true, 'unittest-add-position', function(chain) {
+    a.state.chain.add(true, 'unittest-add-position',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         position: 100
@@ -184,12 +212,20 @@ test('a.state.chain-remove', function() {
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
-    a.state.chain.add(false, 'unittest-remove', function(chain) {
+    a.state.chain.add(false, 'unittest-remove', 
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         position: 100
     });
-    a.state.chain.add(false, 'unittest-remove', function(chain) {
+    a.state.chain.add(false, 'unittest-remove',
+    function() {
+        return true;
+    },
+    function(chain) {
         chain.next();
     }, {
         position: 100

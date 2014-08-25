@@ -542,7 +542,7 @@ asyncTest('a.state-multiData', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager13', start, 100);
+    chain('astatemanager13', start, 300);
 
     hashtag('astatemanager13');
 });
