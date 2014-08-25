@@ -53,6 +53,12 @@ a.state.chain = new function() {
      *                                      give the loading chain. Anything
      *                                      else will give the unloading chain
      * @param name {String}                 The function name (to identify it)
+     * @param test {Function}               A function to call and try if
+     *                                      the given state should use this
+     *                                      chain or not (things to go faster,
+     *                                      if you dont know, just create
+     *                                      blank function which always return
+     *                                      true)
      * @param fct {Function}                The function to call
      * @param option {Object}               An option tool to place this in the
      *                                      chain. It can be 'after:string'
@@ -62,12 +68,13 @@ a.state.chain = new function() {
      *                                      Or position to specify integer to
      *                                      to place at the defined position
     */
-    this.add = function(loadOrUnload, name, fct, option) {
+    this.add = function(loadOrUnload, name, test, fct, option) {
         option = option || {};
 
         var store = getStore(loadOrUnload),
             storedObject = {
                 name:  name,
+                test:  test,
                 fct:   fct,
                 scope: option.scope || null
             };
@@ -129,6 +136,34 @@ a.state.chain = new function() {
     this.get = function(loadOrUnload) {
         return getStore(loadOrUnload);
     };
+
+    /**
+     * Get the loading or unloading chain. Same as get function, but remove
+     * un-needed toolchain function, better to use this one.
+     *
+     * @method getWithTest
+     *
+     * @param loadOrUnload {Boolean}        True to get the load chain, false
+     *                                      to get the unloading chain
+     * @param state {Object}                The state to test
+    */
+    this.getWithTest = function(loadOrUnload, state) {
+        var get = getStore(loadOrUnload),
+            toolchain = [];
+
+        for(var i=0, l=get.length; i<l; ++i) {
+            var tmp = get[i],
+                test = tmp.test;
+
+            if(test) {
+                if(test.call(state, state) === true) {
+                    toolchain.push(tmp);
+                }
+            }
+        }
+
+        return toolchain;
+    }
 };
 
 
@@ -438,7 +473,13 @@ a.state.chain = new function() {
     };
 
     // LOAD: add parameters
-    a.state.chain.add(true, 'loadParameters', function loadParameters() {
+    a.state.chain.add(true, 'loadParameters', 
+    // Test
+    function() {
+        return (('hash' in this) && !a.isNone(this.hash));
+    },
+    // Content
+    function() {
         //a.console.log('loading');
         //a.console.log(this);
         try {
@@ -464,32 +505,51 @@ a.state.chain = new function() {
     });
 
     // LOAD: preLoad
-    a.state.chain.add(true, 'preLoad', function preLoad() {
-        if(this.preLoad) {
-            if(testAsync(this.async, 'preLoad')) {
-                this.preLoad.apply(this, arguments);
-                return;
-            } else {
-                this.preLoad.call(this);
-            }
+    a.state.chain.add(true, 'preLoad',
+    // Test
+    function() {
+        // If preload is defined only
+        return a.isFunction(this.preLoad);
+    },
+    // Content
+    function() {
+        if(testAsync(this.async, 'preLoad')) {
+            this.preLoad.apply(this, arguments);
+            return;
+        } else {
+            this.preLoad.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: title
-    a.state.chain.add(true, 'title', function title() {
-        if(this.title) {
-            var hashs = getValidHash(this);
-            for(var i=0, l=hashs.length; i<l; ++i) {
-                document.title = a.parameter.extrapolate(
-                            this.title, a.hash.getHash(), hashs[i]);
-            }
+    a.state.chain.add(true, 'title',
+    // Test
+    function() {
+        return (('title' in this) && a.isString(this.title));
+    },
+    // Content
+    function() {
+        var hashs = getValidHash(this);
+        for(var i=0, l=hashs.length; i<l; ++i) {
+            document.title = a.parameter.extrapolate(
+                        this.title, a.hash.getHash(), hashs[i]);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: include (insert included elements into DOM)
-    a.state.chain.add(true, 'include', function include() {
+    a.state.chain.add(true, 'include',
+    // Test
+    function() {
+        // State does not handle any data or include to load
+        if(!('include' in this) && !('data' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         var hash     = a.hash.getHash(),
             internal = getValidHash(this),
             args     = arguments,
@@ -620,27 +680,27 @@ a.state.chain = new function() {
     });
 
     // Load: converter before rendering data
-    a.state.chain.add(true, 'converter', function converter() {
-        // We merge all data
-        var chain = a.last(arguments);
-
-        if(this.converter) {
-            this.converter.call(this, this.data);
-        }
-
+    a.state.chain.add(true, 'converter',
+    // Test
+    function() {
+        return (('converter' in this) && a.isFunction(this.converter));
+    },
+    // Content
+    function() {
+        this.converter.call(this, this.data);
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: content (insert HTML content)
-    a.state.chain.add(true, 'contentLoad', function contentLoad() {
+    a.state.chain.add(true, 'contentLoad',
+    // Test
+    function() {
+        return (('include' in this) && ('html' in this.include));
+    },
+    // Content
+    function() {
         var args  = a.toArray(arguments),
             chain = a.last(args);
-
-        // There is no html to load, we skip
-        if(!this._storm.html) {
-            goToNextStep.apply(this, args);
-            return;
-        }
 
         a.template.get(this._storm.html, this.data, a.scope(
         function(content) {
@@ -674,20 +734,33 @@ a.state.chain = new function() {
     });
 
     // LOAD: load
-    a.state.chain.add(true, 'load', function load() {
-        if(this.load) {
-            if(testAsync(this.async, 'load')) {
-                this.load.apply(this, arguments);
-                return;
-            } else {
-                this.load.call(this);
-            }
+    a.state.chain.add(true, 'load',
+    // Test
+    function() {
+        return (('load' in this) && a.isFunction(this.load));
+    },
+    // Content
+    function() {
+        if(testAsync(this.async, 'load')) {
+            this.load.apply(this, arguments);
+            return;
+        } else {
+            this.load.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: bind (HTML events)
-    a.state.chain.add(true, 'bindDom', function bindDom() {
+    a.state.chain.add(true, 'bindDom',
+    // Test
+    function() {
+        if(!('bind' in this) && !('bindings' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || null,
             state    = this,
@@ -720,7 +793,16 @@ a.state.chain = new function() {
     });
 
     // Load: bind (GLOBAL HTML events)
-    a.state.chain.add(true, 'bindGlobalDom', function bindGlobalDom() {
+    a.state.chain.add(true, 'bindGlobalDom',
+    // Test
+    function() {
+        if(!('globalBind' in this) && !('globalBindings' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         // Use bind/binding to elements
         var bindings = this.globalBind || this.globalBindings || null,
             state    = this;
@@ -744,7 +826,16 @@ a.state.chain = new function() {
 
 
     // LOAD: bind (keyboard events)
-    a.state.chain.add(true, 'bindKeyboard', function bindKeyboard() {
+    a.state.chain.add(true, 'bindKeyboard',
+    // test
+    function() {
+        if(!('keyboard' in this) && !('accelerator' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         var bindings = this.keyboard || this.accelerator || null;
 
         a.each(bindings, function(fct, query) {
@@ -769,29 +860,37 @@ a.state.chain = new function() {
     });
 
     // LOAD: postLoad
-    a.state.chain.add(true, 'postLoad', function postLoad() {
-        if(this.postLoad) {
-            if(testAsync(this.async, 'postLoad')) {
-                this.postLoad.apply(this, arguments);
-                return;
-            } else {
-                this.postLoad.call(this);
-            }
+    a.state.chain.add(true, 'postLoad',
+    // Test
+    function() {
+        return (('postLoad' in this) && a.isFunction(this.postLoad));
+    },
+    // Content
+    function() {
+        if(testAsync(this.async, 'postLoad')) {
+            this.postLoad.apply(this, arguments);
+            return;
+        } else {
+            this.postLoad.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // LOAD: loadAfter: launch state after this one is loaded
-    a.state.chain.add(true, 'loadAfter', function loadAfter() {
-        if(this.loadAfter) {
-            var after = this.loadAfter;
-            if(a.isArray(after)) {
-                a.each(after, function(state) {
-                    a.state.load(state);
-                });
-            } else if(a.isString(after) || a.isNumber(after)) {
-                a.state.load(after);
-            }
+    a.state.chain.add(true, 'loadAfter',
+    // Test
+    function() {
+        return (('loadAfter' in this) && !a.isNone(this.loadAfter));
+    },
+    // Content
+    function() {
+        var after = this.loadAfter;
+        if(a.isArray(after)) {
+            a.each(after, function(state) {
+                a.state.load(state);
+            });
+        } else if(a.isString(after) || a.isNumber(after)) {
+            a.state.load(after);
         }
         goToNextStep.apply(this, arguments);
     });
@@ -804,22 +903,35 @@ a.state.chain = new function() {
     */
 
     // UNLOAD: preUnload
-    a.state.chain.add(false, 'preUnload', function preUnload() {
+    a.state.chain.add(false, 'preUnload',
+    // Test
+    function() {
+        return (('preUnload' in this) && a.isFunction(this.preUnload));
+    },
+    // Content
+    function() {
         //a.console.log('unloading');
         //a.console.log(this);
-        if(this.preUnload) {
-            if(testAsync(this.async, 'preUnload')) {
-                this.preUnload.apply(this, arguments);
-                return;
-            } else {
-                this.preUnload.call(this);
-            }
+        if(testAsync(this.async, 'preUnload')) {
+            this.preUnload.apply(this, arguments);
+            return;
+        } else {
+            this.preUnload.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: unbind (keyboard events)
-    a.state.chain.add(false, 'unbindKeyboard', function unbindKeyboard() {
+    a.state.chain.add(false, 'unbindKeyboard',
+    // Test
+    function() {
+        if(!('keyboard' in this) && !('accelerator' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         var bindings = this.keyboard || this.accelerator || null;
 
         a.each(bindings, function(fct, query) {
@@ -844,7 +956,16 @@ a.state.chain = new function() {
     });
 
     // Load: unbind (GLOBAL HTML events)
-    a.state.chain.add(false, 'unbindGlobalDom', function unbindGlobalDom() {
+    a.state.chain.add(false, 'unbindGlobalDom',
+    // Test
+    function() {
+        if(!('globalBind' in this) && !('globalBindings' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         // Use bind/binding to elements
         var bindings = this.globalBind || this.globalBindings || null;
 
@@ -868,7 +989,16 @@ a.state.chain = new function() {
     });
 
     // UNLOAD: unbind (HTML events)
-    a.state.chain.add(false, 'unbindDom', function unbindDom() {
+    a.state.chain.add(false, 'unbindDom',
+    // Test
+    function() {
+        if(!('bind' in this) && !('bindings' in this)) {
+            return false;
+        }
+        return true;
+    },
+    // Content
+    function() {
         // Use bind/binding to elements
         var bindings = this.bind || this.bindings || null,
             entry    = a.dom.el(getEntry.call(this));
@@ -900,20 +1030,36 @@ a.state.chain = new function() {
     });
 
     // UNLOAD: unload
-    a.state.chain.add(false, 'unload', function unload() {
-        if(this.unload) {
-            if(testAsync(this.async, 'unload')) {
-                this.unload.apply(this, arguments);
-                return;
-            } else {
-                this.unload.call(this);
-            }
+    a.state.chain.add(false, 'unload',
+    // Test
+    function() {
+        return (('unload' in this) && a.isFunction(this.unload));
+    },
+    // Content
+    function() {
+        if(testAsync(this.async, 'unload')) {
+            this.unload.apply(this, arguments);
+            return;
+        } else {
+            this.unload.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: content (unload HTML content)
-    a.state.chain.add(false, 'contentUnload', function contentUnload() {
+    a.state.chain.add(false, 'contentUnload',
+    // Test
+    function() {
+        // Little bit different from them other, as it can be modified during
+        // runtime
+        var entry = getEntry.call(this);
+        if(!entry) {
+            return false;
+        }
+        return (a.isFunction(entry) || a.isString(entry));
+    },
+    // Content
+    function() {
         var startingPoint = null,
             entry = getEntry.call(this),
             args  = a.toArray(arguments);
@@ -948,20 +1094,30 @@ a.state.chain = new function() {
     });
 
     // UNLOAD: postUnload
-    a.state.chain.add(false, 'postUnload', function postUnload() {
-        if(this.postUnload) {
-            if(testAsync(this.async, 'postUnload')) {
-                this.postUnload.apply(this, arguments);
-                return;
-            } else {
-                this.postUnload.call(this);
-            }
+    a.state.chain.add(false, 'postUnload',
+    // Test
+    function() {
+        return (('postUnload' in this) && a.isFunction(this.postUnload));
+    },
+    // Content
+    function() {
+        if(testAsync(this.async, 'postUnload')) {
+            this.postUnload.apply(this, arguments);
+            return;
+        } else {
+            this.postUnload.call(this);
         }
         goToNextStep.apply(this, arguments);
     });
 
     // UNLOAD: remove parameters previously created
-    a.state.chain.add(false, 'removeParameters', function loadParameters() {
+    a.state.chain.add(false, 'removeParameters',
+    // Test
+    function() {
+        return (('hash' in this) && !a.isNone(this.hash));
+    },
+    // Content
+    function() {
         try {
             // Applying parameters
             delete this.parameters;

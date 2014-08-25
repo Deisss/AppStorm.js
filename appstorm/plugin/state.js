@@ -162,7 +162,8 @@ a.state = new function() {
      *                                      error function ONLY
     */
     function performSingleState(loadOrUnload, state, success, error, scope) {
-        var callbacks = a.pluck(a.state.chain.get(loadOrUnload), 'fct'),
+        var callbacks = a.pluck(a.state.chain.getWithTest(loadOrUnload, state),
+                'fct'),
             chain     = a.callback.chainer(callbacks, success, error);
 
         chain.scope = state;
@@ -365,6 +366,31 @@ a.state = new function() {
 
 
     /**
+     * Remove persistent state from unloading chain
+     *
+     * @method removePersistentState
+     * @private
+     *
+     * @param states {Array}                Array of elements to filter
+     * @return {Array}                      The persistent states removed
+    */
+    function removePersistentState(states) {
+        var i = states.length;
+        while(i--) {
+            var state = states[i];
+            if(
+                ('persistent' in state && state.persistent === true)
+                ||
+                ('persist' in state && state.persist === true)
+            ) {
+                states.splice(i, 1);
+            }
+        }
+        return states;
+    };
+
+
+    /**
      * Main function to respond to hash change.
      *
      * @method performHashChange
@@ -417,6 +443,9 @@ a.state = new function() {
         // We do it right now to prevent some unwanted loading
         loaded = a.difference(loaded, unloadingIntersection)
                                     .concat(loadingIntersection);
+
+        // Removing persistent states from unloading chain
+        unloadingIntersection = removePersistentState(unloadingIntersection);
 
         // Perform the unload/load process
         setTimeout(function() {
