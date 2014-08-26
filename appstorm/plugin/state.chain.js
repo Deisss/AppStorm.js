@@ -157,7 +157,7 @@ a.state.chain = new function() {
 
             if(test) {
                 if(test.call(state, state) === true) {
-                    toolchain.push(tmp);
+                    toolchain.push(tmp.fct);
                 }
             }
         }
@@ -383,7 +383,8 @@ a.state.chain = new function() {
                 initContent.call(state, customChain);
 
             // We need to get url
-            } else {
+            // BUT, if the parsed element is not done property, we should quit
+            } else if(parsedUrl !== null) {
                 options.url = parsedUrl;
 
                 var request = new a.ajax(options, function(content) {
@@ -398,6 +399,13 @@ a.state.chain = new function() {
 
                 // Starting and waiting reply
                 request.send();
+
+            // Parsed is probably null, it means the content is not ready to show
+            } else {
+                a.console.error('request cannot be proceed, state: '
+                    + state.id + ', data request: ' + name +
+                    ', url parsing may have fail... It can be ' +
+                    'some missing parameters', 3);
             }
         };
     };
