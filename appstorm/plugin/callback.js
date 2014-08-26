@@ -166,13 +166,11 @@ a.callback.synchronizerInstance.prototype = {
      *                                      controlling chain process
     */
     getResultObject: function() {
+        var n = a.scope(this.next, this),
+            s = a.scope(this.stop, this);
         return {
-            next:    a.scope(this.next, this),
-            done:    a.scope(this.next, this),
-            success: a.scope(this.next, this),
-            fail:    a.scope(this.stop, this),
-            error:   a.scope(this.stop, this),
-            stop:    a.scope(this.stop, this),
+            next: n, done: n, success: n,
+            fail: s, error: s, stop: s,
             setData: a.scope(this.setData, this),
             getData: a.scope(this.getData, this)
         };
@@ -257,9 +255,10 @@ a.callback.synchronizerInstance.prototype = {
 
         args.push(this.getResultObject());
 
-        a.each(this.callbacks, function(callback) {
+        for(var i=0, l=this.callbacks.length; i<l; ++i) {
+            var callback = this.callbacks[i];
             callback.apply(scope, args);
-        });
+        }
     },
 
     /**
