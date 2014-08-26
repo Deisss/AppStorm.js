@@ -252,13 +252,18 @@ a.storage.type.localStorage = new function() {
     // Test support (if you use localStorageShim
     // this should work for most of browsers (including old IE) !)
     if(store in window && window[store] != null) {
-        // Testing database work or not
-        window.localStorage.setItem(idTest, 'o');
+        // localStorage may have no space left, making everything crash
+        try {
+            // Testing database work or not
+            window.localStorage.setItem(idTest, 'o');
 
-        // Test system is working
-        if(window.localStorage.getItem(idTest) == 'o') {
-            window.localStorage.removeItem(idTest);
-            support = true;
+            // Test system is working
+            if(window.localStorage.getItem(idTest) == 'o') {
+                window.localStorage.removeItem(idTest);
+                support = true;
+            }
+        } catch(e) {
+            support = false;
         }
     }
 
@@ -347,12 +352,17 @@ a.storage.type.globalStorage = new function() {
         hostname = window.location.hostname;
 
     if(!a.isNone(window.globalStorage)) {
-        window.globalStorage[hostname].setItem(idTest, 'o');
+        // In case of space not left, we can have crash
+        try {
+            window.globalStorage[hostname].setItem(idTest, 'o');
 
-        // Test system is working
-        if(window.globalStorage[hostname].getItem(idTest) == 'o') {
-            window.globalStorage[hostname].removeItem(idTest);
-            support = true;
+            // Test system is working
+            if(window.globalStorage[hostname].getItem(idTest) == 'o') {
+                window.globalStorage[hostname].removeItem(idTest);
+                support = true;
+            }
+        } catch(e) {
+            support = false;
         }
     }
 
@@ -525,13 +535,17 @@ a.storage.type.sessionStorage = new function() {
 
     // Test support
     if(ss in window && !a.isNone(window[ss])) {
-        // Testing database work or not
-        window.sessionStorage.setItem(idTest, 'o');
+        try {
+            // Testing database work or not
+            window.sessionStorage.setItem(idTest, 'o');
 
-        // Test system is working
-        if(window.sessionStorage.getItem(idTest) == 'o') {
-            window.sessionStorage.removeItem(idTest);
-            support = true;
+            // Test system is working
+            if(window.sessionStorage.getItem(idTest) == 'o') {
+                window.sessionStorage.removeItem(idTest);
+                support = true;
+            }
+        } catch(e) {
+            support = false;
         }
     }
 
