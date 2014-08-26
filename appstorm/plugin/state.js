@@ -162,8 +162,7 @@ a.state = new function() {
      *                                      error function ONLY
     */
     function performSingleState(loadOrUnload, state, success, error, scope) {
-        var callbacks = a.pluck(a.state.chain.getWithTest(loadOrUnload, state),
-                'fct'),
+        var callbacks = a.state.chain.getWithTest(loadOrUnload, state),
             chain     = a.callback.chainer(callbacks, success, error);
 
         chain.scope = state;
@@ -354,7 +353,6 @@ a.state = new function() {
                 return state._storm.level;
             }),
             chain = a.callback.chainer(null, callback, raiseError);
-
         a.each(statesLevel, function(level) {
             chain.addCallback(function() {
                 performLevelState('load', level, this.next, this.error, chain);
@@ -446,7 +444,6 @@ a.state = new function() {
 
         // Removing persistent states from unloading chain
         unloadingIntersection = removePersistentState(unloadingIntersection);
-
         // Perform the unload/load process
         setTimeout(function() {
             performUnloadChanges(unloadingIntersection, function() {
