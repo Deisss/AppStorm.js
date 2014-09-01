@@ -17,6 +17,7 @@ module.exports = function(grunt) {
           // Coming from Bower
           'appstorm/vendor/lodash/lodash.compat.js',
           'appstorm/vendor/handlebars/handlebars.js',
+          'appstorm/vendor/watch/watch.js',
           'appstorm/vendor/mousetrap/mousetrap.min.js',
 
           'appstorm/a.js',
