@@ -112,6 +112,7 @@ a.form = (function() {
             var el = elements[i];
             if(el.type &&
                     (  el.type == 'submit'
+                    || el.type == 'button'
                     || el.type == 'reset'
                     || el.type == 'image'
                     ) ) {
@@ -169,6 +170,172 @@ a.form = (function() {
             id:    id,
             error: error
         };
+    };
+
+
+    /**
+     * We try to grab the model instance, or a new model instance if it's not
+     * an existing model instance.
+     *
+     * @method getModel
+     * @private
+     *
+     * @param idOrModelName {String}            From HTML side, the id or the model
+     *                                          name to use for this form.
+     * @return {a.modelInstance}                A new or existing instance
+    */
+    function getModel(idOrModelName) {
+        var model = a.modelManager.get(idOrModelName);
+        if(model) {
+            return model;
+        } else {
+            return a.modelPooler.createTemporaryInstance(idOrModelName);
+        }
+    };
+
+    /**
+     * Apply model content to form, automatically
+     *
+     * @method applymodelToForm
+     * @private
+     *
+     * @param form {DOMElement}             The form to apply model into
+     * @param model {a.modelInstance}       The instance to take elements from
+     * @param constraints {Object}          List of constraint to use for
+     *                                      rendering the form. 
+    */
+    function applyModelToForm(form, model, constraints) {
+        // Get model properties
+        var propertiesName = model.list(),
+            // Rendered elements
+            propertiesRendering = {};
+        form = a.dom.el(form);
+
+        /*
+        ------------------------------------
+          CHECK ALLOWED & REFUSED CONSTRAINT
+        ------------------------------------
+        */
+        var allowed = constraints.allowed,
+            refused = constraints.refused;
+
+        // Uniform data before using
+        // TODO: this should be done when adding forms to model
+        // not here
+        if(a.isString(allowed) && allowed) {
+            allowed = [allowed];
+        }
+        if(a.isString(refused) && refused) {
+            refused = [refused];
+        }
+
+        // Remove properties which are not allowed or are refused to be here
+        var isArrayAllowed = a.isArray(allowed),
+            isArrayRefused = a.isArray(refused);
+
+        if(isArrayAllowed || isArrayRefused) {
+            var i = propertiesName.length;
+            while(i--) {
+                if(isArrayRefused && a.contains(refused, propertiesName[i])) {
+                    propertiesName.splice(i, 1);
+                } else if(isArrayAllowed
+                        && !a.contains(allowed, propertiesName[i])) {
+                    propertiesName.splice(i, 1);
+                }
+            }
+        }
+
+
+        /*
+        ------------------------------------
+          GENERATING PROPERTIES
+        ------------------------------------
+        */
+        // For every property, we create corresponding element
+        var custom = constraints.customize || constraints.custom || null;
+        a.each(propertiesName, function(property) {
+            var type = model.type(property),
+                tag = null,
+                value = model.get(property),
+                el = null;
+
+            // TODO: déporter la création de l'élément pour plus de claretée
+            switch(type) {
+                case 'radio':
+                    // hardcoreeee
+                    break;
+                case 'checkbox':
+                    tag = 'input';
+                    el = document.createElement('input');
+                    el.type = 'checkbox';
+                    break;
+                default:
+                    tag = 'input';
+                    el = document.createElement('input');
+                    el.type = 'text';
+                    if(value !== null) {
+                        el.value = value;
+                    }
+                    break;
+            }
+
+            // TODO: do automatic translation using the model name and property name
+            // Like define Placeholder.ModelName.PropertyName
+
+            // Applying customize constraint
+            if(custom) {
+                if(custom[property]) {
+                    var fct = custom['property'],
+                        result = fct.call(null, el, property);
+
+                    if(a.isTrueObject(result)) {
+                        el = result;
+                    }
+                }
+                if(custom[tag]) {
+                    var fct = custom[tag],
+                        result = fct.call(null, el, property);
+
+                    if(a.isTrueObject(result)) {
+                        el = result;
+                    }
+                }
+                if(custom[type]) {
+                    var fct = custom[type],
+                        result = fct.call(null, el, property);
+
+                    if(a.isTrueObject(result)) {
+                        el = result;
+                    }
+                }
+            }
+
+            // Store elements
+            propertiesRendering[property] = el;
+        });
+
+        // TODO: if label, create label related to every properties
+        if(constraints.label || constraints.showLabel) {
+
+        }
+
+
+        /*
+        ------------------------------------
+          RENDERING
+        ------------------------------------
+        */
+        // TODO: find a way to place beforeRendering, rendering, afterRendering
+        var placement = constraints.placement;
+
+        if(a.isArray(placement)) {
+            // TODO: apply algorithm to place properties at the right order
+        } else {
+            // TODO: apply block creation...
+            a.each(propertiesRendering, function(element) {
+                form.append(element);
+            });
+        }
     };
 
     return {
@@ -427,6 +594,44 @@ a.form = (function() {
                 obj.error = true;
             }
             return obj;
+        },
+
+        /**
+         * Insert model content into form regarding the given data-model
+         * submitted.
+         * Note: you should avoid as much as possible to use this function
+         * and let appstorm do it for you threw state...
+         *
+         * @method model
+         *
+         * @param dom {Object}              The dom element to search inside.
+         *                                  You should submit a list of 'form'
+         *                                  elements which may have data-model
+         *                                  tag.
+        */
+        model: function(dom) {
+            dom = a.dom.el(dom);
+
+            // Searching for data-model tag
+            dom.each(function() {
+                var el = a.dom.el(this),
+                    // May contains: modelname or modeluid
+                    // Use the {{model variable}} to insert it properly
+                    modelIdOrName = el.data('model'),
+                    requestName = el.data('method'),
+                    formName = el.data('form');
+
+                // We found elements using data-model tag
+                if(modelIdOrName && requestName) {
+                    // Will get existing model, or bring a new one...
+                    var model = getModel(modelIdOrName),
+                        request = model.request(requestName),
+                        form = model.form(formName);
+
+                    // Now we use model to populate form inside
+                    applyModelToForm(el, model, form);
+                }
+            });
         }
     };
 
