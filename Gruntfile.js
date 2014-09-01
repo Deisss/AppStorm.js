@@ -48,7 +48,11 @@ module.exports = function(grunt) {
           'appstorm/plugin/state.protocol.js',
           'appstorm/plugin/binding.js',
           'appstorm/plugin/model.js',
-          'appstorm/plugin/template.js'
+          'appstorm/plugin/template.js',
+
+
+          // Last loaded - ready event
+          'appstorm/r.js'
         ],
         dest: 'appstorm/appstorm.concat.js',
         nonull: true,
