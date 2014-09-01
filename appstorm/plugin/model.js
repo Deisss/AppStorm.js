@@ -77,7 +77,17 @@ a.model = function(name, properties, requests, forms) {
 
     // Name is a search query system
     } else if(a.isTrueObject(name)) {
-        return a.modelPooler.searchInstance(name);
+        if('destroy' in name) {
+            var instances = name['instances'];
+            if(instances && a.isArray(instances)) {
+                var i = instances.length;
+                while(i--) {
+                    a.modelPooler.deleteInstance(instances[i]);
+                }
+            }
+        } else {
+            return a.modelPooler.searchInstance(name);
+        }
     }
 };
 
