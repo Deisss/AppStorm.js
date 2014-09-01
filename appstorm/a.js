@@ -194,7 +194,7 @@ a.differenceObject = function differenceObject(obj1, obj2) {
 */
 a.extend = function extend(object, source, guard) {
     if (!object) {
-      return object;
+        return object;
     }
     var args = arguments,
         argsIndex = 0,
@@ -203,18 +203,18 @@ a.extend = function extend(object, source, guard) {
 
     if ((type == 'number' || type == 'string') && args[3]
                                 && args[3][guard] === source) {
-      argsLength = 2;
+        argsLength = 2;
     }
     while (++argsIndex < argsLength) {
-      source = args[argsIndex];
-      if (source) {
-        for (var key in source) {
-          object[key] = source[key];
+        source = args[argsIndex];
+        if (source) {
+            for (var key in source) {
+                object[key] = source[key];
+            }
         }
-      }
     }
     return object;
-  }
+};
 
 /**
  * Define the default ajax options to send on every request.
