@@ -36,7 +36,7 @@ a.url = '';
  * @return {Function}                       Intermediate function with scope
  *                                          binding
 */
-a.scope = function scope(fct, scope) {
+a.scope = function(fct, scope) {
     return function() {
         return fct.apply(scope, arguments);
     }
@@ -49,7 +49,7 @@ a.scope = function scope(fct, scope) {
  *
  * @return {String}                         Stack trace
 */
-a.getStackTrace = function getStackTrace() {
+a.getStackTrace = function() {
     var err = new Error();
     return err.stack;
 };
@@ -63,7 +63,7 @@ a.getStackTrace = function getStackTrace() {
  * @return {Boolean}                        True if element is null/undefined
  *                                          False in other cases
 */
-a.isNone = function isNone(obj) {
+a.isNone = function(obj) {
     return (a.isNull(obj) || a.isUndefined(obj));
 };
 
@@ -77,7 +77,7 @@ a.isNone = function isNone(obj) {
  * @return {Boolean}                        True if it's an object, false if
  *                                          it's a null value, or not an object
 */
-a.isTrueObject = function isTrueObject(obj) {
+a.isTrueObject = function(obj) {
     return (typeof(obj) == 'object' && !a.isNone(obj));
 };
 
@@ -90,7 +90,7 @@ a.isTrueObject = function isTrueObject(obj) {
  * @param str {String}                      The value to trim
  * @return {String}                         The trimmed value
 */
-a.trim = function trim(str) {
+a.trim = function(str) {
     // We allow both native and custom trim
     if (!String.prototype.trim) {
         return str.replace(/^\s+|\s+$/g, '');
@@ -110,7 +110,7 @@ a.trim = function trim(str) {
  * @return {String}                         The string with first letter in
  *                                          uppercase
 */
-a.firstLetterUppercase = function firstLetterUppercase(str, prefix) {
+a.firstLetterUppercase = function(str, prefix) {
     prefix = prefix || '';
     return prefix + str.charAt(0).toUpperCase() + str.slice(1);
 };
@@ -126,7 +126,7 @@ a.firstLetterUppercase = function firstLetterUppercase(str, prefix) {
 * @param obj {Object}                       A state object
 * @return {Object}                          A new state object
 */
-a.deepClone = function deepClone(obj) {
+a.deepClone = function(obj) {
     // The deep clone only take care of object, and not function
     if (a.isTrueObject(obj) && !a.isFunction(obj)) {
         // Array cloning
@@ -169,7 +169,7 @@ a.deepClone = function deepClone(obj) {
  *                                          difference from
  * @return {Object}                         The result-free object
 */
-a.differenceObject = function differenceObject(obj1, obj2) {
+a.differenceObject = function(obj1, obj2) {
     var keys = a.difference(a.keys(obj1), a.keys(obj2)),
         result = {};
 
@@ -192,7 +192,7 @@ a.differenceObject = function differenceObject(obj1, obj2) {
  *                                          properties from
  * @return {Object}                         A combined object
 */
-a.extend = function extend(object, source, guard) {
+a.extend = function(object, source, guard) {
     if (!object) {
         return object;
     }
@@ -217,6 +217,18 @@ a.extend = function extend(object, source, guard) {
 };
 
 /**
+ * Alias for Watch.JS
+ *
+ * @method watch
+ * @see https://github.com/melanke/Watch.JS/
+ *
+ * @param                                   See Watch.JS
+*/
+a.watch = function() {
+    watch.apply(this, arguments);
+};
+
+/**
  * Define the default ajax options to send on every request.
  * At any time, by providing good options, you can override this content
  * on a single ajax request.
@@ -225,7 +237,7 @@ a.extend = function extend(object, source, guard) {
  *
  * @param options {Object}                  The default options to set
 */
-a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
+a.setDefaultAjaxOptions = function(options) {
     if(a.isTrueObject(options)) {
         a.mem.set('app.ajax.default', options);
     }
@@ -239,7 +251,7 @@ a.setDefaultAjaxOptions = function setDefaultAjaxOptions(options) {
  *
  * @return {Object}                         The default ajax options setted
 */
-a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
+a.getDefaultAjaxOptions = function() {
     return a.mem.get('app.ajax.default') || {};
 };
 
@@ -251,7 +263,7 @@ a.getDefaultAjaxOptions = function getDefaultAjaxOptions() {
  * @param name {String}                     The template name to define
  * @param options {Object}                  The options linked to template
 */
-a.setTemplateAjaxOptions = function setTemplateAjaxOptions(name, options) {
+a.setTemplateAjaxOptions = function(name, options) {
     if(name && a.isTrueObject(options)) {
         a.mem.set('app.ajax.template.' + name, options);
     }
@@ -265,7 +277,7 @@ a.setTemplateAjaxOptions = function setTemplateAjaxOptions(name, options) {
  * @param name {String}                     The template name to retrieve
  * @return {Object | null}                  The resulting object content
 */
-a.getTemplateAjaxOptions = function getTemplateAjaxOptions(name) {
+a.getTemplateAjaxOptions = function(name) {
     return a.mem.get('app.ajax.template.' + name);
 };
 
