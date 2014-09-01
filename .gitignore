@@ -1,9 +1,8 @@
 /logo
 /node_modules
 /bower_components
-/appstorm/appstorm.concat.js
-/appstorm/appstorm.min.js
 /appstorm/vendor/handlebars
 /appstorm/vendor/lodash
 /appstorm/vendor/mousetrap
 /appstorm/vendor/watch
+/appstorm/vendor/document-register-element
