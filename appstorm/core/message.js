@@ -254,3 +254,71 @@ a.eventEmitter.prototype = {
  * @namespace a
 */
 a.message = new a.eventEmitter('a.message');
+
+
+/*
+------------------------------
+  SPECIFIC READY
+------------------------------
+*/
+(function() {
+    var ready = false,
+        tmp = [];
+
+    /**
+     * Internal function to call function regarding it's scope
+     *
+     * @method internalCall
+     * @private
+     *
+     * @param func {Function}               The function to call
+     * @param scope {Object | null}         The potential scope (optional)
+    */
+    function internalCall(func, scope) {
+        setTimeout(function() {
+            if(scope) {
+                func.call(scope);
+            } else {
+                func();
+            }
+        }, 0);
+    };
+
+    a.message.bind('ready', function() {
+        ready = true;
+        var i = tmp.length;
+        while(i--) {
+            internalCall(tmp[i].func, tmp[i].scope);
+        }
+
+        // Clearing tmp (not needed anymore)
+        tmp = null;
+    });
+
+    /**
+     * Alias mostly used for appstorm ready event
+     *
+     * @method on
+     *
+     * @param name {String}                     The event name
+     * @param func {Function}                   The function to start
+     * @param scope {Object | null}             The scope to apply (optional)
+    */
+    a.on = function(name, func, scope) {
+        var evt = name.toLowerCase();
+        if(evt === 'ready' && a.isFunction(func)) {
+            // Direct call, ready event already gone
+            if(ready === true) {
+                internalCall(func, scope);
+            // Need to queue
+            } else {
+                tmp.push({
+                    func: func,
+                    scope: scope
+                });
+            }
+        } else {
+            a.message.bind(name, func, scope);
+        }
+    };
+})();
