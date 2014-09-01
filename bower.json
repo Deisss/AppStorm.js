@@ -12,6 +12,7 @@
     "type": "git",
     "url": "git://github.com/Deisss/AppStorm.js"
   },
+  "main": "appstorm/appstorm.concat.js",
   "ignore": [
     "**/.*",
     "node_modules",
