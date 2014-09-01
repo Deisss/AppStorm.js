@@ -55,7 +55,7 @@ module.exports = function(grunt) {
           // Last loaded - ready event
           'appstorm/r.js'
         ],
-        dest: 'appstorm/appstorm.concat.js',
+        dest: './appstorm.concat.js',
         nonull: true,
       }
     },
@@ -66,7 +66,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'appstorm/appstorm.min.js': ['<%= concat.dist.dest %>']
+          './appstorm.min.js': ['<%= concat.dist.dest %>']
         }
       }
     },
