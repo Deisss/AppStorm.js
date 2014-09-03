@@ -219,7 +219,7 @@ a.modelPooler = a.mem.getInstance('app.model.type');
  * @return {Object | null}                  The model instance created, or null
  *                                          if model name is not defined
 */
-a.modelPooler.createInstance = function createInstance(name) {
+a.modelPooler.createInstance = function(name) {
     var model = this.createTemporaryInstance(name);
 
     if(!a.isNull(model)) {
@@ -242,8 +242,7 @@ a.modelPooler.createInstance = function createInstance(name) {
  * @return {Object | null}                  The model instance created, or null
  *                                          if model name is not defined
 */
-a.modelPooler.createTemporaryInstance =
-                                    function createTemporaryInstance(name) {
+a.modelPooler.createTemporaryInstance = function(name) {
     var instanceType = this.get(name);
 
     if(!instanceType) {
@@ -276,7 +275,7 @@ a.modelPooler.createTemporaryInstance =
  * @return {a.modelInstance | null}         The single instance found,
  *                                          or a list of instances, or null
 */
-a.modelPooler.searchInstance = function searchInstance(query) {
+a.modelPooler.searchInstance = function(query) {
     var models = a.modelManager.getByName(query.modelName || query.model ||
                                           query.name);
 
@@ -543,6 +542,22 @@ a.modelInstance.prototype = {
         this.takeSnapshot();
 
         this.dispatch('init', {});
+    },
+
+    /**
+     * Get a fresh copy of the model, another instance with same data
+     *
+     * @method clone
+     *
+     * @return {a.modelInstance}            A new instance with exactly same
+     *                                      data
+    */
+    clone: function() {
+        var data = a.deepClone(this.toObject()),
+            instance = a.modelPooler.createInstance(this.name);
+
+        instance.fromObject(data);
+        return instance;
     },
 
     /**
