@@ -67,7 +67,7 @@ a.binding = (function() {
                     content += node.nodeValue;
                 }
             }
-;            return content;
+            return content;
         }
     };
 
@@ -77,15 +77,30 @@ a.binding = (function() {
      * @method applyChange
      * @private
      *
-     * @param el {DOMElement}               The dom element requesting change
      * @param name {String}                 The binding name
      * @param value {String}                The binding value to apply
     */
     function applyChange(el, name, value) {
-        var el    = this,
-            name  = getBindingName(el),
-            value = el.value,
-            innerSearch = [
+        // Updating data
+        el = this || el;
+        name = getBindingName(el) || name;
+        value = value || el.value;
+
+        // Searching data-bind elements tags
+        a.dom.attr(findSearch, name).each(function(val) {
+            if(el && this === el) {
+                return;
+            }
+
+            if(a.contains(inputSearch, this.nodeName)) {
+                this.value = val;
+            } else {
+                this.innerHTML = val;
+            }
+        }, value);
+
+
+        /*var innerSearch = [
                 'data-inner-bind-' + name,
                 'a-inner-bind-' + name,
                 'inner-bind-' + name
@@ -107,20 +122,7 @@ a.binding = (function() {
         a.message.dispatch('a.binding', {
             name: name,
             value: value
-        });
-
-        // Searching data-bind elements tags
-        a.dom.attr(findSearch, name).each(function(val) {
-            if(el && this === el) {
-                return;
-            }
-
-            if(a.contains(inputSearch, this.nodeName)) {
-                this.value = val;
-            } else {
-                this.innerHTML = val;
-            }
-        }, value);
+        });*/
 
         // Searching inner-bind-{{name}} elements tags
         /*a.dom.attr(innerStart).each(function(val) {
@@ -140,9 +142,21 @@ a.binding = (function() {
             // start value updated if above the current start position
             // (has we change the length of string) !
         }, value);*/
-        a.dom.attr(innerStart).each(function(val) {
+        /*a.dom.attr(innerStart).each(function(val) {
             // TODO: take advantages of functionnalities here
-        }, value);
+        }, value);*/
+    };
+
+    /**
+     * Tiny binder between the applyChange function and event related
+     *
+     * @method eventApplyChange
+     * @private
+     *
+     * @param evt {Object}                  The input event
+    */
+    function eventApplyChange(evt) {
+        applyChange.call(evt.target);
     };
 
     /**
@@ -156,22 +170,18 @@ a.binding = (function() {
      * @return {Array}                      The HTML elements who are emitting
     */
     function binding(root) {
-        root = root || document;
-
         var elements = [];
 
         // We get elements subject to binding
-        a.dom.el(root).attr(findSearch).each(function() {
+        a.dom.el(root || document).attr(findSearch).each(function() {
             if(!a.contains(inputSearch, this.nodeName)) {
                 return;
             }
 
             elements.push(this);
 
-            var bindingName = getBindingName(this);
-
             // On change apply binding
-            a.dom.el(this).bind('change input keydown', applyChange);
+            a.dom.el(this).bind('change input keydown', eventApplyChange);
 
             // Start first time
             applyChange.call(this);
@@ -191,12 +201,10 @@ a.binding = (function() {
      * @return {Array}                      The HTML elements who are emitting
     */
     function unbinding(root) {
-        root = root || document;
-
         var elements = [];
 
         // We get elements subject to binding
-        a.dom.el(root).attr(findSearch).each(function() {
+        a.dom.el(root || document).attr(findSearch).each(function() {
             if(!a.contains(inputSearch, this.nodeName)) {
                 return;
             }
@@ -204,7 +212,7 @@ a.binding = (function() {
             elements.push(this);
 
             // On change apply binding
-            a.dom.el(this).unbind('change input keydown', applyChange);
+            a.dom.el(this).unbind('change input keydown', eventApplyChange);
         });
 
         return elements;
@@ -228,11 +236,15 @@ a.binding = (function() {
         // Search in all sub elements of root if they need to be
         // marked as inner data
         a.dom.el(root).all().each(function() {
+            // Erasing previous reg test
+            reg.lastIndex = 0;
+
             // Selecting HTML content
             var value = getElementValue(this);
 
             // Searching TAG inside value
             if(
+                    !value ||
                     value.indexOf('{{') == -1 ||
                     value.indexOf('}}') == -1 ||
                     !reg.test(value)) {
@@ -241,11 +253,12 @@ a.binding = (function() {
 
             // To remember position of all elements
             var matches = value.match(reg);
+            reg.lastIndex = 0;
 
             // We remove '{{' and '}}' and replace them by invisible char
             // We also remove inside {{...}} because we don't need it
             // (as matches already keep position of every elements)
-            value.replace(reg, '\u200C\u200c\u200C\u200c');
+            console.log(value.replace(reg, '\u200C\u200c\u200C\u200c'));
 
             // TODO: we add attribute tag to retrieve them
             // TODO: create a fct to insert tag into element at specified position
@@ -330,12 +343,13 @@ a.binding = (function() {
          *
          * @method refresh
          *
+         * @param dom {DOMObject || null}   The dom starting point
          * @return {Array}                  The input/textarea who recieve
          *                                  event binding
         */
-        refresh: function() {
-            unbind(document);
-            return binding(document);
+        refresh: function(dom) {
+            unbinding(dom);
+            return binding(dom);
         },
 
         /**
@@ -346,11 +360,11 @@ a.binding = (function() {
          * @param name {String}             The name to use inside html tags
          * @param fct {Function}            The function linked to name
         */
-        registerConverter: function(name, fct) {
+        /*registerConverter: function(name, fct) {
             if(a.isFunction(fct)) {
                 converters[name] = fct;
             }
-        },
+        },*/
 
         /**
          * Get a converter by it's name
@@ -361,9 +375,9 @@ a.binding = (function() {
          * @return {Function | null}        The related function, or null
          *                                  if nothing has been found
         */
-        getConverter: function(name) {
+        /*getConverter: function(name) {
             return converters[name] || null;
-        },
+        },*/
 
         /**
          * Remove a converter from existing converter list
@@ -372,9 +386,9 @@ a.binding = (function() {
          *
          * @param name {String}             The converter name to remove
         */
-        removeConverter: function(name) {
+        /*removeConverter: function(name) {
             delete converters[name];
-        },
+        },*/
 
         /**
          * From a given root (document), find the elements who needs to be
@@ -382,8 +396,12 @@ a.binding = (function() {
          *
          * @param root {DOMElement | null}  The dom root, document if null
         */
-        registerInnerBind: function(root) {
+        watchInnerBind: function(root) {
+            // change name to bindInner(root)
             findInnerDataElement(root);
+        },
+        unwatchInnerBind: function(root) {
+            unbindInner(root);
         }
     };
 })();
