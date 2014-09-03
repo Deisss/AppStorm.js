@@ -51,6 +51,7 @@ module.exports = function(grunt) {
           'appstorm/plugin/binding.js',
           'appstorm/plugin/model.js',
           'appstorm/plugin/template.js',
+          'appstorm/plugin/module.js',
 
 
           // Last loaded - ready event
