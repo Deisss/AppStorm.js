@@ -441,6 +441,33 @@ test('a.model.object', function() {
     strictEqual(obj2.testB, 'great', 'Test second Object');
 });
 
+// Test model clone
+test('a.model.clone', function() {
+    var unittest = a.model('unittest-clone', {
+        za: {
+            init: 'ok'
+        },
+        bigObject: {
+            init: {
+                'hello': 'yeah'
+            }
+        }
+    });
+
+    var test1 = new unittest(),
+        test2 = test1.clone();
+
+    test2.get('bigObject').hello = 'something';
+
+    strictEqual(test1.get('za'), test2.get('za'));
+    strictEqual(test1.get('za'), 'ok');
+    test2.set('za', 'you');
+    strictEqual(test1.get('za'), 'ok');
+    strictEqual(test2.get('za'), 'you');
+    strictEqual(test1.get('bigObject').hello, 'yeah');
+    strictEqual(test2.get('bigObject').hello, 'something');
+});
+
 // Test snapshot function
 test('a.model.snapshot', function() {
     var unittest = a.model('unittest-snapshot', {
