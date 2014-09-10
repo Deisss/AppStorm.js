@@ -538,10 +538,14 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        var hashs = getValidHash(this);
-        for(var i=0, l=hashs.length; i<l; ++i) {
-            document.title = a.parameter.extrapolate(
-                        this.title, a.hash.getHash(), hashs[i]);
+        if(this.title.indexOf('{{') >= 0 && this.title.indexOf('}}') >= 0) {
+            var hashs = getValidHash(this);
+            for(var i=0, l=hashs.length; i<l; ++i) {
+                document.title = a.parameter.extrapolate(
+                            this.title, a.hash.getHash(), hashs[i]);
+            }
+        } else {
+            document.title = this.title;
         }
         goToNextStep.apply(this, arguments);
     });
