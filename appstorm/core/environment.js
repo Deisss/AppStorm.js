@@ -33,6 +33,7 @@ a.environment = a.mem.getInstance('app.environment');
 // Default data
 a.environment.set('verbose', 2);
 a.environment.set('console', 'log');
+a.environment.set('cache', false);
 
 
 /*

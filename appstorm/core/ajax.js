@@ -71,6 +71,11 @@ a.ajax = function(options, success, error) {
         header : {}       // Allowed type : any kind of object | key => value
     };
 
+    // We override the cache by the "default" value
+    if(a.environment.get('cache') === true) {
+        this.params.cache = true;
+    }
+
     // Binding options
     for(var p in this.params) {
         if(p === 'data' || p === 'header') {
@@ -358,6 +363,14 @@ a.ajax.prototype.send = function() {
             'Content-Type': 'application/xml',
             'Accept': 'application/xml'
         }
+    });
+
+    // Cache management
+    a.setTemplateAjaxOptions('cache-enable', {
+        cache: true
+    });
+    a.setTemplateAjaxOptions('cache-disable', {
+        cache: false
     });
 
     // Creating http verb
