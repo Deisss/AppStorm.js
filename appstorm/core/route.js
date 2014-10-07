@@ -131,11 +131,11 @@ a.route = new function() {
             a.state.inject(parameters);
         }
         if(hash) {
-            if( ('history' in window) && history.pushState ) {
+            /*if( ('history' in window) && history.pushState ) {
                 window.history.pushState(parameters || {}, null, '#' + hash);
-            } else {
+            } else {*/
                 window.location.href = '#' + hash;
-            }
+            //}
         }
     };
 

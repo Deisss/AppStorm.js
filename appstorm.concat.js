@@ -10995,6 +10995,7 @@ a.environment = a.mem.getInstance('app.environment');
 // Default data
 a.environment.set('verbose', 2);
 a.environment.set('console', 'log');
+a.environment.set('cache', false);
 
 
 /*
@@ -12083,199 +12084,6 @@ a.timer = (function() {
         }
     };
 })();;/* ************************************************************************
-
-    License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/mem.js
-    ]
-
-    Events : [
-        a.hash {
-            value: The new hash value
-            old:   The previous hash value
-        }
-    ]
-
-    Description:
-        Manipulate page hash, be able to retrieve also the list of hash
-        previously used.
-
-************************************************************************ */
-
-
-/**
- * Manipulate page hash, be able to retrieve also the list of hash previously
- * used.
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
- *
- * @class hash
- * @static
- * @namespace a
-*/
-a.hash = new function() {
-    var previousHash  = null,
-        traceHashList = [],
-        that          = this,
-        store         = a.mem.getInstance('app.hash');
-
-    // The traceHashList is linked to store
-    store.set('history', traceHashList);
-
-    /**
-     * Retrieve the current system hash
-     *
-     * @method getCurrentPageHash
-     * @private
-     *
-     * @return {String | null}              The hash, or null if nothing is set
-     */
-    function getCurrentPageHash() {
-        var h = window.location.hash;
-        return h ? h.substring(1) : null;
-    };
-
-
-    /**
-     * Store the latest event appearing into a store
-     *
-     * @method registerNewHash
-     * @private
-     *
-      @param hash {String}                  The new hash incoming
-    */
-    function registerNewHash(hash) {
-        store.set('current', hash);
-
-        // Store both hash and time used
-        traceHashList.push({
-            hash: hash,
-            time: (new Date()).getTime()
-        });
-
-        // Remove exceed hash stored
-        while(traceHashList.length > 500) {
-            traceHashList.shift();
-        }
-    };
-
-    /**
-     * Check for existing hash, call the callback if there is any change
-     *
-     * @method checkAndComputeHashChange
-     * @private
-     *
-     * @param noCallback {Boolean}          Indicate if the system
-     *                                      should call the callback or not
-     */
-    function checkAndComputeHashChange(noCallback) {
-        //Extracting hash, or null if there is nothing to extract
-        var currentHash = getCurrentPageHash();
-        if(previousHash != currentHash) {
-            if(noCallback !== true) {
-                registerNewHash(currentHash);
-                // Dispatch event
-                var eventObject = {
-                    value: currentHash,
-                    old:   previousHash
-                };
-                that.dispatch('change', eventObject);
-                a.message.dispatch('a.hash.change', eventObject);
-            }
-            previousHash = currentHash;
-            store.set('previous', previousHash);
-        }
-    };
-
-    // Initiate the system
-    checkAndComputeHashChange(true);
-
-    // The onhashchange exist in IE8 in compatibility mode,
-    // but does not work because it is disabled like IE7
-    if(!a.isNone(window.onhashchange) &&
-        (document.documentMode === undefined || document.documentMode > 7)) {
-        //Many browser support the onhashchange event, but not all of them
-        window.onhashchange = checkAndComputeHashChange;
-    } else {
-        //Starting manual function check, if there is no event to attach
-        a.timer.add(checkAndComputeHashChange, null, 50);
-    }
-
-
-    /**
-     * Fake the hashtag change (can be usefull sometimes), it really apply
-     * hash change, but does not change the browser hashtag.
-     *
-     * @method fake
-     *
-     * @param currentHash {String}          The hash to fake
-    */
-    this.fake = function(currentHash) {
-        if(previousHash != currentHash) {
-            registerNewHash(currentHash);
-            // Dispatch event
-            var eventObject = {
-                value: currentHash,
-                old:   previousHash
-            };
-            that.dispatch('change', eventObject);
-            a.message.dispatch('a.hash.change', eventObject);
-        }
-        previousHash = currentHash;
-        store.set('previous', previousHash);
-    };
-
-    /**
-     * Retrieve the current system hash
-     *
-     * @method getHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
-     */
-    this.getHash = function() {
-        return getCurrentPageHash();
-    };
-
-    /**
-     * Get the previous page hash (can be null)
-     *
-     * @method getPreviousHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
-    */
-    this.getPreviousHash = function() {
-        return previousHash;
-    };
-
-    /**
-     * Force the system to set a specific hash
-     *
-     * @method setPreviousHash
-     *
-     * @param value {String}            The hash to set
-     */
-    this.setPreviousHash = function(value) {
-        previousHash = value;
-        store.set('previous', previousHash);
-    };
-
-    /**
-     * Get list of existing previous hash used into system
-     *
-     * @method trace
-     *
-     * @return {Array}                  An array with all hash
-     *                                  done since beginning
-    */
-    this.trace = function() {
-        return traceHashList;
-    };
-};
-
-// Erasing previous a.hash and add event system to it
-a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ************************************************************************
 
     License: MIT Licence
 
@@ -13476,6 +13284,206 @@ a.dom.children.prototype = {
 
     Dependencies : [
         a.js
+        core/mem.js
+    ]
+
+    Events : [
+        a.hash {
+            value: The new hash value
+            old:   The previous hash value
+        }
+    ]
+
+    Description:
+        Manipulate page hash, be able to retrieve also the list of hash
+        previously used.
+
+************************************************************************ */
+
+
+/**
+ * Manipulate page hash, be able to retrieve also the list of hash previously
+ * used.
+ *
+ * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
+ *
+ * @class hash
+ * @static
+ * @namespace a
+*/
+a.hash = new function() {
+    var previousHash  = null,
+        traceHashList = [],
+        that          = this,
+        store         = a.mem.getInstance('app.hash');
+
+    // The traceHashList is linked to store
+    store.set('history', traceHashList);
+
+    /**
+     * Retrieve the current system hash
+     *
+     * @method getCurrentPageHash
+     * @private
+     *
+     * @return {String | null}              The hash, or null if nothing is set
+     */
+    function getCurrentPageHash() {
+        var h = window.location.hash;
+        return h ? h.substring(1) : null;
+    };
+
+
+    /**
+     * Store the latest event appearing into a store
+     *
+     * @method registerNewHash
+     * @private
+     *
+      @param hash {String}                  The new hash incoming
+    */
+    function registerNewHash(hash) {
+        store.set('current', hash);
+
+        // Store both hash and time used
+        traceHashList.push({
+            hash: hash,
+            time: (new Date()).getTime()
+        });
+
+        // Remove exceed hash stored
+        while(traceHashList.length > 500) {
+            traceHashList.shift();
+        }
+    };
+
+    /**
+     * Check for existing hash, call the callback if there is any change
+     *
+     * @method checkAndComputeHashChange
+     * @private
+     */
+    function checkAndComputeHashChange(evt) {
+        //Extracting hash, or null if there is nothing to extract
+        var currentHash = null;
+
+        // Current hash is superseeded by the event one...
+        if(evt && evt.originalEvent && evt.originalEvent.newURL) {
+            var newUrl = evt.originalEvent.newURL;
+            currentHash = newUrl.substring(newUrl.indexOf('#') + 1);
+        } else {
+            currentHash = getCurrentPageHash();
+        }
+
+        if(previousHash != currentHash) {
+            registerNewHash(currentHash);
+            // Dispatch event
+            var eventObject = {
+                value: currentHash,
+                old:   previousHash
+            };
+            that.dispatch('change', eventObject);
+            a.message.dispatch('a.hash.change', eventObject);
+            previousHash = currentHash;
+            store.set('previous', previousHash);
+        }
+    };
+
+    // Initiate the system (when appstorm is ready !)
+    a.on('ready', function() {
+        checkAndComputeHashChange();
+    });
+
+    // The onhashchange exist in IE8 in compatibility mode,
+    // but does not work because it is disabled like IE7
+    if( ('onhashchange' in window) &&
+        (document.documentMode === undefined || document.documentMode > 7)) {
+        //Many browser support the onhashchange event, but not all of them
+        a.dom.eventListener.bind(window, 'hashchange',
+                            checkAndComputeHashChange, null);
+    } else {
+        //Starting manual function check, if there is no event to attach
+        a.timer.add(checkAndComputeHashChange, null, 50);
+    }
+
+
+    /**
+     * Fake the hashtag change (can be usefull sometimes), it really apply
+     * hash change, but does not change the browser hashtag.
+     *
+     * @method fake
+     *
+     * @param currentHash {String}          The hash to fake
+    */
+    this.fake = function(currentHash) {
+        if(previousHash != currentHash) {
+            registerNewHash(currentHash);
+            // Dispatch event
+            var eventObject = {
+                value: currentHash,
+                old:   previousHash
+            };
+            that.dispatch('change', eventObject);
+            a.message.dispatch('a.hash.change', eventObject);
+        }
+        previousHash = currentHash;
+        store.set('previous', previousHash);
+    };
+
+    /**
+     * Retrieve the current system hash
+     *
+     * @method getHash
+     *
+     * @return {String | null}          The hash, or null if nothing is set
+     */
+    this.getHash = function() {
+        return getCurrentPageHash();
+    };
+
+    /**
+     * Get the previous page hash (can be null)
+     *
+     * @method getPreviousHash
+     *
+     * @return {String | null}          The hash, or null if nothing is set
+    */
+    this.getPreviousHash = function() {
+        return previousHash;
+    };
+
+    /**
+     * Force the system to set a specific hash
+     *
+     * @method setPreviousHash
+     *
+     * @param value {String}            The hash to set
+     */
+    this.setPreviousHash = function(value) {
+        previousHash = value;
+        store.set('previous', previousHash);
+    };
+
+    /**
+     * Get list of existing previous hash used into system
+     *
+     * @method trace
+     *
+     * @return {Array}                  An array with all hash
+     *                                  done since beginning
+    */
+    this.trace = function() {
+        return traceHashList;
+    };
+};
+
+// Erasing previous a.hash and add event system to it
+a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ************************************************************************
+
+    License: MIT Licence
+
+    Dependencies : [
+        a.js
         core/parser.js
         core/message.js
     ]
@@ -13542,6 +13550,11 @@ a.ajax = function(options, success, error) {
         data   : {},      // Allowed type : any kind of object | key => value
         header : {}       // Allowed type : any kind of object | key => value
     };
+
+    // We override the cache by the "default" value
+    if(a.environment.get('cache') === true) {
+        this.params.cache = true;
+    }
 
     // Binding options
     for(var p in this.params) {
@@ -13830,6 +13843,14 @@ a.ajax.prototype.send = function() {
             'Content-Type': 'application/xml',
             'Accept': 'application/xml'
         }
+    });
+
+    // Cache management
+    a.setTemplateAjaxOptions('cache-enable', {
+        cache: true
+    });
+    a.setTemplateAjaxOptions('cache-disable', {
+        cache: false
     });
 
     // Creating http verb
@@ -14570,11 +14591,11 @@ a.route = new function() {
             a.state.inject(parameters);
         }
         if(hash) {
-            if( ('history' in window) && history.pushState ) {
+            /*if( ('history' in window) && history.pushState ) {
                 window.history.pushState(parameters || {}, null, '#' + hash);
-            } else {
+            } else {*/
                 window.location.href = '#' + hash;
-            }
+            //}
         }
     };
 
@@ -20152,10 +20173,14 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        var hashs = getValidHash(this);
-        for(var i=0, l=hashs.length; i<l; ++i) {
-            document.title = a.parameter.extrapolate(
-                        this.title, a.hash.getHash(), hashs[i]);
+        if(this.title.indexOf('{{') >= 0 && this.title.indexOf('}}') >= 0) {
+            var hashs = getValidHash(this);
+            for(var i=0, l=hashs.length; i<l; ++i) {
+                document.title = a.parameter.extrapolate(
+                            this.title, a.hash.getHash(), hashs[i]);
+            }
+        } else {
+            document.title = this.title;
         }
         goToNextStep.apply(this, arguments);
     });
@@ -21586,6 +21611,17 @@ a.modelManager = {
     },
 
     /**
+     * Get the full model list
+     *
+     * @method list
+     *
+     * @return {Array}                      The list of stored models
+    */
+    list: function() {
+        return this._store.list();
+    },
+
+    /**
      * Remove all existing model from store
      *
      * @method clear
@@ -21707,8 +21743,11 @@ a.modelPooler.createTemporaryInstance = function(name) {
  *                                          or a list of instances, or null
 */
 a.modelPooler.searchInstance = function(query) {
-    var models = a.modelManager.getByName(query.modelName || query.model ||
-                                          query.name);
+    var name = query.modelName || query.model || query.name || null;
+
+    // Faster search
+    var models = (name && a.isString(name)) ? a.modelManager.getByName(name) :
+                        a.modelManager.list();
 
     // We remove the first searched element
     if(query.modelName) {
@@ -21726,8 +21765,11 @@ a.modelPooler.searchInstance = function(query) {
         while(i--) {
             var model = models[i];
             // The model is not related to searched value
-            if(model.get(key) !== value) {
+            if(!a.isTrueObject(value) && model.get(key) !== value) {
                 models.splice(i, 1);
+            // The value is an object itself, we should check deeper inside
+            } else if(a.isTrueObject(value)) {
+
             }
         }
     }

@@ -155,6 +155,17 @@ a.modelManager = {
     },
 
     /**
+     * Get the full model list
+     *
+     * @method list
+     *
+     * @return {Array}                      The list of stored models
+    */
+    list: function() {
+        return this._store.list();
+    },
+
+    /**
      * Remove all existing model from store
      *
      * @method clear
@@ -276,8 +287,11 @@ a.modelPooler.createTemporaryInstance = function(name) {
  *                                          or a list of instances, or null
 */
 a.modelPooler.searchInstance = function(query) {
-    var models = a.modelManager.getByName(query.modelName || query.model ||
-                                          query.name);
+    var name = query.modelName || query.model || query.name || null;
+
+    // Faster search
+    var models = (name && a.isString(name)) ? a.modelManager.getByName(name) :
+                        a.modelManager.list();
 
     // We remove the first searched element
     if(query.modelName) {
@@ -295,8 +309,11 @@ a.modelPooler.searchInstance = function(query) {
         while(i--) {
             var model = models[i];
             // The model is not related to searched value
-            if(model.get(key) !== value) {
+            if(!a.isTrueObject(value) && model.get(key) !== value) {
                 models.splice(i, 1);
+            // The value is an object itself, we should check deeper inside
+            } else if(a.isTrueObject(value)) {
+
             }
         }
     }

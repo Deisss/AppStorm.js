@@ -82,38 +82,45 @@ a.hash = new function() {
      *
      * @method checkAndComputeHashChange
      * @private
-     *
-     * @param noCallback {Boolean}          Indicate if the system
-     *                                      should call the callback or not
      */
-    function checkAndComputeHashChange(noCallback) {
+    function checkAndComputeHashChange(evt) {
         //Extracting hash, or null if there is nothing to extract
-        var currentHash = getCurrentPageHash();
+        var currentHash = null;
+
+        // Current hash is superseeded by the event one...
+        if(evt && evt.originalEvent && evt.originalEvent.newURL) {
+            var newUrl = evt.originalEvent.newURL;
+            currentHash = newUrl.substring(newUrl.indexOf('#') + 1);
+        } else {
+            currentHash = getCurrentPageHash();
+        }
+
         if(previousHash != currentHash) {
-            if(noCallback !== true) {
-                registerNewHash(currentHash);
-                // Dispatch event
-                var eventObject = {
-                    value: currentHash,
-                    old:   previousHash
-                };
-                that.dispatch('change', eventObject);
-                a.message.dispatch('a.hash.change', eventObject);
-            }
+            registerNewHash(currentHash);
+            // Dispatch event
+            var eventObject = {
+                value: currentHash,
+                old:   previousHash
+            };
+            that.dispatch('change', eventObject);
+            a.message.dispatch('a.hash.change', eventObject);
             previousHash = currentHash;
             store.set('previous', previousHash);
         }
     };
 
-    // Initiate the system
-    checkAndComputeHashChange(true);
+    // Initiate the system (when appstorm is ready !)
+    a.on('ready', function() {
+        checkAndComputeHashChange();
+    });
 
     // The onhashchange exist in IE8 in compatibility mode,
     // but does not work because it is disabled like IE7
-    if(!a.isNone(window.onhashchange) &&
+    if( ('onhashchange' in window) &&
         (document.documentMode === undefined || document.documentMode > 7)) {
         //Many browser support the onhashchange event, but not all of them
-        window.onhashchange = checkAndComputeHashChange;
+        a.dom.eventListener.bind(window, 'hashchange',
+                            checkAndComputeHashChange, null);
     } else {
         //Starting manual function check, if there is no event to attach
         a.timer.add(checkAndComputeHashChange, null, 50);
