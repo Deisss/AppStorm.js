@@ -599,6 +599,42 @@ test('a.model.searchInstance', function() {
 });
 
 
+// Test search instance in a more complex element
+test('a.model.searchInstance-no-name', function() {
+    var unittest = a.model('unittest-searchInstance-no-name', {
+        id: {
+            check: 'number'
+        }
+    });
+    var unittest2 = a.model('unittest-searchInstance-no-name2', {
+        id: {
+            check: 'number'
+        }
+    });
+
+    var test1 = new unittest(),
+        test2 = new unittest(),
+        test3 = new unittest2(),
+        test4 = new unittest2();
+
+    test1.set('id', 2);
+    test3.set('id', 2);
+    test2.set('id', 3);
+    test4.set('id', 4);
+
+    var getTest1 = a.model({id: 2}),
+        getTest2 = a.model({id: 3});
+
+    strictEqual(getTest2.name, 'unittest-searchInstance-no-name');
+    strictEqual(getTest2.uid, test2.uid);
+    strictEqual(getTest1.length, 2);
+    strictEqual(getTest1[0].uid, test1.uid);
+    strictEqual(getTest1[0].name, 'unittest-searchInstance-no-name');
+    strictEqual(getTest1[1].uid, test3.uid);
+    strictEqual(getTest1[1].name, 'unittest-searchInstance-no-name2');
+});
+
+
 test('a.model.validates', function() {
     // TODO
     ok(1==1);
