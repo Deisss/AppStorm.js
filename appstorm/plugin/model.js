@@ -290,8 +290,16 @@ a.modelPooler.searchInstance = function(query) {
     var name = query.modelName || query.model || query.name || null;
 
     // Faster search
-    var models = (name && a.isString(name)) ? a.modelManager.getByName(name) :
-                        a.modelManager.list();
+    var models;
+    if(name && a.isString(name)) {
+    	models = a.modelManager.getByName(name);
+    } else {
+    	var list = a.modelManager.list(),
+    		models = [];
+    	a.each(list, function(element) {
+    		models.push(element);
+    	});
+    }
 
     // We remove the first searched element
     if(query.modelName) {
