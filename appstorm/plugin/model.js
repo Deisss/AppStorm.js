@@ -326,11 +326,6 @@ a.modelPooler.searchInstance = function(query) {
         }
     }
 
-    if(models.length == 0) {
-        return null;
-    } else if(models.length == 1) {
-        return models[0];
-    }
     return models;
 };
 
