@@ -1,6 +1,6 @@
 // Unit test for a.dom.*
 
-module('core/dom.js');
+QUnit.module('core/dom.js');
 
 
 /*
@@ -11,104 +11,114 @@ module('core/dom.js');
 
 
 // Testing dom id search
-test('a.dom.id', function() {
+QUnit.test('a.dom.id', function(assert) {
+    expect(7);
+
     // Test find one id
     var first = a.dom.id('a.dom.testid').getElements();
-    strictEqual(first[0].innerHTML, 'a.dom.testid', 'Test id content');
-    strictEqual(first.length, 1, 'Test length');
+    assert.strictEqual(first[0].innerHTML, 'a.dom.testid', 'Test id content');
+    assert.strictEqual(first.length, 1, 'Test length');
 
     // Test find another id
     var second = a.dom.id('a.dom.secondtestid').getElements();
-    strictEqual(second[0].nodeName, 'INPUT', 'Test node type found');
-    strictEqual(second.length, 1, 'Test length');
+    assert.strictEqual(second[0].nodeName, 'INPUT', 'Test node type found');
+    assert.strictEqual(second.length, 1, 'Test length');
 
     // Test find multiple elements
     var elements = a.dom.id('a.dom.testid,a.dom.secondtestid').getElements();
-    strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements.length, 2, 'Test length');
 
     var arrElements = a.dom.id(['a.dom.testid', 'a.dom.secondtestid'])
                         .getElements();
-    strictEqual(arrElements.length, 2, 'Test length');
+    assert.strictEqual(arrElements.length, 2, 'Test length');
 
     // Test unknow id does not create trouble
     var notFound = a.dom.id('supernotfound').getElements();
-    strictEqual(notFound.length, 0, 'Test length');
+    assert.strictEqual(notFound.length, 0, 'Test length');
 });
 
 
 
 // Testing dom class search
-test('a.dom.cls', function() {
+QUnit.test('a.dom.cls', function(assert) {
+    expect(6);
+
     // Test default search
     var elements = a.dom.cls('a.dom.testclass').getElements();
-    strictEqual(elements.length, 3, 'Test length');
-    strictEqual(elements[0].nodeName, 'A', 'Test first');
-    strictEqual(elements[1].nodeName, 'A', 'Test second');
-    strictEqual(elements[2].nodeName, 'I', 'Test third');
+    assert.strictEqual(elements.length, 3, 'Test length');
+    assert.strictEqual(elements[0].nodeName, 'A', 'Test first');
+    assert.strictEqual(elements[1].nodeName, 'A', 'Test second');
+    assert.strictEqual(elements[2].nodeName, 'I', 'Test third');
 
     var dual = a.dom.cls('a.dom.testclass,a.dom.secondtestclass')
                     .getElements();
-    strictEqual(dual.length, 4, 'Test length');
+    assert.strictEqual(dual.length, 4, 'Test length');
 
     var third = a.dom.cls(['a.dom.testclass', 'a.dom.secondtestclass'])
                     .getElements();
-    strictEqual(third.length, 4, 'Test length');
+    assert.strictEqual(third.length, 4, 'Test length');
 });
 
 
 
 // Testing searching by tag name
-test('a.dom.tag', function() {
+QUnit.test('a.dom.tag', function(assert) {
+    expect(4);
+
     // First easy test
     var elements = a.dom.id('a.dom.testtag').tag('a').getElements();
-    strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements.length, 2, 'Test length');
 
     // Second test
     var sub = a.dom.id('a.dom.testtag').tag('a,i').getElements();
-    strictEqual(sub.length, 3, 'Test length');
+    assert.strictEqual(sub.length, 3, 'Test length');
 
     // Third test
     var sub2 = a.dom.id('a.dom.testtag').tag(['a', 'i']).getElements();
-    strictEqual(sub2.length, 3, 'Test length');
+    assert.strictEqual(sub2.length, 3, 'Test length');
 
     // Complex test case
     var subsub = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag'])
                 .tag('a,i').getElements();
-    strictEqual(subsub.length, 4, 'Test length');
+    assert.strictEqual(subsub.length, 4, 'Test length');
 });
 
 
 
 // Testing searching by attribute
-test('a.dom.attr', function() {
+QUnit.test('a.dom.attr', function(assert) {
+    expect(5);
+
     // Simple attribute check
     var first = a.dom.attr('data-attr-test', 'a.dom.testattr').getElements();
-    strictEqual(first.length, 2, 'Test length');
-    strictEqual(first[0].nodeName, 'A', 'Test A tag');
-    strictEqual(first[1].nodeName, 'SPAN', 'Test SPAN tag');
+    assert.strictEqual(first.length, 2, 'Test length');
+    assert.strictEqual(first[0].nodeName, 'A', 'Test A tag');
+    assert.strictEqual(first[1].nodeName, 'SPAN', 'Test SPAN tag');
 
     // Little bit more complex attribute
     var second = a.dom.attr(
                     'data-attr-test',
                     ['a.dom.testattr', 'a.dom.secondtestattr']).getElements();
-    strictEqual(second.length, 3, 'Test length');
+    assert.strictEqual(second.length, 3, 'Test length');
 
     // Much more complex attribute
     var third = a.dom.attr(
                     ['id', 'data-attr-test'],
                     ['a.dom.testid', 'a.dom.secondtestattr']
                 ).getElements();
-    strictEqual(third.length, 2, 'Test length');
+    assert.strictEqual(third.length, 2, 'Test length');
 });
 
 
 
 // Testing converting element to a.dom
-test('a.dom.el', function() {
+QUnit.test('a.dom.el', function(assert) {
+    expect(1);
+
     var doc = document.createElement('div');
     var el = a.dom.el(doc);
 
-    strictEqual(el.get(0).nodeName, 'DIV', 'Test passing element');
+    assert.strictEqual(el.get(0).nodeName, 'DIV', 'Test passing element');
 });
 
 
@@ -119,88 +129,102 @@ test('a.dom.el', function() {
 -------------------------------------------
 */
 // Test getting single element
-test('a.dom.children.get', function() {
+QUnit.test('a.dom.children.get', function(assert) {
+    expect(2);
+
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag']);
 
     for(var i=0; i<2; ++i) {
-        strictEqual(elements.get(i).nodeName, 'DIV', 'Test node name');
+        assert.strictEqual(elements.get(i).nodeName, 'DIV', 'Test node name');
     }
 });
 
 // Test getting stored elements
-test('a.dom.children.getElements', function() {
+QUnit.test('a.dom.children.getElements', function(assert) {
+    expect(3);
+
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag'])
                     .getElements();
     for(var i=0, l=elements.length; i<l; ++i) {
-        strictEqual(elements[i].nodeName, 'DIV', 'Test node name');
+        assert.strictEqual(elements[i].nodeName, 'DIV', 'Test node name');
     }
-    strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements.length, 2, 'Test length');
 });
 
 // Test getting specific id from element
-test('a.dom.children.id', function() {
+QUnit.test('a.dom.children.id', function(assert) {
+    expect(2);
+
     var sub = a.dom.tag('div').id('a.dom.secondtesttag').getElements();
 
-    strictEqual(sub.length, 1, 'Test length');
-    strictEqual(sub[0].nodeName, 'DIV', 'Test node name');
+    assert.strictEqual(sub.length, 1, 'Test length');
+    assert.strictEqual(sub[0].nodeName, 'DIV', 'Test node name');
 });
 
 // Test getting specific class from element
-test('a.dom.children.cls', function() {
+QUnit.test('a.dom.children.cls', function(assert) {
+    expect(3);
+
     var sub = a.dom.id('a.dom.testtag').cls('a.dom.testclass').getElements();
 
-    strictEqual(sub.length, 2, 'Test length');
-    strictEqual(sub[0].nodeName, 'I', 'Test node name');
-    strictEqual(sub[1].nodeName, 'A', 'Test node name');
+    assert.strictEqual(sub.length, 2, 'Test length');
+    assert.strictEqual(sub[0].nodeName, 'I', 'Test node name');
+    assert.strictEqual(sub[1].nodeName, 'A', 'Test node name');
 });
 
 // Test setting or getting CSS attribute
-test('a.dom.children.css', function() {
+QUnit.test('a.dom.children.css', function(assert) {
+    expect(3);
+
     // Test setter
     a.dom.id('a.dom.secondtesttag').tag('a').css('text-align', 'right');
 
     var el = a.dom.id('a.dom.secondtesttag').tag('a').get(0);
-    strictEqual(el.style.textAlign, 'right', 'Test css setter');
+    assert.strictEqual(el.style.textAlign, 'right', 'Test css setter');
 
     // Test getter
-    strictEqual(a.dom.id('a.dom.secondtesttag').tag('a').css('text-align'),
+    assert.strictEqual(a.dom.id('a.dom.secondtesttag').tag('a').css('text-align'),
             'right', 'Test CSS getter');
 
     // Many getter
     var multiGetter = a.dom.id('a.dom.secondtesttag').tag('a,b')
                         .css('text-align');
     // First text align is blank, second one ir 'right'
-    strictEqual(multiGetter.join(','),
+    assert.strictEqual(multiGetter.join(','),
             ',right', 'Test multi CSS getter');
 });
 
 // Test adding class to system
-test('a.dom.children.addClass', function() {
+QUnit.test('a.dom.children.addClass', function(assert) {
+    expect(2);
+
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
 
-    strictEqual(document.getElementById('a.dom.testtag').className,
+    assert.strictEqual(document.getElementById('a.dom.testtag').className,
                 'a.dom.testaddclass',
                 'Test class');
 
     // We try a second time
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
-    strictEqual(document.getElementById('a.dom.testid').className,
+    assert.strictEqual(document.getElementById('a.dom.testid').className,
                 'a.dom.testaddclass',
                 'Test class');
 });
 
 // Test checking class existence
-test('a.dom.children.hasClass', function() {
+QUnit.test('a.dom.children.hasClass', function(assert) {
+    expect(3);
+
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
 
-    strictEqual(
+    assert.strictEqual(
         a.dom.id(['a.dom.testtag', 'a.dom.testid'])
                 .hasClass('a.dom.testaddclass'),
         true,
         'Test simple hasclass'
     );
 
-    strictEqual(
+    assert.strictEqual(
         a.dom.id(['a.dom.testtag', 'a.dom.testid'])
                 .hasClass('wrong'),
         false,
@@ -208,7 +232,7 @@ test('a.dom.children.hasClass', function() {
     );
 
     // Mixed (has and not has) give false result
-    strictEqual(
+    assert.strictEqual(
         a.dom.id(['a.dom.testtag', 'a.dom.children.parenttest'])
                 .hasClass('a.dom.testaddclass'),
         false,
@@ -217,11 +241,13 @@ test('a.dom.children.hasClass', function() {
 });
 
 // Test remove class
-test('a.dom.children.removeClass', function() {
+QUnit.test('a.dom.children.removeClass', function(assert) {
+    expect(2);
+
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass')
                 .removeClass('a.dom.testaddclass');
 
-    strictEqual(
+    assert.strictEqual(
         a.dom.id(['a.dom.testtag', 'a.dom.testid'])
                 .hasClass('a.dom.testaddclass'),
         false,
@@ -235,7 +261,7 @@ test('a.dom.children.removeClass', function() {
     a.dom.id('a.dom.testid').removeClass('a.dom.specialclass')
             .removeClass('a.dom.secondclass');
 
-    strictEqual(
+    assert.strictEqual(
         document.getElementById('a.dom.testid').className,
         '',
         'Test empty classname'
@@ -243,30 +269,32 @@ test('a.dom.children.removeClass', function() {
 });
 
 // Test toggle class
-test('a.dom.children.toggleClass', function() {
+QUnit.test('a.dom.children.toggleClass', function(assert) {
+    expect(4);
+
     // We set one class, and not the other
     a.dom.id('a.dom.testid').addClass('a.dom.toggletest');
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid'])
         .toggleClass('a.dom.toggletest');
 
-    strictEqual(a.dom.id('a.dom.testtag').hasClass('a.dom.toggletest'),
+    assert.strictEqual(a.dom.id('a.dom.testtag').hasClass('a.dom.toggletest'),
             true, 'Test has class is true');
-    strictEqual(a.dom.id('a.dom.testid').hasClass('a.dom.toggletest'),
+    assert.strictEqual(a.dom.id('a.dom.testid').hasClass('a.dom.toggletest'),
             false, 'Test has class is false');
 
     // We invert again
     a.dom.id(['a.dom.testtag', 'a.dom.testid'])
         .toggleClass('a.dom.toggletest');
 
-    strictEqual(a.dom.id('a.dom.testtag').hasClass('a.dom.toggletest'),
+    assert.strictEqual(a.dom.id('a.dom.testtag').hasClass('a.dom.toggletest'),
             false, 'Test has class inverted is false');
-    strictEqual(a.dom.id('a.dom.testid').hasClass('a.dom.toggletest'),
+    assert.strictEqual(a.dom.id('a.dom.testid').hasClass('a.dom.toggletest'),
             true, 'Test has class inverted is true');
 });
 
 // Test click system
-asyncTest('a.dom.children.bind', function() {
+QUnit.asyncTest('a.dom.children.bind', function(assert) {
     expect(1);
 
     // Internal function to fire click event
@@ -281,7 +309,7 @@ asyncTest('a.dom.children.bind', function() {
     };
 
     var click = function() {
-        strictEqual(true, true, 'Test click has been binded');
+        assert.strictEqual(true, true, 'Test click has been binded');
 
         // Unbind and continue
         a.dom.id('a.dom.testid').unbind('click', click);
@@ -295,7 +323,7 @@ asyncTest('a.dom.children.bind', function() {
 });
 
 // Test click system with binding
-asyncTest('a.dom.children.bindWithScope', function() {
+QUnit.asyncTest('a.dom.children.bindWithScope', function(assert) {
     expect(2);
 
     // Internal function to fire click event
@@ -310,8 +338,8 @@ asyncTest('a.dom.children.bindWithScope', function() {
     };
 
     var click = function() {
-        strictEqual(true, true, 'Test click has been binded');
-        strictEqual(this.something, 'great', 'Test scope binding');
+        assert.strictEqual(true, true, 'Test click has been binded');
+        assert.strictEqual(this.something, 'great', 'Test scope binding');
 
         // Unbind and continue
         a.dom.id('a.dom.testid').unbind('click', click);
@@ -329,7 +357,7 @@ asyncTest('a.dom.children.bindWithScope', function() {
 });
 
 // Test unbinding does work
-asyncTest('a.dom.children.unbind', function() {
+QUnit.asyncTest('a.dom.children.unbind', function(assert) {
     expect(1);
 
     // Internal function to fire click event
@@ -345,7 +373,7 @@ asyncTest('a.dom.children.unbind', function() {
 
     var click = function() {
         alert('If you see this message it means unbind did not unbind...');
-        strictEqual(true, false, 'Test click should not be fired');
+        assert.strictEqual(true, false, 'Test click should not be fired');
     };
 
     a.dom.id('a.dom.testid').bind('click', click);
@@ -354,86 +382,96 @@ asyncTest('a.dom.children.unbind', function() {
     // Fake a click
     eventFire(a.dom.id('a.dom.testid').get(0), 'click');
 
-    strictEqual(true, true, 'Fake test');
+    assert.strictEqual(true, true, 'Fake test');
 
     setTimeout(start, 100);
 });
 
 // Test getting sub element by tag
-test('a.dom.children.tag', function() {
+QUnit.test('a.dom.children.tag', function(assert) {
+    expect(5);
+
     var sub = a.dom.id('a.dom.testtag').tag('a').getElements();
 
-    strictEqual(sub.length, 2, 'Test length');
-    strictEqual(sub[0].nodeName, 'A', 'Test node name');
-    strictEqual(sub[1].nodeName, 'A', 'Test second node name');
+    assert.strictEqual(sub.length, 2, 'Test length');
+    assert.strictEqual(sub[0].nodeName, 'A', 'Test node name');
+    assert.strictEqual(sub[1].nodeName, 'A', 'Test second node name');
 
     // TODO: do a double tag check .tag().tag()
     var subsub = a.dom.id('a.dom.testtag').tag('span').tag('i').getElements();
-    strictEqual(subsub.length, 1, 'Test length');
-    strictEqual(a.dom.el(subsub[0]).hasClass('a.dom.testclass'), true,
+    assert.strictEqual(subsub.length, 1, 'Test length');
+    assert.strictEqual(a.dom.el(subsub[0]).hasClass('a.dom.testclass'), true,
                                                 'Test element');
 });
 
 // Test selecting threw attribute
-test('a.dom.children.attr', function() {
+QUnit.test('a.dom.children.attr', function(assert) {
+    expect(2);
+
     var attr1 = a.dom.id('a.dom.testidattr')
         .attr('data-attr-test').getElements();
-    strictEqual(attr1.length, 2, 'Test length');
+    assert.strictEqual(attr1.length, 2, 'Test length');
 
 
     var attr2 = a.dom.id('a.dom.testidattr')
         .attr('data-attr-test', 'a.dom.secondtestattr').getElements();
-    strictEqual(attr2.length, 1, 'Test length');
+    assert.strictEqual(attr2.length, 1, 'Test length');
 });
 
 // Test selecting attribute tag elements
-test('a.dom.children.attribute', function() {
+QUnit.test('a.dom.children.attribute', function(assert) {
+    expect(3);
+
     // Getter test
 
     // Simple element
     var single = a.dom.id('a.dom.testidattr').tag('span')
             .attribute('data-attr-test');
-    strictEqual(single, 'a.dom.testattr', 'Test single element');
+    assert.strictEqual(single, 'a.dom.testattr', 'Test single element');
 
     // Multi elements
     var multi = a.dom.id('a.dom.testidattr').children()
             .attribute('data-attr-test');
-    strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
+    assert.strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
             'Test multi element');
 
 
     // Setter test
     a.dom.id('a.dom.testidattr').tag('span').attribute('data-some', 'ok');
     var set = a.dom.id('a.dom.testidattr').tag('span').attribute('data-some');
-    strictEqual(set, 'ok', 'Test setter');
+    assert.strictEqual(set, 'ok', 'Test setter');
 });
 
 // Quite the same as attribute, but with (data- used always before)
-test('a.dom.children.data', function() {
+QUnit.test('a.dom.children.data', function(assert) {
+    expect(3);
+
     // Simple element
     var single = a.dom.id('a.dom.testidattr').tag('span')
             .data('attr-test');
-    strictEqual(single, 'a.dom.testattr', 'Test single element');
+    assert.strictEqual(single, 'a.dom.testattr', 'Test single element');
 
     // Multi elements
     var multi = a.dom.id('a.dom.testidattr').children()
             .data('attr-test');
-    strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
+    assert.strictEqual(multi.join(','), 'a.dom.secondtestattr,a.dom.testattr',
             'Test multi element');
 
 
     // Setter test
     a.dom.id('a.dom.testidattr').tag('span').data('second', 'ok');
     var set = a.dom.id('a.dom.testidattr').tag('span').data('second');
-    strictEqual(set, 'ok', 'Test setter');
+    assert.strictEqual(set, 'ok', 'Test setter');
 });
 
 // Multi attribute check (data-'attribute', a-'attribute', 'attribute')
-test('a.dom.children.appstorm', function() {
+QUnit.test('a.dom.children.appstorm', function(assert) {
+    expect(2);
+
     // Getter
     var getter = a.dom.id('a.dom.children.appstorm').children()
                     .appstorm('children-appstorm');
-    strictEqual(getter.join(','), 'system,great,super', 'Array result');
+    assert.strictEqual(getter.join(','), 'system,great,super', 'Array result');
 
     // Setter
     a.dom.id('a.dom.children.appstorm').children()
@@ -441,64 +479,72 @@ test('a.dom.children.appstorm', function() {
     var getter2 = a.dom.id('a.dom.children.appstorm').children()
                     .appstorm('children-appstorm');
     // It's not an array as all values are same
-    strictEqual(getter2, 'content', 'Array result');
+    assert.strictEqual(getter2, 'content', 'Array result');
 });
 
 // Test going to parent element
-test('a.dom.children.parent', function() {
+QUnit.test('a.dom.children.parent', function(assert) {
+    expect(4);
+
     // Point to same element id 'a.dom.secondtesttag'
     var elements = a.dom.id('a.dom.secondtesttag').tag('a').parent()
                     .getElements();
-    strictEqual(elements.length, 1, 'Test length');
-    strictEqual(elements[0].id, 'a.dom.secondtesttag', 'Test element result');
+    assert.strictEqual(elements.length, 1, 'Test length');
+    assert.strictEqual(elements[0].id, 'a.dom.secondtesttag', 'Test element result');
 
     // Two children 'a.dom.children.parent' and same parent give back
     // only one parent
     var sub = a.dom.cls('a.dom.children.parent').parent().getElements();
-    strictEqual(sub.length, 1, 'Test only one parent is selected');
+    assert.strictEqual(sub.length, 1, 'Test only one parent is selected');
 
-    strictEqual(sub[0].id, 'a.dom.children.parenttest', 'Test element');
+    assert.strictEqual(sub[0].id, 'a.dom.children.parenttest', 'Test element');
 });
 
 // Test selecting direct children
-test('a.dom.children.children', function() {
+QUnit.test('a.dom.children.children', function(assert) {
+    expect(9);
+
     // First 'easy' test
     var first = a.dom.id('a.dom.testtag').tag('span')
                         .children().getElements();
 
-    strictEqual(first.length, 3, 'Test length');
-    strictEqual(first[0].nodeName, 'I', 'Test I tag');
-    strictEqual(first[1].nodeName, 'A', 'Test A tag');
-    strictEqual(first[2].nodeName, 'B', 'Test B tag');
+    assert.strictEqual(first.length, 3, 'Test length');
+    assert.strictEqual(first[0].nodeName, 'I', 'Test I tag');
+    assert.strictEqual(first[1].nodeName, 'A', 'Test A tag');
+    assert.strictEqual(first[2].nodeName, 'B', 'Test B tag');
 
     // Second 'hard' test
     var second = a.dom.id(['a.dom.testidattr', 'a.dom.children.parenttest'])
                         .children().getElements();
-    strictEqual(second.length, 4, 'Test length');
-    strictEqual(second[0].nodeName, 'SPAN', 'Test SPAN tag');
-    strictEqual(second[1].nodeName, 'I', 'Test I tag');
-    strictEqual(second[2].nodeName, 'A', 'Test A tag 1');
-    strictEqual(second[3].nodeName, 'A', 'Test A tag 2');
+    assert.strictEqual(second.length, 4, 'Test length');
+    assert.strictEqual(second[0].nodeName, 'SPAN', 'Test SPAN tag');
+    assert.strictEqual(second[1].nodeName, 'I', 'Test I tag');
+    assert.strictEqual(second[2].nodeName, 'A', 'Test A tag 1');
+    assert.strictEqual(second[3].nodeName, 'A', 'Test A tag 2');
 });
 
 // Testing selecting all sub children
-test('a.dom.children.all', function() {
+QUnit.test('a.dom.children.all', function(assert) {
+    expect(7);
+
     var all = a.dom.id('a.dom.testtag').all().getElements();
 
-    strictEqual(all.length, 5, 'Test length');
-    strictEqual(all[0].nodeName, 'A', 'Test A tag');
-    strictEqual(all[1].nodeName, 'SPAN', 'Test SPAN tag');
-    strictEqual(all[2].nodeName, 'I', 'Test I tag');
-    strictEqual(all[3].nodeName, 'A', 'Test A tag');
-    strictEqual(all[4].nodeName, 'B', 'Test B tag');
+    assert.strictEqual(all.length, 5, 'Test length');
+    assert.strictEqual(all[0].nodeName, 'A', 'Test A tag');
+    assert.strictEqual(all[1].nodeName, 'SPAN', 'Test SPAN tag');
+    assert.strictEqual(all[2].nodeName, 'I', 'Test I tag');
+    assert.strictEqual(all[3].nodeName, 'A', 'Test A tag');
+    assert.strictEqual(all[4].nodeName, 'B', 'Test B tag');
 
     var duplicate = a.dom.id(['a.dom.testtag', 'a.dom.testtag'])
             .all().getElements();
-    strictEqual(duplicate.length, 5, 'Test duplicate length');
+    assert.strictEqual(duplicate.length, 5, 'Test duplicate length');
 });
 
 // Test insertBefore elements
-test('a.dom.children.insertBefore', function() {
+QUnit.test('a.dom.children.insertBefore', function(assert) {
+    expect(3);
+
     var div = document.createElement('div');
     div.id  = 'a.dom.children.insertBefore';
     var append = a.dom.el(div);
@@ -508,16 +554,18 @@ test('a.dom.children.insertBefore', function() {
     // Getting inserted element
     var elements = a.dom.id('a.dom.children.insert').parent().children()
                         .getElements();
-    strictEqual(elements.length, 2, 'Test length');
-    strictEqual(elements[0].id, 'a.dom.children.insertBefore', 'Test first');
-    strictEqual(elements[1].id, 'a.dom.children.insert', 'Test second');
+    assert.strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements[0].id, 'a.dom.children.insertBefore', 'Test first');
+    assert.strictEqual(elements[1].id, 'a.dom.children.insert', 'Test second');
 
     // Clearing
     a.dom.id('a.dom.children.insert').parent().remove(append);
 });
 
 // Test insertAfter elements
-test('a.dom.children.insertAfter', function() {
+QUnit.test('a.dom.children.insertAfter', function(assert) {
+    expect(3);
+
     var div = document.createElement('div');
     div.id  = 'a.dom.children.insertAfter';
     var append = a.dom.el(div);
@@ -527,23 +575,27 @@ test('a.dom.children.insertAfter', function() {
     // Getting inserted element
     var elements = a.dom.id('a.dom.children.insert').parent().children()
                         .getElements();
-    strictEqual(elements.length, 2, 'Test length');
-    strictEqual(elements[0].id, 'a.dom.children.insert', 'Test first');
-    strictEqual(elements[1].id, 'a.dom.children.insertAfter', 'Test second');
+    assert.strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements[0].id, 'a.dom.children.insert', 'Test first');
+    assert.strictEqual(elements[1].id, 'a.dom.children.insertAfter', 'Test second');
 
     // Clearing
     a.dom.id('a.dom.children.insert').parent().remove(append);
 });
 
 // Test clearing content
-test('a.dom.children.empty', function() {
+QUnit.test('a.dom.children.empty', function(assert) {
+    expect(1);
+
     var clear = a.dom.id('a.dom.children.empty').empty()
         .children().getElements();
-    strictEqual(clear.length, 0, 'Test empty result');
+    assert.strictEqual(clear.length, 0, 'Test empty result');
 });
 
 // Testing remove element
-test('a.dom.children.remove', function() {
+QUnit.test('a.dom.children.remove', function(assert) {
+    expect(2);
+
     var append  = document.createElement('div');
     append.id   = 'a.dom.children.insert2';
 
@@ -553,8 +605,8 @@ test('a.dom.children.remove', function() {
     var elements = a.dom.id('a.dom.children.insert').parent()
                     .remove(document.getElementById('a.dom.children.insert'))
                     .children().getElements();
-    strictEqual(elements.length, 1, 'Test length');
-    strictEqual(elements[0].id, 'a.dom.children.insert2', 'Test id');
+    assert.strictEqual(elements.length, 1, 'Test length');
+    assert.strictEqual(elements[0].id, 'a.dom.children.insert2', 'Test id');
 
     // Re-creating first elements
     var div = document.createElement('div');
@@ -564,7 +616,9 @@ test('a.dom.children.remove', function() {
 });
 
 // Test appending element
-test('a.dom.children.append', function() {
+QUnit.test('a.dom.children.append', function(assert) {
+    expect(2);
+
     var div = document.createElement('div');
     div.id  = 'a.dom.children.append';
     a.dom.id('a.dom.children.insert').parent().append(div);
@@ -572,15 +626,17 @@ test('a.dom.children.append', function() {
     // Checking included as expected
     var elements = a.dom.id('a.dom.children.insert')
                     .parent().children().getElements();
-    strictEqual(elements.length, 2, 'Test length');
-    strictEqual(elements[1].id, 'a.dom.children.append');
+    assert.strictEqual(elements.length, 2, 'Test length');
+    assert.strictEqual(elements[1].id, 'a.dom.children.append');
 
     // We remove (rollback to default data)
     a.dom.id('a.dom.children.insert').parent().remove(div);
 });
 
 // Testing replace method
-test('a.dom.children.replace', function() {
+QUnit.test('a.dom.children.replace', function(assert) {
+    expect(2);
+
     var div = document.createElement('div');
     div.id  = 'a.dom.children.replace';
     a.dom.id('a.dom.children.insert').parent().replace(div);
@@ -588,8 +644,8 @@ test('a.dom.children.replace', function() {
     // Checking included as expected
     var elements = a.dom.id('a.dom.children.replace')
                     .parent().children().getElements();
-    strictEqual(elements.length, 1, 'Test length');
-    strictEqual(elements[0].id, 'a.dom.children.replace');
+    assert.strictEqual(elements.length, 1, 'Test length');
+    assert.strictEqual(elements[0].id, 'a.dom.children.replace');
 
     // We remove (rollback to default data)
     var old = document.createElement('div');
@@ -599,7 +655,7 @@ test('a.dom.children.replace', function() {
 });
 
 // Test data each
-asyncTest('a.dom.children.each', function() {
+QUnit.asyncTest('a.dom.children.each', function(assert) {
     expect(8);
 
     // Test parameters
@@ -608,20 +664,20 @@ asyncTest('a.dom.children.each', function() {
             'a.dom.children.parenttest'
     ]).each(function(a, b, c) {
         if(this.id == 'a.dom.secondtesttag') {
-            strictEqual(this.id, 'a.dom.secondtesttag', 'Test id');
+            assert.strictEqual(this.id, 'a.dom.secondtesttag', 'Test id');
         } else {
-            strictEqual(this.id, 'a.dom.children.parenttest', 'Test id');
+            assert.strictEqual(this.id, 'a.dom.children.parenttest', 'Test id');
         }
-        strictEqual(a, 1, 'Test first parameter');
-        strictEqual(b, 2, 'Test second parameter');
-        strictEqual(c, 'test', 'Test third parameter');
+        assert.strictEqual(a, 1, 'Test first parameter');
+        assert.strictEqual(b, 2, 'Test second parameter');
+        assert.strictEqual(c, 'test', 'Test third parameter');
     }, 1, 2, 'test');
 
     setTimeout(start, 50);
 });
 
 // Test event binding and prevent-default
-asyncTest('a.dom.event-prevent', function() {
+QUnit.asyncTest('a.dom.event-prevent', function(assert) {
     expect(1);
 
     // Internal function to fire click event
@@ -636,7 +692,7 @@ asyncTest('a.dom.event-prevent', function() {
     };
 
     var click = function(e) {
-        strictEqual(e.target.id, 'a.dom.testid', 'Test click has been binded');
+        assert.strictEqual(e.target.id, 'a.dom.testid', 'Test click has been binded');
         e.preventDefault();
     };
 
