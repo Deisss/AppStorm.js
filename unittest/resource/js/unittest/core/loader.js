@@ -1,10 +1,10 @@
 // Unit test for a.loader
 
-module('core/loader.js');
+QUnit.module('core/loader.js');
 
 // Testing loading js file threw 'script' tag
-asyncTest('a.loader.js', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.js', function(assert) {
+    assert.expect(1);
 
     /*
      * We load a JS file, on this file there is a function not registrated right now
@@ -12,8 +12,8 @@ asyncTest('a.loader.js', function() {
     */
 
     var success = function() {
-        strictEqual(true, true, 'JS file loading success');
-        start();
+        assert.strictEqual(true, true, 'JS file loading success');
+        QUnit.start();
     };
 
     // Loading file
@@ -23,8 +23,8 @@ asyncTest('a.loader.js', function() {
 });
 
 // Testing loading jsonp file threw 'script' tag
-asyncTest('a.loader.jsonp', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.jsonp', function(assert) {
+    assert.expect(1);
 
     /*
      * JSONP is almost the same as JS, 
@@ -32,8 +32,8 @@ asyncTest('a.loader.jsonp', function() {
      * window scope (because it will be called from script directly)
     */
     window.unittest_load_jsonp = function(content) {
-        strictEqual(content.result, 'ok', 'JSONP file loading success');
-        start();
+        assert.strictEqual(content.result, 'ok', 'JSONP file loading success');
+        QUnit.start();
     };
 
     // Loading file
@@ -41,32 +41,32 @@ asyncTest('a.loader.jsonp', function() {
 });
 
 // Testing loading json file threw ajax mode
-asyncTest('a.loader.json', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.json', function(assert) {
+    assert.expect(1);
 
     // Loading file
     a.loader.json('./resource/data/loader/test.json',
     function(content, status) {
-        strictEqual(content.data, 'nice', 'JSON file loading success');
-        start();
+        assert.strictEqual(content.data, 'nice', 'JSON file loading success');
+        QUnit.start();
     });
 });
 
 // Testing loading json file threw ajax mode
-asyncTest('a.loader.xml', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.xml', function(assert) {
+    assert.expect(1);
 
     // Loading file
     a.loader.xml('./resource/data/loader/test.xml', function(content, status) {
-        strictEqual(content.getElementsByTagName('bodyt')[0].childNodes[0]
+        assert.strictEqual(content.getElementsByTagName('bodyt')[0].childNodes[0]
                             .nodeValue, 'Content', 'Testing XML loading');
-        start();
+        QUnit.start();
     });
 });
 
 // Testing loading CSS files threw 'link' tag
-asyncTest('a.loader.css', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.css', function(assert) {
+    assert.expect(1);
 
     // We create a dummy HTML tag, we load a specific CSS files
     // Then we check style apply correctly (the style comes from CSS files)
@@ -95,34 +95,34 @@ asyncTest('a.loader.css', function() {
                                         .getPropertyValue('height');
             }
 
-            strictEqual(height, '20px', 'Test CSS applies correctly');
-            start();
+            assert.strictEqual(height, '20px', 'Test CSS applies correctly');
+            QUnit.start();
         }, 200);
     });
 });
 
 // Testing loading html files
-asyncTest('a.loader.html', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.html', function(assert) {
+    assert.expect(1);
 
     // Loading file
     a.loader.html('./resource/data/loader/test.html', function(content) {
-        strictEqual(content, '<a>ok</a>', 'Test HTML applies correctly');
-        start();
+        assert.strictEqual(content, '<a>ok</a>', 'Test HTML applies correctly');
+        QUnit.start();
     });
 });
 
 // Testing loading JavaFX files
-/*asyncTest('a.loader.javafx', function() {
-    expect(1);
+/*QUnit.asyncTest('a.loader.javafx', function(assert) {
+    assert.expect(1);
 
     // Loading file
     a.loader.javafx(a.url + 'vendor/storage/javafx/JavaFXStorage.jar',
     function() {
         var t = document.getElementById('javafxstorage');
-        strictEqual(t.Packages.javafxstorage.localStorage.testData(),
+        assert.strictEqual(t.Packages.javafxstorage.localStorage.testData(),
                                 true, 'Test system is loaded');
-        start();
+        QUnit.start();
     }, {
         code : 'javafxstorage.Main',
         id : 'javafxstorage'
@@ -131,8 +131,8 @@ asyncTest('a.loader.html', function() {
 
 
 // Testing loading Flash files
-asyncTest('a.loader.flash', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.flash', function(assert) {
+    assert.expect(1);
 
     // Append to root a div for recieving flash
     var root = document.createElement('div');
@@ -157,15 +157,15 @@ asyncTest('a.loader.flash', function() {
     a.loader.flash(a.url + 'vendor/storage/flash/localStorage.swf',
     function(e) {
         var el = document.getElementById(data.id);
-        strictEqual(el.testData(), true, 'Test system is loaded');
-        start();
+        assert.strictEqual(el.testData(), true, 'Test system is loaded');
+        QUnit.start();
     }, data);
 });
 
 
 // Testing loading Silverlight files
-asyncTest('a.loader.silverlight', function() {
-    expect(1);
+QUnit.asyncTest('a.loader.silverlight', function(assert) {
+    assert.expect(1);
 
     // Append to root a div for recieving silverlight
     var root = document.createElement('div');
@@ -189,7 +189,7 @@ asyncTest('a.loader.silverlight', function() {
     a.loader.silverlight(a.url +
         'vendor/storage/silverlight/silverlightStorage.xap', function(e) {
         var el = document.getElementById(data.id);
-        strictEqual(el.Content.store.testData(), true,'Test system is loaded');
-        start();
+        assert.strictEqual(el.Content.store.testData(), true,'Test system is loaded');
+        QUnit.start();
     }, data);
 });

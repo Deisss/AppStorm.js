@@ -15,7 +15,7 @@ QUnit.module('core/hash.js', {
 
 // Start testing hash system
 QUnit.asyncTest('a.hash', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var check = function() {
         QAppStorm.pop();

@@ -12,7 +12,7 @@ QUnit.module('core/dom.js');
 
 // Testing dom id search
 QUnit.test('a.dom.id', function(assert) {
-    expect(7);
+    assert.expect(7);
 
     // Test find one id
     var first = a.dom.id('a.dom.testid').getElements();
@@ -41,7 +41,7 @@ QUnit.test('a.dom.id', function(assert) {
 
 // Testing dom class search
 QUnit.test('a.dom.cls', function(assert) {
-    expect(6);
+    assert.expect(6);
 
     // Test default search
     var elements = a.dom.cls('a.dom.testclass').getElements();
@@ -63,7 +63,7 @@ QUnit.test('a.dom.cls', function(assert) {
 
 // Testing searching by tag name
 QUnit.test('a.dom.tag', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     // First easy test
     var elements = a.dom.id('a.dom.testtag').tag('a').getElements();
@@ -87,7 +87,7 @@ QUnit.test('a.dom.tag', function(assert) {
 
 // Testing searching by attribute
 QUnit.test('a.dom.attr', function(assert) {
-    expect(5);
+    assert.expect(5);
 
     // Simple attribute check
     var first = a.dom.attr('data-attr-test', 'a.dom.testattr').getElements();
@@ -113,7 +113,7 @@ QUnit.test('a.dom.attr', function(assert) {
 
 // Testing converting element to a.dom
 QUnit.test('a.dom.el', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     var doc = document.createElement('div');
     var el = a.dom.el(doc);
@@ -130,7 +130,7 @@ QUnit.test('a.dom.el', function(assert) {
 */
 // Test getting single element
 QUnit.test('a.dom.children.get', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag']);
 
@@ -141,7 +141,7 @@ QUnit.test('a.dom.children.get', function(assert) {
 
 // Test getting stored elements
 QUnit.test('a.dom.children.getElements', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag'])
                     .getElements();
@@ -153,7 +153,7 @@ QUnit.test('a.dom.children.getElements', function(assert) {
 
 // Test getting specific id from element
 QUnit.test('a.dom.children.id', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var sub = a.dom.tag('div').id('a.dom.secondtesttag').getElements();
 
@@ -163,7 +163,7 @@ QUnit.test('a.dom.children.id', function(assert) {
 
 // Test getting specific class from element
 QUnit.test('a.dom.children.cls', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     var sub = a.dom.id('a.dom.testtag').cls('a.dom.testclass').getElements();
 
@@ -174,7 +174,7 @@ QUnit.test('a.dom.children.cls', function(assert) {
 
 // Test setting or getting CSS attribute
 QUnit.test('a.dom.children.css', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     // Test setter
     a.dom.id('a.dom.secondtesttag').tag('a').css('text-align', 'right');
@@ -196,7 +196,7 @@ QUnit.test('a.dom.children.css', function(assert) {
 
 // Test adding class to system
 QUnit.test('a.dom.children.addClass', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
 
@@ -213,7 +213,7 @@ QUnit.test('a.dom.children.addClass', function(assert) {
 
 // Test checking class existence
 QUnit.test('a.dom.children.hasClass', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
 
@@ -242,7 +242,7 @@ QUnit.test('a.dom.children.hasClass', function(assert) {
 
 // Test remove class
 QUnit.test('a.dom.children.removeClass', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass')
                 .removeClass('a.dom.testaddclass');
@@ -270,7 +270,7 @@ QUnit.test('a.dom.children.removeClass', function(assert) {
 
 // Test toggle class
 QUnit.test('a.dom.children.toggleClass', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     // We set one class, and not the other
     a.dom.id('a.dom.testid').addClass('a.dom.toggletest');
@@ -295,7 +295,7 @@ QUnit.test('a.dom.children.toggleClass', function(assert) {
 
 // Test click system
 QUnit.asyncTest('a.dom.children.bind', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     // Internal function to fire click event
     function eventFire(el, etype){
@@ -324,7 +324,7 @@ QUnit.asyncTest('a.dom.children.bind', function(assert) {
 
 // Test click system with binding
 QUnit.asyncTest('a.dom.children.bindWithScope', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     // Internal function to fire click event
     function eventFire(el, etype){
@@ -358,7 +358,7 @@ QUnit.asyncTest('a.dom.children.bindWithScope', function(assert) {
 
 // Test unbinding does work
 QUnit.asyncTest('a.dom.children.unbind', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     // Internal function to fire click event
     function eventFire(el, etype){
@@ -389,7 +389,7 @@ QUnit.asyncTest('a.dom.children.unbind', function(assert) {
 
 // Test getting sub element by tag
 QUnit.test('a.dom.children.tag', function(assert) {
-    expect(5);
+    assert.expect(5);
 
     var sub = a.dom.id('a.dom.testtag').tag('a').getElements();
 
@@ -406,7 +406,7 @@ QUnit.test('a.dom.children.tag', function(assert) {
 
 // Test selecting threw attribute
 QUnit.test('a.dom.children.attr', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var attr1 = a.dom.id('a.dom.testidattr')
         .attr('data-attr-test').getElements();
@@ -420,7 +420,7 @@ QUnit.test('a.dom.children.attr', function(assert) {
 
 // Test selecting attribute tag elements
 QUnit.test('a.dom.children.attribute', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     // Getter test
 
@@ -444,7 +444,7 @@ QUnit.test('a.dom.children.attribute', function(assert) {
 
 // Quite the same as attribute, but with (data- used always before)
 QUnit.test('a.dom.children.data', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     // Simple element
     var single = a.dom.id('a.dom.testidattr').tag('span')
@@ -466,7 +466,7 @@ QUnit.test('a.dom.children.data', function(assert) {
 
 // Multi attribute check (data-'attribute', a-'attribute', 'attribute')
 QUnit.test('a.dom.children.appstorm', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     // Getter
     var getter = a.dom.id('a.dom.children.appstorm').children()
@@ -484,7 +484,7 @@ QUnit.test('a.dom.children.appstorm', function(assert) {
 
 // Test going to parent element
 QUnit.test('a.dom.children.parent', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     // Point to same element id 'a.dom.secondtesttag'
     var elements = a.dom.id('a.dom.secondtesttag').tag('a').parent()
@@ -502,7 +502,7 @@ QUnit.test('a.dom.children.parent', function(assert) {
 
 // Test selecting direct children
 QUnit.test('a.dom.children.children', function(assert) {
-    expect(9);
+    assert.expect(9);
 
     // First 'easy' test
     var first = a.dom.id('a.dom.testtag').tag('span')
@@ -525,7 +525,7 @@ QUnit.test('a.dom.children.children', function(assert) {
 
 // Testing selecting all sub children
 QUnit.test('a.dom.children.all', function(assert) {
-    expect(7);
+    assert.expect(7);
 
     var all = a.dom.id('a.dom.testtag').all().getElements();
 
@@ -543,7 +543,7 @@ QUnit.test('a.dom.children.all', function(assert) {
 
 // Test insertBefore elements
 QUnit.test('a.dom.children.insertBefore', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     var div = document.createElement('div');
     div.id  = 'a.dom.children.insertBefore';
@@ -564,7 +564,7 @@ QUnit.test('a.dom.children.insertBefore', function(assert) {
 
 // Test insertAfter elements
 QUnit.test('a.dom.children.insertAfter', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     var div = document.createElement('div');
     div.id  = 'a.dom.children.insertAfter';
@@ -585,7 +585,7 @@ QUnit.test('a.dom.children.insertAfter', function(assert) {
 
 // Test clearing content
 QUnit.test('a.dom.children.empty', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     var clear = a.dom.id('a.dom.children.empty').empty()
         .children().getElements();
@@ -594,7 +594,7 @@ QUnit.test('a.dom.children.empty', function(assert) {
 
 // Testing remove element
 QUnit.test('a.dom.children.remove', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var append  = document.createElement('div');
     append.id   = 'a.dom.children.insert2';
@@ -617,13 +617,13 @@ QUnit.test('a.dom.children.remove', function(assert) {
 
 // Test appending element
 QUnit.test('a.dom.children.append', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var div = document.createElement('div');
     div.id  = 'a.dom.children.append';
     a.dom.id('a.dom.children.insert').parent().append(div);
 
-    // Checking included as expected
+    // Checking included as assert.expected
     var elements = a.dom.id('a.dom.children.insert')
                     .parent().children().getElements();
     assert.strictEqual(elements.length, 2, 'Test length');
@@ -635,13 +635,13 @@ QUnit.test('a.dom.children.append', function(assert) {
 
 // Testing replace method
 QUnit.test('a.dom.children.replace', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var div = document.createElement('div');
     div.id  = 'a.dom.children.replace';
     a.dom.id('a.dom.children.insert').parent().replace(div);
 
-    // Checking included as expected
+    // Checking included as assert.expected
     var elements = a.dom.id('a.dom.children.replace')
                     .parent().children().getElements();
     assert.strictEqual(elements.length, 1, 'Test length');
@@ -656,7 +656,7 @@ QUnit.test('a.dom.children.replace', function(assert) {
 
 // Test data each
 QUnit.asyncTest('a.dom.children.each', function(assert) {
-    expect(8);
+    assert.expect(8);
 
     // Test parameters
     a.dom.id([
@@ -678,7 +678,7 @@ QUnit.asyncTest('a.dom.children.each', function(assert) {
 
 // Test event binding and prevent-default
 QUnit.asyncTest('a.dom.event-prevent', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     // Internal function to fire click event
     function eventFire(el, etype){

@@ -9,7 +9,7 @@ QUnit.module('core/environment.js', {
 
 // Testing environment get/set and remove key from it
 QUnit.test('a.environment.get-set-remove', function(assert) {
-    expect(5);
+    assert.expect(5);
 
     var env = a.environment;
     assert.strictEqual(env.get('unittest'), null, 'Testing value before set');
@@ -28,7 +28,7 @@ QUnit.test('a.environment.get-set-remove', function(assert) {
 
 // Testing environment clear all key
 QUnit.test('a.environment.clear', function(assert) {
-    expect(6);
+    assert.expect(6);
 
     var env = a.environment;
 

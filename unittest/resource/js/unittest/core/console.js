@@ -14,7 +14,7 @@ QUnit.module('core/console.js', {
 
 // Testing console 'log' mode
 QUnit.test('a.console.log', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.log('one log', null, false);
     a.console.log('second log', null, false);
@@ -30,7 +30,7 @@ QUnit.test('a.console.log', function(assert) {
 
 // Testing console 'info' mode
 QUnit.test('a.console.info', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.info('one information', null, false);
     a.console.info('second information', null, false);
@@ -49,7 +49,7 @@ QUnit.test('a.console.info', function(assert) {
 
 // Testing console 'warning' mode
 QUnit.test('a.console.warn', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.warn('one warning', null, false);
     a.console.warn('second warning', null, false);
@@ -65,7 +65,7 @@ QUnit.test('a.console.warn', function(assert) {
 
 // Testing console 'error' mode
 QUnit.test('a.console.error', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.error('one error', null, false);
     a.console.error('second error', null, false);
@@ -81,7 +81,7 @@ QUnit.test('a.console.error', function(assert) {
 
 // Testing trace (console keep data...)
 QUnit.test('a.console.trace', function(assert) {
-    expect(5);
+    assert.expect(5);
 
     a.console.log('ok', null, false);
     a.console.log('ok2', null, false);
@@ -109,7 +109,7 @@ QUnit.test('a.console.trace', function(assert) {
 
 // Testing trace (console keep data...)
 QUnit.test('a.console.trace-type', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.log('ok', null, false);
     a.console.log('ok2', null, false);
@@ -135,7 +135,7 @@ QUnit.test('a.console.trace-type', function(assert) {
 
 // Testing console clearing trace system
 QUnit.test('a.console.clear', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.console.log('ok', null, false);
     a.console.warn('ok', null, false);

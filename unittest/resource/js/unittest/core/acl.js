@@ -13,7 +13,7 @@ QUnit.module('core/acl.js', {
 
 // Test current role get and set
 QUnit.test('a.acl.currentRole', function(assert) {
-    expect(2);
+    assert.expect(2);
     a.acl.setCurrentRole('super-something');
     assert.strictEqual(a.acl.getCurrentRole(), 'super-something', 'Test role 1');
     a.acl.setCurrentRole('super');
@@ -22,7 +22,7 @@ QUnit.test('a.acl.currentRole', function(assert) {
 
 // Test roleList get and set
 QUnit.test('a.acl.roleList', function(assert) {
-    expect(2);
+    assert.expect(2);
     a.acl.setRoleList(['a', 'b', 'c']);
     assert.strictEqual(a.acl.getRoleList().join(','), 'a,b,c', 'Test list');
     a.acl.setRoleList(['a', 'z', 'k']);
@@ -31,7 +31,7 @@ QUnit.test('a.acl.roleList', function(assert) {
 
 // Test allowed
 QUnit.test('a.acl.allowed', function(assert) {
-    expect(12);
+    assert.expect(12);
     a.acl.setRoleList(['a', 'b', 'c']);
     a.acl.setCurrentRole('b');
 
@@ -54,7 +54,7 @@ QUnit.test('a.acl.allowed', function(assert) {
 
 // Test refused
 QUnit.test('a.acl.refused', function(assert) {
-    expect(12);
+    assert.expect(12);
     a.acl.setRoleList(['a', 'b', 'c']);
     a.acl.setCurrentRole('b');
 
@@ -78,7 +78,7 @@ QUnit.test('a.acl.refused', function(assert) {
 
 // Test event based is well performed
 QUnit.asyncTest('a.acl-event', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     function testEvent(role) {
         assert.strictEqual(role, 'role-event-based');
