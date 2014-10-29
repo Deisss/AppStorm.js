@@ -1,44 +1,43 @@
 // Unit test for a.page (plugin)
 
-module('plugin/template.js');
+QUnit.module('plugin/template.js');
 
 
 // Test template system, including translate one
-asyncTest('a.template.get-working', function() {
-    expect(1);
+QUnit.asyncTest('a.template.get-working', function(assert) {
+    assert.expect(1);
 
     a.template.get('./resource/data/page.template/tmpl1.html', {},
         function(content) {
-            strictEqual(content, '<a>ok</a>', 'Test basic template loading');
-            start();
+            assert.strictEqual(content, '<a>ok</a>', 'Test basic template loading');
+            QUnit.start();
     });
 });
 
 // Test non-XHTML compatible is refused (for now)
-asyncTest('a.template.get-notworking', function() {
-    expect(1);
+QUnit.asyncTest('a.template.get-notworking', function(assert) {
+    assert.expect(1);
 
     var data = {};
 
     // On IE : an exception will be raised
     var time = setTimeout(function() {
-        strictEqual(true, true);
-        start();
+        assert.strictEqual(true, true);
     }, 500);
 
     a.template.get('./resource/data/page.template/tmpl-notxhtml.html', {},
         function(content) {
             // Depends on system, it may be null or undefined
-            strictEqual(content, '<a>ok<a>',
+            assert.strictEqual(content, '<a>ok<a>',
                     'Test basic template not compatible XHTML is refused');
             clearTimeout(time);
-            start();
+            QUnit.start();
     });
 });
 
 // Test translation system is parsing content as expected BEFORE loading html
-asyncTest('a.template.get-translation', function() {
-    expect(2);
+QUnit.asyncTest('a.template.get-translation', function(assert) {
+    assert.expect(2);
 
     var userLanguage = a.translate.getLanguage();
 
@@ -49,25 +48,25 @@ asyncTest('a.template.get-translation', function() {
 
     a.template.get('./resource/data/page.template/tmpl-translation.html', {},
         function(content) {
-            strictEqual(content, '<div id="unittest-tmpl-translation" ' +
+            assert.strictEqual(content, '<div id="unittest-tmpl-translation" ' +
                         'style="display:none"><a data-tr="welcome"></a></div>',
                         'Test content loaded');
 
             a.template.append(document.body, content);
-            strictEqual(document.getElementById('unittest-tmpl-translation')
+            assert.strictEqual(document.getElementById('unittest-tmpl-translation')
                 .getElementsByTagName('a')[0].childNodes[0].nodeValue,
                 'The welcome page', 'Test basic template loading');
 
             // Going back to default
             a.translate.setLanguage(userLanguage);
 
-            start();
+            QUnit.start();
     });
 });
 
 // Test using HTML data to change content (Mustache.JS test)
-asyncTest('a.template.get-data', function() {
-    expect(1);
+QUnit.asyncTest('a.template.get-data', function(assert) {
+    assert.expect(1);
 
     var data = {
         name : 'Charles',
@@ -77,17 +76,17 @@ asyncTest('a.template.get-data', function() {
     a.template.get('./resource/data/page.template/tmpl-data.html', data,
         function(content) {
             a.template.append(document.body, content);
-            strictEqual(document.getElementById('unittest-tmpl-data')
+            assert.strictEqual(document.getElementById('unittest-tmpl-data')
                 .getElementsByTagName('a')[0].childNodes[0].nodeValue,
                 'The project AppStorm.JS has been created by Charles',
                 'Test basic template loading');
-            start();
+            QUnit.start();
     });
 });
 
 // Test using both data and translate, on a complex system
-asyncTest('a.template.get-complex', function() {
-    expect(4);
+QUnit.asyncTest('a.template.get-complex', function(assert) {
+    assert.expect(4);
 
     var data = {
         'stooges': [
@@ -111,10 +110,10 @@ asyncTest('a.template.get-complex', function() {
             a.template.append(document.body, content);
 
             content = document.getElementById('unittest-tmp-complex');
-            strictEqual(content.getElementsByTagName('a')[0].childNodes[0]
+            assert.strictEqual(content.getElementsByTagName('a')[0].childNodes[0]
                 .nodeValue,
                 'One of the member was Moe', 'Test basic template loading');
-            strictEqual(content.getElementsByTagName('a')[1].childNodes[0]
+            assert.strictEqual(content.getElementsByTagName('a')[1].childNodes[0]
                 .nodeValue,
                 'One of the member was Larry', 'Test basic template loading');
 
@@ -123,23 +122,23 @@ asyncTest('a.template.get-complex', function() {
             // only in memory
             a.translate.translate(content);
 
-            strictEqual(content.getElementsByTagName('a')[0].childNodes[0]
+            assert.strictEqual(content.getElementsByTagName('a')[0].childNodes[0]
                 .nodeValue,
               'Other language said it was Moe', 'Test basic template loading');
-            strictEqual(content.getElementsByTagName('a')[1].childNodes[0]
+            assert.strictEqual(content.getElementsByTagName('a')[1].childNodes[0]
                 .nodeValue,
             'Other language said it was Larry', 'Test basic template loading');
 
             // Going back to default
             a.translate.setLanguage(userLanguage);
 
-            start();
+            QUnit.start();
     });
 });
 
 // Test template system, including translate one
-asyncTest('a.template.replace-working', function() {
-    expect(1);
+QUnit.asyncTest('a.template.replace-working', function(assert) {
+    assert.expect(1);
 
     var id = 'a.template.replace-working';
 
@@ -155,16 +154,16 @@ asyncTest('a.template.replace-working', function() {
     a.template.get('./resource/data/page.template/tmpl1.html', {},
         function(content) {
             a.template.replace(result, content, function() {
-                strictEqual(result.getElementsByTagName('a')[0].innerHTML,
+                assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
                     'ok', 'Test content replaced');
-                start();
+                QUnit.start();
             });
     });
 });
 
 // Test replace with translate before replace, and also after replace to DOM
-asyncTest('a.template.replace-translation', function() {
-    expect(1);
+QUnit.asyncTest('a.template.replace-translation', function(assert) {
+    assert.expect(1);
 
     var id = 'a.template.replace-translation';
 
@@ -185,20 +184,20 @@ asyncTest('a.template.replace-translation', function() {
     a.template.get('./resource/data/page.template/tmpl-translation.html', {},
         function(content) {
             a.template.replace(result, content, function() {
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                     'The welcome page', 'Test basic template loading');
                 // Going back to default
                 a.translate.setLanguage(userLanguage);
 
-                start();
+                QUnit.start();
             });
     });
 });
 
 // Test a complex system (with translate, list & co)
-asyncTest('a.template.replace-complex', function() {
-    expect(4);
+QUnit.asyncTest('a.template.replace-complex', function(assert) {
+    assert.expect(4);
 
     var id = 'a.template.replace-complex';
     var data = {
@@ -229,10 +228,10 @@ asyncTest('a.template.replace-complex', function() {
     a.template.get('./resource/data/page.template/tmpl-complex.html', data,
         function(content) {
             a.template.replace(result, content, function() {
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                 'One of the member was Moe', 'Test basic template loading');
-                strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
                     .nodeValue,
                 'One of the member was Larry', 'Test basic template loading');
 
@@ -241,18 +240,18 @@ asyncTest('a.template.replace-complex', function() {
                 // only in memory
                 a.translate.translate();
 
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                     'Other language said it was Moe',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
                     .nodeValue,
                     'Other language said it was Larry',
                     'Test basic template loading');
 
                 // Going back to default
                 a.translate.setLanguage(userLanguage);
-                start();
+                QUnit.start();
             });
     });
 });
@@ -261,8 +260,8 @@ asyncTest('a.template.replace-complex', function() {
 
 // Test template system, append two template to same id
 // (we reuse replace-working)
-asyncTest('a.template.append-working', function() {
-    expect(2);
+QUnit.asyncTest('a.template.append-working', function(assert) {
+    assert.expect(2);
 
     // We reuse item created previously
     var id = 'a.template.replace-working';
@@ -272,20 +271,20 @@ asyncTest('a.template.append-working', function() {
         function(content) {
             a.template.append(result, content, function() {
                 // Test from working
-                strictEqual(result.getElementsByTagName('a')[0].innerHTML,
+                assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
                     'ok', 'Test content append');
                 // New test
-                strictEqual(result.getElementsByTagName('span')[0].innerHTML,
+                assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
                     'append', 'Test content append');
-                start();
+                QUnit.start();
             });
     });
 });
 
 // Test translation system, append two template on same id
 // (we reuse replace-translate)
-asyncTest('a.template.append-translation', function() {
-    expect(2);
+QUnit.asyncTest('a.template.append-translation', function(assert) {
+    assert.expect(2);
 
     var id = 'a.template.replace-translation';
     var data = {};
@@ -302,25 +301,25 @@ asyncTest('a.template.append-translation', function() {
         function(content) {
             a.template.append(result, content, function() {
                 // Test from translation
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                     'The welcome page', 'Test basic template loading');
                 // New test
                 // (no need to change : the data is not translated here)
-                strictEqual(result.getElementsByTagName('span')[0].innerHTML,
+                assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
                     'append', 'Test content append');
 
                 // Going back to default
                 a.translate.setLanguage(userLanguage);
 
-                start();
+                QUnit.start();
             });
     });
 });
 
 // Test appending to a complex system, another complex system, works.
-asyncTest('a.template.append-complex', function() {
-    expect(8);
+QUnit.asyncTest('a.template.append-complex', function(assert) {
+    assert.expect(8);
 
     var id = 'a.template.replace-complex';
     var data = {
@@ -348,18 +347,18 @@ asyncTest('a.template.append-complex', function() {
     a.template.get('./resource/data/page.template/tmpl-append-complex.html',
         data, function(content) {
             a.template.append(result, content, function() {
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                     'One of the member was Moe',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
                     .nodeValue,
                     'One of the member was Larry',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('span')[0]
+                assert.strictEqual(result.getElementsByTagName('span')[0]
                     .childNodes[0].nodeValue, 'He study in Physics',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('span')[1]
+                assert.strictEqual(result.getElementsByTagName('span')[1]
                     .childNodes[0].nodeValue, 'He study in Math',
                     'Test basic template loading');
 
@@ -368,40 +367,40 @@ asyncTest('a.template.append-complex', function() {
                 // only in memory
                 a.translate.translate();
 
-                strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
                     .nodeValue,
                     'Other language said it was Moe',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
                     .nodeValue,
                     'Other language said it was Larry',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('span')[0]
+                assert.strictEqual(result.getElementsByTagName('span')[0]
                     .childNodes[0].nodeValue, 'Another stydy in Physics',
                     'Test basic template loading');
-                strictEqual(result.getElementsByTagName('span')[1]
+                assert.strictEqual(result.getElementsByTagName('span')[1]
                     .childNodes[0].nodeValue, 'Another stydy in Math',
                     'Test basic template loading');
 
                 // Going back to default
                 a.translate.setLanguage(userLanguage);
 
-                start();
+                QUnit.start();
             });
     });
 });
 
 
 // Test loading partial template
-asyncTest('a.template.partial', function() {
-    expect(3);
+QUnit.asyncTest('a.template.partial', function(assert) {
+    assert.expect(3);
 
     a.template.partial(
         'testpartial',
         './resource/data/page.template/tmpl-partial.html',
         function(name, uri) {
-            strictEqual(name, 'testpartial', 'Test template name');
-            strictEqual(uri, "<a id='test-partial'>hello</a>",
+            assert.strictEqual(name, 'testpartial', 'Test template name');
+            assert.strictEqual(uri, "<a id='test-partial'>hello</a>",
                 'test template content');
 
             // Now we load the template and check everything is working
@@ -409,43 +408,43 @@ asyncTest('a.template.partial', function() {
                 './resource/data/page.template/tmpl-partial-container.html',
                 null,
                 function(content) {
-                    strictEqual(content, "<a id='test-partial'>hello</a>",
+                    assert.strictEqual(content, "<a id='test-partial'>hello</a>",
                                                     'Test result');
-                    start();
+                    QUnit.start();
             });
     });
 });
 
 // Test multiple partials loading (many times)
 // Prevent a bug appearing (callback not called in some cases)
-asyncTest('a.template.partial-multiple', function() {
-    expect(6);
+QUnit.asyncTest('a.template.partial-multiple', function(assert) {
+    assert.expect(6);
 
 
     a.template.partial(
         'testpartial',
         './resource/data/page.template/tmpl-partial.html',
         function(name, uri) {
-            strictEqual(name, 'testpartial', 'Test template name');
-            strictEqual(uri, "<a id='test-partial'>hello</a>",
+            assert.strictEqual(name, 'testpartial', 'Test template name');
+            assert.strictEqual(uri, "<a id='test-partial'>hello</a>",
                 'test template content');
 
             a.template.partial(
                 'testpartial',
                 './resource/data/page.template/tmpl-partial.html',
                 function(name, uri) {
-                    strictEqual(name, 'testpartial', 'Test template name');
-                    strictEqual(uri, "<a id='test-partial'>hello</a>",
+                    assert.strictEqual(name, 'testpartial', 'Test template name');
+                    assert.strictEqual(uri, "<a id='test-partial'>hello</a>",
                         'test template content');
 
                     a.template.partial(
                         'testpartial',
                         './resource/data/page.template/tmpl-partial.html',
                         function(name, uri) {
-                            strictEqual(name, 'testpartial', 'Test template name');
-                            strictEqual(uri, "<a id='test-partial'>hello</a>",
+                            assert.strictEqual(name, 'testpartial', 'Test template name');
+                            assert.strictEqual(uri, "<a id='test-partial'>hello</a>",
                                 'test template content');
-                            start();
+                            QUnit.start();
                     });
             });
     });
@@ -455,8 +454,8 @@ asyncTest('a.template.partial-multiple', function() {
 // Bug : using innerHTML remove onclick on sibbling children
 // We do a workaround for that, but we have to be sure it will never come back
 // Here is a test for.
-asyncTest('a.template.children-sibling', function() {
-    expect(4);
+QUnit.asyncTest('a.template.children-sibling', function(assert) {
+    assert.expect(4);
 
     // First : we create a dom element and add it to DOM
     var d = document.createElement('div');
@@ -469,18 +468,18 @@ asyncTest('a.template.children-sibling', function() {
 
     a.template.append(d, el1);
     document.getElementById('sibling1').onclick = function() {
-        strictEqual(true, true, 'test el1');
+        assert.strictEqual(true, true, 'test el1');
     };
     document.getElementById('sibling1').click();
 
     a.template.append(d, el2);
     document.getElementById('sibling2').onclick = function() {
-        strictEqual(true, true, 'test el2');
+        assert.strictEqual(true, true, 'test el2');
     };
     document.getElementById('sibling2').click();
 
     document.getElementById('sibling1').click();
     document.getElementById('sibling2').click();
 
-    start();
+    QUnit.start();
 });
