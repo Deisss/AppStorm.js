@@ -188,16 +188,6 @@ setInterval(function() {
     }
 }, 200);
 
-
-/*
-----------------------
-  MODIFIED QUNIT
-----------------------
-*/
-QUnit.config.autostart = false;
-QUnit.config.testTimeout = 10000;
-QUnit.config.requireExpects = true;
-
 /*
 // Add the custon functions for handling custom raise
 (function(w) {

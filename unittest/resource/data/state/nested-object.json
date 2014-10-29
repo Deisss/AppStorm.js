@@ -1,0 +1,21 @@
+{
+    "id": "544fc10fdfc418383e237608",
+    "description": "this is a product description",
+    "subobject": {
+        "primary": {
+            "id": "544fc10fdfc418383e23e604",
+            "description": "primary sub object"
+        },
+        "secondary": {
+            "id": "544fc10fdfc418383e23d6d1",
+            "description": "secondary sub object"
+        }
+    },
+    "user": [{
+        "id": "544fc10fdfc418383e23a1df",
+        "role": "leader"
+    },{
+        "id": "544fc10fdfc418383e23a1bb",
+        "role": "user"
+    }]
+}

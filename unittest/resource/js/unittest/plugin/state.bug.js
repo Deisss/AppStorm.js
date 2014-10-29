@@ -1,11 +1,11 @@
 // Unit test for a.state (plugin)
 // We handle bug and test to check they are not coming back
 
-module('plugin/state.js');
+QUnit.module('plugin/state.js');
 
 // In this unit test, we check 2 children, with same parent element,
 // and same hashtag, are both loaded not only one
-asyncTest('a.state.dualchildren', function() {
+QUnit.asyncTest('a.state.dualchildren', function() {
     expect(4);
 
     var tree = {
@@ -308,4 +308,27 @@ asyncTest('a.state.chain-triple-load', function() {
     }, 200);
 
     hashtag('/chain-triple-load/abcdef');
+});
+
+// In some case, one some AppStorm version we could find a bug where the system
+// 
+asyncTest('a.sate.nested-data-object', function() {
+    stop();
+    expect(1);
+
+    a.state.add({
+        id: 'state-nested-data-object',
+        data: {
+            session: {
+                url: 'resource/data/state/nested-object.json'
+            }
+        },
+        converter: function(data) {
+            strictEqual('ok', 'ok');
+        }
+    });
+
+    QAppStorm.chain({
+        hash: 'state-nested-data-object'
+    });
 });

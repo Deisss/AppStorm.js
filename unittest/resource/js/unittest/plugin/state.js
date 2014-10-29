@@ -4,8 +4,9 @@
 // TODO: bootOnLoad => reactivate
 // TODO: event for every state loaded has been deleted, maybe corret that ?
 
-module('plugin/state.js', {
+QUnit.module('plugin/state.js', {
     setup: function() {
+        QAppStorm.clear();
         hashtag('');
     },
     teardown: function() {
@@ -14,6 +15,7 @@ module('plugin/state.js', {
         a.mock.clear();
         hashtag('');
         a.acl.clear();
+        QAppStorm.clear();
     }
 });
 
@@ -22,14 +24,15 @@ module('plugin/state.js', {
 
 
 // Start to check a single check hash change
-asyncTest('a.state.hash-single-state', function() {
+QUnit.asyncTest('a.state.hash-single-state', function(assert) {
     expect(2);
 
     var main1 = {
         hash : 'astatemanager1',
         async: true,
         load : function(chain) {
-            strictEqual(1, 1, 'Loading basic 1 succeed');
+            assert.strictEqual(1, 1, 'Loading basic 1 succeed');
+            QAppStorm.pop();
             chain.next();
         }
     };
@@ -37,7 +40,8 @@ asyncTest('a.state.hash-single-state', function() {
         hash : 'astatemanager2',
         async: true,
         load : function(chain) {
-            strictEqual(1, 1, 'Loading basic 2 succeed');
+            assert.strictEqual(1, 1, 'Loading basic 2 succeed');
+            QAppStorm.pop();
             chain.next();
         }
     };
@@ -45,17 +49,20 @@ asyncTest('a.state.hash-single-state', function() {
     a.state.add(main1);
     a.state.add(main2);
 
-    chain('astatemanager1', function() {
-        hashtag('astatemanager2');
-    });
-
-    chain('astatemanager2', start, 100);
-
-    hashtag('astatemanager1');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager1',
+            expect: 1
+        }, {
+            hash: 'astatemanager2',
+            expect: 1
+        }
+    );
 });
 
 // Test hashexists
-test('a.state.hashExists', function() {
+QUnit.test('a.state.hashExists', function(assert) {
+    expect(4);
     // We add one existing hash
     var child1 = {
         hash : 'something-good'
@@ -69,15 +76,15 @@ test('a.state.hashExists', function() {
     a.state.add(child2);
 
     // Now testing hashExists
-    strictEqual(a.state.hashExists('something-good'), true,
+    assert.strictEqual(a.state.hashExists('something-good'), true,
                                             'Testing basic input');
-    strictEqual(a.state.hashExists('notexisting'), false,
+    assert.strictEqual(a.state.hashExists('notexisting'), false,
                                             'Testing wrong input');
 
     // Testing parameter detection
-    strictEqual(a.state.hashExists('ok-now-something'), true,
+    assert.strictEqual(a.state.hashExists('ok-now-something'), true,
                                             'Testing parameter input');
-    strictEqual(a.state.hashExists('ok-now-2'), false,
+    assert.strictEqual(a.state.hashExists('ok-now-2'), false,
                                             'Testing parameter input');
 });
 
@@ -91,7 +98,8 @@ test('a.state.hashExists', function() {
 
 // State manager test
 // Testing add to function : testing parent add, children add
-test('a.state.add', function() {
+QUnit.test('a.state.add', function(assert) {
+    expect(10);
     var testSingleChildren = {
         id : 'root',
         children : {
@@ -100,8 +108,8 @@ test('a.state.add', function() {
     };
     a.state.add(testSingleChildren);
     var treeSingleChildren = a.state.get('root');
-    strictEqual(treeSingleChildren.id, 'root', 'Test root content');
-    strictEqual(treeSingleChildren.children[0].id, 'sub',
+    assert.strictEqual(treeSingleChildren.id, 'root', 'Test root content');
+    assert.strictEqual(treeSingleChildren.children[0].id, 'sub',
                                                 'Test children content');
     a.state.clear();
 
@@ -121,10 +129,10 @@ test('a.state.add', function() {
     a.state.add(testNormalChildren);
     var treeNormalChildren = a.state.get('root');
 
-    strictEqual(treeNormalChildren.id, 'root', 'Test root content');
-    strictEqual(treeNormalChildren.children[0].id, 'sub1',
+    assert.strictEqual(treeNormalChildren.id, 'root', 'Test root content');
+    assert.strictEqual(treeNormalChildren.children[0].id, 'sub1',
                                         'Test children content');
-    strictEqual(treeNormalChildren.children[1].id, 'sub2',
+    assert.strictEqual(treeNormalChildren.children[1].id, 'sub2',
                                         'Test children content');
     a.state.clear();
 
@@ -145,10 +153,10 @@ test('a.state.add', function() {
     a.state.add(child1);
     a.state.add(child1Sub);
     var treeParentChildren = a.state.get('root');
-    strictEqual(treeParentChildren.id, 'root', 'Test root content');
-    strictEqual(treeParentChildren.children[0].id, 'sub1',
+    assert.strictEqual(treeParentChildren.id, 'root', 'Test root content');
+    assert.strictEqual(treeParentChildren.children[0].id, 'sub1',
                                             'Test children content');
-    strictEqual(treeParentChildren.children[0].children[0].id, 'subsub1',
+    assert.strictEqual(treeParentChildren.children[0].children[0].id, 'subsub1',
                                             'Test children content');
     a.state.clear();
 
@@ -165,15 +173,15 @@ test('a.state.add', function() {
     a.state.add(tab);
     var root1 = a.state.get('root'),
         root2 = a.state.get('root2');
-    strictEqual(root1.id, 'root', 'Test root content');
-    strictEqual(root2.id, 'root2', 'Test second root content');
+    assert.strictEqual(root1.id, 'root', 'Test root content');
+    assert.strictEqual(root2.id, 'root2', 'Test second root content');
 });
 
 
 
-
+// TODO: REACTIVATE
 // Test a load and unload, with a state in common (a parent)
-asyncTest('a.state-path', function() {
+QUnit.asyncTest('a.state-path', function(assert) {
     // We expect 3 : one from parent1, and 2 from sub child, this is
     // because parent1 will be loaded only
     // at first time, because it is shared between main1, and main2 !
@@ -182,21 +190,24 @@ asyncTest('a.state-path', function() {
     var tree = {
         async: true,
         load : function(chain) {
-            strictEqual(1, 1, 'Loading basic 1 succeed');
+            assert.strictEqual(1, 1, 'Loading basic 1 succeed');
+            QAppStorm.pop();
             chain.next();
         },
         children : [{
             hash : 'astatemanager3',
             async: true,
             load : function(chain) {
-                strictEqual(1, 1, 'Loading basic 3 succeed');
+                assert.strictEqual(1, 1, 'Loading basic 3 succeed');
+                QAppStorm.pop();
                 chain.next();
             }
         },{
             hash : 'astatemanager4',
             async: true,
             load : function(chain) {
-                strictEqual(1, 1, 'Loading basic 4 succeed');
+                assert.strictEqual(1, 1, 'Loading basic 4 succeed');
+                QAppStorm.pop();
                 chain.next();
             }
         }]
@@ -204,51 +215,58 @@ asyncTest('a.state-path', function() {
 
     a.state.add(tree);
 
-
-    chain('astatemanager3', function() {
-        hashtag('astatemanager4');
-    });
-
-    chain('astatemanager4', start, 100);
-
-    hashtag('astatemanager3');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager3',
+            expect: 2
+        }, {
+            hash: 'astatemanager4',
+            expect: 1
+        }
+    );
 });
 
 
 
 
 // Test full load chain process
-asyncTest('a.state-load', function() {
+QUnit.asyncTest('a.state-load', function(assert) {
     // We expect the 6 : 3 from parent, 3 from children
     expect(6);
 
     var tree = {
         async: true,
         preLoad : function(chain) {
-            strictEqual(1, 1, 'Test preLoad parent');
+            assert.strictEqual(1, 1, 'Test preLoad parent');
+            QAppStorm.pop();
             chain.next();
         },
         load : function(chain) {
-            strictEqual(1, 1, 'Test load parent');
+            assert.strictEqual(1, 1, 'Test load parent');
+            QAppStorm.pop();
             chain.next();
         },
         postLoad : function(chain) {
-            strictEqual(1, 1, 'Test postLoad parent');
+            assert.strictEqual(1, 1, 'Test postLoad parent');
+            QAppStorm.pop();
             chain.next();
         },
         children : [{
             hash : 'astatemanager5',
             async: true,
             preLoad : function(chain) {
-                strictEqual(1, 1, 'Test preLoad child');
+                assert.strictEqual(1, 1, 'Test preLoad child');
+                QAppStorm.pop();
                 chain.next();
             },
             load : function(chain) {
-                strictEqual(1, 1, 'Test load child');
+                assert.strictEqual(1, 1, 'Test load child');
+                QAppStorm.pop();
                 chain.next();
             },
             postLoad : function(chain) {
-                strictEqual(1, 1, 'Test postLoad child');
+                assert.strictEqual(1, 1, 'Test postLoad child');
+                QAppStorm.pop();
                 chain.next();
             },
         }]
@@ -256,46 +274,60 @@ asyncTest('a.state-load', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager5', start, 100);
-
-    hashtag('astatemanager5');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager5',
+            expect: 6
+        }
+    );
 });
 
 
 
 
 // Test full unload chain process
-asyncTest('a.state-unload', function() {
-    // We expect the 6 : 3 from parent, 3 from children
-    expect(6);
+QUnit.asyncTest('a.state-unload', function(assert) {
+    // We expect the 6 : 1, loading, then unloading: 3 from parent, 3 from children
+    expect(7);
 
     var tree = {
         async: true,
         preUnload : function(chain) {
-            strictEqual(1, 1, 'Test preUnload parent');
+            assert.strictEqual(1, 1, 'Test preUnload parent');
+            QAppStorm.pop();
             chain.next();
         },
         unload : function(chain) {
-            strictEqual(1, 1, 'Test unload parent');
+            assert.strictEqual(1, 1, 'Test unload parent');
+            QAppStorm.pop();
             chain.next();
         },
         postUnload : function(chain) {
-            strictEqual(1, 1, 'Test postUnload parent');
+            assert.strictEqual(1, 1, 'Test postUnload parent');
+            QAppStorm.pop();
             chain.next();
         },
         children : [{
             hash : 'astatemanager6',
             async: true,
+            postLoad: function(chain) {
+                assert.strictEqual(1, 1, 'Test postLoad child');
+                QAppStorm.pop();
+                chain.next();
+            },
             preUnload : function(chain) {
-                strictEqual(1, 1, 'Test preUnload child');
+                assert.strictEqual(1, 1, 'Test preUnload child');
+                QAppStorm.pop();
                 chain.next();
             },
             unload : function(chain) {
-                strictEqual(1, 1, 'Test unload child');
+                assert.strictEqual(1, 1, 'Test unload child');
+                QAppStorm.pop();
                 chain.next();
             },
             postUnload : function(chain) {
-                strictEqual(1, 1, 'Test postUnload child');
+                assert.strictEqual(1, 1, 'Test postUnload child');
+                QAppStorm.pop();
                 chain.next();
             },
         }]
@@ -303,19 +335,21 @@ asyncTest('a.state-unload', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager6', function() {
-        hashtag('tmp_statemanager6');
-    });
-
-    chain('tmp_statemanager6', start, 100);
-
-    hashtag('astatemanager6');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager6',
+            expect: 1
+        }, {
+            hash: 'tmp_statemanager6',
+            expect: 6
+        }
+    );
 });
 
 
 
 // Testing both some load, and some unload
-asyncTest('a.state-load-unload', function() {
+QUnit.asyncTest('a.state-load-unload', function(assert) {
     // We expect the 7 : 2 from parent at load, 2 from children at load,
     // 3 from parent and children on unload
     expect(7);
@@ -324,34 +358,41 @@ asyncTest('a.state-load-unload', function() {
         hash : 'astatemanager7',
         async: true,
         preLoad : function(chain) {
-            strictEqual(1, 1, 'Test preLoad parent');
+            assert.strictEqual(1, 1, 'Test preLoad parent');
+            QAppStorm.pop();
             chain.next();
         },
         load : function(chain) {
-            strictEqual(1, 1, 'Test load parent');
+            assert.strictEqual(1, 1, 'Test load parent');
+            QAppStorm.pop();
             chain.next();
         },
         preUnload : function(chain) {
-            strictEqual(1, 1, 'Test preUnload parent');
+            assert.strictEqual(1, 1, 'Test preUnload parent');
+            QAppStorm.pop();
             chain.next();
         },
         postUnload : function(chain) {
-            strictEqual(1, 1, 'Test postUnload parent');
+            assert.strictEqual(1, 1, 'Test postUnload parent');
+            QAppStorm.pop();
             chain.next();
         },
         children : [{
             hash : 'astatemanager8',
             async: true,
             preLoad : function(chain) {
-                strictEqual(1, 1, 'Test preLoad child');
+                assert.strictEqual(1, 1, 'Test preLoad child');
+                QAppStorm.pop();
                 chain.next();
             },
             load : function(chain) {
-                strictEqual(1, 1, 'Test load child');
+                assert.strictEqual(1, 1, 'Test load child');
+                QAppStorm.pop();
                 chain.next();
             },
             postUnload : function(chain) {
-                strictEqual(1, 1, 'Test postUnload child');
+                assert.strictEqual(1, 1, 'Test postUnload child');
+                QAppStorm.pop();
                 chain.next();
             }
         }]
@@ -359,30 +400,32 @@ asyncTest('a.state-load-unload', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager7', function() {
-        hashtag('astatemanager8');
-    }, 100);
-
-    chain('astatemanager8', function() {
-        hashtag('tmp_statemanager8');
-    }, 100);
-
-    chain('tmp_statemanager8', start, 100);
-
-    hashtag('astatemanager7');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager7',
+            expect: 2
+        }, {
+            hash: 'astatemanager8',
+            expect: 2
+        }, {
+            hash: 'tmp_statemanager8',
+            expect: 3
+        }
+    );
 });
 
 
 
 // Test hashtag not fired if state is not linked to this hashtag
-asyncTest('a.state-notfired', function() {
+QUnit.asyncTest('a.state-notfired', function(assert) {
     expect(1);
 
     var main1 = {
         hash : 'astatemanager9',
         async: true,
         load : function(chain) {
-            strictEqual(1, 1, 'Test load, main1');
+            assert.strictEqual(1, 1, 'Test load, main1');
+            QAppStorm.pop();
             chain.next();
         }
     };
@@ -391,7 +434,8 @@ asyncTest('a.state-notfired', function() {
         hash : 'astatemanager10',
         async: true,
         load : function(chain) {
-            strictEqual(1, 1, 'Test load, main2');
+            assert.strictEqual(10, 1, 'Should not fire...');
+            QAppStorm.pop();
             chain.next();
         }
     };
@@ -399,20 +443,27 @@ asyncTest('a.state-notfired', function() {
     a.state.add(main1);
     a.state.add(main2);
 
-    chain('astatemanager9', function() {
-        hashtag('tmp_astatemanager9');
-    }, 100);
-
-    chain('tmp_astatemanager9', start, 100);
-
-    hashtag('astatemanager9');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager9',
+            expect: 1
+        }, {
+            hash: 'tmp_astatemanager9',
+            expect: 0,
+            callback: function(chain) {
+                setTimeout(function() {
+                    chain.next();
+                }, 100);
+            }
+        }
+    );
 });
 
 
 
 // TODO : be able to test translate, css, and html loaded
 // Test loading HTML, CSS, JS, and translate
-asyncTest('a.state-loader', function() {
+QUnit.asyncTest('a.state-loader', function(assert) {
     // Many test are done to check everything was loaded as expected
     expect(7);
 
@@ -432,17 +483,23 @@ asyncTest('a.state-loader', function() {
         postLoad: function(chain) {
             // Testing JS files has been loaded (the function included inside
             // Js file exist in page
-            strictEqual(typeof(unittest_state_js), 'function',
+            assert.strictEqual(typeof(unittest_state_js), 'function',
                     'Test JS file has been loaded');
+            QAppStorm.pop();
 
             // Testing language translate
             var tr1 = a.translate.getDictionnary('unittest-state1'),
                 tr2 = a.translate.getDictionnary('unittest-state2');
 
-            strictEqual(tr1['hello'], 'nope', 'Test translate');
-            strictEqual(tr1['second'], 'nope2', 'Test translate');
-            strictEqual(tr2['hello'], 'word', 'Test translate');
-            strictEqual(tr2['second'], 'hy', 'Test translate');
+            
+            assert.strictEqual(tr1['hello'], 'nope', 'Test translate');
+            QAppStorm.pop();
+            assert.strictEqual(tr1['second'], 'nope2', 'Test translate');
+            QAppStorm.pop();
+            assert.strictEqual(tr2['hello'], 'word', 'Test translate');
+            QAppStorm.pop();
+            assert.strictEqual(tr2['second'], 'hy', 'Test translate');
+            QAppStorm.pop();
 
             // Testing CSS loading
             var div = document.createElement('div');
@@ -458,27 +515,32 @@ asyncTest('a.state-loader', function() {
             var height = (div.currentStyle) ? div.currentStyle['height'] :
                     document.defaultView.getComputedStyle(div,null)
                     .getPropertyValue('height');
-            strictEqual(height, '20px', 'Test CSS applies correctly');
+            assert.strictEqual(height, '20px', 'Test CSS applies correctly');
+            QAppStorm.pop();
 
             // Test HTML (test mustache got the file loaded)
             var uriHTML = './resource/data/state/test.html';
             var hash = 'a_tmpl_' + uriHTML.replace(/[^a-zA-Z0-9]/g, '_');
-            strictEqual(typeof(a.template._tmpl[hash]), 'string',
+            assert.strictEqual(typeof(a.template._tmpl[hash]), 'string',
                 'Test the template has been registred as available template');
+            QAppStorm.pop();
             chain.next();
         }
     }
 
     a.state.add(main);
 
-    chain('astatemanager12', start, 500);
-
-    hashtag('astatemanager12');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager12',
+            expect: 7
+        }
+    );
 });
 
 
 // Test loading multiple data and send that to html as expected
-asyncTest('a.state-multiData', function() {
+QUnit.asyncTest('a.state-multiData', function(assert) {
     expect(7);
 
     var tree = {
@@ -505,10 +567,12 @@ asyncTest('a.state-multiData', function() {
             var user1 = document.getElementById('multidata-userlist4-result');
             var user2 = document.getElementById('multidata-userlist5-result');
 
-            strictEqual(user1.innerHTML.toLowerCase(), 'george',
+            assert.strictEqual(user1.innerHTML.toLowerCase(), 'george',
                                                         'Test first user');
-            strictEqual(user2.innerHTML.toLowerCase(), 'christophe', 
+            QAppStorm.pop();
+            assert.strictEqual(user2.innerHTML.toLowerCase(), 'christophe', 
                                                         'Test second user');
+            QAppStorm.pop();
 
             // ProjectList test
             var project1 = document
@@ -516,25 +580,30 @@ asyncTest('a.state-multiData', function() {
             var project2 = document
                         .getElementById('multidata-projectlist300-result');
 
-            strictEqual(project1.innerHTML.toLowerCase(), 'project 1',
+            assert.strictEqual(project1.innerHTML.toLowerCase(), 'project 1',
                                                     'Test first project');
-            strictEqual(project2.innerHTML.toLowerCase(), 'superb project',
+            QAppStorm.pop();
+            assert.strictEqual(project2.innerHTML.toLowerCase(), 'superb project',
                                                     'Test second project');
+            QAppStorm.pop();
 
             // Testing object loading
             var myself1 = document
                         .getElementById('multidata-myself-id-result');
-            strictEqual(myself1.innerHTML.toLowerCase(), '30', 'Test user id');
+            assert.strictEqual(myself1.innerHTML.toLowerCase(), '30', 'Test user id');
+            QAppStorm.pop();
 
             var myself2 = document
                         .getElementById('multidata-myself-firstname-result');
-            strictEqual(myself2.innerHTML.toLowerCase(), 'js',
+            assert.strictEqual(myself2.innerHTML.toLowerCase(), 'js',
                                                     'Test user firstname');
+            QAppStorm.pop();
 
             var myself3 = document
                         .getElementById('multidata-myself-lastname-result');
-            strictEqual(myself3.innerHTML.toLowerCase(), 'appstorm',
+            assert.strictEqual(myself3.innerHTML.toLowerCase(), 'appstorm',
                                                     'Test user lastname');
+            QAppStorm.pop();
 
             chain.next();
         }
@@ -542,35 +611,54 @@ asyncTest('a.state-multiData', function() {
 
     a.state.add(tree);
 
-    chain('astatemanager13', start, 300);
-
-    hashtag('astatemanager13');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager13',
+            expect: 7
+        }
+    );
 });
 
 
 
 
 // Test event begin and end before and after loading a state
-asyncTest('a.state.begin-end', function() {
+QUnit.asyncTest('a.state.begin-end', function(assert) {
     expect(2);
 
     a.message.bind('a.state.begin', function(data) {
-        strictEqual(data.value, 'astatemanager14', 'Test message begin');
+        // We don't want preload unit tests...
+        if(!data.value || data.value === 'tmp_astatemanager14') {
+            return;
+        }
+        assert.strictEqual(data.value, 'astatemanager14', 'Test message begin');
+        QAppStorm.pop();
     });
     a.message.bind('a.state.end', function(data) {
-        strictEqual(data.value, 'astatemanager14', 'Test message end');
+        // We don't want preload unit tests...
+        if(!data.value || data.value === 'tmp_astatemanager14') {
+            return;
+        }
+        assert.strictEqual(data.value, 'astatemanager14', 'Test message end');
+        QAppStorm.pop();
     });
 
-    chain('astatemanager14', start, 100);
-
-    hashtag('astatemanager14');
+    QAppStorm.chain(
+        {
+            hash: 'astatemanager14',
+            expect: 1
+        }, {
+            hash: 'tmp_astatemanager14',
+            expect: 1
+        }
+    );
 });
 
 
 
 
 // Test to send parameter into html loading
-asyncTest('a.state.html-parameter', function() {
+QUnit.asyncTest('a.state.html-parameter', function(assert) {
     expect(1);
 
     var htmlParameter = {
@@ -588,23 +676,27 @@ asyncTest('a.state.html-parameter', function() {
         // and check content
         load : function(chain) {
             var loaded = document.getElementById('html-parameter-loaded');
-            strictEqual(loaded.innerHTML.toLowerCase(), 'ok',
+            assert.strictEqual(loaded.innerHTML.toLowerCase(), 'ok',
                                 'Test loading html with parameters');
+            QAppStorm.pop();
             chain.next();
         }
     };
 
     a.state.add(htmlParameter);
 
-    chain('html-parameter-ok', start, 100);
-
-    hashtag('html-parameter-ok');
+    QAppStorm.chain(
+        {
+            hash: 'html-parameter-ok',
+            expect: 1
+        }
+    );
 });
 
 
 
 // Test adding parameter inside data url
-asyncTest('a.state.data-parameter', function() {
+QUnit.asyncTest('a.state.data-parameter', function(assert) {
     expect(1);
 
     var htmlParameter = {
@@ -614,22 +706,26 @@ asyncTest('a.state.data-parameter', function() {
         data : 'resource/data/state/data-parameter-{{param}}.json',
 
         converter : function(data) {
-            strictEqual(data.ok, 'ok', 'Test loading data with parameters');
+            assert.strictEqual(data.ok, 'ok', 'Test loading data with parameters');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(htmlParameter);
 
-    chain('data-parameter-ok', start, 100);
-
-    hashtag('data-parameter-ok');
+    QAppStorm.chain(
+        {
+            hash: 'data-parameter-ok',
+            expect: 1
+        }
+    );
 });
 
 
 
 
 // Test converter function behaviour on no data loaded
-asyncTest('a.state.data-converter-nodata', function() {
+QUnit.asyncTest('a.state.data-converter-nodata', function(assert) {
     expect(1);
 
     var test = {
@@ -650,23 +746,27 @@ asyncTest('a.state.data-converter-nodata', function() {
         load : function(chain) {
             var loaded = document
                         .getElementById('data-converter-nodata-loaded');
-            strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
+            assert.strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
                                             'Test loading data converter');
+            QAppStorm.pop();
             chain.next();
         }
     };
 
     a.state.add(test);
 
-    chain('data-converter-nodata', start, 100);
-
-    hashtag('data-converter-nodata');
+    QAppStorm.chain(
+        {
+            hash: 'data-converter-nodata',
+            expect: 1
+        }
+    );
 });
 
 
 
 // Test converter function behaviour with loaded data
-asyncTest('a.state.data-converter-append', function() {
+QUnit.asyncTest('a.state.data-converter-append', function(assert) {
     expect(2);
 
     var test = {
@@ -688,27 +788,32 @@ asyncTest('a.state.data-converter-append', function() {
         load : function(chain) {
             var loaded = document
                             .getElementById('data-converter-append-loaded');
-            strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
+            assert.strictEqual(loaded.innerHTML.toLowerCase(), 'converted',
                                             'Test loading data converter');
+            QAppStorm.pop();
             var second = document
                     .getElementById('data-converter-append-another-loaded');
-            strictEqual(second.innerHTML.toLowerCase(), 'chain',
+            assert.strictEqual(second.innerHTML.toLowerCase(), 'chain',
                                         'Test append loading data converter');
+            QAppStorm.pop();
             chain.next();
         }
     };
 
     a.state.add(test);
 
-    chain('data-converter-append', start, 100);
-
-    hashtag('data-converter-append');
+    QAppStorm.chain(
+        {
+            hash: 'data-converter-append',
+            expect: 2
+        }
+    );
 });
 
 
 
 // Test binding parameters to data
-asyncTest('a.state.data-cross-parameter', function() {
+QUnit.asyncTest('a.state.data-cross-parameter', function(assert) {
     expect(4);
 
     var test = {
@@ -733,23 +838,24 @@ asyncTest('a.state.data-cross-parameter', function() {
         // Test content has been loaded with parameter modification
         load : function(chain) {
             var id = document.getElementById('data-cross-parameter-id');
-            strictEqual(id.innerHTML, '9860', 'Test data cross parameter');
-
+            assert.strictEqual(id.innerHTML, '9860', 'Test data cross parameter');
+            QAppStorm.pop();
+            
             var parent = document
                         .getElementById('data-cross-parameter-parent');
-            strictEqual(parent.innerHTML, 'dataParent01',
+            assert.strictEqual(parent.innerHTML, 'dataParent01',
                                                 'Test data cross parameter');
-
+            QAppStorm.pop();
             var memComplexA = document
                     .getElementById('data-cross-parameter-mem-complex-a');
-            strictEqual(memComplexA.innerHTML, 'b',
+            assert.strictEqual(memComplexA.innerHTML, 'b',
                                                 'Test data cross parameter');
-
+            QAppStorm.pop();
             var memComplexC = document
                     .getElementById('data-cross-parameter-mem-complex-c');
-            strictEqual(memComplexC.innerHTML, 'd',
+            assert.strictEqual(memComplexC.innerHTML, 'd',
                                                 'Test data cross parameter');
-
+            QAppStorm.pop();
             // Continue
             chain.next();
         }
@@ -764,16 +870,18 @@ asyncTest('a.state.data-cross-parameter', function() {
     a.state.add(test);
 
     // Now starting to proceed loader
-
-    chain('data-cross-parameter-9860-dataParent01', start, 100);
-
-    hashtag('data-cross-parameter-9860-dataParent01');
+    QAppStorm.chain(
+        {
+            hash: 'data-cross-parameter-9860-dataParent01',
+            expect: 4
+        }
+    );
 });
 
 
 
 // Test title with hashtag parameters
-asyncTest('a.state.title', function() {
+QUnit.asyncTest('a.state.title', function(assert) {
     expect(1);
 
     var previous = document.title;
@@ -781,25 +889,29 @@ asyncTest('a.state.title', function() {
     var test = {
         id : 'test-title',
         hash : 'test-title-{{parent : [a-zA-Z0-9]+}}',
-        title : 'test loading - {{parent}}'
+        title : 'test loading - {{parent}}',
+        postLoad: function() {
+            assert.strictEqual(document.title, 'test loading - oktitle',
+                                            'test title parameter');
+            QAppStorm.pop();
+            document.title = previous;
+        }
     };
 
     a.state.add(test);
 
-    chain('test-title-oktitle', function() {
-        strictEqual(document.title, 'test loading - oktitle',
-                                        'test title parameter');
-        document.title = previous;
-        start();
-    }, 100);
-
-    hashtag('test-title-oktitle');
+    QAppStorm.chain(
+        {
+            hash: 'test-title-oktitle',
+            expect: 1
+        }
+    );
 });
 
 
 // Two hashtag : one in the parent, one in the children
 // Only the children is correctly parsed (speed gain)
-asyncTest('a.state.underhash', function() {
+QUnit.asyncTest('a.state.underhash', function(assert) {
     expect(2);
 
     var tree = {
@@ -809,7 +921,8 @@ asyncTest('a.state.underhash', function() {
             id : '{{user}}'
         },
         converter : function(data) {
-            strictEqual(data.id, '{{user}}', 'Test user is not parsed tag');
+            assert.strictEqual(data.id, '{{user}}', 'Test user is not parsed tag');
+            QAppStorm.pop();
         },
         children : {
             id : 'sub',
@@ -818,21 +931,25 @@ asyncTest('a.state.underhash', function() {
                 id : '{{user}}'
             },
             converter : function(data) {
-                strictEqual(data.id, 'aaaa', 'Test user is parsed into child');
+                assert.strictEqual(data.id, 'aaaa', 'Test user is parsed into child');
+                QAppStorm.pop();
             }
         }
     };
 
     a.state.add(tree);
 
-    chain('welcome-aaaa', start, 100);
-
-    hashtag('welcome-aaaa');
+    QAppStorm.chain(
+        {
+            hash: 'welcome-aaaa',
+            expect: 2
+        }
+    );
 });
 
 
 // Test options url
-asyncTest('a.state.options-parameter', function() {
+QUnit.asyncTest('a.state.options-parameter', function(assert) {
     expect(1);
 
     var tree = {
@@ -849,21 +966,25 @@ asyncTest('a.state.options-parameter', function() {
             }
         },
         converter : function(data) {
-            strictEqual(data.user, 'abcdef0',
+            assert.strictEqual(data.user, 'abcdef0',
                                     'Test content transmitted threw system');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(tree);
 
-    chain('options-parameter-abcdef0', start, 100);
-
-    hashtag('options-parameter-abcdef0');
+    QAppStorm.chain(
+        {
+            hash: 'options-parameter-abcdef0',
+            expect: 1
+        }
+    );
 });
 
 
 // Test the 'use' extend system
-test('a.state.use', function() {
+QUnit.test('a.state.use', function(assert) {
     var initialState = {
         id: 'init-state',
         hash: 'init-state',
@@ -885,25 +1006,25 @@ test('a.state.use', function() {
         storedSubState = a.state.get('sub-state');
 
     // Now we test the current init-state element
-    strictEqual(storedInitialState.id, 'init-state', 'Test id');
-    strictEqual(storedInitialState._storm.hash[0].hash, 'init-state',
+    assert.strictEqual(storedInitialState.id, 'init-state', 'Test id');
+    assert.strictEqual(storedInitialState._storm.hash[0].hash, 'init-state',
                                                                 'Test hash');
-    strictEqual(a.isFunction(storedInitialState.preLoad), true,
+    assert.strictEqual(a.isFunction(storedInitialState.preLoad), true,
                                                             'Test preLoad');
-    strictEqual(a.isFunction(storedInitialState.postLoad), false,
+    assert.strictEqual(a.isFunction(storedInitialState.postLoad), false,
                                                             'Test postLoad');
 
     // We test the duplicate element
-    strictEqual(storedSubState.id, 'sub-state', 'Test id');
-    strictEqual(storedSubState._storm.hash[0].hash, 'init-state', 'Test hash');
-    strictEqual(a.isFunction(storedSubState.preLoad), true, 'Test preLoad');
-    strictEqual(a.isFunction(storedSubState.postLoad), true, 'Test postLoad');
+    assert.strictEqual(storedSubState.id, 'sub-state', 'Test id');
+    assert.strictEqual(storedSubState._storm.hash[0].hash, 'init-state', 'Test hash');
+    assert.strictEqual(a.isFunction(storedSubState.preLoad), true, 'Test preLoad');
+    assert.strictEqual(a.isFunction(storedSubState.postLoad), true, 'Test postLoad');
 });
 
 
 
 // Test system allow bind/unbind event
-asyncTest('a.state.load-bind', function() {
+QUnit.asyncTest('a.state.load-bind', function(assert) {
     // We create a binding
     // Test binding is working
     // Unload state
@@ -922,10 +1043,10 @@ asyncTest('a.state.load-bind', function() {
 
         bind: {
             '#bind-unbind .first | click': function(e) {
-                strictEqual(e.target.className, 'first', 'Test first click');
+                assert.strictEqual(e.target.className, 'first', 'Test first click');
             },
             '#bind-unbind .second | click': function(e) {
-                strictEqual(e.target.className, 'second', 'Test second click');
+                assert.strictEqual(e.target.className, 'second', 'Test second click');
             }
         }
     };
@@ -965,7 +1086,7 @@ asyncTest('a.state.load-bind', function() {
 
 
 // Test system allow bind/unbind event ON the entry directly
-asyncTest('a.state.load-bind-entry', function() {
+QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
     // We create a binding
     // Test binding is working
     // Unload state
@@ -980,7 +1101,7 @@ asyncTest('a.state.load-bind-entry', function() {
 
         bind: {
             'click': function(e) {
-                strictEqual(e.target.id, 'a-state-direct-entry-bind',
+                assert.strictEqual(e.target.id, 'a-state-direct-entry-bind',
                                                         'Test id click');
             }
         }
@@ -1016,7 +1137,7 @@ asyncTest('a.state.load-bind-entry', function() {
 
 
 // Test the async parameter
-asyncTest('a.state.async-boolean', function() {
+QUnit.asyncTest('a.state.async-boolean', function(assert) {
     expect(4);
 
     var asyncFalse = {
@@ -1024,10 +1145,12 @@ asyncTest('a.state.async-boolean', function() {
         hash: 'test-async-false',
         async: false,
         preLoad: function() {
-            strictEqual(1, 1, 'Test async false');
+            assert.strictEqual(1, 1, 'Test async false');
+            QAppStorm.pop();
         },
         postLoad: function() {
-            strictEqual(1, 1, 'Test async false');
+            assert.strictEqual(1, 1, 'Test async false');
+            QAppStorm.pop();
         }
     };
 
@@ -1036,29 +1159,33 @@ asyncTest('a.state.async-boolean', function() {
         hash: 'test-async-true',
         async: true,
         preLoad: function(chain) {
-            strictEqual(1, 1, 'Test async true');
+            assert.strictEqual(1, 1, 'Test async true');
+            QAppStorm.pop();
             chain.next();
         },
         postLoad: function(chain) {
-            strictEqual(1, 1, 'Test async true');
+            assert.strictEqual(1, 1, 'Test async true');
+            QAppStorm.pop();
             chain.next();
         }
     };
 
     a.state.add([asyncTrue, asyncFalse]);
 
-    chain('test-async-true', start, 100);
-
-    chain('test-async-false', function() {
-        hashtag('test-async-true');
-    });
-
-    hashtag('test-async-false');
+    QAppStorm.chain(
+        {
+            hash: 'test-async-false',
+            expect: 2
+        }, {
+            hash: 'test-async-true',
+            expect: 2
+        }
+    );
 });
 
 
 // Test async on a single string
-asyncTest('a.state.async-string', function() {
+QUnit.asyncTest('a.state.async-string', function(assert) {
     expect(6);
 
     var asyncString1 = {
@@ -1066,14 +1193,17 @@ asyncTest('a.state.async-string', function() {
         hash: 'test-async-str1',
         async: 'load',
         preLoad: function() {
-            strictEqual(1, 1, 'Test async str');
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
         },
         load: function(chain) {
-            strictEqual(1, 1, 'Test async str');
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
             chain.next();
         },
         postLoad: function() {
-            strictEqual(1, 1, 'Test async str');
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
         }
     };
 
@@ -1082,30 +1212,35 @@ asyncTest('a.state.async-string', function() {
         hash: 'test-async-str2',
         async: 'postLoad',
         preLoad: function() {
-            strictEqual(1, 1, 'Test async str');
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
         },
         load: function() {
-            strictEqual(1, 1, 'Test async str');
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
         },
         postLoad: function(chain) {
-            strictEqual(1, 1, 'Test async str');
-            setTimeout(chain.next, 100);
+            assert.strictEqual(1, 1, 'Test async str');
+            QAppStorm.pop();
+            chain.next();
         }
     };
 
     a.state.add([asyncString1, asyncString2]);
 
-    chain('test-async-str2', start, 200);
-
-    chain('test-async-str1', function() {
-        hashtag('test-async-str2');
-    });
-
-    hashtag('test-async-str1');
+    QAppStorm.chain(
+        {
+            hash: 'test-async-str1',
+            expect: 3
+        }, {
+            hash: 'test-async-str2',
+            expect: 3
+        }
+    );
 });
 
 
-asyncTest('a.state.async-array', function() {
+QUnit.asyncTest('a.state.async-array', function(assert) {
     expect(6);
 
     var asyncArray1 = {
@@ -1113,15 +1248,18 @@ asyncTest('a.state.async-array', function() {
         hash: 'test-async-arr1',
         async: ['preLoad', 'load'],
         preLoad: function(chain) {
-            strictEqual(1, 1, 'Test async array');
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
             chain.next();
         },
         load: function(chain) {
-            strictEqual(1, 1, 'Test async array');
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
             chain.next();
         },
         postLoad: function() {
-            strictEqual(1, 1, 'Test async array');
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
         }
     };
 
@@ -1130,32 +1268,37 @@ asyncTest('a.state.async-array', function() {
         hash: 'test-async-arr2',
         async: ['preLoad', 'postLoad'],
         preLoad: function(chain) {
-            strictEqual(1, 1, 'Test async array');
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
             chain.next();
         },
         load: function() {
-            strictEqual(1, 1, 'Test async array');
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
         },
         postLoad: function(chain) {
-            strictEqual(1, 1, 'Test async array');
-            setTimeout(chain.next, 100);
+            assert.strictEqual(1, 1, 'Test async array');
+            QAppStorm.pop();
+            chain.next();
         }
     };
 
     a.state.add([asyncArray1, asyncArray2]);
 
-    chain('test-async-arr2', start, 200);
-
-    chain('test-async-arr1', function() {
-        hashtag('test-async-arr2');
-    });
-
-    hashtag('test-async-arr1');
+    QAppStorm.chain(
+        {
+            hash: 'test-async-arr1',
+            expect: 3
+        }, {
+            hash: 'test-async-arr2',
+            expect: 3
+        }
+    );
 });
 
 
 // Test how the state react regarding acl changes
-asyncTest('a.state.acl-change', function() {
+QUnit.asyncTest('a.state.acl-change', function(assert) {
     expect(3);
 
     var state = {
@@ -1165,7 +1308,8 @@ asyncTest('a.state.acl-change', function() {
             allowed: 'acl-change2'
         },
         preLoad: function() {
-            strictEqual(1, 1, 'Acl has been updated as expected');
+            assert.strictEqual(1, 1, 'Acl has been updated as expected');
+            QAppStorm.pop();
         }
     };
 
@@ -1173,29 +1317,30 @@ asyncTest('a.state.acl-change', function() {
     a.state.add(state);
 
     // We test acl value
-    strictEqual(state._storm.acl, false, 'Value is not ready');
+    assert.strictEqual(state._storm.acl, false, 'Value is not ready');
 
-    // Even if state can respond to bot state, only
-    // the second will raise as the acl has been modified
-    chain('state-acl-change', function() {
-        a.acl.setCurrentRole('acl-change2');
-        setTimeout(function() {
-            strictEqual(state._storm.acl, true, 'Value has been updated');
-        }, 100);
-        setTimeout(function() {
-            hashtag('state-acl-changz');
-        }, 200);
-       
-    });
-
-    chain('state-acl-changz', start, 200);
-
-    hashtag('state-acl-change');
+    QAppStorm.chain(
+        {
+            hash: 'state-acl-change',
+            expect: 1,
+            callback: function(chain) {
+                a.acl.setCurrentRole('acl-change2');
+                chain.next();
+            }
+        }, {
+            hash: 'state-acl-changz',
+            expect: 0,
+            callback: function(chain) {
+                assert.strictEqual(state._storm.acl, true, 'Value has been updated');
+                chain.next();
+            }
+        }
+    );
 });
 
 
 // Setup a minimum role for acl
-asyncTest('a.state.acl-minimum', function() {
+QUnit.asyncTest('a.state.acl-minimum', function(assert) {
     expect(1);
 
     var state = {
@@ -1205,7 +1350,8 @@ asyncTest('a.state.acl-minimum', function() {
             minimum: 'admin'
         },
         postLoad: function() {
-            strictEqual(a.acl.getCurrentRole(), 'admin', 'ACL unit test');
+            assert.strictEqual(a.acl.getCurrentRole(), 'admin', 'ACL unit test');
+            QAppStorm.pop();
         }
     };
 
@@ -1216,20 +1362,23 @@ asyncTest('a.state.acl-minimum', function() {
     // We add the state, the minimum will be performed
     a.state.add(state);
 
-    chain('a.state.acl-minimuma', function() {
-        a.acl.setCurrentRole('admin');
-        setTimeout(function() {
-            hashtag('a.state.acl-minimumb');
-        }, 100);
-    }, 100);
-
-    chain('a.state.acl-minimumb', start, 100);
-
-    hashtag('a.state.acl-minimuma');
+    QAppStorm.chain(
+        {
+            hash: 'a.state.acl-minimuma',
+            expect: 1,
+            callback: function(chainer) {
+                a.acl.setCurrentRole('admin');
+                chain.next();
+            }
+        }, {
+            hash: 'a.state.acl-minimumb',
+            expect: 0
+        }
+    );
 });
 
 // Define a maximum step
-asyncTest('a.state.acl-maximum', function() {
+QUnit.asyncTest('a.state.acl-maximum', function(assert) {
     expect(1);
 
     var state = {
@@ -1239,7 +1388,8 @@ asyncTest('a.state.acl-maximum', function() {
             maximum: 'user'
         },
         postLoad: function() {
-            strictEqual(a.acl.getCurrentRole(), 'user', 'ACL unit test');
+            assert.strictEqual(a.acl.getCurrentRole(), 'user', 'ACL unit test');
+            QAppStorm.pop();
         }
     };
 
@@ -1250,20 +1400,23 @@ asyncTest('a.state.acl-maximum', function() {
     // We add the state, the maximum will be performed
     a.state.add(state);
 
-    chain('a.state.acl-maximuma', function() {
-        a.acl.setCurrentRole('admin');
-        setTimeout(function() {
-            hashtag('a.state.acl-maximumb');
-        }, 100);
-    }, 100);
-
-    chain('a.state.acl-maximumb', start, 100);
-
-    hashtag('a.state.acl-maximuma');
+    QAppStorm.chain(
+        {
+            hash: 'a.state.acl-maximuma',
+            expect: 1,
+            callback: function(chain) {
+                a.acl.setCurrentRole('admin');
+                chain.next();
+            }
+        }, {
+            hash: 'a.state.acl-maximumb',
+            expect: 0
+        }
+    );
 });
 
 // Any element is accepted, except the one defined in refused
-asyncTest('a.state.acl-refused', function() {
+QUnit.asyncTest('a.state.acl-refused', function(assert) {
     expect(2);
 
     var state = {
@@ -1276,11 +1429,14 @@ asyncTest('a.state.acl-refused', function() {
             var role = a.acl.getCurrentRole();
             // Thoose two role are allowed
             if(role == 'user') {
-                strictEqual(role, 'user', 'User passed');
+                assert.strictEqual(role, 'user', 'User passed');
+                QAppStorm.pop();
             } else if(role == 'admin') {
-                strictEqual(role, 'admin', 'Admin passed');
+                assert.strictEqual(role, 'admin', 'Admin passed');
+                QAppStorm.pop();
             } else {
-                strictEqual(role, false, 'Leader SHOULD NOT pass');
+                assert.strictEqual(role, false, 'Leader SHOULD NOT pass');
+                QAppStorm.pop();
             }
         }
     };
@@ -1291,29 +1447,32 @@ asyncTest('a.state.acl-refused', function() {
     // We add the state, the refused will not be performed
     a.state.add(state);
 
-    chain('a.state.acl-refuseda', function() {
-        a.acl.setCurrentRole('leader');
-        setTimeout(function() {
-            hashtag('a.state.acl-refusedb');
-        }, 100);
-    }, 100);
-
-    chain('a.state.acl-refusedb', function() {
-        a.acl.setCurrentRole('admin');
-        setTimeout(function() {
-            hashtag('a.state.acl-refusedc');
-        }, 100);
-    }, 100);
-
-    chain('a.state.acl-refusedc', start, 100);
-
-    hashtag('a.state.acl-refuseda');
+    QAppStorm.chain(
+        {
+            hash: 'a.state.acl-refuseda',
+            expect: 1,
+            callback: function(chain) {
+                a.acl.setCurrentRole('leader');
+                chain.next();
+            }
+        }, {
+            hash: 'a.state.acl-refusedb',
+            expect: 1,
+            callback: function(chain) {
+                a.acl.setCurrentRole('admin');
+                chain.next();
+            }
+        }, {
+            hash: 'a.state.acl-refusedc',
+            expect: 0
+        }
+    );
 });
 
 
 
 // Test the inject parameters system
-asyncTest('a.state.inject', function() {
+QUnit.asyncTest('a.state.inject', function(assert) {
     expect(1);
 
     var state = {
@@ -1323,13 +1482,13 @@ asyncTest('a.state.inject', function() {
             el: '{{inject: ok}}'
         },
         converter: function(data) {
-            strictEqual(data.el, 'something');
+            assert.strictEqual(data.el, 'something');
         }
     };
 
     a.state.add(state);
 
-    chain('a.state.inject-test', start, 100);
+    chain('a.state.inject-test', start, 500);
 
     a.route.hash('a.state.inject-test', {
         ok: 'something'
@@ -1338,7 +1497,7 @@ asyncTest('a.state.inject', function() {
 
 
 // Testing to loadAfter functionnality
-asyncTest('a.state.load-after', function() {
+QUnit.asyncTest('a.state.load-after', function(assert) {
     expect(2);
 
     var parent = {
@@ -1346,26 +1505,31 @@ asyncTest('a.state.load-after', function() {
         hash: 'a.state.loadafter',
         loadAfter: 'a.state.loadafter-child',
         postLoad: function() {
-            strictEqual(true, true);
+            assert.strictEqual(true, true);
+            QAppStorm.pop();
         }
     };
 
     var child = {
         id: 'a.state.loadafter-child',
         postLoad: function() {
-            strictEqual(true, true);
+            assert.strictEqual(true, true);
+            QAppStorm.pop();
         }
     };
 
     a.state.add([parent, child]);
 
-    chain('a.state.loadafter', start, 200);
-
-    hashtag('a.state.loadafter');
+    QAppStorm.chain(
+        {
+            hash: 'a.state.loadafter',
+            expect: 2
+        }
+    );
 });
 
 // Unit test the raw mock support for faking server with not-parsed requests
-asyncTest('a.state.data-mock', function() {
+QUnit.asyncTest('a.state.data-mock', function(assert) {
     expect(2);
 
     a.mock.add('GET', 'something/{{important}}', {
@@ -1385,18 +1549,24 @@ asyncTest('a.state.data-mock', function() {
             }
         },
         converter: function(data) {
-            strictEqual(data.content.version, '1.0.2');
+            assert.strictEqual(data.content.version, '1.0.2');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(state);
-    chain('a.state.data-mock-abcdef', start, 200);
-    hashtag('a.state.data-mock-abcdef');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.data-mock-abcdef',
+            expect: 1
+        }
+    );
 });
 
 
 // Test the new capacities for entry/el/dom to use a function instead of a string
-asyncTest('a.state.entry-function', function() {
+QUnit.asyncTest('a.state.entry-function', function(assert) {
     expect(2);
 
     var state = {
@@ -1406,8 +1576,10 @@ asyncTest('a.state.entry-function', function() {
             return 'something-is-working';
         },
         type: function(entry, content, chain) {
-            strictEqual(entry, 'something-is-working');
-            strictEqual(content, "<a style='display:none'>I'm loaded threw state</a>");
+            assert.strictEqual(entry, 'something-is-working');
+            QAppStorm.pop();
+            assert.strictEqual(content, "<a style='display:none'>I'm loaded threw state</a>");
+            QAppStorm.pop();
             chain.next();
         },
         include : {
@@ -1416,13 +1588,18 @@ asyncTest('a.state.entry-function', function() {
     };
 
     a.state.add(state);
-    chain('a.state.entry-function', start, 200);
-    hashtag('a.state.entry-function');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.entry-function',
+            expect: 2
+        }
+    );
 });
 
 
 // Test data as a function instead of string/object
-asyncTest('a.state.data-function', function() {
+QUnit.asyncTest('a.state.data-function', function(assert) {
     expect(1);
 
     var state = {
@@ -1435,17 +1612,23 @@ asyncTest('a.state.data-function', function() {
             html : './resource/data/state/test.html'
         },
         converter: function(data) {
-            strictEqual(data, 'i got something');
+            assert.strictEqual(data, 'i got something');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(state);
-    chain('a.state.data-function', start, 200);
-    hashtag('a.state.data-function');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.data-function',
+            expect: 1
+        }
+    );
 });
 
 // Little bit more complex data test
-asyncTest('a.state.data-function2', function() {
+QUnit.asyncTest('a.state.data-function2', function(assert) {
     expect(1);
 
     var state = {
@@ -1464,17 +1647,23 @@ asyncTest('a.state.data-function2', function() {
             html : './resource/data/state/test.html'
         },
         converter: function(data) {
-            strictEqual(data.ok, 'ok');
+            assert.strictEqual(data.ok, 'ok');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(state);
-    chain('a.state.data-function2', start, 200);
-    hashtag('a.state.data-function2');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.data-function2',
+            expect: 1
+        }
+    );
 });
 
 // More complex data structure, mixing many things at a time
-asyncTest('a.state.data-function3', function() {
+QUnit.asyncTest('a.state.data-function3', function(assert) {
     expect(2);
 
     a.storage.memory.set('something', 'other ok');
@@ -1498,8 +1687,10 @@ asyncTest('a.state.data-function3', function() {
             html : './resource/data/state/test.html'
         },
         converter: function(data) {
-            strictEqual(data.id, 'other ok');
-            strictEqual(data.content.ok, 'ok');
+            assert.strictEqual(data.id, 'other ok');
+            QAppStorm.pop();
+            assert.strictEqual(data.content.ok, 'ok');
+            QAppStorm.pop();
         },
         postLoad: function() {
             a.storage.memory.remove('something');
@@ -1507,30 +1698,42 @@ asyncTest('a.state.data-function3', function() {
     };
 
     a.state.add(state);
-    chain('a.state.data-function3', start, 200);
-    hashtag('a.state.data-function3');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.data-function3',
+            expect: 2
+        }
+    );
 });
 
 // Testing usage parameters
-asyncTest('a.state.parameters', function() {
+QUnit.asyncTest('a.state.parameters', function(assert) {
     expect(2);
 
     var state = {
         id: 'a.state.parameters',
         hash: '/something/{{interest: [a-zA-Z0-9]+}}/with/{{content: \\d+}}',
         preLoad: function() {
-            strictEqual(this.parameters.interest, 'gettinggood01');
-            strictEqual(this.parameters.content, '13');
+            assert.strictEqual(this.parameters.interest, 'gettinggood01');
+            QAppStorm.pop();
+            assert.strictEqual(this.parameters.content, '13');
+            QAppStorm.pop();
         }
     };
 
     a.state.add(state);
-    chain('/something/gettinggood01/with/13', start, 200);
-    hashtag('/something/gettinggood01/with/13');
+
+    QAppStorm.chain(
+        {
+            hash: '/something/gettinggood01/with/13',
+            expect: 2
+        }
+    );
 });
 
 // Keyboard test
-asyncTest('a.state.keyboard-bindings', function() {
+QUnit.asyncTest('a.state.keyboard-bindings', function(assert) {
     expect(6);
 
     a.state.add({
@@ -1538,16 +1741,20 @@ asyncTest('a.state.keyboard-bindings', function() {
         hash: 'a.state.keyboard-bindings',
         keyboard: {
             'a': function() {
-                strictEqual(true, true);
+                assert.strictEqual(true, true);
+                QAppStorm.pop();
             },
             'b:keypress': function() {
-                strictEqual(true, true);
+                assert.strictEqual(true, true);
+                QAppStorm.pop();
             },
             'c|d:keyup': function() {
-                strictEqual(true, true);
+                assert.strictEqual(true, true);
+                QAppStorm.pop();
             },
             'e:keypress|f:keydown': function() {
-                strictEqual(true, true);
+                assert.strictEqual(true, true);
+                QAppStorm.pop();
             }
         },
         postLoad: function() {
@@ -1570,16 +1777,20 @@ asyncTest('a.state.keyboard-bindings', function() {
         }
     });
 
-    chain('a.state.keyboard-bindings', function() {
-        hashtag('a.state.keyboard-unbind');
-    }, 200);
-    chain('a.state.keyboard-unbind', start, 200);
-    hashtag('a.state.keyboard-bindings');
+    QAppStorm.chain(
+        {
+            hash: 'a.state.keyboard-bindings',
+            expect: 6
+        }, {
+            hash: 'a.state.keyboard-unbind',
+            expect: 0
+        }
+    );
 });
 
 
 // Testing multiple hash response
-asyncTest('a.state.multiple-hash', function() {
+QUnit.asyncTest('a.state.multiple-hash', function(assert) {
     expect(4);
 
     a.state.add({
@@ -1589,22 +1800,30 @@ asyncTest('a.state.multiple-hash', function() {
             'a.state.multiple-hash{{let: [a-z]+}}'
         ],
         postLoad: function() {
-            strictEqual(a.size(this.parameters), 1);
+            assert.strictEqual(a.size(this.parameters), 1);
+            QAppStorm.pop();
 
             if(this.parameters.num) {
-                strictEqual(this.parameters.num, '2');
+                assert.strictEqual(this.parameters.num, '2');
+                QAppStorm.pop();
             } else {
-                strictEqual(this.parameters.let, 'a');
+                assert.strictEqual(this.parameters.let, 'a');
+                QAppStorm.pop();
             }
         }
     });
 
-    chain('a.state.multiple-hasha', function() {
-        hashtag('a.state.NO-multiple-hash');
-    }, 200);
-    chain('a.state.NO-multiple-hash', function() {
-        hashtag('a.state.multiple-hash2');
-    }, 200);
-    chain('a.state.multiple-hash2', start, 200);
-    hashtag('a.state.multiple-hasha');
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.multiple-hasha',
+            expect: 2
+        }, {
+            hash: 'a.state.NO-multiple-hash',
+            expect: 0
+        }, {
+            hash: 'a.state.multiple-hash2',
+            expect: 2
+        }
+    );
 });
