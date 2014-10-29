@@ -5,8 +5,8 @@ QUnit.module('plugin/state.js');
 
 // In this unit test, we check 2 children, with same parent element,
 // and same hashtag, are both loaded not only one
-QUnit.asyncTest('a.state.dualchildren', function() {
-    expect(4);
+QUnit.asyncTest('a.state.dualchildren', function(assert) {
+    assert.expect(4);
 
     var tree = {
         id : 'ok',
@@ -15,11 +15,13 @@ QUnit.asyncTest('a.state.dualchildren', function() {
                 hash : 'unittest-dualchildren',
                 async: true,
                 load : function(chain) {
-                    strictEqual(1, 1, 'Test loading first child');
+                    QAppStorm.pop();
+                    assert.strictEqual(1, 1, 'Test loading first child');
                     chain.next();
                 },
                 unload : function(chain) {
-                    strictEqual(1, 1, 'Test unloading first child');
+                    QAppStorm.pop();
+                    assert.strictEqual(1, 1, 'Test unloading first child');
                     chain.next();
                 }
             },
@@ -27,11 +29,13 @@ QUnit.asyncTest('a.state.dualchildren', function() {
                 hash : 'unittest-dualchildren',
                 async: true,
                 load : function(chain) {
-                    strictEqual(1, 1, 'Test loading second child');
+                    QAppStorm.pop();
+                    assert.strictEqual(1, 1, 'Test loading second child');
                     chain.next();
                 },
                 unload : function(chain) {
-                    strictEqual(1, 1, 'Test unloading second child');
+                    QAppStorm.pop();
+                    assert.strictEqual(1, 1, 'Test unloading second child');
                     chain.next();
                 }
             }
@@ -40,21 +44,20 @@ QUnit.asyncTest('a.state.dualchildren', function() {
 
     a.state.add(tree);
 
-    // Now starting to proceed loader
-    chain('unittest-dualchildren', function() {
-        hashtag('tmp_unittest-dualchildren');
+    QAppStorm.chain({
+        hash: 'unittest-dualchildren',
+        expect: 2
+    }, {
+        hash: 'tmp_unittest-dualchildren',
+        expect: 2
     });
-
-    chain('tmp_unittest-dualchildren', start, 200);
-
-    hashtag('unittest-dualchildren');
 });
 
 
 
 // Bug : passing data threw preLoad, load and postLoad
-asyncTest('a.state.parameter-passthrew', function() {
-    expect(3);
+QUnit.asyncTest('a.state.parameter-passthrew', function(assert) {
+    assert.expect(3);
 
     var test = {
         id : 'testloadpassthrew',
@@ -70,14 +73,14 @@ asyncTest('a.state.parameter-passthrew', function() {
             chain.next();
         },
         postLoad : function(chain) {
-            strictEqual(this.data['objId'], 'hello from data',
+            assert.strictEqual(this.data['objId'], 'hello from data',
                                                             'test data pass');
-            strictEqual(this.data['plop'], 'hello from data',
+            assert.strictEqual(this.data['plop'], 'hello from data',
                                                             'test data pass');
-            strictEqual(this.data['data2'], 'ok', 'test from postload');
+            assert.strictEqual(this.data['data2'], 'ok', 'test from postload');
 
             chain.next();
-            start();
+            QUnit.start();
         }
     };
     a.state.add(test);
@@ -90,15 +93,16 @@ asyncTest('a.state.parameter-passthrew', function() {
 
 // Bug : too long request, may make the system putting
 // content of #a while #b is already loading...
-asyncTest('a.state.request-abort', function() {
-    expect(1);
+QUnit.asyncTest('a.state.request-abort', function(assert) {
+    assert.expect(1);
 
     var b = {
         id : 'child-b',
         hash : 'request-abort-b',
         async: true,
         preLoad : function(chain) {
-            strictEqual(true, true, 'Arrive on time');
+            QAppStorm.pop();
+            assert.strictEqual(true, true, 'Arrive on time');
             chain.next();
         }
     };
@@ -111,7 +115,8 @@ asyncTest('a.state.request-abort', function() {
             a.timer.once(chain.error, null, 500);
         },
         load : function(chain) {
-            strictEqual(false, true, 'should be cancelled');
+            QAppStorm.pop();
+            assert.strictEqual(false, true, 'should be cancelled');
             chain.next();
         }
     };
@@ -119,19 +124,24 @@ asyncTest('a.state.request-abort', function() {
     a.state.add(c);
     a.state.add(b);
 
-    chain('request-abort-c', function() {
-        hashtag('request-abort-b');
+    QAppStorm.chain({
+        hash: 'request-abort-c',
+        expect: 0,
+        callback: function(chain) {
+            setTimeout(function() {
+                chain.next();
+            }, 1000);
+        }
+    }, {
+        hash: 'request-abort-b',
+        expect: 1
     });
-
-    chain('request-abort-b', start, 100);
-
-    hashtag('request-abort-c');
 });
 
 
 // Simple elements to load as sub elements into data
-asyncTest('a.state.request-element', function() {
-    expect(4);
+QUnit.asyncTest('a.state.request-element', function(assert) {
+    assert.expect(4);
 
     var state = {
         id:    'root',
@@ -141,10 +151,14 @@ asyncTest('a.state.request-element', function() {
             commentList: 'resource/data/state/wall-list-unittest.json'
         },
         converter: function(d) {
-            strictEqual(d.commentList.length, 3);
-            strictEqual(d.commentList[0].id, 1);
-            strictEqual(d.commentList[1].id, 23);
-            strictEqual(d.commentList[2].id, 20);
+            QAppStorm.pop();
+            assert.strictEqual(d.commentList.length, 3);
+            QAppStorm.pop();
+            assert.strictEqual(d.commentList[0].id, 1);
+            QAppStorm.pop();
+            assert.strictEqual(d.commentList[1].id, 23);
+            QAppStorm.pop();
+            assert.strictEqual(d.commentList[2].id, 20);
         },
         // Callbacks
         postLoad: function(chain) {
@@ -154,50 +168,50 @@ asyncTest('a.state.request-element', function() {
 
     a.state.add(state);
 
-    chain('wall-list', start, 100);
-
-    hashtag('wall-list');
+    QAppStorm.chain({
+        hash: 'wall-list',
+        expect: 4
+    });
 });
 
 
 // Bug: sometimes, doing a a.state.load while a state is loading
 // can cause something close to infinite loop (but stop at a point)
 // Hanging lots of loads on server side, for nothing...
-asyncTest('a.state.chain-load', function() {
-    expect(2);
+QUnit.asyncTest('a.state.chain-load', function(assert) {
+    assert.expect(2);
 
     var state = {
         id: 'a.state.chain-load',
         hash: 'a.state.chain-load',
         preLoad: function() {
-            strictEqual(true, true);
+            QAppStorm.pop();
+            assert.strictEqual(true, true);
             // Applying load from parent state can hang out state
             a.state.load('a.state.chain-load-sub');
         },
         children: [{
             id: 'a.state.chain-load-sub',
             postLoad: function() {
-                strictEqual(true, true);
+                QAppStorm.pop();
+                assert.strictEqual(true, true);
             }
         }]
     };
 
     a.state.add(state);
 
-    // We exit
-    chain('a.state.chain-load', function() {
-        hashtag('');
-        start();
-    }, 200);
-
-    hashtag('a.state.chain-load');
+    QAppStorm.chain({
+        hash: 'a.state.chain-load',
+        expect: 2
+    });
 });
 
 
 // Loading many child while root is not finished to load
 // Can hang application
-asyncTest('a.state.chain-load-with-url', function() {
-    expect(6);
+QUnit.asyncTest('a.state.chain-load-with-url', function(assert) {
+    assert.expect(6);
 
     var wall = [{
         id: 'root',
@@ -222,7 +236,7 @@ asyncTest('a.state.chain-load-with-url', function() {
                 a.state.load(child);
             }
 
-            strictEqual(true, true, 'Load root parent');
+            assert.strictEqual(true, true, 'Load root parent');
 
             chain.next();
         },
@@ -231,7 +245,7 @@ asyncTest('a.state.chain-load-with-url', function() {
             id:       'mine',
             async:    true,
             postLoad: function(chain) {
-                strictEqual(true, true, 'Load mine child');
+                assert.strictEqual(true, true, 'Load mine child');
                 chain.next();
             }
         },
@@ -239,7 +253,7 @@ asyncTest('a.state.chain-load-with-url', function() {
             id:       'friend',
             async:    true,
             postLoad: function(chain) {
-                strictEqual(true, true, 'load friend child');
+                assert.strictEqual(true, true, 'load friend child');
                 chain.next();
             }
         }]
@@ -248,7 +262,7 @@ asyncTest('a.state.chain-load-with-url', function() {
     a.state.add(wall);
     a.state.load('root');
 
-    setTimeout(start, 200);
+    setTimeout(QUnit.start, 200);
 });
 
 
@@ -257,8 +271,8 @@ asyncTest('a.state.chain-load-with-url', function() {
 // too many times a state create a bug
 // due to cache system which get override by tmp data...
 // This test is here to check that behavior does not come back.
-asyncTest('a.state.chain-triple-load', function() {
-    expect(8);
+QUnit.asyncTest('a.state.chain-triple-load', function(assert) {
+    assert.expect(8);
 
     var state1 = {
         id: 'ok',
@@ -270,8 +284,8 @@ asyncTest('a.state.chain-triple-load', function() {
             var current = this.data.custom,
                 original = this._storm.data.custom;
 
-            strictEqual(current, 'abcdef', 'Test load current value');
-            strictEqual(original, '{{id}}', 'Test load original value');
+            assert.strictEqual(current, 'abcdef', 'Test load current value');
+            assert.strictEqual(original, '{{id}}', 'Test load original value');
         }
     };
 
@@ -285,8 +299,8 @@ asyncTest('a.state.chain-triple-load', function() {
             var current = this.data.sub,
                 original = this._storm.data.sub;
 
-            strictEqual(current, 'abcdef', 'Test unload current value');
-            strictEqual(original, '{{id}}', 'Test unload original value');
+            assert.strictEqual(current, 'abcdef', 'Test unload current value');
+            assert.strictEqual(original, '{{id}}', 'Test unload original value');
         }
     };
 
@@ -298,7 +312,7 @@ asyncTest('a.state.chain-triple-load', function() {
             chain('/chain-triple-load/abcdef', function() {
                 chain('/chain-triple-unload/abcdef', function() {
                     hashtag('');
-                    start();
+                    QUnit.start();
                 }, 200);
                 hashtag('/chain-triple-unload/abcdef')
             }, 200);
@@ -312,9 +326,8 @@ asyncTest('a.state.chain-triple-load', function() {
 
 // In some case, one some AppStorm version we could find a bug where the system
 // 
-asyncTest('a.sate.nested-data-object', function() {
-    stop();
-    expect(1);
+QUnit.asyncTest('a.sate.nested-data-object', function(assert) {
+    assert.expect(1);
 
     a.state.add({
         id: 'state-nested-data-object',
@@ -324,11 +337,12 @@ asyncTest('a.sate.nested-data-object', function() {
             }
         },
         converter: function(data) {
-            strictEqual('ok', 'ok');
+            assert.strictEqual('ok', 'ok');
         }
     });
 
     QAppStorm.chain({
-        hash: 'state-nested-data-object'
+        hash: 'state-nested-data-object',
+        expect: 1
     });
 });

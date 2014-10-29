@@ -1,10 +1,12 @@
 // Unit test for a.state (plugin)
 // We separate from state because it is less important, and more easy one...
 
-module('plugin/state.js');
+QUnit.module('plugin/state.js');
 
 // Testing getById function
-test('a.state.get', function() {
+QUnit.test('a.state.get', function(assert) {
+    assert.expect(3);
+
     var element = {
         id : 'nowitisworking',
         hash : 'you'
@@ -12,32 +14,34 @@ test('a.state.get', function() {
     a.state.add(element);
 
     // We test access
-    strictEqual(a.state.get('notworking'), null, 'Test not existing id');
-    deepEqual(a.state.get('nowitisworking'), element,
+    assert.strictEqual(a.state.get('notworking'), null, 'Test not existing id');
+    assert.deepEqual(a.state.get('nowitisworking'), element,
                                     'Test element can be accessed');
 
     // Now we test we can handle changes easily (item is not duplicate)
     a.state.get('nowitisworking').hash = 'newone';
 
-    strictEqual(a.state.get('nowitisworking').hash, 'newone',
+    assert.strictEqual(a.state.get('nowitisworking').hash, 'newone',
                                     'Test element can change');
 });
 
 // Testing removeById function
-test('a.state.remove', function() {
+QUnit.test('a.state.remove', function(assert) {
+    assert.expect(2);
+
     var element = {
         id : 'nowitisworking',
         hash : 'you'
     };
     a.state.add(element);
 
-    deepEqual(a.state.get('nowitisworking'), element,
+    assert.deepEqual(a.state.get('nowitisworking'), element,
                                         'Test element can be accessed');
 
     // Now we remove
     a.state.remove(element.id);
 
-    deepEqual(a.state.get('nowitisworking'), null,
+    assert.deepEqual(a.state.get('nowitisworking'), null,
                         'Test element cannot be accessed after deleting');
 
     // Now we remove dummy one...

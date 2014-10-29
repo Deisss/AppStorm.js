@@ -1,8 +1,10 @@
 // Unit test for a.state.chain (plugin)
-module('plugin/state.chain.js');
+QUnit.module('plugin/state.chain.js');
 
 // Test adding before
-test('a.state.chain-add-before', function() {
+QUnit.test('a.state.chain-add-before', function(assert) {
+    assert.expect(5);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -18,21 +20,23 @@ test('a.state.chain-add-before', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
-    strictEqual(result[1].name, 'unittest-add-before', 'Test name inserted');
-    strictEqual(result[2].name, 'preLoad', 'Test original chain name');
+    assert.strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    assert.strictEqual(result[1].name, 'unittest-add-before', 'Test name inserted');
+    assert.strictEqual(result[2].name, 'preLoad', 'Test original chain name');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-before');
 });
 
 // Second test for adding before
-test('a.state.chain.add-before2', function() {
+QUnit.test('a.state.chain.add-before2', function(assert) {
+    assert.expect(4);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -48,20 +52,22 @@ test('a.state.chain.add-before2', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
-    strictEqual(result[3].name, 'unittest-add-before', 'Test name inserted');
+    assert.strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    assert.strictEqual(result[3].name, 'unittest-add-before', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-before');
 });
 
 // Test for adding after
-test('a.state.chain-add-after', function() {
+QUnit.test('a.state.chain-add-after', function(assert) {
+    assert.expect(5);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -77,21 +83,23 @@ test('a.state.chain-add-after', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
-    strictEqual(result[1].name, 'preLoad', 'Test original chain name');
-    strictEqual(result[2].name, 'unittest-add-after', 'Test name inserted');
+    assert.strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    assert.strictEqual(result[1].name, 'preLoad', 'Test original chain name');
+    assert.strictEqual(result[2].name, 'unittest-add-after', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-after');
 });
 
 
-test('a.state.chain-add-after2', function() {
+QUnit.test('a.state.chain-add-after2', function(assert) {
+    assert.expect(7);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -107,23 +115,25 @@ test('a.state.chain-add-after2', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
-    strictEqual(result[1].name, 'preLoad', 'Test original chain name');
-    strictEqual(result[2].name, 'title', 'Test original chain name');
-    strictEqual(result[3].name, 'include', 'Test original chain name');
-    strictEqual(result[4].name, 'unittest-add-after', 'Test name inserted')
+    assert.strictEqual(result[0].name, 'loadParameters', 'Test original chain name');
+    assert.strictEqual(result[1].name, 'preLoad', 'Test original chain name');
+    assert.strictEqual(result[2].name, 'title', 'Test original chain name');
+    assert.strictEqual(result[3].name, 'include', 'Test original chain name');
+    assert.strictEqual(result[4].name, 'unittest-add-after', 'Test name inserted')
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-after');
 });
 
 // Test for adding at specific position
-test('a.state.chain-add-position', function() {
+QUnit.test('a.state.chain-add-position', function(assert) {
+    assert.expect(3);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -139,19 +149,21 @@ test('a.state.chain-add-position', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[3].name, 'unittest-add-position', 'Test name inserted');
+    assert.strictEqual(result[3].name, 'unittest-add-position', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-position');
 });
 
 // Test for adding at specific position
-test('a.state.chain-add-position-negative', function() {
+QUnit.test('a.state.chain-add-position-negative', function(assert) {
+    assert.expect(3);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -167,19 +179,21 @@ test('a.state.chain-add-position-negative', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[0].name, 'unittest-add-position', 'Test name inserted');
+    assert.strictEqual(result[0].name, 'unittest-add-position', 'Test name inserted');
 
     // We rollback
     a.state.chain.remove(true, 'unittest-add-position');
 });
 
 // Test for adding at specific position
-test('a.state.chain-add-position-toobig', function() {
+QUnit.test('a.state.chain-add-position-toobig', function(assert) {
+    assert.expect(3);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -195,12 +209,12 @@ test('a.state.chain-add-position-toobig', function() {
     });
     var result = a.state.chain.get('load');
 
-    strictEqual(currentUnloadingChain.length,
+    assert.strictEqual(currentUnloadingChain.length,
             a.state.chain.get('unload').length, 'Test unload didn\'t change');
-    strictEqual(currentLoadingChain.length + 1,
+    assert.strictEqual(currentLoadingChain.length + 1,
             result.length, 'Test load change size');
 
-    strictEqual(result[result.length - 1].name, 'unittest-add-position',
+    assert.strictEqual(result[result.length - 1].name, 'unittest-add-position',
                                     'Test name inserted');
 
     // We rollback
@@ -208,7 +222,9 @@ test('a.state.chain-add-position-toobig', function() {
 });
 
 // Test removing elements
-test('a.state.chain-remove', function() {
+QUnit.test('a.state.chain-remove', function(assert) {
+    assert.expect(4);
+
     var currentLoadingChain   = a.clone(a.state.chain.get('load')),
         currentUnloadingChain = a.clone(a.state.chain.get('unload'));
 
@@ -231,24 +247,26 @@ test('a.state.chain-remove', function() {
         position: 100
     });
 
-    strictEqual(a.state.chain.get('load').length, currentLoadingChain.length,
+    assert.strictEqual(a.state.chain.get('load').length, currentLoadingChain.length,
             'Test chain length result');
-    strictEqual(a.state.chain.get('unload').length, 
+    assert.strictEqual(a.state.chain.get('unload').length, 
             currentUnloadingChain.length + 2, 'Test chain length result');
 
     a.state.chain.remove(false, 'unittest-remove');
 
-    strictEqual(a.state.chain.get('load').length, currentLoadingChain.length,
+    assert.strictEqual(a.state.chain.get('load').length, currentLoadingChain.length,
             'Test chain length result2');
-    strictEqual(a.state.chain.get('unload').length,
+    assert.strictEqual(a.state.chain.get('unload').length,
             currentUnloadingChain.length, 'Test chain length result2');
 });
 
 // Test loading elements
-test('a.state.chain.loading', function() {
+QUnit.test('a.state.chain.loading', function(assert) {
+    assert.expect(1);
+
     var currentLoadingChain = a.state.chain.get('load'),
         result = a.pluck(currentLoadingChain, 'name').join(',');
-    strictEqual(result,
+    assert.strictEqual(result,
             'loadParameters,preLoad,title,include,converter,contentLoad,load,'+
                                         'bindDom,' +
                                         'bindGlobalDom,bindKeyboard,postLoad' +
@@ -257,10 +275,11 @@ test('a.state.chain.loading', function() {
 });
 
 // Test unloading elements
-test('a.state.chain.unloading', function() {
+QUnit.test('a.state.chain.unloading', function(assert) {
+    assert.expect(1);
     var currentUnloadingChain = a.state.chain.get('unload'),
         result = a.pluck(currentUnloadingChain, 'name').join(',');
-    strictEqual(result, 'preUnload,unbindKeyboard,unbindGlobalDom,' +
+    assert.strictEqual(result, 'preUnload,unbindKeyboard,unbindGlobalDom,' +
                                         'unbindDom,unload' +
                                         ',contentUnload,postUnload,'+
                                         'removeParameters',
