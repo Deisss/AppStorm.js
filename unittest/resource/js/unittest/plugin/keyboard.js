@@ -1,6 +1,6 @@
 // Unit test for a.keyboard (plugin)
 
-module('plugin/keyboard.js', {
+QUnit.module('plugin/keyboard.js', {
     teardown: function() {
         a.keyboard.clear();
     }
@@ -14,11 +14,11 @@ module('plugin/keyboard.js', {
  *        (you can found them on /unittest/vendor/mousetrap)
 */
 
-asyncTest('a.keyboard.bind', function() {
-    expect(3);
+QUnit.asyncTest('a.keyboard.bind', function(assert) {
+    assert.expect(3);
 
     var callback = function(e) {
-        strictEqual(true, true, 'Event where fired as expected');
+        assert.strictEqual(true, true, 'Event where fired as expected');
     };
 
     a.keyboard.bind('a', callback);
@@ -31,14 +31,14 @@ asyncTest('a.keyboard.bind', function() {
     // Now launching mousetrap trigger (only one of two callback should pass)
     Mousetrap.trigger('a', 'keypress');
 
-    setTimeout(start, 100);
+    setTimeout(QUnit.start, 100);
 });
 
-asyncTest('a.keyboard.unbind', function() {
-    expect(2);
+QUnit.asyncTest('a.keyboard.unbind', function(assert) {
+    assert.expect(2);
 
     var callback = function() {
-        strictEqual(true, true, 'Event where fired as expected');
+        assert.strictEqual(true, true, 'Event where fired as expected');
     };
 
     a.keyboard.bind('a', callback);
@@ -52,5 +52,5 @@ asyncTest('a.keyboard.unbind', function() {
     Mousetrap.trigger('a', 'keypress');
     Mousetrap.trigger('c', 'keypress');
 
-    setTimeout(start, 100);
+    setTimeout(QUnit.start, 100);
 });
