@@ -1,6 +1,6 @@
 // Unit test for a.translate (plugin)
 
-module('plugin/translate.js', {
+QUnit.module('plugin/translate.js', {
     teardown: function() {
         a.console.clear();
         a.translate.clear();
@@ -21,7 +21,9 @@ module('plugin/translate.js', {
 
     // Test in general case, the setLanguage works,
     // try to create some translate test from that
-    test('a.translate.current-working', function() {
+    QUnit.test('a.translate.current-working', function(assert) {
+        assert.expect(2);
+
         a.translate.add('en', 'somehash',
                                                 'This is working', false);
         a.translate.add('de', 'somehash',
@@ -29,24 +31,26 @@ module('plugin/translate.js', {
 
         a.translate.setLanguage('en', false);
 
-        strictEqual(a.translate.get('somehash'),
+        assert.strictEqual(a.translate.get('somehash'),
                             'This is working', 'Test english translate');
 
         a.translate.setLanguage('de', false);
 
-        strictEqual(a.translate.get('somehash'),
+        assert.strictEqual(a.translate.get('somehash'),
                             'dies funktioniert', 'Test deutch translate');
     });
 
     // Test sending not string, or empty string, is refused
-    test('a.translate.current-non-string', function() {
+    QUnit.test('a.translate.current-non-string', function(assert) {
+        assert.expect(2);
+
         // Setting an array as default translate raise an error
         a.translate.setLanguage([], false);
 
         var trace = a.console.trace();
         var error = trace['error'].pop();
 
-        strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
+        assert.strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
                             'lang, or empty string, as default translate: ',
                             'Test non-string value is refused');
 
@@ -57,35 +61,39 @@ module('plugin/translate.js', {
         trace = a.console.trace();
         error = trace['error'].pop();
 
-        strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
+        assert.strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
                             'lang, or empty string, as default translate: ',
                             'Test non-string value is refused');
     });
 
     // Test sending a valid, but not existing translate
     // inside 'allowed', will raise a warning, but works
-    test('a.translate.current-non-existing', function() {
+    QUnit.test('a.translate.current-non-existing', function(assert) {
+        assert.expect(2);
+
         a.translate.setLanguage('some-undefined', false);
 
         var trace = a.console.trace();
         var warn = trace['warn'].pop();
 
-        strictEqual(a.translate.getLanguage(), 'some-undefined',
+        assert.strictEqual(a.translate.getLanguage(), 'some-undefined',
                                                 'Test translate set');
-        deepEqual(a.translate.getDictionnary('some-undefined'), {},
+        assert.deepEqual(a.translate.getDictionnary('some-undefined'), {},
                                 'Test translate created on dictionnary');
     });
 
     // This test is not always valid (depends if user storage is OK or not)
     if(!a.storage.persistent.support) {
-        testSkip('a.translate.current.storage (STORAGE NOT SUPPORTED)');
+        QUnit.testSkip('a.translate.current.storage (STORAGE NOT SUPPORTED)');
     } else {
-        test('a.translate.current.storage', function() {
+        QUnit.test('a.translate.current.storage', function(assert) {
+            assert.expect(2);
+
             a.translate.setLanguage('unittest-storage', false);
             var storageCurrent = a.storage.persistent.get('app.language');
 
             // Test system does not already contains unit test
-            strictEqual(storageCurrent, 'unittest-storage',
+            assert.strictEqual(storageCurrent, 'unittest-storage',
                                             'Test unit test setted');
 
             a.translate.setLanguage('unittest-storage2', false);
@@ -93,7 +101,7 @@ module('plugin/translate.js', {
             // Now we compare again
             var afterStorage = a.storage.persistent.get('app.language');
 
-            strictEqual(afterStorage, 'unittest-storage2',
+            assert.strictEqual(afterStorage, 'unittest-storage2',
                 'Test the latest translate has been taken in consideration');
         });
     }
@@ -111,7 +119,9 @@ module('plugin/translate.js', {
 ---------------------------------
 */
 // We do some basic test with addSingle, getSingle...
-test('a.translate.single-working', function() {
+QUnit.test('a.translate.single-working', function(assert) {
+    assert.expect(5);
+
     // We set two times the same translate, to be sure system override
     // correctly
     a.translate.add('unittest-lang1', 'hash1',
@@ -137,25 +147,27 @@ test('a.translate.single-working', function() {
 
     a.translate.setLanguage('unittest-lang1');
 
-    strictEqual(a.translate.get('hash1'),
+    assert.strictEqual(a.translate.get('hash1'),
                         'The first translate', 'Test translate translation');
-    strictEqual(a.translate.get('hash2'),
+    assert.strictEqual(a.translate.get('hash2'),
                     'Another first translate', 'Test translate translation');
 
     a.translate.setLanguage('unittest-lang3');
 
-    strictEqual(a.translate.get('hash1'),
+    assert.strictEqual(a.translate.get('hash1'),
                         'The thrid translate', 'Test translate translation');
-    strictEqual(a.translate.get('hash2'),
+    assert.strictEqual(a.translate.get('hash2'),
                     'Another thrid translate', 'Test translate translation');
 
     // Test null hash value return the hash
-    strictEqual(a.translate.get('unusedhash'), 'unusedhash',
+    assert.strictEqual(a.translate.get('unusedhash'), 'unusedhash',
                                                 'Test not hash translation');
 });
 
 // Test setting a complex key and see the result
-test('a.translate.single-complex', function() {
+QUnit.test('a.translate.single-complex', function(assert) {
+    assert.expect(1);
+
     var complexKey = 'I\'m a teapot; and I should not be refused';
     var value = 'ok';
 
@@ -163,12 +175,14 @@ test('a.translate.single-complex', function() {
                                                                 false);
     a.translate.setLanguage('unittest-complex1');
 
-    strictEqual(a.translate.get(complexKey), value,
+    assert.strictEqual(a.translate.get(complexKey), value,
                                                 'Test complex key passes');
 });
 
 // Test data binding inside translate system
-test('a.translate.single-variable', function() {
+QUnit.test('a.translate.single-variable', function(assert) {
+    assert.expect(4);
+
     a.translate.add('unittest-lang1', 'hash1',
                 'The first {{name}} translate for {{user}} directory', false);
     a.translate.add('unittest-lang2', 'hash1',
@@ -186,20 +200,20 @@ test('a.translate.single-variable', function() {
     a.translate.setLanguage('unittest-lang1');
 
     // Performing some test on variable system (working as expected)
-    strictEqual(a.translate.get('hash1', emptyVar),
+    assert.strictEqual(a.translate.get('hash1', emptyVar),
                                 'The first  translate for  directory',
                                 'Test empty var remove var code from string');
-    strictEqual(a.translate.get('hash1', fullVar),
+    assert.strictEqual(a.translate.get('hash1', fullVar),
                             'The first system translate for Roger directory',
                             'Test full var replace as expected inside string');
 
     a.translate.setLanguage('unittest-lang2');
 
     // Performing some test on variable system (working as expected)
-    strictEqual(a.translate.get('hash1', emptyVar),
+    assert.strictEqual(a.translate.get('hash1', emptyVar),
                             'The second  translate for  directory',
                             'Test empty var remove var code from string');
-    strictEqual(a.translate.get('hash1', fullVar),
+    assert.strictEqual(a.translate.get('hash1', fullVar),
                             'The second system translate for Roger directory',
                             'Test full var replace as expected inside string');
 });
@@ -211,7 +225,9 @@ test('a.translate.single-variable', function() {
 ---------------------------------
 */
 // We try to set translate directly in a single function call
-test('a.translate.translation', function() {
+QUnit.test('a.translate.translation', function(assert) {
+    assert.expect(12);
+
     var dictEnglish = {
         hash1 : 'the hash1 english version',
         hash2 : 'the hash2 english version',
@@ -230,41 +246,43 @@ test('a.translate.translation', function() {
     var resultEnglish = a.translate.getDictionnary('en');
     var resultFrench = a.translate.getDictionnary('fr');
 
-    deepEqual(dictEnglish, resultEnglish, 'Test english translate setted');
-    deepEqual(dictFrench, resultFrench, 'Test french translate setted');
+    assert.deepEqual(dictEnglish, resultEnglish, 'Test english translate setted');
+    assert.deepEqual(dictFrench, resultFrench, 'Test french translate setted');
 
     // We test global get
     var result = a.translate.getDictionnary();
 
-    deepEqual(result['en'], dictEnglish, 'Test global translate');
-    deepEqual(result['fr'], dictFrench, 'Test global translate');
+    assert.deepEqual(result['en'], dictEnglish, 'Test global translate');
+    assert.deepEqual(result['fr'], dictFrench, 'Test global translate');
 
     // Test translate
     a.translate.setLanguage('en', false);
-    strictEqual(a.translate.get('hash1'),
+    assert.strictEqual(a.translate.get('hash1'),
                         'the hash1 english version', 'Test translate apply');
-    strictEqual(a.translate.get('hash2'),
+    assert.strictEqual(a.translate.get('hash2'),
                         'the hash2 english version', 'Test translate apply');
-    strictEqual(a.translate.get('hash3'),
+    assert.strictEqual(a.translate.get('hash3'),
                         'the hash3 english version', 'Test translate apply');
-    strictEqual(a.translate.get('hash5'),
+    assert.strictEqual(a.translate.get('hash5'),
                         'hash5', 'Test translate apply');
 
     a.translate.setLanguage('fr', false);
-    strictEqual(a.translate.get('hash1'),
+    assert.strictEqual(a.translate.get('hash1'),
                     'la version francaise de hash1', 'Test translate apply');
-    strictEqual(a.translate.get('hash2'),
+    assert.strictEqual(a.translate.get('hash2'),
                     'hash2', 'Test translate apply');
-    strictEqual(a.translate.get('hash3'),
+    assert.strictEqual(a.translate.get('hash3'),
                     'la version francaise de hash3', 'Test translate apply');
-    strictEqual(a.translate.get('hash5'),
+    assert.strictEqual(a.translate.get('hash5'),
                     'la version francaise de hash5', 'Test translate apply');
 });
 
 
 // In the translate test we apply translate to two types of elements :
 // a createElement one, and an existing page elements
-test('a.translate.translate-working', function() {
+QUnit.test('a.translate.translate-working', function(assert) {
+    assert.expect(4);
+
     var id = 'unittest-translate-working';
 
     // First we setup environment
@@ -287,20 +305,22 @@ test('a.translate.translate-working', function() {
     // (by not setting noUpdate to false)
     a.translate.setLanguage('en');
     a.translate.translate(notIncluded);
-    strictEqual(document.getElementById(id).innerHTML, 'Home',
+    assert.strictEqual(document.getElementById(id).innerHTML, 'Home',
                                             'Test auto apply value');
-    strictEqual(notIncluded.innerHTML, 'Home', 'Test auto apply value');
+    assert.strictEqual(notIncluded.innerHTML, 'Home', 'Test auto apply value');
 
     a.translate.setLanguage('de');
     a.translate.translate(notIncluded);
-    strictEqual(document.getElementById(id).innerHTML, 'Zuhause',
+    assert.strictEqual(document.getElementById(id).innerHTML, 'Zuhause',
                                             'Test auto apply value');
-    strictEqual(notIncluded.innerHTML, 'Zuhause', 'Test auto apply value');
+    assert.strictEqual(notIncluded.innerHTML, 'Zuhause', 'Test auto apply value');
 });
 
 
 // In this test we try to translate with variable included inside dom
-test('a.translate.translate-variable', function() {
+QUnit.test('a.translate.translate-variable', function(assert) {
+    assert.expect(2);
+
     a.translate.clear();
 
     var id = 'unittest-translate-variable';
@@ -319,17 +339,19 @@ test('a.translate.translate-variable', function() {
     document.body.appendChild(el);
 
     a.translate.setLanguage('en');
-    strictEqual(document.getElementById(id).innerHTML, 'Welcome Remi',
+    assert.strictEqual(document.getElementById(id).innerHTML, 'Welcome Remi',
                                                     'Test auto apply value');
 
     a.translate.setLanguage('de');
-    strictEqual(document.getElementById(id).innerHTML, 'Willkommen Remi',
+    assert.strictEqual(document.getElementById(id).innerHTML, 'Willkommen Remi',
                                                     'Test auto apply value');
 });
 
 
 // Test global variable support
-test('a.translate.global-variable', function() {
+QUnit.test('a.translate.global-variable', function(assert) {
+    assert.expect(6);
+
     a.translate.clear();
 
     a.translate.add('en', 'welcome', 'Welcome {{name}}',
@@ -341,23 +363,23 @@ test('a.translate.global-variable', function() {
     a.translate.setLanguage('en');
 
     // Test with nothing
-    strictEqual(a.translate.get('welcome'), 'Welcome ',
+    assert.strictEqual(a.translate.get('welcome'), 'Welcome ',
                                                     'Test without variable');
-    strictEqual(a.translate.get('welcome2'), 'Welcome ',
+    assert.strictEqual(a.translate.get('welcome2'), 'Welcome ',
                                                     'Test without variable');
 
     // Test with store setted
     a.translate.setGlobalVariable('name-store', 'from store');
-    strictEqual(a.translate.get('welcome'), 'Welcome ',
+    assert.strictEqual(a.translate.get('welcome'), 'Welcome ',
                                                 'Test with global variable');
-    strictEqual(a.translate.get('welcome2'),
+    assert.strictEqual(a.translate.get('welcome2'),
                             'Welcome from store', 'Test with global variable');
 
     // Test override with local variable
-    strictEqual(a.translate.get('welcome',
+    assert.strictEqual(a.translate.get('welcome',
                             {'name' : 'no store'}), 'Welcome no store',
                             'Test with global variable');
-    strictEqual(a.translate.get('welcome2',
+    assert.strictEqual(a.translate.get('welcome2',
                             {'name-store' : 'no store'}), 'Welcome no store',
                             'Test with global variable');
 });
@@ -365,7 +387,9 @@ test('a.translate.global-variable', function() {
 
 // Check if we change the translate for a cutom element tag,
 // the system apply it as expected
-test('a.translate.translate-attr', function() {
+QUnit.test('a.translate.translate-attr', function(assert) {
+    assert.expect(1);
+
     a.translate.clear();
 
     var id = 'unittest-translate-attr';
@@ -382,8 +406,8 @@ test('a.translate.translate-attr', function() {
     document.body.appendChild(el);
 
     a.translate.setLanguage('en');
-    strictEqual(document.getElementById(id).title, 'This is title populated',
-                                                        'Test title value');
+    assert.strictEqual(document.getElementById(id).title,
+                        'This is title populated', 'Test title value');
 });
 
 
@@ -394,7 +418,9 @@ test('a.translate.translate-attr', function() {
 */
 // In the translate process, a sub element with a parent translated,
 // will not be altered...
-test('a.translate.translate-subelement', function() {
+QUnit.test('a.translate.translate-subelement', function(assert) {
+    assert.expect(4);
+
     var id = 'unittest-translate-subelement';
 
     // First we setup environment
@@ -430,17 +456,17 @@ test('a.translate.translate-subelement', function() {
     };
 
     a.translate.setLanguage('fr');
-    strictEqual(document.getElementById(id + 'aa').innerHTML,
+    assert.strictEqual(document.getElementById(id + 'aa').innerHTML,
                     'not translated',
                     'test sub elements does still exist and are not affected');
-    strictEqual(__extractDirectText(document.getElementById(id)),
+    assert.strictEqual(__extractDirectText(document.getElementById(id)),
                     'translatedsub', 'test root element is translated');
 
     a.translate.setLanguage('en');
-    strictEqual(document.getElementById(id + 'aa').innerHTML,
+    assert.strictEqual(document.getElementById(id + 'aa').innerHTML,
                     'not translated',
                     'test sub elements does still exist and are not affected');
-    strictEqual(__extractDirectText(document.getElementById(id)),
+    assert.strictEqual(__extractDirectText(document.getElementById(id)),
                     'subelementcontent', 'test root element is translated');
 });
 
@@ -454,7 +480,9 @@ test('a.translate.translate-subelement', function() {
 
 
 // Simple easy tag tag elements translation
-test('a.translate.tag-element', function() {
+QUnit.test('a.translate.tag-element', function(assert) {
+    assert.expect(1);
+
     // We generate a new translate with <tag> inside
     a.translate.add('en', 'testtag',
                     'superb text <tag> split with many <tag> tags');
@@ -473,13 +501,15 @@ test('a.translate.tag-element', function() {
     a.translate.setLanguage('en', false);
     a.translate.translate(doc);
 
-    strictEqual(doc.textContent,
+    assert.strictEqual(doc.textContent,
         'superb text inside1 split with many inside2 tags',
         'Test auto apply value');
 });
 
 // Test when there is more <tag> elements than found into dom
-test('a.translate.tag-element-too-much', function() {
+QUnit.test('a.translate.tag-element-too-much', function(assert) {
+    assert.expect(1);
+
     // We generate a new translate with <tag> inside
     a.translate.add('en', 'testtag',
                     'superb text <tag> split with <tag> many <tag> tags');
@@ -498,13 +528,15 @@ test('a.translate.tag-element-too-much', function() {
     a.translate.setLanguage('en', false);
     a.translate.translate(doc);
 
-    strictEqual(doc.textContent,
+    assert.strictEqual(doc.textContent,
         'superb text inside1 split with inside2 many  tags',
         'Test auto apply value');
 });
 
 // Test when there is less <tag> elements than found into dom
-test('a.translate-tag-element-not-enough', function() {
+QUnit.test('a.translate-tag-element-not-enough', function(assert) {
+    assert.expect(1);
+
     // We generate a new translate with <tag> inside
     a.translate.add('en', 'testtag',
                     'superb text <tag> split with many tags ');
@@ -527,7 +559,7 @@ test('a.translate-tag-element-not-enough', function() {
     a.translate.setLanguage('en', false);
     a.translate.translate(doc);
 
-    strictEqual(doc.textContent,
+    assert.strictEqual(doc.textContent,
         'superb text inside1 split with many tags inside2inside3',
         'Test auto apply value');
 });
