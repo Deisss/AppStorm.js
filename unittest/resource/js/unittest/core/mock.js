@@ -1,6 +1,6 @@
 // Unit test for a.mock
 
-module('core/mock.js', {
+QUnit.module('core/mock.js', {
     setup: function() {
         a.mock.clear();
     },
@@ -9,16 +9,20 @@ module('core/mock.js', {
     }
 });
 
-test('a.mock.add', function() {
+QUnit.test('a.mock.add', function(assert) {
+    assert.expect(2);
+
     a.mock.add('GET', 'api/version', {
         version: '1.0.2'
     });
 
-    strictEqual(a.mock._mock.length, 1);
-    strictEqual(a.mock._mock[0].url, 'api/version');
+    assert.strictEqual(a.mock._mock.length, 1);
+    assert.strictEqual(a.mock._mock[0].url, 'api/version');
 });
 
-test('a.mock.get', function() {
+QUnit.test('a.mock.get', function(assert) {
+    assert.expect(3);
+
     a.mock.add('GET', 'api/version', {
         version: '1.0.1'
     });
@@ -31,17 +35,19 @@ test('a.mock.get', function() {
         return '1.0.3';
     });
 
-    strictEqual(a.mock._mock.length, 3);
+    assert.strictEqual(a.mock._mock.length, 3);
 
     var test = a.mock.get('GET', 'api/version');
-    strictEqual(test.version, '1.0.1');
+    assert.strictEqual(test.version, '1.0.1');
 
     // Second test with function result
     var second = a.mock.get('PUT', 'api/version');
-    strictEqual(second, '1.0.3');
+    assert.strictEqual(second, '1.0.3');
 });
 
-test('a.mock.merge', function() {
+QUnit.test('a.mock.merge', function(assert) {
+    assert.expect(8);
+
     a.mock.add('GET', 'user', {
         id: 4,
         forgotten: true
@@ -62,17 +68,19 @@ test('a.mock.merge', function() {
 
     // Try to find the final model content
     var merged = a.mock.merge('user');
-    strictEqual(merged.id, 'number');
-    strictEqual(merged.forgotten, 'boolean');
-    strictEqual(merged.login, 'string');
-    strictEqual(merged.password, 'string');
-    strictEqual(merged.firstname, 'string');
-    strictEqual(merged.lastname, 'string');
-    strictEqual(merged.avatar, 'string');
-    strictEqual(merged.links, 'array');
+    assert.strictEqual(merged.id, 'number');
+    assert.strictEqual(merged.forgotten, 'boolean');
+    assert.strictEqual(merged.login, 'string');
+    assert.strictEqual(merged.password, 'string');
+    assert.strictEqual(merged.firstname, 'string');
+    assert.strictEqual(merged.lastname, 'string');
+    assert.strictEqual(merged.avatar, 'string');
+    assert.strictEqual(merged.links, 'array');
 });
 
-test('a.mock.map', function() {
+QUnit.test('a.mock.map', function(assert) {
+    assert.expect(5);
+
     a.mock.add('GET', 'user', {
         id: 4,
         forgotten: true
@@ -97,15 +105,15 @@ test('a.mock.map', function() {
     a.mock.add('POST', 'url/complex/somehow', {}, 'session');
 
     var result = a.mock.map();
-    strictEqual(result.unknow.post[0], 'api/version');
-    strictEqual(result.unknow.post[1], 'api/version2');
-    strictEqual(result.session.post[0], 'url/complex/somehow');
-    strictEqual(result.users.post[0], 'user');
-    strictEqual(result.user.get[0], 'user');
+    assert.strictEqual(result.unknow.post[0], 'api/version');
+    assert.strictEqual(result.unknow.post[1], 'api/version2');
+    assert.strictEqual(result.session.post[0], 'url/complex/somehow');
+    assert.strictEqual(result.users.post[0], 'user');
+    assert.strictEqual(result.user.get[0], 'user');
 });
 
-asyncTest('a.mock.ajax', function() {
-    expect(3);
+QUnit.asyncTest('a.mock.ajax', function(assert) {
+    assert.expect(3);
 
     a.mock.add('GET', 'user', {
         id: 4,
@@ -119,10 +127,10 @@ asyncTest('a.mock.ajax', function() {
 
     // Success function to test
     }, function(content, status) {
-        strictEqual(status, 200);
-        strictEqual(content.id, 4);
-        strictEqual(content.login, 'hello');
-        start();
+        assert.strictEqual(status, 200);
+        assert.strictEqual(content.id, 4);
+        assert.strictEqual(content.login, 'hello');
+        QUnit.start();
     });
 
     // Starting system
