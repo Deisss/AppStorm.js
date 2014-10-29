@@ -1,6 +1,6 @@
 // Unit test for a.mem
 
-module('core/mem.js', {
+QUnit.module('core/mem.js', {
     teardown: function() {
         var list = a.mem.list();
 
@@ -12,37 +12,43 @@ module('core/mem.js', {
 
 
 // Test mem system
-test('a.mem.default', function() {
+QUnit.test('a.mem.default', function(assert) {
+    assert.expect(3);
+
     a.mem.set('some-test', 'hello');
-    strictEqual(a.mem.get('some-test'), 'hello');
+    assert.strictEqual(a.mem.get('some-test'), 'hello');
 
     a.mem.set('some-test', 'second');
-    strictEqual(a.mem.get('some-test'), 'second');
+    assert.strictEqual(a.mem.get('some-test'), 'second');
 
     a.mem.remove('some-test');
-    strictEqual(a.mem.get('some-test'), null);
+    assert.strictEqual(a.mem.get('some-test'), null);
 });
 
 // Test mem duplicate system
-test('a.mem.instance', function() {
+QUnit.test('a.mem.instance', function(assert) {
+    assert.expect(6);
+
     var instance = a.mem.getInstance('some.test');
 
     instance.set('inside', 'ok');
-    strictEqual(a.mem.get('some.test.inside'), 'ok');
-    strictEqual(instance.get('inside'), 'ok');
+    assert.strictEqual(a.mem.get('some.test.inside'), 'ok');
+    assert.strictEqual(instance.get('inside'), 'ok');
 
     instance.set('inside', 'second');
-    strictEqual(a.mem.get('some.test.inside'), 'second');
-    strictEqual(instance.get('inside'), 'second');
+    assert.strictEqual(a.mem.get('some.test.inside'), 'second');
+    assert.strictEqual(instance.get('inside'), 'second');
 
     instance.remove('inside');
-    strictEqual(a.mem.get('some.test.inside'), null);
-    strictEqual(instance.get('inside'), null);
+    assert.strictEqual(a.mem.get('some.test.inside'), null);
+    assert.strictEqual(instance.get('inside'), null);
 });
 
 
 // Testing list function
-test('a.mem.list', function() {
+QUnit.test('a.mem.list', function(assert) {
+    assert.expect(4);
+
     a.mem.set('tempList', 'ok');
 
     var instance = a.mem.getInstance('list.test');
@@ -51,10 +57,10 @@ test('a.mem.list', function() {
     var list1 = a.mem.list(),
         list2 = instance.list();
 
-    strictEqual(list2.t, 'ok');
-    strictEqual(list1.tempList, 'ok', 'Test global list');
-    strictEqual(list1['list.test.t'], 'ok', 'Test instance list');
-    strictEqual(list2.tempList, undefined,
+    assert.strictEqual(list2.t, 'ok');
+    assert.strictEqual(list1.tempList, 'ok', 'Test global list');
+    assert.strictEqual(list1['list.test.t'], 'ok', 'Test instance list');
+    assert.strictEqual(list2.tempList, undefined,
                                 'Test instance does not have full list');
 
     // Cleaning elements
