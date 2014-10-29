@@ -1,14 +1,14 @@
 // Unit test for a.callback (plugin)
 
-module('plugin/callback.js');
+QUnit.module('plugin/callback.js');
 
 /*
 ---------------------------------
   SYNCHRONIZER RELATED
 ---------------------------------
 */
-asyncTest('a.callback.synchronizer-working', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.synchronizer-working', function(assert) {
+    assert.expect(1);
 
     /*
      * The idea : we start a timeout which will fail everything
@@ -22,7 +22,7 @@ asyncTest('a.callback.synchronizer-working', function() {
     // This timeout has to be removed by final callback,
     // or the test will fail (too much test)
     var time = setTimeout(function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
             'The test fail : this event should be cancelled on time');
     }, 200);
 
@@ -32,9 +32,9 @@ asyncTest('a.callback.synchronizer-working', function() {
     };
     var finalCallback = function() {
         clearTimeout(time);
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        start();
+        QUnit.start();
     };
 
     var sync = a.callback.synchronizer([
@@ -52,13 +52,13 @@ asyncTest('a.callback.synchronizer-working', function() {
 
 
 
-asyncTest('a.callback.synchronizer-error', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.synchronizer-error', function(assert) {
+    assert.expect(1);
 
     // This timeout has to be removed by final callback,
     // or the test will fail (too much test)
     var time = setTimeout(function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
             'The test fail : this event should be cancelled on time');
     }, 200);
 
@@ -68,9 +68,9 @@ asyncTest('a.callback.synchronizer-error', function() {
     };
     var finalCallback = function() {
         clearTimeout(time);
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        start();
+        QUnit.start();
     };
 
     // Now running system
@@ -88,8 +88,8 @@ asyncTest('a.callback.synchronizer-error', function() {
 
 
 
-asyncTest('a.callback.synchronizer-removecallback', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.synchronizer-removecallback', function(assert) {
+    assert.expect(1);
 
     /*
      * We set a pretty short timeout on synchronizer.start,
@@ -106,9 +106,9 @@ asyncTest('a.callback.synchronizer-removecallback', function() {
         result.success();
     };
     var finalCallback = function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        start();
+        QUnit.start();
     };
 
     // Now running system
@@ -128,13 +128,13 @@ asyncTest('a.callback.synchronizer-removecallback', function() {
 
 
 // We check that synchronizer, without any callback, raise success function
-asyncTest('a.callback.synchronizer-nocallback', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.synchronizer-nocallback', function(assert) {
+    assert.expect(1);
 
     var finalCallback = function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
           'The test succeed : the system could stop event before final time');
-        start();
+        QUnit.start();
     };
 
     var sync = a.callback.synchronizer(null, finalCallback);
@@ -144,13 +144,13 @@ asyncTest('a.callback.synchronizer-nocallback', function() {
 
 
 // Sending data threw callback works
-asyncTest('a.callback.synchronizer-data', function() {
-    expect(2);
+QUnit.asyncTest('a.callback.synchronizer-data', function(assert) {
+    assert.expect(2);
 
     var finalCallback = function(result) {
-        strictEqual(result.getData('ok'), 'hello', 'The first stored data');
-        strictEqual(result.getData('ok2'), 'hello2', 'The second stored data');
-        start();
+        assert.strictEqual(result.getData('ok'), 'hello', 'The first stored data');
+        assert.strictEqual(result.getData('ok2'), 'hello2', 'The second stored data');
+        QUnit.start();
     };
 
     var sync = a.callback.synchronizer(null, finalCallback);
@@ -170,33 +170,33 @@ asyncTest('a.callback.synchronizer-data', function() {
 
 
 // Test sending data threw start function
-asyncTest('a.callback.synchronizer-initial-data', function() {
-    expect(4);
+QUnit.asyncTest('a.callback.synchronizer-initial-data', function(assert) {
+    assert.expect(4);
 
     function defaultCallback(arg1, arg2, result) {
-        strictEqual(arg1, 'ok');
-        strictEqual(arg2, 2);
+        assert.strictEqual(arg1, 'ok');
+        assert.strictEqual(arg2, 2);
         result.done();
     };
 
     var sync = a.callback.synchronizer([
         defaultCallback,
         defaultCallback
-    ], start);
+    ], QUnit.start);
     sync.start('ok', 2);
 });
 
 // Test addCallback manually
-asyncTest('a.callback.synchronizer-addCallback', function() {
-    expect(5);
+QUnit.asyncTest('a.callback.synchronizer-addCallback', function(assert) {
+    assert.expect(5);
 
     function defaultCallback() {
-        strictEqual(true, true, 'Test default callback');
+        assert.strictEqual(true, true, 'Test default callback');
         this.next();
     };
 
     function finalCallback() {
-        strictEqual(true, true, 'Test final callback');
+        assert.strictEqual(true, true, 'Test final callback');
     };
 
     var sync1 = a.callback.synchronizer(),
@@ -214,22 +214,22 @@ asyncTest('a.callback.synchronizer-addCallback', function() {
     sync2.start();
 
     // Release unit test
-    setTimeout(start, 100);
+    setTimeout(QUnit.start, 100);
 });
 
 
 // Test event success, error, start event
-asyncTest('a.callback.synchronizer-event', function() {
-    expect(2);
+QUnit.asyncTest('a.callback.synchronizer-event', function(assert) {
+    assert.expect(2);
 
     var sync = a.callback.synchronizer();
 
     sync.bind('start', function() {
-        strictEqual(true, true);
+        assert.strictEqual(true, true);
     });
     sync.bind('success', function() {
-        strictEqual(true, true);
-        start();
+        assert.strictEqual(true, true);
+        QUnit.start();
     });
 
     sync.start();
@@ -238,12 +238,12 @@ asyncTest('a.callback.synchronizer-event', function() {
 
 
 // Test the result scope element
-asyncTest('a.callback.synchronizer-resultScope', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.synchronizer-resultScope', function(assert) {
+    assert.expect(1);
 
     var sync = a.callback.synchronizer(null, function() {
-        strictEqual(this.ok, 'ok');
-        start();
+        assert.strictEqual(this.ok, 'ok');
+        QUnit.start();
     });
 
     sync.scope = {
@@ -270,18 +270,18 @@ asyncTest('a.callback.synchronizer-resultScope', function() {
 // we make sure any changes will broke the fact they are separated...
 // Se we run multiple instance of both,
 // and check they are running alone each of them
-asyncTest('a.callback.synchronizer-chainer', function() {
-    expect(10);
+QUnit.asyncTest('a.callback.synchronizer-chainer', function(assert) {
+    assert.expect(10);
 
     // We will add 7 times this callback, two for each system and one alone
     var defaultCallback = function(result) {
         result = result || this;
-        strictEqual(true, true, 'Not final result ');
+        assert.strictEqual(true, true, 'Not final result ');
         result.success();
     };
     // We add it 3 times : one of them will not have any success function
     var finalCallback = function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
            'The test succeed : the system could stop event before final time');
     };
 
@@ -315,23 +315,23 @@ asyncTest('a.callback.synchronizer-chainer', function() {
     chain1.start();
     chain2.start();
 
-    setTimeout(start, 150);
+    setTimeout(QUnit.start, 150);
 });
 
 
 // This time, we do the same, but we include a scope change
-asyncTest('a.callback.synchronizer-chainer-with-scope', function() {
-    expect(10);
+QUnit.asyncTest('a.callback.synchronizer-chainer-with-scope', function(assert) {
+    assert.expect(10);
 
     // We will add 7 times this callback, two for each system and one alone
     var defaultCallback = function(result) {
         result = result || this;
-        strictEqual(true, true, 'Not final result ');
+        assert.strictEqual(true, true, 'Not final result ');
         result.success();
     };
     // We add it 3 times : one of them will not have any success function
     var finalCallback = function() {
-        strictEqual(true, true,
+        assert.strictEqual(true, true,
            'The test succeed : the system could stop event before final time');
     };
 
@@ -370,7 +370,7 @@ asyncTest('a.callback.synchronizer-chainer-with-scope', function() {
     chain2.scope = o;
     chain2.start();
 
-    setTimeout(start, 150);
+    setTimeout(QUnit.start, 150);
 });
 
 
@@ -382,8 +382,8 @@ asyncTest('a.callback.synchronizer-chainer-with-scope', function() {
 */
 
 
-asyncTest('a.callback.chainer-working', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.chainer-working', function(assert) {
+    assert.expect(1);
 
     /*
      * The idea : we compare date between start and end time,
@@ -403,9 +403,9 @@ asyncTest('a.callback.chainer-working', function() {
         var newTime = (new Date()).getTime();
         // Using timer is not extremely precise,
         // but will be around 400ms as expected
-        ok(newTime - time > 300,
+        assert.ok(newTime - time > 300,
                         'The system wait as expected chain to finish');
-        start();
+        QUnit.start();
     };
 
     var chain = a.callback.chainer([
@@ -423,8 +423,8 @@ asyncTest('a.callback.chainer-working', function() {
 
 
 
-asyncTest('a.callback.chainer-error', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.chainer-error', function(assert) {
+    assert.expect(1);
 
     /*
      * The idea : we compare date between start and end time,
@@ -443,7 +443,7 @@ asyncTest('a.callback.chainer-error', function() {
     };
     var finalCallback = function() {
         var newTime = (new Date()).getTime();
-        ok(newTime - time < 150,
+        assert.ok(newTime - time < 150,
                         'The system wait as expected chain to finish');
         start();
     };
@@ -463,26 +463,26 @@ asyncTest('a.callback.chainer-error', function() {
 
 
 // Test passing arguments
-asyncTest('a.callback.chainer-arguments', function() {
-    expect(5);
+QUnit.asyncTest('a.callback.chainer-arguments', function(assert) {
+    assert.expect(5);
 
     function firstCallback(chain) {
-        strictEqual(true, true, 'First callback');
+        assert.strictEqual(true, true, 'First callback');
         chain.setData('ok', 'yatta');
         // Passing a string to next element
         chain.next('something');
     };
 
     function secondCallback(str, chain) {
-        strictEqual(str, 'something', 'Test argument');
-        strictEqual(chain.getData('ok'), 'yatta', 'Arguments passed threw data');
+        assert.strictEqual(str, 'something', 'Test argument');
+        assert.strictEqual(chain.getData('ok'), 'yatta', 'Arguments passed threw data');
         chain.next('ok', 2);
     };
 
     function finalCallback(str1, int1, chain) {
-        strictEqual(str1, 'ok', 'Test arg1');
-        strictEqual(int1, 2, 'Test arg2');
-        start();
+        assert.strictEqual(str1, 'ok', 'Test arg1');
+        assert.strictEqual(int1, 2, 'Test arg2');
+        QUnit.start();
     };
 
     var chain = a.callback.chainer(
@@ -492,16 +492,16 @@ asyncTest('a.callback.chainer-arguments', function() {
 
 
 // Test addCallback manually
-asyncTest('a.callback.chainer-addCallback', function() {
-    expect(5);
+QUnit.asyncTest('a.callback.chainer-addCallback', function(assert) {
+    assert.expect(5);
 
     function defaultCallback() {
-        strictEqual(true, true, 'Test default callback');
+        assert.strictEqual(true, true, 'Test default callback');
         this.next();
     };
 
     function finalCallback() {
-        strictEqual(true, true, 'Test final callback');
+        assert.strictEqual(true, true, 'Test final callback');
     };
 
     var chain1 = a.callback.chainer(),
@@ -519,13 +519,13 @@ asyncTest('a.callback.chainer-addCallback', function() {
     chain2.start();
 
     // Release unit test
-    setTimeout(start, 100);
+    setTimeout(QUnit.start, 100);
 });
 
 
 
-asyncTest('a.callback.chainer-removeCallback', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.chainer-removeCallback', function(assert) {
+    assert.expect(1);
 
     /*
      * The idea : we remove all callback,
@@ -544,8 +544,8 @@ asyncTest('a.callback.chainer-removeCallback', function() {
     };
     var finalCallback = function() {
         var newTime = (new Date()).getTime();
-        ok(newTime - time < 50, 'The system wait as expected chain to finish');
-        start();
+        assert.ok(newTime - time < 50, 'The system wait as expected chain to finish');
+        QUnit.start();
     };
 
     // Now running system
@@ -565,12 +565,12 @@ asyncTest('a.callback.chainer-removeCallback', function() {
 
 
 // We test that without callback, chainer start success directly
-asyncTest('a.callback.chainer-nocallback', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.chainer-nocallback', function(assert) {
+    assert.expect(1);
 
     var finalCallback = function() {
-        ok(1==1, 'The system directly output result');
-        start();
+        assert.ok(1==1, 'The system directly output result');
+        QUnit.start();
     };
 
     // Now running system
@@ -580,13 +580,13 @@ asyncTest('a.callback.chainer-nocallback', function() {
 
 
 // Sending data threw callback works
-asyncTest('a.callback.chainer-data', function() {
-    expect(3);
+QUnit.asyncTest('a.callback.chainer-data', function(assert) {
+    assert.expect(3);
 
     var finalCallback = function(obj) {
-        strictEqual(this.getData('ok'), 'hello', 'Test data stored');
-        strictEqual(this.data['ok2'], 'hello2', 'Test data stored');
-        start();
+        assert.strictEqual(this.getData('ok'), 'hello', 'Test data stored');
+        assert.strictEqual(this.data['ok2'], 'hello2', 'Test data stored');
+        QUnit.start();
     };
 
     var chain = a.callback.chainer(null, finalCallback);
@@ -598,7 +598,7 @@ asyncTest('a.callback.chainer-data', function() {
 
     chain.addCallback(function() {
         this.setData('ok2', 'hello2', 'Test data');
-        strictEqual(this.getData('ok'), 'hello', 'The system send data');
+        assert.strictEqual(this.getData('ok'), 'hello', 'The system send data');
         this.done();
     });
 
@@ -606,29 +606,29 @@ asyncTest('a.callback.chainer-data', function() {
     chain.start();
 });
 
-asyncTest('a.callback.chainer-event', function() {
-    expect(2);
+QUnit.asyncTest('a.callback.chainer-event', function(assert) {
+    assert.expect(2);
 
     var chain = a.callback.chainer();
 
     chain.bind('start', function() {
-        strictEqual(true, true);
+        assert.strictEqual(true, true);
     });
     chain.bind('success', function() {
-        strictEqual(true, true);
-        start();
+        assert.strictEqual(true, true);
+        QUnit.start();
     });
 
     chain.start();
 });
 
 // Test result scope on chainer
-asyncTest('a.callback.chainer-resultScope', function() {
-    expect(1);
+QUnit.asyncTest('a.callback.chainer-resultScope', function(assert) {
+    assert.expect(1);
 
     var chain = a.callback.chainer(null, function() {
-        strictEqual(this.ok, 'ok');
-        start();
+        assert.strictEqual(this.ok, 'ok');
+        QUnit.start();
     });
 
     chain.scope = {
