@@ -1,6 +1,6 @@
 // Unit test for a.hash
 
-module('core/hash.js', {
+QUnit.module('core/hash.js', {
     setup: function() {
         hashtag('');
     },
@@ -14,20 +14,26 @@ module('core/hash.js', {
 
 
 // Start testing hash system
-asyncTest('a.hash', function() {
+QUnit.asyncTest('a.hash', function(assert) {
     expect(2);
 
     var check = function() {
-        ok(1==1);
+        QAppStorm.pop();
+        assert.ok(1==1);
     };
 
     a.hash.bind('change', check);
 
-    chain('unittest1', function() {
-        hashtag('unittest2');
-    }, 100);
-
-    chain('unittest2', start, 100);
-
-    hashtag('unittest1');
+    QAppStorm.chain({
+        hash: 'hash-unittest1',
+        expect: 1,
+    }, {
+        hash: 'hash-unittest2',
+        expect: 1,
+        callback: function(chain) {
+            // We remove binding
+            a.hash.unbind('change', check);
+            chain.next();
+        }
+    });
 });
