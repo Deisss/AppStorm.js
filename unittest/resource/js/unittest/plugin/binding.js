@@ -1,30 +1,34 @@
 // Unit test for a.binding (plugin)
 
-module('plugin/binding.js');
+QUnit.module('plugin/binding.js');
 
 // Check converter get/set/delete
-test('a.binding.converter', function() {
+QUnit.test('a.binding.converter', function(assert) {
+	assert.expect(3);
+
 	function testConverter() {};
 
 	// Before anything: nothing is already existing
-	strictEqual(a.binding.getConverter('testConverter'), null, 'Test null');
+	assert.strictEqual(a.binding.getConverter('testConverter'), null, 'Test null');
 
 	// Creating the converter
 	a.binding.registerConverter('testConverter', testConverter);
 
 	// Checking everything is fine
-	strictEqual(a.binding.getConverter('testConverter'), testConverter,
+	assert.strictEqual(a.binding.getConverter('testConverter'), testConverter,
 		'Test get');
 
 	// Removing converter
 	a.binding.removeConverter('testConverter');
 
 	// Test remove work
-	strictEqual(a.binding.getConverter('testConverter'), null, 'Test remove');
+	assert.strictEqual(a.binding.getConverter('testConverter'), null, 'Test remove');
 });
 
 // Check inner bind function
-test('a.binding.registerInnerBind', function() {
+QUnit.test('a.binding.registerInnerBind', function(assert) {
+	assert.expect(5);
+
 	var p = document.createElement('p');
 	p.innerHTML = 'This should {{handle}} as {{expected}} data';
 
@@ -37,9 +41,9 @@ test('a.binding.registerInnerBind', function() {
 	// Now we can test p has been parsed as expected
 	var html = p.innerHTML;
 
-	strictEqual(html, 'This should  as  data', 'Test content');
-	strictEqual(p.getAttribute('data-inner-bind-handle-start'), '12');
-	strictEqual(p.getAttribute('data-inner-bind-handle-stop'), '0');
-	strictEqual(p.getAttribute('data-inner-bind-expected-start'), '16');
-	strictEqual(p.getAttribute('data-inner-bind-expected-stop'), '0');
+	assert.strictEqual(html, 'This should  as  data', 'Test content');
+	assert.strictEqual(p.getAttribute('data-inner-bind-handle-start'), '12');
+	assert.strictEqual(p.getAttribute('data-inner-bind-handle-stop'), '0');
+	assert.strictEqual(p.getAttribute('data-inner-bind-expected-start'), '16');
+	assert.strictEqual(p.getAttribute('data-inner-bind-expected-stop'), '0');
 });
