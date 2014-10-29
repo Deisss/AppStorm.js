@@ -30,7 +30,7 @@
         <![endif]-->
 
         <!-- QUnit unit test tool -->
-        <link href='resource/css/vendor/qunit-1.14.0.css' rel='stylesheet' type='text/css' />
+        <link href='resource/css/vendor/qunit-1.15.0.css' rel='stylesheet' type='text/css' />
 
         <!-- Define here your custom CSS files : here an example with loading -->
         <link href='resource/css/main.css' rel='stylesheet' type='text/css' />
@@ -121,7 +121,7 @@
         <!-- Script -->
 
         <!-- QUnit unit test tool -->
-        <script src='resource/js/vendor/qunit-1.14.0.js'></script>
+        <script src='resource/js/vendor/qunit-1.15.0.js'></script>
         <script src='resource/js/vendor/qunit-testskip.js'></script>
 
 
@@ -134,6 +134,11 @@
 
         <!-- AppStorm.JS - helper -->
         <script src='resource/js/hash.js'></script>
+        <script src='resource/js/QAppStorm.js'></script>
+
+
+        <!-- Unit test - QAppStorm -->
+        <script src='resource/js/unittest/QAppStorm-unit-test.js'></script>
 
 
         <!-- Unit test - CORE -->
@@ -172,9 +177,11 @@
         <script src='resource/js/unittest/plugin/state.protocol.js'></script>
 
         <!-- set AppStorm.JS in debug mode -->
+        <!-- Start unit test -->
         <script>
             a.environment.set('debug', true);
             a.environment.set('verbose', 1);
+            QUnit.start();
         </script>
     </body>
 </html>
