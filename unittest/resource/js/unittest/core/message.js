@@ -1,6 +1,6 @@
 // Unit test for a.message (and in the same time eventEmitter)
 
-module('core/message.js', {
+QUnit.module('core/message.js', {
     setup: function() {
         a.message.clear();
     },
@@ -11,17 +11,17 @@ module('core/message.js', {
 
 
 // Testing bind function and dispatching event
-asyncTest('a.message.bind-dispatch', function() {
-    expect(3);
+QUnit.asyncTest('a.message.bind-dispatch', function(assert) {
+    assert.expect(3);
 
     var callback = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
     var callback2 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     }
     var callback3 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
 
     a.message.bind('a.unittest', callback);
@@ -36,17 +36,17 @@ asyncTest('a.message.bind-dispatch', function() {
 });
 
 // Testing unbind function
-asyncTest('a.message.unbind', function() {
-    expect(2);
+QUnit.asyncTest('a.message.unbind', function(assert) {
+    assert.expect(2);
 
     var callback = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
     var callback2 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     }
     var callback3 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
 
     a.message.bind('a.unittest', callback);
@@ -65,17 +65,17 @@ asyncTest('a.message.unbind', function() {
 });
 
 // Testing remove all listeners of the given type
-asyncTest('a.message.unbindAll', function() {
-    expect(1);
+QUnit.asyncTest('a.message.unbindAll', function(assert) {
+    assert.expect(1);
 
     var callback = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
     var callback2 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     }
     var callback3 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
 
     a.message.bind('a.unittest', callback);
@@ -93,15 +93,15 @@ asyncTest('a.message.unbindAll', function() {
 });
 
 // Testing message clearing
-asyncTest('a.message.clear', function() {
-    expect(1);
+QUnit.asyncTest('a.message.clear', function(assert) {
+    assert.expect(1);
 
     // We add callback like normal
     var callback = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
     var callback2 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     }
 
     a.message.bind('a.unittest', callback);
@@ -111,7 +111,7 @@ asyncTest('a.message.clear', function() {
     a.message.clear();
 
     var callback3 = function() {
-        ok(true, 'Checking callback response');
+        assert.ok(true, 'Checking callback response');
     };
     a.message.bind('a.unittest2', callback3);
 
@@ -124,8 +124,8 @@ asyncTest('a.message.clear', function() {
 
 
 // Testing eventListener does work with many sub object
-asyncTest('a.message.multiple-instance', function() {
-    expect(5);
+QUnit.asyncTest('a.message.multiple-instance', function(assert) {
+    assert.expect(5);
 
     var obj1 = function() {
         // Starting an object
@@ -159,21 +159,21 @@ asyncTest('a.message.multiple-instance', function() {
     var o2 = new obj2();
 
     o1.bind('obj.dispatch', function(data) {
-        strictEqual(data, 'obj1', 'Test obj1');
+        assert.strictEqual(data, 'obj1', 'Test obj1');
     });
     o2.bind('obj.dispatch', function(data) {
-        strictEqual(data, 'obj2', 'Test obj2');
+        assert.strictEqual(data, 'obj2', 'Test obj2');
     });
 
     o1.bind('obj1.clear', function() {
-        strictEqual(true, true, 'test clear');
+        assert.strictEqual(true, true, 'test clear');
     });
     o2.bind('obj2.clear', function() {
-        strictEqual(true, true, 'test clear');
+        assert.strictEqual(true, true, 'test clear');
     });
 
     function doClear() {
-        strictEqual(true, true, 'test clear');
+        assert.strictEqual(true, true, 'test clear');
     };
 
     a.message.bind('a.message.clear', doClear);
@@ -194,16 +194,16 @@ asyncTest('a.message.multiple-instance', function() {
 
 // It's possible to bind, an unbindable function
 // Except unbind function
-asyncTest('a.message.stop-clear', function() {
-    expect(1);
+QUnit.asyncTest('a.message.stop-clear', function(assert) {
+    assert.expect(1);
 
     function doesSupportUnbindAll() {
-        strictEqual(1, 1, 'Test');
+        assert.strictEqual(1, 1, 'Test');
         start();
     };
 
     function doesNotSupportUnbindAll() {
-        strictEqual(0, 1, 'Wrong test');
+        assert.strictEqual(0, 1, 'Wrong test');
     };
 
     a.message.bind('try-unbindAll', doesSupportUnbindAll, null, false, false);
