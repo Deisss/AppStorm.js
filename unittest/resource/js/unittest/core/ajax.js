@@ -1,6 +1,6 @@
 // Unit test for a.ajax
 
-module('core/ajax.js');
+QUnit.module('core/ajax.js');
 
 /*
 ---------------------------------
@@ -8,7 +8,7 @@ module('core/ajax.js');
 ---------------------------------
 */
 // Test sending header and getting reply (may fail on some server due to PHP side limit)
-asyncTest('a.ajax.header', function() {
+QUnit.asyncTest('a.ajax.header', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -19,7 +19,7 @@ asyncTest('a.ajax.header', function() {
             unittest : 'youpi'
         }
     }, function(res){
-        strictEqual(res, 'youpi', 'Testing header passed threw request');
+        assert.strictEqual(res, 'youpi', 'Testing header passed threw request');
         start();
     });
 
@@ -32,7 +32,7 @@ asyncTest('a.ajax.header', function() {
   ABORT RELATED
 ---------------------------------
 */
-asyncTest('a.ajax.abort', function() {
+QUnit.asyncTest('a.ajax.abort', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -40,10 +40,10 @@ asyncTest('a.ajax.abort', function() {
         type : 'raw',
         cache : true
     }, function(){
-        strictEqual(false, true, 'The abort has not been used');
+        assert.strictEqual(false, true, 'The abort has not been used');
         start();
     }, function() {
-        strictEqual(true, true, 'abort works');
+        assert.strictEqual(true, true, 'abort works');
         start();
     });
 
@@ -59,7 +59,7 @@ asyncTest('a.ajax.abort', function() {
 ---------------------------------
 */
 // Usage of defaultOptions
-asyncTest('a.ajax.defaultOptions', function() {
+QUnit.asyncTest('a.ajax.defaultOptions', function(assert) {
     expect(2);
 
     // We setup same request as header one, but with defaultOptions
@@ -73,11 +73,11 @@ asyncTest('a.ajax.defaultOptions', function() {
     });
 
     // Test url
-    strictEqual(a.getDefaultAjaxOptions().url,
+    assert.strictEqual(a.getDefaultAjaxOptions().url,
             './resource/data/ajax/header.php', 'Test default options stored');
 
     var ajx = new a.ajax({}, function(res){
-        strictEqual(res, 'youpi', 'Testing header passed threw request');
+        assert.strictEqual(res, 'youpi', 'Testing header passed threw request');
         // Now test is done => clear
         a.setDefaultAjaxOptions({});
         start();
@@ -87,7 +87,7 @@ asyncTest('a.ajax.defaultOptions', function() {
     ajx.send();
 });
 
-asyncTest('a.ajax.defaultOptions-mixed', function() {
+QUnit.asyncTest('a.ajax.defaultOptions-mixed', function(assert) {
     expect(2);
 
     // We setup same request as header one, but with defaultOptions
@@ -101,7 +101,7 @@ asyncTest('a.ajax.defaultOptions-mixed', function() {
     });
 
     // Test url
-    strictEqual(a.getDefaultAjaxOptions().url,
+    assert.strictEqual(a.getDefaultAjaxOptions().url,
             './resource/data/ajax/data.php', 'Test default options stored');
 
     var ajx = new a.ajax({
@@ -109,7 +109,7 @@ asyncTest('a.ajax.defaultOptions-mixed', function() {
             second : 'great'
         }
     }, function(res){
-        strictEqual(res, 'get=unittest|greatsecond|great',
+        assert.strictEqual(res, 'get=unittest|greatsecond|great',
     'Testing data passed threw request (mixed between default and options)');
         // Now test is done => clear
         a.setDefaultAjaxOptions({});
@@ -126,7 +126,7 @@ asyncTest('a.ajax.defaultOptions-mixed', function() {
   TEMPLATE RELATED
 ---------------------------------
 */
-asyncTest('a.ajax.template', function() {
+QUnit.asyncTest('a.ajax.template', function(assert) {
     expect(2);
 
     a.setTemplateAjaxOptions('easy', {
@@ -139,7 +139,7 @@ asyncTest('a.ajax.template', function() {
     });
 
     // Test url
-    strictEqual(a.getTemplateAjaxOptions('easy').url,
+    assert.strictEqual(a.getTemplateAjaxOptions('easy').url,
             './resource/data/ajax/data.php', 'Test default options stored');
 
     var ajx = new a.ajax({
@@ -148,7 +148,7 @@ asyncTest('a.ajax.template', function() {
             second : 'great'
         }
     }, function(res){
-        strictEqual(res, 'get=unittest|greatsecond|great',
+        assert.strictEqual(res, 'get=unittest|greatsecond|great',
     'Testing data passed threw request (mixed between default and options)');
         // Now test is done => clear
         a.setTemplateAjaxOptions('easy', {});
@@ -159,7 +159,7 @@ asyncTest('a.ajax.template', function() {
     ajx.send();
 });
 
-asyncTest('a.ajax.template-mixed', function() {
+QUnit.asyncTest('a.ajax.template-mixed', function(assert) {
     expect(3);
 
     a.setTemplateAjaxOptions('easy2', {
@@ -180,9 +180,9 @@ asyncTest('a.ajax.template-mixed', function() {
     });
 
     // Test url
-    strictEqual(a.getTemplateAjaxOptions('easy2').url,
+    assert.strictEqual(a.getTemplateAjaxOptions('easy2').url,
             './resource/data/ajax/data.php', 'Test easy2 url stored');
-    strictEqual(a.getTemplateAjaxOptions('easy3').data.second,
+    assert.strictEqual(a.getTemplateAjaxOptions('easy3').data.second,
             'awesome', 'Test easy3 data stored');
 
     var ajx = new a.ajax({
@@ -191,7 +191,7 @@ asyncTest('a.ajax.template-mixed', function() {
             second : 'great'
         }
     }, function(res){
-        strictEqual(res, 'get=unittest|greatunittest2|great2second|great',
+        assert.strictEqual(res, 'get=unittest|greatunittest2|great2second|great',
     'Testing data passed threw request (mixed between default and options)');
         // Now test is done => clear
         a.setTemplateAjaxOptions('easy2', {});
@@ -210,7 +210,7 @@ asyncTest('a.ajax.template-mixed', function() {
 ---------------------------------
 */
 // Test JSON support
-asyncTest('a.ajax.json', function() {
+QUnit.asyncTest('a.ajax.json', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -218,7 +218,7 @@ asyncTest('a.ajax.json', function() {
         type : 'json',
         cache : true
     }, function(res){
-        strictEqual(res.note.body, 'Content', 'Testing JSON loading');
+        assert.strictEqual(res.note.body, 'Content', 'Testing JSON loading');
         start();
     });
 
@@ -227,7 +227,7 @@ asyncTest('a.ajax.json', function() {
 });
 
 // test XML support
-asyncTest('a.ajax.xml', function() {
+QUnit.asyncTest('a.ajax.xml', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -235,7 +235,7 @@ asyncTest('a.ajax.xml', function() {
         type : 'xml',
         cache : true
     }, function(res){
-        strictEqual(res.getElementsByTagName('bodyt')[0].childNodes[0]
+        assert.strictEqual(res.getElementsByTagName('bodyt')[0].childNodes[0]
                         .nodeValue, 'Content', 'Testing XML loading');
         start();
     });
@@ -244,7 +244,7 @@ asyncTest('a.ajax.xml', function() {
 });
 
 // Test raw data (all other) support
-asyncTest('a.ajax.raw', function() {
+QUnit.asyncTest('a.ajax.raw', function(assert) {
     expect(2);
 
     var ajx = new a.ajax({
@@ -252,9 +252,9 @@ asyncTest('a.ajax.raw', function() {
         cache : true
     }, function(res){
         // Checking no parsing has been done (XML, then JSON)
-        strictEqual(typeof(res.getElementsByTagName), 
+        assert.strictEqual(typeof(res.getElementsByTagName), 
                                         'undefined', 'Testing raw data');
-        strictEqual(typeof(res.note), 'undefined', 'Testing raw data');
+        assert.strictEqual(typeof(res.note), 'undefined', 'Testing raw data');
         start();
     });
     ajx.send();
@@ -267,7 +267,9 @@ asyncTest('a.ajax.raw', function() {
 ---------------------------------
 */
 // Test synchronized request
-test('a.ajax.synchronous', function() {
+QUnit.test('a.ajax.synchronous', function(assert) {
+    expect(1);
+
     var ajx = new a.ajax({
         url : './resource/data/ajax/index.php',
         method : 'POST',
@@ -277,11 +279,11 @@ test('a.ajax.synchronous', function() {
         }
     });
     var res = ajx.send();
-    strictEqual(res, 'post', 'Testing synchronous POST');
+    assert.strictEqual(res, 'post', 'Testing synchronous POST');
 });
 
 // Test async request
-asyncTest('a.ajax.asynchronous', function() {
+QUnit.asyncTest('a.ajax.asynchronous', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -291,7 +293,7 @@ asyncTest('a.ajax.asynchronous', function() {
             'trypost' : 1
         }
     }, function(res){
-        strictEqual(res, 'post', 'Testing asynchronous POST');
+        assert.strictEqual(res, 'post', 'Testing asynchronous POST');
         start();
     });
 
@@ -299,7 +301,9 @@ asyncTest('a.ajax.asynchronous', function() {
 });
 
 // Test async request error response while accessing result in sync mode
-test('a.ajax.asynchronous-problem', function() {
+QUnit.test('a.ajax.asynchronous-problem', function(assert) {
+    expect(1);
+
     var ajx = new a.ajax({
         url : './resource/data/ajax/index.php',
         method : 'POST',
@@ -309,7 +313,7 @@ test('a.ajax.asynchronous-problem', function() {
     });
     var res = ajx.send();
 
-    strictEqual(res, 'No return in async mode',
+    assert.strictEqual(res, 'No return in async mode',
             'Testing asynchronous used as synchrnous one give bad results');
 });
 
@@ -321,7 +325,7 @@ test('a.ajax.asynchronous-problem', function() {
 ---------------------------------
 */
 // Test cache
-asyncTest('a.ajax.get-cache', function() {
+QUnit.asyncTest('a.ajax.get-cache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -329,7 +333,7 @@ asyncTest('a.ajax.get-cache', function() {
     }, function(res){
         // All parameters are printed to output,
         // here cachedisable should appears
-        strictEqual(res, 'get=cachedisable', 'Testing get cache');
+        assert.strictEqual(res, 'get=cachedisable', 'Testing get cache');
         start();
     });
 
@@ -337,7 +341,7 @@ asyncTest('a.ajax.get-cache', function() {
 });
 
 // Test cache
-asyncTest('a.ajax.get-nocache', function() {
+QUnit.asyncTest('a.ajax.get-nocache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -346,14 +350,14 @@ asyncTest('a.ajax.get-nocache', function() {
     }, function(res){
         // All parameters are printed to output,
         // empty string means no parameters where passed...
-        strictEqual(res, 'get=', 'Testing get no cache');
+        assert.strictEqual(res, 'get=', 'Testing get no cache');
         start();
     });
     ajx.send();
 });
 
 // Test cache
-asyncTest('a.ajax.post-cache', function() {
+QUnit.asyncTest('a.ajax.post-cache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -362,14 +366,14 @@ asyncTest('a.ajax.post-cache', function() {
     }, function(res){
         // All parameters are printed to output,
         // here cachedisable should appears
-        strictEqual(res, 'post=cachedisable', 'Testing post cache');
+        assert.strictEqual(res, 'post=cachedisable', 'Testing post cache');
         start();
     });
     ajx.send();
 });
 
 // Test cache
-asyncTest('a.ajax.post-nocache', function() {
+QUnit.asyncTest('a.ajax.post-nocache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -383,7 +387,7 @@ asyncTest('a.ajax.post-nocache', function() {
     }, function(res){
         // All parameters are printed to output,
         // empty string means no parameters where passed...
-        strictEqual(res, 'post=ok', 'Testing post no cache');
+        assert.strictEqual(res, 'post=ok', 'Testing post no cache');
         start();
     });
 
@@ -391,7 +395,7 @@ asyncTest('a.ajax.post-nocache', function() {
 });
 
 // Test cache
-asyncTest('a.ajax.put-cache', function() {
+QUnit.asyncTest('a.ajax.put-cache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -400,14 +404,14 @@ asyncTest('a.ajax.put-cache', function() {
     }, function(res){
         // All parameters are printed to output,
         // here cachedisable should appears
-        strictEqual(res, 'put=cachedisable', 'Testing put cache');
+        assert.strictEqual(res, 'put=cachedisable', 'Testing put cache');
         start();
     });
     ajx.send();
 });
 
 // Test cache
-asyncTest('a.ajax.put-nocache', function() {
+QUnit.asyncTest('a.ajax.put-nocache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -417,7 +421,7 @@ asyncTest('a.ajax.put-nocache', function() {
     }, function(res){
         // All parameters are printed to output,
         // empty string means no parameters where passed...
-        strictEqual(res, 'put=', 'Testing put no cache');
+        assert.strictEqual(res, 'put=', 'Testing put no cache');
         start();
     });
 
@@ -425,7 +429,7 @@ asyncTest('a.ajax.put-nocache', function() {
 });
 
 // Test cache
-asyncTest('a.ajax.delete-cache', function() {
+QUnit.asyncTest('a.ajax.delete-cache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -434,7 +438,7 @@ asyncTest('a.ajax.delete-cache', function() {
     }, function(res){
         // All parameters are printed to output,
         // here cachedisable should appears
-        strictEqual(res, 'delete=cachedisable', 'Testing delete cache');
+        assert.strictEqual(res, 'delete=cachedisable', 'Testing delete cache');
         start();
     });
 
@@ -442,7 +446,7 @@ asyncTest('a.ajax.delete-cache', function() {
 });
 
 // Test cache
-asyncTest('a.ajax.delete-nocache', function() {
+QUnit.asyncTest('a.ajax.delete-nocache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -452,14 +456,14 @@ asyncTest('a.ajax.delete-nocache', function() {
     }, function(res){
         // All parameters are printed to output,
         // empty string means no parameters where passed...
-        strictEqual(res, 'delete=', 'Testing delete no cache');
+        assert.strictEqual(res, 'delete=', 'Testing delete no cache');
         start();
     });
     ajx.send();
 });
 
 // Test cache
-asyncTest('a.ajax.options-cache', function() {
+QUnit.asyncTest('a.ajax.options-cache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -468,14 +472,14 @@ asyncTest('a.ajax.options-cache', function() {
     }, function(res){
         // All parameters are printed to output,
         // here cachedisable should appears
-        strictEqual(res, 'options=cachedisable', 'Testing options cache');
+        assert.strictEqual(res, 'options=cachedisable', 'Testing options cache');
         start();
     });
     ajx.send();
 });
 
 // Test cache
-asyncTest('a.ajax.options-nocache', function() {
+QUnit.asyncTest('a.ajax.options-nocache', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -485,7 +489,7 @@ asyncTest('a.ajax.options-nocache', function() {
     }, function(res){
         // All parameters are printed to output,
         // empty string means no parameters where passed...
-        strictEqual(res, 'options=', 'Testing options no cache');
+        assert.strictEqual(res, 'options=', 'Testing options no cache');
         start();
     });
 
@@ -499,7 +503,7 @@ asyncTest('a.ajax.options-nocache', function() {
 ---------------------------------
 */
 // Test HTTP mode
-asyncTest('a.ajax.get-single', function() {
+QUnit.asyncTest('a.ajax.get-single', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -509,7 +513,7 @@ asyncTest('a.ajax.get-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        strictEqual(res, 'get=gettest|ok', 'Testing get parameter');
+        assert.strictEqual(res, 'get=gettest|ok', 'Testing get parameter');
         start();
     });
 
@@ -517,7 +521,7 @@ asyncTest('a.ajax.get-single', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.get-multiple', function() {
+QUnit.asyncTest('a.ajax.get-multiple', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -528,7 +532,7 @@ asyncTest('a.ajax.get-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        strictEqual(res, 'get=gettest|oksecondtest|oktoo',
+        assert.strictEqual(res, 'get=gettest|oksecondtest|oktoo',
                                     'Testing get parameter');
         start();
     });
@@ -536,7 +540,7 @@ asyncTest('a.ajax.get-multiple', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.post-single', function() {
+QUnit.asyncTest('a.ajax.post-single', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -547,7 +551,7 @@ asyncTest('a.ajax.post-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        strictEqual(res, 'post=gettest|ok', 'Testing post parameter');
+        assert.strictEqual(res, 'post=gettest|ok', 'Testing post parameter');
         start();
     });
 
@@ -555,7 +559,7 @@ asyncTest('a.ajax.post-single', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.post-multiple', function() {
+QUnit.asyncTest('a.ajax.post-multiple', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -567,7 +571,7 @@ asyncTest('a.ajax.post-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        strictEqual(res, 'post=gettest|oksecondtest|oktoo',
+        assert.strictEqual(res, 'post=gettest|oksecondtest|oktoo',
                                     'Testing post parameter');
         start();
     });
@@ -576,7 +580,7 @@ asyncTest('a.ajax.post-multiple', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.put-single', function() {
+QUnit.asyncTest('a.ajax.put-single', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -587,7 +591,7 @@ asyncTest('a.ajax.put-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        strictEqual(res, 'put=gettest|ok', 'Testing put parameter');
+        assert.strictEqual(res, 'put=gettest|ok', 'Testing put parameter');
         start();
     });
 
@@ -595,7 +599,7 @@ asyncTest('a.ajax.put-single', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.put-multiple', function() {
+QUnit.asyncTest('a.ajax.put-multiple', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -607,7 +611,7 @@ asyncTest('a.ajax.put-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        strictEqual(res, 'put=gettest|oksecondtest|oktoo',
+        assert.strictEqual(res, 'put=gettest|oksecondtest|oktoo',
                                         'Testing put parameter');
         start();
     });
@@ -616,7 +620,7 @@ asyncTest('a.ajax.put-multiple', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.delete-single', function() {
+QUnit.asyncTest('a.ajax.delete-single', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -627,7 +631,7 @@ asyncTest('a.ajax.delete-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        strictEqual(res, 'delete=gettest|ok', 'Testing delete parameter');
+        assert.strictEqual(res, 'delete=gettest|ok', 'Testing delete parameter');
         start();
     });
 
@@ -635,7 +639,7 @@ asyncTest('a.ajax.delete-single', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.delete-multiple', function() {
+QUnit.asyncTest('a.ajax.delete-multiple', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -647,7 +651,7 @@ asyncTest('a.ajax.delete-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        strictEqual(res, 'delete=gettest|oksecondtest|oktoo',
+        assert.strictEqual(res, 'delete=gettest|oksecondtest|oktoo',
                                             'Testing delete parameter');
         start();
     });
@@ -656,7 +660,7 @@ asyncTest('a.ajax.delete-multiple', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.options-single', function() {
+QUnit.asyncTest('a.ajax.options-single', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -667,7 +671,7 @@ asyncTest('a.ajax.options-single', function() {
             'gettest' : 'ok'
         }
     }, function(res){
-        strictEqual(res, 'options=gettest|ok', 'Testing options parameter');
+        assert.strictEqual(res, 'options=gettest|ok', 'Testing options parameter');
         start();
     });
 
@@ -675,7 +679,7 @@ asyncTest('a.ajax.options-single', function() {
 });
 
 // Test HTTP mode
-asyncTest('a.ajax.options-multiple', function() {
+QUnit.asyncTest('a.ajax.options-multiple', function(assert) {
     expect(1);
 
     var ajx = new a.ajax({
@@ -687,7 +691,7 @@ asyncTest('a.ajax.options-multiple', function() {
             'secondtest' : 'oktoo'
         }
     }, function(res){
-        strictEqual(res, 'options=gettest|oksecondtest|oktoo',
+        assert.strictEqual(res, 'options=gettest|oksecondtest|oktoo',
                                         'Testing options parameter');
         start();
     });
