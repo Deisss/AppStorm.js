@@ -1,6 +1,6 @@
 // Unit test for a.form (plugin)
 
-module('plugin/form.js');
+QUnit.module('plugin/form.js');
 
 /*
 ---------------------------------
@@ -8,7 +8,9 @@ module('plugin/form.js');
 ---------------------------------
 */
 // Test default behavior
-test('a.form.get-default-test', function() {
+QUnit.test('a.form.get-default-test', function(assert) {
+    assert.expect(2);
+
     var id = 'a.form.get-default-test';
 
     // Main element
@@ -46,13 +48,15 @@ test('a.form.get-default-test', function() {
 
     var test = a.form.get(document.getElementById(id));
 
-    strictEqual(test[id + '-input'], 'input-ok', 'Test input');
-    strictEqual(test[id + '-select'], 'select-choice1', 'Test select');
+    assert.strictEqual(test[id + '-input'], 'input-ok', 'Test input');
+    assert.strictEqual(test[id + '-select'], 'select-choice1', 'Test select');
 });
 
 
 // Test checkbox
-test('a.form.get-checkbox-test', function() {
+QUnit.test('a.form.get-checkbox-test', function(assert) {
+    assert.expect(2);
+
     var id = 'a.form.get-checkbox-test';
 
     // Main element
@@ -81,13 +85,15 @@ test('a.form.get-checkbox-test', function() {
     // Get elements
     var test = a.form.get(document.getElementById(id));
 
-    strictEqual(test[id + '-c1'], true, 'Test first checkbox');
-    strictEqual(test[id + '-c2'], false, 'Test second checkbox');
+    assert.strictEqual(test[id + '-c1'], true, 'Test first checkbox');
+    assert.strictEqual(test[id + '-c2'], false, 'Test second checkbox');
 });
 
 
 // Test radio button group
-test('a.form.get-radio-test', function() {
+QUnit.test('a.form.get-radio-test', function(assert) {
+    assert.expect(2);
+
     var id = 'a.form.get-radio-test';
 
     // Main element
@@ -117,19 +123,21 @@ test('a.form.get-radio-test', function() {
     r1.checked = true;
     r2.checked = false;
     var test1 = a.form.get(document.getElementById(id));
-    strictEqual(test1[id + '-content'], 'r1',
+    assert.strictEqual(test1[id + '-content'], 'r1',
                         'Test first radio is found as checked');
 
     r1.checked = false;
     r2.checked = true;
     var test2 = a.form.get(document.getElementById(id));
-    strictEqual(test2[id + '-content'], 'r2',
+    assert.strictEqual(test2[id + '-content'], 'r2',
                         'Test second radio is found as checked');
 });
 
 
 // Test select, with or without option inside
-test('a.form.select-empty', function() {
+QUnit.test('a.form.select-empty', function(assert) {
+    assert.expect(1);
+
     var id = 'a.form.select-empty';
 
     // Main element
@@ -149,11 +157,13 @@ test('a.form.select-empty', function() {
     var test = a.form.get(document.getElementById(id));
 
     // Test the system is not hang by not existing options
-    strictEqual(test[id + '-content'], null, 'Test empty select');
+    assert.strictEqual(test[id + '-content'], null, 'Test empty select');
 });
 
 
-test('a.form.select-single', function() {
+QUnit.test('a.form.select-single', function(assert) {
+    assert.expect(1);
+
     var id = 'a.form.select-single';
 
     // Main element
@@ -177,11 +187,13 @@ test('a.form.select-single', function() {
     var test = a.form.get(document.getElementById(id));
 
     // Test the system is not hang by not existing options
-    strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
+    assert.strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
 
 
-test('a.form.select-full', function() {
+QUnit.test('a.form.select-full', function(assert) {
+    assert.expect(1);
+
     var id = 'a.form.select-full';
 
     // Main element
@@ -210,11 +222,13 @@ test('a.form.select-full', function() {
     var test = a.form.get(document.getElementById(id));
 
     // Test the system is not hang by not existing options
-    strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
+    assert.strictEqual(test[id + '-content'], 'yatta', 'Test empty select');
 });
 
 // Test a simple blank input
-test('a.form.get-blank', function() {
+QUnit.test('a.form.get-blank', function(assert) {
+    assert.expect(1);
+
     var id = 'a.form.get-blank';
 
     // Main element
@@ -234,12 +248,14 @@ test('a.form.get-blank', function() {
 
     var test = a.form.get(document.getElementById(id));
 
-    strictEqual(test[id + '-content'], null, 'Test empty content gives blank');
+    assert.strictEqual(test[id + '-content'], null, 'Test empty content gives blank');
 });
 
 // Testing that input with a name using [] is treated as an array not
 // a single value
-test('a.form.get-input-array', function() {
+QUnit.test('a.form.get-input-array', function(assert) {
+    assert.expect(3);
+
     var id = 'a.form.get-input-array';
 
     // Main element
@@ -267,14 +283,16 @@ test('a.form.get-input-array', function() {
 
     var test = a.form.get(document.getElementById(id));
 
-    strictEqual(a.isArray(test[id + '-content[]']), true);
-    strictEqual(test[id + '-content[]'][0], 'first');
-    strictEqual(test[id + '-content[]'][1], 'second');
+    assert.strictEqual(a.isArray(test[id + '-content[]']), true);
+    assert.strictEqual(test[id + '-content[]'][0], 'first');
+    assert.strictEqual(test[id + '-content[]'][1], 'second');
 });
 
 // Testing the custom tag attribute data-name to override the a.form way of
 // finding field name
-test('a.form.custom-attribute', function() {
+QUnit.test('a.form.custom-attribute', function(assert) {
+    assert.expect(1);
+
     var id = 'a.form.custom-attribute';
 
     // Main element
@@ -296,7 +314,7 @@ test('a.form.custom-attribute', function() {
 
     var test = a.form.get(document.getElementById(id));
 
-    strictEqual(test[id + '-custom-data'], 'something', 'Test custom tag');
+    assert.strictEqual(test[id + '-custom-data'], 'something', 'Test custom tag');
 });
 
 /*
@@ -305,7 +323,9 @@ test('a.form.custom-attribute', function() {
 ---------------------------------
 */
 // Test a basic validate is working as expected
-test('a.form.validate-default-test', function() {
+QUnit.test('a.form.validate-default-test', function(assert) {
+    assert.expect(2);
+
     var id = 'a.form.validate-default-test';
 
     // Main element
@@ -331,14 +351,14 @@ test('a.form.validate-default-test', function() {
     var test = a.form.validate(document.getElementById(id));
 
     if(test[0].id == id + '-i1') {
-        strictEqual(test[0].id, id + '-i1',
+        assert.strictEqual(test[0].id, id + '-i1',
                             'Test second id has been setted as not valid');
-        strictEqual(test[1].id, id + '-i2',
+        assert.strictEqual(test[1].id, id + '-i2',
                             'Test second id has been setted as not valid');
     } else {
-        strictEqual(test[1].id, id + '-i1',
+        assert.strictEqual(test[1].id, id + '-i1',
                             'Test second id has been setted as not valid');
-        strictEqual(test[0].id, id + '-i2',
+        assert.strictEqual(test[0].id, id + '-i2',
                             'Test second id has been setted as not valid');
     }
 });
