@@ -18769,7 +18769,7 @@ a.state = new function() {
                             'with no state linked to it...', 1);
             a.console.error(a.getStackTrace(), 1);
         }
-        var id = state.id;
+        var id = (state) ? state.id: null;
         // Convert to str
         status = '_' + status;
 
@@ -18820,7 +18820,8 @@ a.state = new function() {
     */
     function raiseError(resource, status) {
         var report = {},
-            state  = a.state._errorState;
+            state  = a.state._errorState,
+            id = (state) ? state.id : null;
 
         if(!a.isNone(resource)) {
             report.resource = resource;
@@ -18834,7 +18835,7 @@ a.state = new function() {
             messageError = 'a.state.raiseError: an error occurs, but ' +
                            'no error function/hash inside the state '+
                            'where existing to handle it. Please ' +
-                           'check your error handler (state-id: ' + state.id +
+                           'check your error handler (state-id: ' + id +
                            ', status: ' + status +
                            ', resource: ' + resource + ')';
 
@@ -18848,7 +18849,7 @@ a.state = new function() {
                 window.location.href = '#' + raiseError;
 
             } else if(a.isFunction(raiseError)) {
-                raiseError(state.id, resource, status);
+                raiseError(id, resource, status);
 
             // No handler to catch error, we raise an error on console
             } else {
@@ -19950,8 +19951,14 @@ a.state.chain = new function() {
 
         if(a.isString(url)) {
             for(var i=0, l=internal.length; i<l; ++i) {
+                // When using a full element, we probably want to not escape
+                // it - to recieve an object from memory
+                // But if it's a string to escape, we probably don't want it
+                // and get the string + variable replaced inside.
+                var escaped = (url.indexOf('{{') === 0) ? false: true;
                 parsedUrl = a.parameter.extrapolate(url, hash,
-                                                internal[i], false);
+                                            internal[i], escaped);
+
                 parseDataOption(options, hash, internal[i]);
             }
         }
@@ -21746,8 +21753,16 @@ a.modelPooler.searchInstance = function(query) {
     var name = query.modelName || query.model || query.name || null;
 
     // Faster search
-    var models = (name && a.isString(name)) ? a.modelManager.getByName(name) :
-                        a.modelManager.list();
+    var models;
+    if(name && a.isString(name)) {
+    	models = a.modelManager.getByName(name);
+    } else {
+    	var list = a.modelManager.list(),
+    		models = [];
+    	a.each(list, function(element) {
+    		models.push(element);
+    	});
+    }
 
     // We remove the first searched element
     if(query.modelName) {
@@ -21774,11 +21789,6 @@ a.modelPooler.searchInstance = function(query) {
         }
     }
 
-    if(models.length == 0) {
-        return null;
-    } else if(models.length == 1) {
-        return models[0];
-    }
     return models;
 };
 

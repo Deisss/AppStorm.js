@@ -101,8 +101,8 @@ QUnit.asyncTest('a.state.request-abort', function(assert) {
         hash : 'request-abort-b',
         async: true,
         preLoad : function(chain) {
-            QAppStorm.pop();
             assert.strictEqual(true, true, 'Arrive on time');
+            QAppStorm.pop();
             chain.next();
         }
     };
@@ -115,8 +115,8 @@ QUnit.asyncTest('a.state.request-abort', function(assert) {
             a.timer.once(chain.error, null, 500);
         },
         load : function(chain) {
-            QAppStorm.pop();
             assert.strictEqual(false, true, 'should be cancelled');
+            QAppStorm.pop();
             chain.next();
         }
     };

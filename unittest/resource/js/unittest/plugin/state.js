@@ -835,6 +835,10 @@ QUnit.asyncTest('a.state.data-cross-parameter', function(assert) {
             html: 'resource/data/state/data-cross-parameter.html'
         },
 
+        converter: function(data) {
+            console.log(data);
+        },
+
         // Test content has been loaded with parameter modification
         load : function(chain) {
             var id = document.getElementById('data-cross-parameter-id');
@@ -1031,9 +1035,9 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
     // Test binding is working
     // Unload state
     // Test binding is not working
-    expect(2);
+    assert.expect(2);
 
-    var state = {
+    a.state.add({
         id:    'state-bind-unbind',
         hash:  'unittest-state-bind-unbind',
         entry: 'body',
@@ -1046,42 +1050,70 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
         bind: {
             '#bind-unbind .first | click': function(e) {
                 assert.strictEqual(e.target.className, 'first', 'Test first click');
+                QAppStorm.pop();
             },
             '#bind-unbind .second | click': function(e) {
                 assert.strictEqual(e.target.className, 'second', 'Test second click');
+                QAppStorm.pop();
             }
         }
-    };
+    });
 
-    a.state.add(state);
 
-    chain('unittest-state-bind-unbind', function() {
-        // We test binding appear
-        var first  = document.querySelector('#bind-unbind .first'),
-            second = document.querySelector('#bind-unbind .second');
 
-        // We start unit test
-        first.click();
-        second.click();
+    QAppStorm.chain(
+        {
+            hash: 'unittest-state-bind-unbind',
+            expect: 0,
+            callback: function(chain) {
+                // The click are raised during callback, so they
+                // will be counted for next element
+                setTimeout(function() {
+                    chain.next();
+                }, 100);
+
+                setTimeout(function() {
+                    // We test binding appear
+                    var first  = document.querySelector('#bind-unbind .first'),
+                        second = document.querySelector('#bind-unbind .second');
+
+                    // We start unit test
+                    first.click();
+                    second.click();
+                }, 500);
+            }
+        }, {
+            hash: 'tmp_unittest-state-bind-unbind',
+            expect: 2,
+            callback: function(chain) {
+                // We test binding appear
+                var first  = document.querySelector('#bind-unbind .first'),
+                    second = document.querySelector('#bind-unbind .second');
+
+                // We start unit test (should do nothing as unbind raised on unload)
+                first.click();
+                second.click();
+
+                setTimeout(function() {
+                    chain.next();
+                }, 100);
+            }
+        }
+    );
+
+    /*chain('unittest-state-bind-unbind', function() {
 
         hashtag('tmp_unittest-state-bind-unbind');
     }, 200);
 
     chain('tmp_unittest-state-bind-unbind', function() {
-        // We test binding appear
-        var first  = document.querySelector('#bind-unbind .first'),
-            second = document.querySelector('#bind-unbind .second');
-
-        // We start unit test (should do nothing as unbind raised on unload)
-        first.click();
-        second.click();
 
         hashtag('tmp_tmp_unittest-state-bind-unbind');
     }, 200);
 
     chain('tmp_tmp_unittest-state-bind-unbind', start, 100);
 
-    hashtag('unittest-state-bind-unbind');
+    hashtag('unittest-state-bind-unbind');*/
 });
 
 
@@ -1093,9 +1125,9 @@ QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
     // Test binding is working
     // Unload state
     // Test binding is not working
-    expect(1);
+    assert.expect(1);
 
-    var state = {
+    a.state.add({
         id:    'state-bind-unbind-entry',
         hash:  'unittest-state-bind-unbind-entry',
         entry: '#a-state-direct-entry-bind',
@@ -1107,9 +1139,7 @@ QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
                                                         'Test id click');
             }
         }
-    };
-
-    a.state.add(state);
+    });
 
     chain('unittest-state-bind-unbind-entry', function() {
         // We test binding appear
@@ -1140,7 +1170,7 @@ QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
 
 // Test the async parameter
 QUnit.asyncTest('a.state.async-boolean', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     var asyncFalse = {
         id: 'a.state.async-false',
@@ -1188,7 +1218,7 @@ QUnit.asyncTest('a.state.async-boolean', function(assert) {
 
 // Test async on a single string
 QUnit.asyncTest('a.state.async-string', function(assert) {
-    expect(6);
+    assert.expect(6);
 
     var asyncString1 = {
         id: 'a.state.async-str1',
@@ -1243,7 +1273,7 @@ QUnit.asyncTest('a.state.async-string', function(assert) {
 
 
 QUnit.asyncTest('a.state.async-array', function(assert) {
-    expect(6);
+    assert.expect(6);
 
     var asyncArray1 = {
         id: 'a.state.async-arr1',
@@ -1301,7 +1331,7 @@ QUnit.asyncTest('a.state.async-array', function(assert) {
 
 // Test how the state react regarding acl changes
 QUnit.asyncTest('a.state.acl-change', function(assert) {
-    expect(3);
+    assert.expect(3);
 
     var state = {
         id: 'state-acl-change',
@@ -1343,7 +1373,7 @@ QUnit.asyncTest('a.state.acl-change', function(assert) {
 
 // Setup a minimum role for acl
 QUnit.asyncTest('a.state.acl-minimum', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     var state = {
         id: 'acl-minimum-change',
@@ -1381,7 +1411,7 @@ QUnit.asyncTest('a.state.acl-minimum', function(assert) {
 
 // Define a maximum step
 QUnit.asyncTest('a.state.acl-maximum', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     var state = {
         id: 'acl-maximum-change',
@@ -1419,7 +1449,7 @@ QUnit.asyncTest('a.state.acl-maximum', function(assert) {
 
 // Any element is accepted, except the one defined in refused
 QUnit.asyncTest('a.state.acl-refused', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var state = {
         id: 'acl-refused-change',
@@ -1475,7 +1505,7 @@ QUnit.asyncTest('a.state.acl-refused', function(assert) {
 
 // Test the inject parameters system
 QUnit.asyncTest('a.state.inject', function(assert) {
-    expect(1);
+    assert.expect(1);
 
     var state = {
         id: 'a.state.inject-test',
@@ -1500,7 +1530,7 @@ QUnit.asyncTest('a.state.inject', function(assert) {
 
 // Testing to loadAfter functionnality
 QUnit.asyncTest('a.state.load-after', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var parent = {
         id: 'a.state.loadafter-parent',
@@ -1532,7 +1562,7 @@ QUnit.asyncTest('a.state.load-after', function(assert) {
 
 // Unit test the raw mock support for faking server with not-parsed requests
 QUnit.asyncTest('a.state.data-mock', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     a.mock.add('GET', 'something/{{important}}', {
         version: '1.0.2'
@@ -1569,7 +1599,7 @@ QUnit.asyncTest('a.state.data-mock', function(assert) {
 
 // Test the new capacities for entry/el/dom to use a function instead of a string
 QUnit.asyncTest('a.state.entry-function', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     var state = {
         id: 'a.state.entry-function',
@@ -1602,9 +1632,9 @@ QUnit.asyncTest('a.state.entry-function', function(assert) {
 
 // Test data as a function instead of string/object
 QUnit.asyncTest('a.state.data-function', function(assert) {
-    expect(1);
+    assert.expect(1);
 
-    var state = {
+    a.state.add({
         id: 'a.state.data-function',
         hash: 'a.state.data-function',
         data: function(chain) {
@@ -1617,9 +1647,7 @@ QUnit.asyncTest('a.state.data-function', function(assert) {
             assert.strictEqual(data, 'i got something');
             QAppStorm.pop();
         }
-    };
-
-    a.state.add(state);
+    });
 
     QAppStorm.chain(
         {
@@ -1631,9 +1659,9 @@ QUnit.asyncTest('a.state.data-function', function(assert) {
 
 // Little bit more complex data test
 QUnit.asyncTest('a.state.data-function2', function(assert) {
-    expect(1);
+    assert.expect(1);
 
-    var state = {
+    a.state.add({
         id: 'a.state.data-function2',
         hash: 'a.state.data-function2',
         data: function(chain) {
@@ -1652,9 +1680,7 @@ QUnit.asyncTest('a.state.data-function2', function(assert) {
             assert.strictEqual(data.ok, 'ok');
             QAppStorm.pop();
         }
-    };
-
-    a.state.add(state);
+    });
 
     QAppStorm.chain(
         {
@@ -1666,7 +1692,7 @@ QUnit.asyncTest('a.state.data-function2', function(assert) {
 
 // More complex data structure, mixing many things at a time
 QUnit.asyncTest('a.state.data-function3', function(assert) {
-    expect(2);
+    assert.expect(2);
 
     a.storage.memory.set('something', 'other ok');
 
@@ -1711,9 +1737,9 @@ QUnit.asyncTest('a.state.data-function3', function(assert) {
 
 // Testing usage parameters
 QUnit.asyncTest('a.state.parameters', function(assert) {
-    expect(2);
+    assert.expect(2);
 
-    var state = {
+    a.state.add({
         id: 'a.state.parameters',
         hash: '/something/{{interest: [a-zA-Z0-9]+}}/with/{{content: \\d+}}',
         preLoad: function() {
@@ -1722,9 +1748,7 @@ QUnit.asyncTest('a.state.parameters', function(assert) {
             assert.strictEqual(this.parameters.content, '13');
             QAppStorm.pop();
         }
-    };
-
-    a.state.add(state);
+    });
 
     QAppStorm.chain(
         {
@@ -1736,7 +1760,7 @@ QUnit.asyncTest('a.state.parameters', function(assert) {
 
 // Keyboard test
 QUnit.asyncTest('a.state.keyboard-bindings', function(assert) {
-    expect(6);
+    assert.expect(6);
 
     a.state.add({
         id: 'a.state.keyboard-bindings',
@@ -1793,7 +1817,7 @@ QUnit.asyncTest('a.state.keyboard-bindings', function(assert) {
 
 // Testing multiple hash response
 QUnit.asyncTest('a.state.multiple-hash', function(assert) {
-    expect(4);
+    assert.expect(4);
 
     a.state.add({
         id: 'a.state.multiple-hash',
