@@ -461,3 +461,18 @@ QUnit.test('a.parameter.getValues-complex', function(assert) {
     assert.strictEqual(test[1].value, 'hello');
 });
 
+QUnit.test('a.parameter.extrapolate-from-memory', function(assert) {
+    assert.expect(1);
+
+    a.storage.memory.set('current.depose.mandatoryId', 'hithere');
+
+    var url = 'ws/depose/box/{{memory: current.depose.mandatoryId}}/file',
+        hash = '/kld/sessions/544fc14178d61f1c5c719768/electre/result',
+        internal = 'ws/depose/box/{{memory: current.depose.mandatoryId}}/file';
+
+    var extrapolate = a.parameter.extrapolate(url, hash, internal);
+
+    assert.strictEqual(extrapolate, 'ws/depose/box/hithere/file');
+
+    a.storage.memory.remove('current.depose.mandatoryId');
+});
