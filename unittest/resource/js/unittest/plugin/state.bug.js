@@ -331,13 +331,19 @@ QUnit.asyncTest('a.sate.nested-data-object', function(assert) {
 
     a.state.add({
         id: 'state-nested-data-object',
+        hash: 'state-nested-data-object',
         data: {
             session: {
-                url: 'resource/data/state/nested-object.json'
+                url: 'resource/data/state/nested-object.json',
+                options: {
+                    template: ['json']
+                }
             }
         },
-        converter: function(data) {
-            assert.strictEqual('ok', 'ok');
+        postLoad: function() {
+            assert.strictEqual(this.data.session.id,
+                                    '544fc10fdfc418383e237608');
+            QAppStorm.pop();
         }
     });
 
