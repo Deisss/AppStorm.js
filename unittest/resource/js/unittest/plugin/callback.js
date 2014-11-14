@@ -443,7 +443,7 @@ QUnit.asyncTest('a.callback.chainer-error', function(assert) {
     };
     var finalCallback = function() {
         var newTime = (new Date()).getTime();
-        assert.ok(newTime - time < 150,
+        assert.ok(newTime - time < 200,
                         'The system wait as expected chain to finish');
         start();
     };
