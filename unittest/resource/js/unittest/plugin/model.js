@@ -632,8 +632,8 @@ QUnit.test('a.model.searchInstance', function(assert) {
             val: 12
         });
 
-    assert.strictEqual(getTest1.get('id'), 3);
-    assert.strictEqual(getTest2.get('id'), 20);
+    assert.strictEqual(getTest1[0].get('id'), 3);
+    assert.strictEqual(getTest2[0].get('id'), 20);
 });
 
 
@@ -665,8 +665,8 @@ QUnit.test('a.model.searchInstance-no-name', function(assert) {
     var getTest1 = a.model({id: 2}),
         getTest2 = a.model({id: 3});
 
-    assert.strictEqual(getTest2.name, 'unittest-searchInstance-no-name');
-    assert.strictEqual(getTest2.uid, test2.uid);
+    assert.strictEqual(getTest2[0].name, 'unittest-searchInstance-no-name');
+    assert.strictEqual(getTest2[0].uid, test2.uid);
     assert.strictEqual(getTest1.length, 2);
     assert.strictEqual(getTest1[0].uid, test1.uid);
     assert.strictEqual(getTest1[0].name, 'unittest-searchInstance-no-name');
