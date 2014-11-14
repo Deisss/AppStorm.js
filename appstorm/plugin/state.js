@@ -52,7 +52,7 @@ a.state = new function() {
                             'with no state linked to it...', 1);
             a.console.error(a.getStackTrace(), 1);
         }
-        var id = state.id;
+        var id = (state) ? state.id: null;
         // Convert to str
         status = '_' + status;
 
@@ -103,7 +103,8 @@ a.state = new function() {
     */
     function raiseError(resource, status) {
         var report = {},
-            state  = a.state._errorState;
+            state  = a.state._errorState,
+            id = (state) ? state.id : null;
 
         if(!a.isNone(resource)) {
             report.resource = resource;
@@ -117,7 +118,7 @@ a.state = new function() {
             messageError = 'a.state.raiseError: an error occurs, but ' +
                            'no error function/hash inside the state '+
                            'where existing to handle it. Please ' +
-                           'check your error handler (state-id: ' + state.id +
+                           'check your error handler (state-id: ' + id +
                            ', status: ' + status +
                            ', resource: ' + resource + ')';
 
@@ -131,7 +132,7 @@ a.state = new function() {
                 window.location.href = '#' + raiseError;
 
             } else if(a.isFunction(raiseError)) {
-                raiseError(state.id, resource, status);
+                raiseError(id, resource, status);
 
             // No handler to catch error, we raise an error on console
             } else {
