@@ -315,8 +315,14 @@ a.state.chain = new function() {
 
         if(a.isString(url)) {
             for(var i=0, l=internal.length; i<l; ++i) {
+                // When using a full element, we probably want to not escape
+                // it - to recieve an object from memory
+                // But if it's a string to escape, we probably don't want it
+                // and get the string + variable replaced inside.
+                var escaped = (url.indexOf('{{') === 0) ? false: true;
                 parsedUrl = a.parameter.extrapolate(url, hash,
-                                                internal[i], false);
+                                            internal[i], escaped);
+
                 parseDataOption(options, hash, internal[i]);
             }
         }
