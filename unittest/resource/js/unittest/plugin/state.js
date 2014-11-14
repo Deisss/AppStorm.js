@@ -985,6 +985,8 @@ QUnit.asyncTest('a.state.options-parameter', function(assert) {
 
 // Test the 'use' extend system
 QUnit.test('a.state.use', function(assert) {
+    assert.expect(8);
+
     var initialState = {
         id: 'init-state',
         hash: 'init-state',
