@@ -1,5 +1,9 @@
 // Unit test for a.binding (plugin)
 
+
+// FOR NOW THIS IS UNUSED AND UNTRUSTED CODE
+
+/*
 QUnit.module('plugin/binding.js');
 
 // Check converter get/set/delete
@@ -47,3 +51,4 @@ QUnit.test('a.binding.registerInnerBind', function(assert) {
 	assert.strictEqual(p.getAttribute('data-inner-bind-expected-start'), '16');
 	assert.strictEqual(p.getAttribute('data-inner-bind-expected-stop'), '0');
 });
+*/
