@@ -229,6 +229,7 @@ QUnit.asyncTest('a.state.error-empty', function(assert) {
                 // handled'
                 var trace = a.console.trace('error'),
                     error = trace[0];
+                console.log(trace);
 
                 // We remove the last part of url to get it more easy to test
                 error = error.replace(/\?cachedisable\=rnd\_\d+/g, '');
@@ -240,7 +241,7 @@ QUnit.asyncTest('a.state.error-empty', function(assert) {
                                         'error-empty-hash, status: 404, ' +
                                         'resource: someunknowurl4)');
                 chain.next();
-            }, 100);
+            }, 1000);
         }
     });
 });
