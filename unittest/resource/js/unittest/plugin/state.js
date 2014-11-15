@@ -1076,8 +1076,6 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
             hash: 'unittest-state-bind-unbind',
             expect: 2,
             callback: function(chain) {
-                // The click are raised during callback, so they
-                // will be counted for next element
                 setTimeout(function() {
                     chain.next();
                 }, 500);
@@ -1100,20 +1098,6 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
             }
         }
     );
-
-    /*chain('unittest-state-bind-unbind', function() {
-
-        hashtag('tmp_unittest-state-bind-unbind');
-    }, 200);
-
-    chain('tmp_unittest-state-bind-unbind', function() {
-
-        hashtag('tmp_tmp_unittest-state-bind-unbind');
-    }, 200);
-
-    chain('tmp_tmp_unittest-state-bind-unbind', start, 100);
-
-    hashtag('unittest-state-bind-unbind');*/
 });
 
 
@@ -1137,31 +1121,44 @@ QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
             'click': function(e) {
                 assert.strictEqual(e.target.id, 'a-state-direct-entry-bind',
                                                         'Test id click');
+                QAppStorm.pop();
             }
+        },
+
+        postLoad: function() {
+            // We test binding appear
+            var entry = document.getElementById('a-state-direct-entry-bind');
+
+            // We start unit test
+            entry.click();
         }
     });
 
-    chain('unittest-state-bind-unbind-entry', function() {
-        // We test binding appear
-        var entry = document.getElementById('a-state-direct-entry-bind');
+    QAppStorm.chain(
+        {
+            hash: 'unittest-state-bind-unbind-entry',
+            expect: 1,
+            callback: function(chain) {
+                setTimeout(function() {
+                    chain.next();
+                }, 500);
+            }
+        }, {
+            hash: 'tmp_unittest-state-bind-unbind-entry',
+            expect: 0,
+            callback: function(chain) {
+                // We test binding appear
+                var entry = document.getElementById('a-state-direct-entry-bind');
 
-        // We start unit test
-        entry.click();
+                // We start unit test (should do nothing)
+                entry.click();
 
-        hashtag('tmp_unittest-state-bind-unbind-entry');
-    }, 200);
-
-    chain('tmp_unittest-state-bind-unbind-entry', function() {
-        // We test binding appear
-        var entry = document.getElementById('a-state-direct-entry-bind');
-
-        // We start unit test (should do nothing)
-        entry.click();
-
-        start();
-    }, 200);
-
-    hashtag('unittest-state-bind-unbind-entry');
+                setTimeout(function() {
+                    chain.next();
+                }, 200);
+            }
+        }
+    );
 });
 
 
