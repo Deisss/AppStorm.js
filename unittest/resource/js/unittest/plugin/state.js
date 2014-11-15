@@ -1354,19 +1354,24 @@ QUnit.asyncTest('a.state.acl-change', function(assert) {
     a.state.add(state);
 
     // We test acl value
-    assert.strictEqual(state._storm.acl, false, 'Value is not ready');
+    setTimeout(function() {
+        assert.strictEqual(state._storm.acl, false, 'Value is not ready');
+        QAppStorm.pop();
+    }, 200);
 
     QAppStorm.chain(
         {
             hash: 'state-acl-change',
             expect: 1,
             callback: function(chain) {
-                a.acl.setCurrentRole('acl-change2');
-                chain.next();
+                setTimeout(function() {
+                    a.acl.setCurrentRole('acl-change2');
+                    chain.next();
+                }, 500);
             }
         }, {
             hash: 'state-acl-changz',
-            expect: 0,
+            expect: 1,
             callback: function(chain) {
                 assert.strictEqual(state._storm.acl, true, 'Value has been updated');
                 chain.next();
@@ -1402,14 +1407,16 @@ QUnit.asyncTest('a.state.acl-minimum', function(assert) {
     QAppStorm.chain(
         {
             hash: 'a.state.acl-minimuma',
-            expect: 1,
-            callback: function(chainer) {
-                a.acl.setCurrentRole('admin');
-                chain.next();
+            expect: 0,
+            callback: function(chain) {
+                setTimeout(function() {
+                    a.acl.setCurrentRole('admin');
+                    chain.next();
+                }, 500);
             }
         }, {
             hash: 'a.state.acl-minimumb',
-            expect: 0
+            expect: 1
         }
     );
 });
@@ -1489,19 +1496,23 @@ QUnit.asyncTest('a.state.acl-refused', function(assert) {
             hash: 'a.state.acl-refuseda',
             expect: 1,
             callback: function(chain) {
-                a.acl.setCurrentRole('leader');
-                chain.next();
+                setTimeout(function() {
+                    a.acl.setCurrentRole('leader');
+                    setTimeout(chain.next, 200);
+                }, 200);
             }
         }, {
             hash: 'a.state.acl-refusedb',
-            expect: 1,
+            expect: 0,
             callback: function(chain) {
-                a.acl.setCurrentRole('admin');
-                chain.next();
+                setTimeout(function() {
+                    a.acl.setCurrentRole('admin');
+                    setTimeout(chain.next, 200);
+                }, 200);
             }
         }, {
             hash: 'a.state.acl-refusedc',
-            expect: 0
+            expect: 1
         }
     );
 });
