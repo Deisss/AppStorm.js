@@ -2,10 +2,12 @@
 
 QUnit.module('plugin/model.js', {
     setup: function() {
-
+        a.modelManager.clear();
+        a.modelPooler.clear();
     },
     teardown: function() {
         a.modelManager.clear();
+        a.modelPooler.clear();
     }
 });
 
@@ -675,10 +677,34 @@ QUnit.test('a.model.searchInstance-no-name', function(assert) {
 });
 
 
-QUnit.test('a.model.validates', function(assert) {
-    assert.expect(1);
-    // TODO
-    assert.ok(1==1);
+QUnit.test('a.model.validate', function(assert) {
+    assert.expect(3);
+
+    var unittest = a.model('unittest-validate', {
+        id: {
+            validate: function(value, old) {
+                return value % 2 === 0;
+            }
+        }
+    });
+
+    var t1 = new unittest();
+
+    t1.set('id', 0);
+
+    assert.strictEqual(t1.get('id'), 0);
+
+    // Not valid
+    t1.set('id', 1);
+
+    // Still original
+    assert.strictEqual(t1.get('id'), 0);
+
+    // Valid
+    t1.set('id', 2);
+
+    // Updated
+    assert.strictEqual(t1.get('id'), 2);
 });
 
 QUnit.test('a.model.requests', function(assert) {
