@@ -1,5 +1,18 @@
 // Unit test for a.state (plugin)
-QUnit.module('plugin/state.js');
+QUnit.module('plugin/state.js', {
+    setup: function() {
+        QAppStorm.clear();
+        hashtag('');
+    },
+    teardown: function() {
+        a.state.clear();
+        a.message.clear();
+        a.mock.clear();
+        hashtag('');
+        a.acl.clear();
+        QAppStorm.clear();
+    }
+});
 
 
 

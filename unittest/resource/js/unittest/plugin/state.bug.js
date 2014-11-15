@@ -1,7 +1,20 @@
 // Unit test for a.state (plugin)
 // We handle bug and test to check they are not coming back
 
-QUnit.module('plugin/state.js');
+QUnit.module('plugin/state.js', {
+    setup: function() {
+        QAppStorm.clear();
+        hashtag('');
+    },
+    teardown: function() {
+        a.state.clear();
+        a.message.clear();
+        a.mock.clear();
+        hashtag('');
+        a.acl.clear();
+        QAppStorm.clear();
+    }
+});
 
 // In this unit test, we check 2 children, with same parent element,
 // and same hashtag, are both loaded not only one
@@ -262,7 +275,7 @@ QUnit.asyncTest('a.state.chain-load-with-url', function(assert) {
     a.state.add(wall);
     a.state.load('root');
 
-    setTimeout(QUnit.start, 200);
+    setTimeout(QUnit.start, 1000);
 });
 
 
@@ -285,7 +298,9 @@ QUnit.asyncTest('a.state.chain-triple-load', function(assert) {
                 original = this._storm.data.custom;
 
             assert.strictEqual(current, 'abcdef', 'Test load current value');
+            QAppStorm.pop();
             assert.strictEqual(original, '{{id}}', 'Test load original value');
+            QAppStorm.pop();
         }
     };
 
@@ -300,28 +315,27 @@ QUnit.asyncTest('a.state.chain-triple-load', function(assert) {
                 original = this._storm.data.sub;
 
             assert.strictEqual(current, 'abcdef', 'Test unload current value');
+            QAppStorm.pop();
             assert.strictEqual(original, '{{id}}', 'Test unload original value');
+            QAppStorm.pop();
         }
     };
 
     a.state.add([state1, state2]);
 
-    // Loading/unloading many times
-    chain('/chain-triple-load/abcdef', function() {
-        chain('/chain-triple-unload/abcdef', function() {
-            chain('/chain-triple-load/abcdef', function() {
-                chain('/chain-triple-unload/abcdef', function() {
-                    hashtag('');
-                    QUnit.start();
-                }, 200);
-                hashtag('/chain-triple-unload/abcdef')
-            }, 200);
-            hashtag('/chain-triple-load/abcdef')
-        }, 200);
-        hashtag('/chain-triple-unload/abcdef');
-    }, 200);
-
-    hashtag('/chain-triple-load/abcdef');
+    QAppStorm.chain({
+        hash: '/chain-triple-load/abcdef',
+        expect: 2
+    }, {
+        hash: '/chain-triple-unload/abcdef',
+        expect: 2
+    }, {
+        hash: '/chain-triple-load/abcdef',
+        expect: 2
+    }, {
+        hash: '/chain-triple-unload/abcdef',
+        expect: 2
+    });
 });
 
 // In some case, one some AppStorm version we could find a bug where the system

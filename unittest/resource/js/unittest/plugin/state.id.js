@@ -1,7 +1,20 @@
 // Unit test for a.state (plugin)
 // We separate from state because it is less important, and more easy one...
 
-QUnit.module('plugin/state.js');
+QUnit.module('plugin/state.js', {
+    setup: function() {
+        QAppStorm.clear();
+        hashtag('');
+    },
+    teardown: function() {
+        a.state.clear();
+        a.message.clear();
+        a.mock.clear();
+        hashtag('');
+        a.acl.clear();
+        QAppStorm.clear();
+    }
+});
 
 // Testing getById function
 QUnit.test('a.state.get', function(assert) {
@@ -30,18 +43,18 @@ QUnit.test('a.state.remove', function(assert) {
     assert.expect(2);
 
     var element = {
-        id : 'nowitisworking',
+        id : 'nowitisworking2',
         hash : 'you'
     };
     a.state.add(element);
 
-    assert.deepEqual(a.state.get('nowitisworking'), element,
+    assert.deepEqual(a.state.get('nowitisworking2'), element,
                                         'Test element can be accessed');
 
     // Now we remove
     a.state.remove(element.id);
 
-    assert.deepEqual(a.state.get('nowitisworking'), null,
+    assert.deepEqual(a.state.get('nowitisworking2'), null,
                         'Test element cannot be accessed after deleting');
 
     // Now we remove dummy one...

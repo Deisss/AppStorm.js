@@ -1,5 +1,18 @@
 // Unit test for a.state.chain (plugin)
-QUnit.module('plugin/state.chain.js');
+QUnit.module('plugin/state.chain.js', {
+    setup: function() {
+        QAppStorm.clear();
+        hashtag('');
+    },
+    teardown: function() {
+        a.state.clear();
+        a.message.clear();
+        a.mock.clear();
+        hashtag('');
+        a.acl.clear();
+        QAppStorm.clear();
+    }
+});
 
 // Test adding before
 QUnit.test('a.state.chain-add-before', function(assert) {
