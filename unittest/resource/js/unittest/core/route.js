@@ -72,8 +72,8 @@ QUnit.asyncTest('a.route.enter-otherwise', function(assert) {
 
     // Dummy function to test entering route element
     function checkOtherwise() {
-        QAppStorm.pop();
         assert.strictEqual(1, 1, 'Test otherwise enter');
+        QAppStorm.pop();
     };
 
     // Binding function to route
@@ -81,10 +81,14 @@ QUnit.asyncTest('a.route.enter-otherwise', function(assert) {
 
     QAppStorm.chain({
         hash: 'unittest-route-otherwise1',
-        expect: 0
+        expect: 1,
+        callback: function(chain) {
+            a.route.otherwise(null);
+            chain.next();
+        }
     }, {
         hash: 'unittest-route-nootherwise1',
-        expect: 1,
+        expect: 0,
         callback: function(chain) {
             a.route.otherwise(null);
             chain.next();
@@ -108,10 +112,14 @@ QUnit.asyncTest('a.route.leaving-otherwise', function(assert) {
 
     QAppStorm.chain({
         hash: 'unittest-route-otherwise2',
-        expect: 0
+        expect: 1,
+        callback: function(chain) {
+            a.route.otherwise(null, 'leave');
+            chain.next();
+        }
     }, {
         hash: 'unittest-route-nootherwise2',
-        expect: 1,
+        expect: 0,
         callback: function(chain) {
             a.route.otherwise(null, 'leave');
             chain.next();
