@@ -1056,6 +1056,16 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
                 assert.strictEqual(e.target.className, 'second', 'Test second click');
                 QAppStorm.pop();
             }
+        },
+
+        postLoad: function() {
+            // We test binding appear
+            var first  = document.querySelector('#bind-unbind .first'),
+                second = document.querySelector('#bind-unbind .second');
+
+            // We start unit test
+            first.click();
+            second.click();
         }
     });
 
@@ -1064,27 +1074,17 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
     QAppStorm.chain(
         {
             hash: 'unittest-state-bind-unbind',
-            expect: 0,
+            expect: 2,
             callback: function(chain) {
                 // The click are raised during callback, so they
                 // will be counted for next element
                 setTimeout(function() {
                     chain.next();
-                }, 100);
-
-                setTimeout(function() {
-                    // We test binding appear
-                    var first  = document.querySelector('#bind-unbind .first'),
-                        second = document.querySelector('#bind-unbind .second');
-
-                    // We start unit test
-                    first.click();
-                    second.click();
                 }, 500);
             }
         }, {
             hash: 'tmp_unittest-state-bind-unbind',
-            expect: 2,
+            expect: 0,
             callback: function(chain) {
                 // We test binding appear
                 var first  = document.querySelector('#bind-unbind .first'),
@@ -1096,7 +1096,7 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
 
                 setTimeout(function() {
                     chain.next();
-                }, 100);
+                }, 200);
             }
         }
     );
