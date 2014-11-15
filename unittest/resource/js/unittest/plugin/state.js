@@ -1078,10 +1078,18 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
             callback: function(chain) {
                 setTimeout(function() {
                     chain.next();
-                }, 500);
+                }, 200);
             }
         }, {
             hash: 'tmp_unittest-state-bind-unbind',
+            expect: 0,
+            callback: function(chain) {
+                setTimeout(function() {
+                    chain.next();
+                }, 500);
+            }
+        }, {
+            hash: 'tmp_tmp_unittest-state-bind-unbind',
             expect: 0,
             callback: function(chain) {
                 // We test binding appear
@@ -1092,9 +1100,9 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
                 first.click();
                 second.click();
 
-                setTimeout(function() {
-                    chain.next();
-                }, 200);
+                var toRemove = document.getElementById('bind-unbind');
+                toRemove.parentElement.removeChild(toRemove);
+                chain.next();
             }
         }
     );
@@ -1504,24 +1512,25 @@ QUnit.asyncTest('a.state.acl-refused', function(assert) {
 QUnit.asyncTest('a.state.inject', function(assert) {
     assert.expect(1);
 
-    var state = {
+    a.state.add({
         id: 'a.state.inject-test',
         hash: 'a.state.inject-test',
         data: {
             el: '{{inject: ok}}'
         },
         converter: function(data) {
+            console.log(data);
             assert.strictEqual(data.el, 'something');
         }
-    };
-
-    a.state.add(state);
+    });
 
     chain('a.state.inject-test', start, 500);
 
-    a.route.hash('a.state.inject-test', {
-        ok: 'something'
-    });
+    setTimeout(function() {
+        a.route.hash('a.state.inject-test', {
+            ok: 'something'
+        });
+    }, 200);
 });
 
 
