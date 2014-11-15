@@ -1,3 +1,0 @@
-function tr() {
-	alert('ok');
-}
