@@ -707,3 +707,62 @@ QUnit.asyncTest('a.dom.event-prevent', function(assert) {
         start();
     }, 200);
 });
+
+// Testing basic html get/set
+QUnit.test('a.dom.html', function(assert) {
+    assert.expect(3);
+
+    var currentHtml = a.dom.id('a.dom.testid').html();
+
+    assert.strictEqual(currentHtml, 'a.dom.testid');
+
+    // Testing set the id
+    a.dom.id('a.dom.testid').html('okworking');
+
+    // Testing content
+    assert.strictEqual(document.getElementById('a.dom.testid').innerHTML, 'okworking');
+    assert.strictEqual(a.dom.id('a.dom.testid').html(), 'okworking');
+
+    // Rollback
+    a.dom.id('a.dom.testid').html(currentHtml);
+});
+
+// Testing complex html get/set
+QUnit.test('a.dom.html-complex', function(assert) {
+    assert.expect(10);
+
+    var children = a.dom.id('a.dom.html-test').children();
+
+    // Searching three children innerHTML
+    var content = children.html();
+
+    assert.strictEqual(content.length, 3, 'Test array length');
+    assert.strictEqual(content[0], '', 'Test empty 1');
+    assert.strictEqual(content[1], '', 'Test empty 2');
+    assert.strictEqual(content[2], '', 'Test empty 3');
+
+    // Second test: in children, we set 3 times the same
+    children.html('oknowworking');
+
+    // Manually updating the first element
+    var tmpId = document.getElementById('a.dom.html-test');
+    tmpId.getElementsByTagName('a')[0].innerHTML = 'okworkingsimple';
+
+    // Now we test reading
+    var child1 = tmpId.getElementsByTagName('a')[0],
+        child2 = tmpId.getElementsByTagName('span')[0],
+        child3 = tmpId.getElementsByTagName('div')[0];
+
+    // Reading three elements
+    assert.strictEqual(child1.innerHTML, 'okworkingsimple', 'Test a tag');
+    assert.strictEqual(child2.innerHTML, 'oknowworking', 'Test span tag');
+    assert.strictEqual(child3.innerHTML, 'oknowworking', 'Test div tag');
+
+    // Finishing, rollback
+    children.html('');
+
+    // Testing finished rollback
+    assert.strictEqual(child1.innerHTML, '', 'Test a tag empty');
+    assert.strictEqual(child2.innerHTML, '', 'Test span tag empty');
+    assert.strictEqual(child3.innerHTML, '', 'Test div tag empty');
+});
