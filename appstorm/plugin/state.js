@@ -580,8 +580,30 @@ a.state = new function() {
 
         // We are storing every needed stuff for appstorm here
         state._storm = {
-            parent: state.parent || null
+            parent: state.parent || null,
+            options: state.options || null,
+            data: state.data || {},
+            flash: state.flash || null,
+            level: 0,
+            acl: null
         };
+
+        // We create the flash element (if it's not already a function)
+        if(!a.isFunction(state.flash) && a.isString(state.flash)) {
+            state.flash = a.scope(function(message) {
+                var found = false;
+
+                if(this._storm.flash) {
+                    a.dom.query(this._storm.flash).html(message);
+                } else if(this.parent && a.isFunction(this.parent.flash)) {
+                    this.parent.flash(message);
+                } else {
+                    a.console.error('state ' + this.id
+                            + ': unable to proceed flash message "' 
+                            + this._storm.flash + '"', 1);
+                }
+            }, state);
+        }
 
         // If there is parent linked to it
         if(state.parent &&
@@ -603,12 +625,7 @@ a.state = new function() {
             }
         } else {
             state.parent = null;
-            state._storm.level = 0;
         }
-
-        // Internal object to store cached value
-        state._storm.data    = state.data || {};
-        state._storm.options = state.options || null;
 
         // We convert into array of values
         if(state.hash && a.isString(state.hash)) {

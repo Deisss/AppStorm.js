@@ -1172,6 +1172,35 @@ a.dom.children.prototype = {
     },
 
     /**
+     * Set inside the current elements the content, or get the current html
+     *
+     * @method html
+     *
+     * @param content {String | null}       The content to set, or nothing to
+     *                                      get
+     * @return {String | null}              The current content, or null
+    */
+    html: function(content) {
+        if(!a.isUndefined(content)) {
+            this.each(function() {
+                this.innerHTML = content;
+            });
+            return this;
+        } else {
+            var results = [];
+            this.each(function() {
+                results.push(this.innerHTML);
+            });
+            if(results.length === 0) {
+                return '';
+            } else if(results.length === 1) {
+                return results[0];
+            }
+            return results;
+        }
+    },
+
+    /**
      * Apply on each elements the given function
      *
      * @method each
