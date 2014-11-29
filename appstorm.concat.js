@@ -19335,21 +19335,36 @@ a.state = new function() {
         };
 
         // We create the flash element (if it's not already a function)
-        if(!a.isFunction(state.flash) && a.isString(state.flash)) {
-            state.flash = a.scope(function(message) {
-                var found = false;
+        state.flash = a.scope(function(message) {
+            // We go for an inside flash
+            if(a.isString(this._storm.flash) && this._storm.flash) {
+                var entry = this.entry || this.target || this.el || this.dom || null;
 
-                if(this._storm.flash) {
-                    a.dom.query(this._storm.flash).html(message);
-                } else if(this.parent && a.isFunction(this.parent.flash)) {
-                    this.parent.flash(message);
-                } else {
-                    a.console.error('state ' + this.id
-                            + ': unable to proceed flash message "' 
-                            + this._storm.flash + '"', 1);
+                if(a.isFunction(entry)) {
+                    entry = entry.call(this);
                 }
-            }, state);
-        }
+
+                if(entry && a.isString(entry)) {
+                    a.dom.query(this._storm.flash, entry).html(message);
+                } else {
+                    a.dom.query(this._storm.flash).html(message);
+                }
+
+            // User want a deeper control
+            } else if(a.isFunction(this._storm.flash)) {
+                this._storm.flash(message);
+
+            // We go up one level to parent
+            } else if(this.parent && a.isFunction(this.parent.flash)) {
+                this.parent.flash(message);
+
+            // No way to handle it
+            } else {
+                a.console.error('state ' + this.id
+                        + ': unable to proceed flash message "' 
+                        + this._storm.flash + '"', 1);
+            }
+        }, state);
 
         // If there is parent linked to it
         if(state.parent &&
