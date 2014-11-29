@@ -22475,7 +22475,7 @@ a.template = {
             if(!this._tmpl[hash]) {
                 a.console.log(
                     fctName + ': loading ' + hash + ' from inner html page',3);
-                this._tmpl[hash] = document.getElementById(hash).innerHTML;
+                this._tmpl[hash] = a.dom.id(hash).html();
             }
 
             // We finally send the callback
@@ -22489,7 +22489,7 @@ a.template = {
             if(!this._tmpl[orig]) {
                 a.console.log(
                     fctName + ': loading ' + orig + ' from inner html page',3);
-                this._tmpl[orig] = document.getElementById(orig).innerHTML;
+                this._tmpl[orig] = a.dom.id(orig).html();
             }
 
             // We finally send the callback
