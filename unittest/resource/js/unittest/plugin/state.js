@@ -1870,3 +1870,115 @@ QUnit.asyncTest('a.state.multiple-hash', function(assert) {
         }
     );
 });
+
+
+
+
+
+// Test the flash property inside the state
+QUnit.asyncTest('a.state.flash-simple', function(assert) {
+    assert.expect(3);
+
+    a.state.add({
+        id: 'flash-simple',
+        hash: 'a.state.flash-simple',
+        entry: 'body',
+        type: 'append',
+        flash: '#flash-message',
+        include: {
+            html: './resource/data/state/flash-simple.html',
+        },
+        postLoad: function() {
+            var element = a.dom.id('flash-message');
+
+            // Testing value is nothing
+            assert.strictEqual(element.html(), '', 'Test empty message');
+            QAppStorm.pop();
+
+            // Setting flash message
+            this.flash('This is working');
+
+            // A little delay to let DOM refresh
+            setTimeout(function() {
+                assert.strictEqual(element.html(), 'This is working',
+                            'Test working');
+                QAppStorm.pop();
+                assert.strictEqual(a.dom.id('flash-not-touched').html(),
+                            'Hello', 'Test side element un-touched');
+                QAppStorm.pop();
+            }, 100);
+        }
+    });
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.flash-simple',
+            expect: 3
+        }
+    );
+});
+
+// Test the flash property inside the parent state
+QUnit.asyncTest('a.state.flash-parent', function(assert) {
+    assert.expect(2);
+
+    a.state.add({
+        id: 'flash-parent-root',
+        entry: 'body',
+        type: 'append',
+        flash: '#flash-message-parent-root',
+        include: {
+            html: './resource/data/state/flash-parent-root.html'
+        },
+        postLoad: function() {
+            var root = a.dom.id('flash-message-parent-root');
+            assert.strictEqual(root.html(), '', 'Test empty');
+            QAppStorm.pop();
+        },
+        children: [{
+            id: 'flash-parent-child',
+            hash: 'a.state.flash-parent',
+            postLoad: function() {
+                // we raise flash, and it should goes to parent flash
+                // As it's not defined here
+                this.flash('Parent is working');
+
+                var root = a.dom.id('flash-message-parent-root');
+                assert.strictEqual(root.html(), 'Parent is working',
+                            'Test working');
+                QAppStorm.pop();
+            }
+        }]
+    });
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.flash-parent',
+            expect: 2
+        }
+    );
+});
+
+// We also allow function raise
+QUnit.asyncTest('a.state.flash-function', function(assert) {
+    assert.expect(1);
+
+    a.state.add({
+        id: 'flash-function',
+        hash: 'a.state.flash-function',
+        flash: function(message) {
+            assert.strictEqual(message, 'function is working');
+            QAppStorm.pop();
+        },
+        postLoad: function() {
+            this.flash('function is working');
+        }
+    });
+
+    QAppStorm.chain(
+        {
+            hash: 'a.state.flash-function',
+            expect: 1
+        }
+    );
+});
