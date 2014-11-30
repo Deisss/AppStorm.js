@@ -1982,3 +1982,36 @@ QUnit.asyncTest('a.state.flash-function', function(assert) {
         }
     );
 });
+
+
+// We can handle the success directly inside data element now
+QUnit.asyncTest('a.state.data-handling-success', function(assert) {
+    assert.expect(2);
+
+    a.state.add({
+        id: 'a.state.data-handling-success',
+        hash: 'a.state.data-handling-success',
+        data: {
+            handler: {
+                url: './resource/data/state/bootOnLoad.json',
+                options: {
+                    template: ['GET', 'json']
+                },
+                success: function(data, chain) {
+                    assert.strictEqual(data['en']['loadonstartup'], 'true');
+                    QAppStorm.pop();
+                    chain.next();
+                }
+            }
+        },
+        postLoad: function() {
+            assert.strictEqual(true, true, 'Pass in postload as expected');
+            QAppStorm.pop();
+        }
+    });
+
+    QAppStorm.chain({
+        hash: 'a.state.data-handling-success',
+        expect: 2
+    });
+});
