@@ -300,8 +300,12 @@ a.state.chain = new function() {
      * @param state {Object}                The state who need thoose data
      * @param name {String | null}          The current object name to get
      * @param options {Object}              The request options to send to ajax
+     * @param success {Function | null}     The success function to use before
+     *                                      leaving loading data
+     * @param error {Function | null}       The error handler to use in case
+     *                                      of any error
     */
-    function generateDataLoader(state, name, url, options) {
+    function generateDataLoader(state, name, url, options, success, error) {
         var initContent = a.isNone(name) ?
                             state._storm.data : state._storm.data[name],
             hash      = a.hash.getHash(),
@@ -393,15 +397,29 @@ a.state.chain = new function() {
             } else if(parsedUrl !== null) {
                 options.url = parsedUrl;
 
-                var request = new a.ajax(options, function(content) {
+                var request = new a.ajax(options,
+                // Success
+                function(content) {
                     if(a.isNone(name)) {
                         state.data = content;
                     } else {
                         state.data[name] = content;
                     }
-                    chain.next();
 
-                }, a.scope(chain.error, state));
+                    if(a.isFunction(success)) {
+                        success.call(state, content, chain);
+                    } else {
+                        chain.next();
+                    }
+
+                // Error
+                }, function(url, status) {
+                    if(a.isFunction(error)) {
+                        error.call(state, url, status, chain);
+                    } else {
+                        chain.error.apply(state, arguments);
+                    }
+                });
 
                 // Starting and waiting reply
                 request.send();
@@ -624,7 +642,9 @@ a.state.chain = new function() {
         if(a.isString(this.data)) {
             this.data = {
                 url:     this.data,
-                options: a.clone(this.options)
+                options: a.clone(this.options),
+                error:   null,
+                success: null
             };
         }
 
@@ -633,7 +653,7 @@ a.state.chain = new function() {
             // We are in single-data mode
             if('url' in this.data && 'options' in this.data) {
                 sync.addCallback(generateDataLoader(this, null, this.data.url,
-                                                        this.data.options));
+                                    this.data.options, null, null));
 
             // We are in multi-data mode
             } else {
@@ -641,12 +661,20 @@ a.state.chain = new function() {
                     if(a.isString(data)) {
                         data = {
                             url:     data,
-                            options: this.options
+                            options: this.options,
+                            error:   null,
+                            success: null
                         };
                     }
 
+                    // Little convertion
+                    data.error   = (a.isFunction(data.error)) ?
+                                                    data.error: null;
+                    data.success = (a.isFunction(data.success)) ?
+                                                    data.success: null;
+
                     sync.addCallback(generateDataLoader(this, name, data.url,
-                                                    data.options));
+                                    data.options, data.success, data.error));
                 }, this);
 
                 // We put back data into element
@@ -657,7 +685,8 @@ a.state.chain = new function() {
                 }
             }
         } else if(a.isFunction(this.data)) {
-            sync.addCallback(generateDataLoader(this, null, this.data, null));
+            sync.addCallback(generateDataLoader(this, null, this.data, null,
+                                                        null, null));
         } else {
             a.console.error('a.state.chain:include: The state ' + this.id +
                             ' is not valid (data is not a valid system)', 1);

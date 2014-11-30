@@ -15,6 +15,36 @@ QUnit.module('plugin/state.js', {
 });
 
 
+// We can handle the error directly inside data element now
+QUnit.asyncTest('a.state.data-handling-error', function(assert) {
+    assert.expect(2);
+
+    a.state.add({
+        id: 'a.state.data-handling-error',
+        hash: 'a.state.data-handling-error',
+        data: {
+            handler: {
+                url: 'not-existing.json',
+                error: function(url, status, chain) {
+                    assert.strictEqual(status, 404, 'Test status');
+                    QAppStorm.pop();
+                    chain.next();
+                }
+            }
+        },
+        postLoad: function() {
+            assert.strictEqual(true, true, 'Pass in postload as expected');
+            QAppStorm.pop();
+        }
+    });
+
+    QAppStorm.chain({
+        hash: 'a.state.data-handling-error',
+        expect: 2
+    });
+});
+
+
 
 // Test raising a 404 error does raise the chainer error function
 QUnit.asyncTest('a.state.error', function(assert) {
