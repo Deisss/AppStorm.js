@@ -698,3 +698,53 @@ QUnit.asyncTest('a.ajax.options-multiple', function(assert) {
 
     ajx.send();
 });
+
+QUnit.asyncTest('a.ajaxCache', function(assert) {
+    assert.expect(3);
+
+    var s1 = null,
+        s2 = null;
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/cache.php',
+            method: 'GET',
+            store: '3s',
+            template: ['json']
+    }, function(data, status) {
+        s1 = data;
+    }, function(url, status) {
+        s1 = -20;
+    });
+    
+    request.send();
+
+    // Second request which should skip ajax
+    setTimeout(function() {
+        var request2 = new a.ajax({
+                url: './resource/data/ajax/cache.php',
+                method: 'GET',
+                template: ['json']
+        }, function(data, status) {
+            s2 = data;
+
+            assert.strictEqual(s1, s2, 'Test dual result');
+
+        }, function(url, status) {
+        });
+        
+        request2.send();
+    }, 1000);
+
+    // Testing cache is still here
+    setTimeout(function() {
+        assert.strictEqual(a.ajaxCache.get('GET', 
+            './resource/data/ajax/cache.php'), s1);
+    }, 2000);
+
+    // Testing cache has been removed
+    setTimeout(function() {
+        assert.strictEqual(a.ajaxCache.get('GET',
+                './resource/data/ajax/cache.php'), null);
+        QUnit.start();
+    }, 4000);
+})

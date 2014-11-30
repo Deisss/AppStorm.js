@@ -13590,6 +13590,75 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
 
 /**
+ * Ajax cache object, used to store cached request and retrieve it if possible
+ *
+ * @class ajaxCache
+ * @namespace a
+*/
+a.ajaxCache = {
+    /**
+     * Add a new cached ajax elemen
+     *
+     * @method add
+     *
+     * @param method {String}               GET/POST/PUT/DELETE/...
+     * @param url {String}                  The url to catch
+     * @param results {Object}              The related result
+     * @param timeout {Integer}             The timeout (in ms)
+    */
+    add: function(method, url, results, timeout) {
+        if(timeout <= 0) {
+            timeout = 1000;
+        }
+
+        var id = a.uniqueId(),
+            obj = {
+            id: id,
+            method: method.toUpperCase(),
+            url: url,
+            results: results
+        };
+
+        a.mem.set('app.ajax.cache.' + obj.id, obj);
+
+        // Creating the auto-delete timeout
+        setTimeout(a.scope(function() {
+            a.mem.remove('app.ajax.cache.' + this.id);
+        }, obj), timeout);
+    },
+
+    /**
+     * Get a previously cached element
+     *
+     * @method get
+     *
+     * @param method {String}               GET/POST/PUT/DELETE/...
+     * @param url {String}                  The url to catch
+     * @return {Object | null}              Return the previously stored
+     *                                      element or null if nothing is
+     *                                      found
+    */
+    get: function(method, url) {
+        if(!method || !url) {
+            return null;
+        }
+        method = method.toUpperCase();
+
+        var mem = a.mem.getInstance('app.ajax.cache'),
+            list = mem.list();
+
+        for(var key in list) {
+            var element = list[key];
+
+            if(element.method === method && element.url === url) {
+                return element.results;
+            }
+        }
+        return null;
+    }
+};
+
+/**
  * Ajax object to call server
  *
  * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:ajax">here</a>
@@ -13627,13 +13696,16 @@ a.ajax = function(options, success, error) {
     }
 
     this.params = {
+        before : [],      // Allowed type : any string function name
         url    : '',      // Allowed type : any URL
         method : 'GET',   // Allowed type : "GET", "POST"
         type   : 'raw',   // Allowed type : raw, json, xml
         async  : true,    // Allowed type : true, false
         cache  : false,   // Allowed type : true, false
+        store  : '',      // Allowed type : string like 4s
         data   : {},      // Allowed type : any kind of object | key => value
-        header : {}       // Allowed type : any kind of object | key => value
+        header : {},      // Allowed type : any kind of object | key => value
+        after  : []       // Allowed type : any string function name
     };
 
     // We override the cache by the "default" value
@@ -13733,11 +13805,40 @@ a.ajax.prototype.parseResult = function(params, http) {
     }
 
     //We are in non async mode, so the function should reply something
-    var type = params.type.toLowerCase();
-    if(type == 'json') {
-        return a.parser.json.parse(http.responseText);
+    var type = params.type.toLowerCase(),
+        result = (type === 'json') ? a.parser.json.parse(http.responseText):
+                (type === 'xml') ? http.responseXML:
+                http.responseText;
+
+    // After to use/parse on object
+    if('after' in params) {
+        for(var i=0, l=params.after.length; i<l; ++i) {
+            var fct = a.getAjaxAfter(params.after[i]);
+            if(a.isFunction(fct)) {
+                result = fct.call(this, params, result);
+            }
+        }
     }
-    return (type == 'xml') ? http.responseXML : http.responseText;
+
+    // We cache if needed
+    if('store' in params && params['store']) {
+        var store = params['store'],
+            multiplier = 1;
+
+        if(store.indexOf('min') > 0) {
+            multiplier = 60000;
+        } else if(store.indexOf('h') > 0) {
+            multiplier = 3600000;
+        } else if(store.indexOf('s') > 0) {
+            multiplier = 1000;
+        }
+
+        // Adding element to store
+        a.ajaxCache.add(params.method, params.url, result, 
+            multiplier * parseInt(params['store'], 10));
+    }
+
+    return result;
 };
 
 /**
@@ -13777,6 +13878,26 @@ a.ajax.prototype.send = function() {
         this.success(mockResult, 200);
 
         // We don't proceed request
+        return;
+    }
+
+    // We search for cached element
+    if(a.isArray(this.params['before'])) {
+        var befores = this.params['before'];
+        for(var i=0, l=befores.length; i<l; ++i) {
+            var before = a.getAjaxBefore(befores[i]);
+            if(a.isFunction(before)) {
+                this.params = before.call(this, this.params);
+            }
+        }
+    }
+
+    // We search for cached element
+    var cached = a.ajaxCache.get(
+                        this.params.method || 'GET', this.params.url || '');
+    // Something is existing, we return it instead or performing request
+    if(cached) {
+        this.success(cached, 200);
         return;
     }
 
@@ -13929,6 +14050,12 @@ a.ajax.prototype.send = function() {
             'Accept': 'application/xml'
         }
     });
+
+    // Many models
+    var many = {many: true};
+    a.setTemplateAjaxOptions('list', many);
+    a.setTemplateAjaxOptions('array', many);
+    a.setTemplateAjaxOptions('many', many);
 
     // Cache management
     a.setTemplateAjaxOptions('cache-enable', {
