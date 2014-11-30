@@ -606,7 +606,7 @@ a.state = new function() {
 
             // User want a deeper control
             } else if(a.isFunction(this._storm.flash)) {
-                this._storm.flash(message);
+                this._storm.flash.apply(this, arguments);
 
             // We go up one level to parent
             } else if(this.parent && a.isFunction(this.parent.flash)) {

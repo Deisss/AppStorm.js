@@ -10664,6 +10664,62 @@ a.getTemplateAjaxOptions = function(name) {
     return a.mem.get('app.ajax.template.' + name);
 };
 
+/**
+ * Set a before action to perform on every ajax request using it
+ *
+ * @method setAjaxBefore
+ *
+ * @param name {String}                     The name to use for recall
+ * @param fct {Function | null}             The linked function to use
+*/
+a.setAjaxBefore = function(name, fct) {
+    if(name && a.isFunction(fct)) {
+        a.mem.set('app.ajax.before.' + name, fct);
+    }
+};
+
+/**
+ * Get an existing ajax before function, or null if nothing is found
+ *
+ * @method getAjaxBefore
+ *
+ * @param name {String}                     The name previously stored using
+ *                                          setAjaxBefore
+ * @return {Function | null}                The function if found, null in
+ *                                          other cases
+*/
+a.getAjaxBefore = function(name) {
+    return a.mem.get('app.ajax.before.' + name) || null;
+};
+
+/**
+ * Set an after action to perform on every ajax request using it
+ *
+ * @method setAjaxAfter
+ *
+ * @param name {String}                     The name to use for recall
+ * @param fct {Function | null}             The linked function to use
+*/
+a.setAjaxAfter = function(name, fct) {
+    if(name && a.isFunction(fct)) {
+        a.mem.set('app.ajax.after.' + name, fct);
+    }
+};
+
+/**
+ * Get an existing ajax after function, or null if nothing is found
+ *
+ * @method getAjaxAfter
+ *
+ * @param name {String}                     The name previously stored using
+ *                                          setAjaxAfter
+ * @return {Function | null}                The function if found, null in
+ *                                          other cases
+*/
+a.getAjaxAfter = function(name) {
+    return a.mem.get('app.ajax.after.' + name) || null;
+};
+
 /*
  * Check AppStorm.JS source url
 */
@@ -19352,7 +19408,7 @@ a.state = new function() {
 
             // User want a deeper control
             } else if(a.isFunction(this._storm.flash)) {
-                this._storm.flash(message);
+                this._storm.flash.apply(this, arguments);
 
             // We go up one level to parent
             } else if(this.parent && a.isFunction(this.parent.flash)) {

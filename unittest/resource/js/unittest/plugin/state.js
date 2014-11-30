@@ -1961,24 +1961,26 @@ QUnit.asyncTest('a.state.flash-parent', function(assert) {
 
 // We also allow function raise
 QUnit.asyncTest('a.state.flash-function', function(assert) {
-    assert.expect(1);
+    assert.expect(2);
 
     a.state.add({
         id: 'flash-function',
         hash: 'a.state.flash-function',
-        flash: function(message) {
+        flash: function(message, id) {
             assert.strictEqual(message, 'function is working');
+            QAppStorm.pop();
+            assert.strictEqual(id, 5);
             QAppStorm.pop();
         },
         postLoad: function() {
-            this.flash('function is working');
+            this.flash('function is working', 5);
         }
     });
 
     QAppStorm.chain(
         {
             hash: 'a.state.flash-function',
-            expect: 1
+            expect: 2
         }
     );
 });
