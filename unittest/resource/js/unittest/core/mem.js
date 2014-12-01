@@ -1,12 +1,18 @@
 // Unit test for a.mem
 
 QUnit.module('core/mem.js', {
-    teardown: function() {
-        var list = a.mem.list();
+    _beforeStore: [],
 
-        for(var i in list) {
-            a.mem.remove(i);
-        }
+    setup: function() {
+        this._beforeStore = a.keys(a.mem.list());
+    },
+    teardown: function() {
+        var current = a.keys(a.mem.list());
+        var difference = a.difference(current, this._beforeStore);
+        a.each(difference, function(element) {
+            a.mem.remove(element);
+        });
+        this._beforeStore = null;
     }
 });
 

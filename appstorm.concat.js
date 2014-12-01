@@ -14067,7 +14067,7 @@ a.ajax.prototype.send = function() {
 };
 
 
-(function() {
+(function(a) {
     // Some basic template to use
     a.setTemplateAjaxOptions('json', {
         type: 'json',
@@ -14085,10 +14085,9 @@ a.ajax.prototype.send = function() {
     });
 
     // Many models
-    var many = {many: true};
-    a.setTemplateAjaxOptions('list', many);
-    a.setTemplateAjaxOptions('array', many);
-    a.setTemplateAjaxOptions('many', many);
+    a.setTemplateAjaxOptions('list', {many: true});
+    a.setTemplateAjaxOptions('array', {many: true});
+    a.setTemplateAjaxOptions('many', {many: true});
 
     // Cache management
     a.setTemplateAjaxOptions('cache-enable', {
@@ -14108,7 +14107,7 @@ a.ajax.prototype.send = function() {
             });
         })(verbs[i]);
     }
-})();;/* ************************************************************************
+})(window.appstorm);;/* ************************************************************************
 
     License: MIT Licence
 
@@ -21836,8 +21835,11 @@ a.model = function(name, properties, requests, forms) {
             });
 
             // Register model into ajax
+            // We auto-add the type 'json' as for now AppStorm
+            // is only able to parse JSON elements
             a.setTemplateAjaxOptions('model:' + name, {
-                model: name
+                model: name,
+                type: 'json'
             });
 
             // We return a function embed to create new instance
