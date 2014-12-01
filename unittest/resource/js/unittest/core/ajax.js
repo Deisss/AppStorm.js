@@ -770,7 +770,7 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
     assert.expect(4);
 
     // We add a model
-    a.model('ajax-blog', {
+    a.model('unittest-ajax-blog', {
         id: {
             nullable: true
         },
@@ -786,7 +786,7 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
 
     var request = new a.ajax({
             url: './resource/data/ajax/model.json',
-            template: ['GET', 'json', 'model:ajax-blog']
+            template: ['GET', 'json', 'model:unittest-ajax-blog']
     }, function(data, status) {
         assert.ok(data instanceof a.modelInstance, 'Test data type');
         assert.strictEqual(data.get('id'), 20, 'Test id');
@@ -808,11 +808,69 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
 
 
 
+// Try to get a model which does not exist, the system should not parse anything
+QUnit.asyncTest('a.ajax.model-undefined', function(assert) {
+    assert.expect(2);
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            template: ['GET', 'json', 'model:undefined-model']
+    }, function(data, status) {
+        assert.ok(!(data instanceof a.modelInstance), 'Test instanceof');
+        assert.strictEqual(data.id, 20, 'Test id');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+
+// Trying to get a parsing of a model which is not related to data
+QUnit.asyncTest('a.ajax.model-wrong', function(assert) {
+    assert.expect(2);
+
+    a.model('unittest-ajax-wrong', {
+        // Property name
+        name: {
+            // Remember every property are optionals
+            init: 'hello'
+        }
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/empty.json',
+            template: ['GET', 'json', 'model:unittest-ajax-wrong']
+    }, function(data, status) {
+        assert.ok(data instanceof a.modelInstance, 'Test data instance');
+        assert.strictEqual(data.get('name'), 'hello');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+
 // Test auto-convert into list of models 
 QUnit.asyncTest('a.ajax.model-list', function(assert) {
     assert.expect(12);
 
-    a.model('ajax-blogs', {
+    a.model('unittest-ajax-blogs', {
         id: {
             nullable: true
         },
@@ -828,7 +886,7 @@ QUnit.asyncTest('a.ajax.model-list', function(assert) {
 
     var request = new a.ajax({
             url: './resource/data/ajax/models.json',
-            template: ['GET', 'json', 'many', 'model:ajax-blogs']
+            template: ['GET', 'json', 'many', 'model:unittest-ajax-blogs']
     }, function(data, status) {
         // Testing 3 elements type
         assert.ok(data[0] instanceof a.modelInstance, 'Test data1 type');
@@ -861,6 +919,110 @@ QUnit.asyncTest('a.ajax.model-list', function(assert) {
         
     }, function(url, status) {
         assert.strictEqual(true, false, 'Wrong, should not fail');
+    });
+    
+    request.send();
+});
+
+
+// Test to grab a list, with some element valid, some invalid
+QUnit.asyncTest('a.ajax.model-list-undefined', function(assert) {
+    assert.expect(6);
+
+    a.model('unittest-ajax-invalid', {
+        // Property name
+        name: {
+            // Remember every property are optionals
+            init: 'hello24'
+        }
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/models-not-valid.json',
+            template: ['GET', 'json', 'many', 'model:unittest-ajax-invalid']
+    }, function(data, status) {
+        // Testing 3 elements type
+        assert.ok(data[0] instanceof a.modelInstance, 'Test data1 type');
+        assert.ok(data[1] instanceof a.modelInstance, 'Test data2 type');
+        assert.ok(data[2] instanceof a.modelInstance, 'Test data3 type');
+
+        // Testing element 1
+        assert.strictEqual(data[0].get('name'), 'hello', 'Test name 1');
+
+        // Testing element 2
+        assert.strictEqual(data[1].get('name'), 'hello24', 'Test name 2');
+
+        // Testing element 3
+        assert.strictEqual(data[2].get('name'), 'hello24', 'Test name 3');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+
+
+
+
+/*
+---------------------------------
+    BEFORE/AFTER RELATED
+---------------------------------
+*/
+// Test ajax before
+QUnit.asyncTest('a.ajax.before', function(assert) {
+    assert.expect(1);
+
+    // First modifier
+    a.setAjaxBefore('unittest-before-1', function(params) {
+        params.url = './resource/data/ajax/test.json';
+        return params;
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            before: ['unittest-before-1'],
+            template: ['GET', 'json']
+    }, function(data, status) {
+        // If those tests works, it means the url has been changed
+        // by the before as expected
+        console.log(data);
+        assert.strictEqual(data.note.to, 'me', 'Test url content is OK');
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+// Test ajax after request
+QUnit.asyncTest('a.ajax.after', function(assert) {
+    assert.expect(1);
+
+    a.setAjaxAfter('unittest-after-1', function(params, result) {
+        return {"ok": "ok"};
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            after: ['unittest-after-1'],
+            template: ['GET', 'json']
+    }, function(data, status) {
+        assert.strictEqual(data.ok, 'ok', 'Test replace');
+        QUnit.start();
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
     });
     
     request.send();
