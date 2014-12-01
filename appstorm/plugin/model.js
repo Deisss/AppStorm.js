@@ -67,8 +67,11 @@ a.model = function(name, properties, requests, forms) {
             });
 
             // Register model into ajax
+            // We auto-add the type 'json' as for now AppStorm
+            // is only able to parse JSON elements
             a.setTemplateAjaxOptions('model:' + name, {
-                model: name
+                model: name,
+                type: 'json'
             });
 
             // We return a function embed to create new instance
