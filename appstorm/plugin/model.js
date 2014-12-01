@@ -59,10 +59,16 @@ a.model = function(name, properties, requests, forms) {
     // model definition)
     if(a.isString(name)) {
         if(!a.modelPooler.get(name)) {
+            // Register model into pooler
             a.modelPooler.set(name, {
                 properties: properties,
                 requests: requests,
                 forms: forms
+            });
+
+            // Register model into ajax
+            a.setTemplateAjaxOptions('model:' + name, {
+                model: name
             });
 
             // We return a function embed to create new instance

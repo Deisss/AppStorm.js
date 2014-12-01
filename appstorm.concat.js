@@ -13705,6 +13705,8 @@ a.ajax = function(options, success, error) {
         store  : '',      // Allowed type : string like 4s
         data   : {},      // Allowed type : any kind of object | key => value
         header : {},      // Allowed type : any kind of object | key => value
+        many   : false,   // Allowed type : true, false
+        model  : '',      // Allowed type : any model name
         after  : []       // Allowed type : any string function name
     };
 
@@ -13809,6 +13811,37 @@ a.ajax.prototype.parseResult = function(params, http) {
         result = (type === 'json') ? a.parser.json.parse(http.responseText):
                 (type === 'xml') ? http.responseXML:
                 http.responseText;
+
+    // User is asking for a model convertion
+    if(params['model']) {
+        var modelName = params['model'],
+            errorStr = 'a.ajax: Model ' + modelName +
+                        ' not found, empty object recieve from pooler';
+        // TODO: here we should be able to check if a model is already
+        // existing or not
+        if(params['many'] === true && a.isArray(result)) {
+            var content = [];
+            for(var i=0, l=result.length; i<l; ++i) {
+                var model = a.modelPooler.createInstance(modelName);
+                if(model !== null) {
+                    model.fromObject(result[i]);
+                    content.push(model);
+                } else {
+                    a.console.error(errorStr, 1);
+                }
+            }
+            // We replace
+            result = content;
+        } else {
+            var model = a.modelPooler.createInstance(modelName);
+            if(model) {
+                model.fromObject(result);
+                result = model;
+            } else {
+                a.console.error(errorStr, 1);
+            }
+        }
+    }
 
     // After to use/parse on object
     if('after' in params) {
@@ -21795,10 +21828,16 @@ a.model = function(name, properties, requests, forms) {
     // model definition)
     if(a.isString(name)) {
         if(!a.modelPooler.get(name)) {
+            // Register model into pooler
             a.modelPooler.set(name, {
                 properties: properties,
                 requests: requests,
                 forms: forms
+            });
+
+            // Register model into ajax
+            a.setTemplateAjaxOptions('model:' + name, {
+                model: name
             });
 
             // We return a function embed to create new instance

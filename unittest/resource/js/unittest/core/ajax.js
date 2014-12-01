@@ -699,6 +699,14 @@ QUnit.asyncTest('a.ajax.options-multiple', function(assert) {
     ajx.send();
 });
 
+
+/*
+---------------------------------
+  CACHE RELATED
+---------------------------------
+*/
+
+// Test the caching feature to avoid to get twice a request
 QUnit.asyncTest('a.ajaxCache', function(assert) {
     assert.expect(3);
 
@@ -747,4 +755,113 @@ QUnit.asyncTest('a.ajaxCache', function(assert) {
                 './resource/data/ajax/cache.php'), null);
         QUnit.start();
     }, 4000);
-})
+});
+
+
+
+
+/*
+---------------------------------
+  MODELS RELATED
+---------------------------------
+*/
+// Test auto-convert into single model
+QUnit.asyncTest('a.ajax.model-single', function(assert) {
+    assert.expect(4);
+
+    // We add a model
+    a.model('ajax-blog', {
+        id: {
+            nullable: true
+        },
+        name: {
+            nullable: true,
+            type: 'string'
+        },
+        text: {
+            nullable: true,
+            type: 'string'
+        }
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            template: ['GET', 'json', 'model:ajax-blog']
+    }, function(data, status) {
+        assert.ok(data instanceof a.modelInstance, 'Test data type');
+        assert.strictEqual(data.get('id'), 20, 'Test id');
+        assert.strictEqual(data.get('name'), 'hello', 'Test name');
+        assert.strictEqual(data.get('text'), 'something long', 'Test text');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Wrong, should not fail');
+    });
+    
+    request.send();
+});
+
+
+
+// Test auto-convert into list of models 
+QUnit.asyncTest('a.ajax.model-list', function(assert) {
+    assert.expect(12);
+
+    a.model('ajax-blogs', {
+        id: {
+            nullable: true
+        },
+        name: {
+            nullable: true,
+            type: 'string'
+        },
+        text: {
+            nullable: true,
+            type: 'string'
+        }
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/models.json',
+            template: ['GET', 'json', 'many', 'model:ajax-blogs']
+    }, function(data, status) {
+        // Testing 3 elements type
+        assert.ok(data[0] instanceof a.modelInstance, 'Test data1 type');
+        assert.ok(data[1] instanceof a.modelInstance, 'Test data2 type');
+        assert.ok(data[2] instanceof a.modelInstance, 'Test data3 type');
+
+        // Testing element 1
+        assert.strictEqual(data[0].get('id'), 20, 'Test id 1');
+        assert.strictEqual(data[0].get('name'), 'hello', 'Test name 1');
+        assert.strictEqual(data[0].get('text'), 'something long',
+                                                            'Test text 1');
+
+        // Testing element 2
+        assert.strictEqual(data[1].get('id'), 21, 'Test id 2');
+        assert.strictEqual(data[1].get('name'), 'hello2', 'Test name 2');
+        assert.strictEqual(data[1].get('text'), 'something long2',
+                                                            'Test text 2');
+
+        // Testing element 3
+        assert.strictEqual(data[2].get('id'), 22, 'Test id 3');
+        assert.strictEqual(data[2].get('name'), 'hello3', 'Test name 3');
+        assert.strictEqual(data[2].get('text'), 'something long3',
+                                                            'Test text 3');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Wrong, should not fail');
+    });
+    
+    request.send();
+});
