@@ -502,7 +502,7 @@ a.ajax.prototype.send = function() {
 };
 
 
-(function() {
+(function(a) {
     // Some basic template to use
     a.setTemplateAjaxOptions('json', {
         type: 'json',
@@ -520,10 +520,9 @@ a.ajax.prototype.send = function() {
     });
 
     // Many models
-    var many = {many: true};
-    a.setTemplateAjaxOptions('list', many);
-    a.setTemplateAjaxOptions('array', many);
-    a.setTemplateAjaxOptions('many', many);
+    a.setTemplateAjaxOptions('list', {many: true});
+    a.setTemplateAjaxOptions('array', {many: true});
+    a.setTemplateAjaxOptions('many', {many: true});
 
     // Cache management
     a.setTemplateAjaxOptions('cache-enable', {
@@ -543,4 +542,4 @@ a.ajax.prototype.send = function() {
             });
         })(verbs[i]);
     }
-})();
+})(window.appstorm);
