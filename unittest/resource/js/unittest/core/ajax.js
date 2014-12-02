@@ -911,6 +911,7 @@ QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
         },
         name: {
             nullable: true,
+            primary: true,
             type: 'string'
         },
         text: {
@@ -922,6 +923,7 @@ QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
     // This element should match the name and text after request
     var first = new unitModel();
     first.set('id', 20);
+    first.set('name', 'hello');
 
     var request = new a.ajax({
             url: './resource/data/ajax/models.json',
