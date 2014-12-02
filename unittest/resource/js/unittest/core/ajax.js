@@ -902,7 +902,7 @@ QUnit.asyncTest('a.ajax.model-shared', function(assert) {
 
 // Check the system is able to share model threw primary key, in a list way
 QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
-    assert.expect(11);
+    assert.expect(15);
 
     var unitModel = a.model('unittest-ajax-list-shared', {
         id: {
@@ -938,11 +938,17 @@ QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
 
         assert.strictEqual(data[0].get('name'), 'hello', 'Test name 0');
         assert.strictEqual(first.get('name'), 'hello', 'Test name first');
+        assert.strictEqual(data[1].get('name'), 'hello2', 'Test name 2');
+        assert.strictEqual(data[2].get('name'), 'hello3', 'Test name 3');
 
         assert.strictEqual(data[0].get('text'), 'something long',
-                                                            'test text 0');
+                                                            'test text 1');
         assert.strictEqual(first.get('text'), 'something long',
                                                             'test text first');
+        assert.strictEqual(data[1].get('text'), 'something long2',
+                                                            'test text 2');
+        assert.strictEqual(data[2].get('text'), 'something long3',
+                                                            'test text 3');
 
         // We clear
         a.modelManager.clear();
