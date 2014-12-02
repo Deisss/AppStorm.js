@@ -29,6 +29,8 @@ TODO:
  * Property available element :
  *   - nullable {Boolean}   if the property can be set to null or not
  *   - init {Mixed}         the initial value
+ *   - primary {Boolean}    Indicate if property is a primary type or not,
+ *                          it's used internally to find models who match...
  *   - needed {Boolean}     Indicate if the property should ALWAYS be
  *                          included when performing a save to server
  *   - check {String}       the typeof check (like String, Object, ...)
@@ -336,6 +338,38 @@ a.modelPooler.searchInstance = function(query) {
     }
 
     return models;
+};
+
+
+/**
+ * Search primary keys inside a model, to be able to perform a search
+ * after.
+ *
+ * @method getPrimary
+ *
+ * @param name {String}                     The model name to get related
+ *                                          primary
+ * @return {Array | null}                   Array if it has been found, null
+ *                                          if there is any problem
+*/
+a.modelPooler.getPrimary = function(name) {
+    var instanceType = this.get(name);
+
+    if(!instanceType) {
+        return null;
+    }
+
+    var properties = instanceType.properties,
+        results = [];
+
+    for(var key in properties) {
+        var property = properties[key];
+        if(('primary' in property) && property['primary'] === true) {
+            results.push(key);
+        }
+    }
+
+    return results;
 };
 
 

@@ -708,7 +708,7 @@ QUnit.asyncTest('a.ajax.options-multiple', function(assert) {
 
 // Test the caching feature to avoid to get twice a request
 QUnit.asyncTest('a.ajaxCache', function(assert) {
-    assert.expect(3);
+    assert.expect(1);
 
     var s1 = null,
         s2 = null;
@@ -736,25 +736,13 @@ QUnit.asyncTest('a.ajaxCache', function(assert) {
             s2 = data;
 
             assert.strictEqual(s1, s2, 'Test dual result');
+            QUnit.start();
 
         }, function(url, status) {
         });
         
         request2.send();
     }, 1000);
-
-    // Testing cache is still here
-    setTimeout(function() {
-        assert.strictEqual(a.ajaxCache.get('GET', 
-            './resource/data/ajax/cache.php'), s1);
-    }, 2000);
-
-    // Testing cache has been removed
-    setTimeout(function() {
-        assert.strictEqual(a.ajaxCache.get('GET',
-                './resource/data/ajax/cache.php'), null);
-        QUnit.start();
-    }, 4000);
 });
 
 
@@ -858,6 +846,109 @@ QUnit.asyncTest('a.ajax.model-wrong', function(assert) {
 
         QUnit.start();
         
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+
+// Check the system is able to share model threw primary key
+QUnit.asyncTest('a.ajax.model-shared', function(assert) {
+    assert.expect(4);
+
+    var unitModel = a.model('unittest-ajax-shared', {
+        id: {
+            nullable: true,
+            primary: true
+        },
+        name: {
+            nullable: true,
+            type: 'string'
+        },
+        text: {
+            nullable: true,
+            type: 'string'
+        }
+    });
+
+    // This element should match the name and text after request
+    var first = new unitModel();
+    first.set('id', 20);
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            template: ['GET', 'json', 'model:unittest-ajax-shared']
+    }, function(data, status) {
+        assert.strictEqual(data.get('id'), 20, 'Test id');
+        assert.strictEqual(first.get('id'), 20, 'Test original id');
+        assert.strictEqual(first.get('name'), 'hello', 'Test name');
+        assert.strictEqual(first.get('text'), 'something long', 'Test text');
+        
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
+
+
+// Check the system is able to share model threw primary key, in a list way
+QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
+    assert.expect(11);
+
+    var unitModel = a.model('unittest-ajax-list-shared', {
+        id: {
+            nullable: true,
+            primary: true
+        },
+        name: {
+            nullable: true,
+            type: 'string'
+        },
+        text: {
+            nullable: true,
+            type: 'string'
+        }
+    });
+
+    // This element should match the name and text after request
+    var first = new unitModel();
+    first.set('id', 20);
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/models.json',
+            template: ['json', 'many', 'model:unittest-ajax-list-shared']
+    }, function(data, status) {
+        assert.ok(data[0] instanceof a.modelInstance, 'Test instance 1');
+        assert.ok(data[1] instanceof a.modelInstance, 'Test instance 2');
+        assert.ok(data[2] instanceof a.modelInstance, 'Test instance 3');
+
+        assert.strictEqual(data[0].get('id'), 20, 'Test id 1');
+        assert.strictEqual(data[1].get('id'), 21, 'Test id 2');
+        assert.strictEqual(data[2].get('id'), 22, 'Test id 3');
+        assert.strictEqual(first.get('id'), 20, 'Test id first');
+
+        assert.strictEqual(data[0].get('name'), 'hello', 'Test name 0');
+        assert.strictEqual(first.get('name'), 'hello', 'Test name first');
+
+        assert.strictEqual(data[0].get('text'), 'something long',
+                                                            'test text 0');
+        assert.strictEqual(first.get('text'), 'something long',
+                                                            'test text first');
+
+        // We clear
+        a.modelManager.clear();
+        a.modelPooler.clear();
+
+        QUnit.start();
     }, function(url, status) {
         assert.strictEqual(true, false, 'Should not fail');
     });
@@ -994,7 +1085,6 @@ QUnit.asyncTest('a.ajax.before', function(assert) {
     }, function(data, status) {
         // If those tests works, it means the url has been changed
         // by the before as expected
-        console.log(data);
         assert.strictEqual(data.note.to, 'me', 'Test url content is OK');
 
         QUnit.start();
@@ -1024,6 +1114,6 @@ QUnit.asyncTest('a.ajax.after', function(assert) {
     }, function(url, status) {
         assert.strictEqual(true, false, 'Should not fail');
     });
-    
+
     request.send();
 });
