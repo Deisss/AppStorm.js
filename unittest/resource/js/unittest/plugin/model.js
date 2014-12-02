@@ -374,6 +374,31 @@ QUnit.test('a.model.has', function(assert) {
     assert.strictEqual(unit.has('C'), false);
 });
 
+// Test primary function
+QUnit.test('a.model.primary', function(assert) {
+    assert.expect(3);
+
+    a.model('unittest-primary', {
+        id: {
+            primary: true,
+            nullable: true
+        },
+        name: {
+            primary: true,
+            nullable: true
+        },
+        text: {
+            nullable: true
+        }
+    });
+
+    var primaries = a.modelPooler.getPrimary('unittest-primary');
+
+    assert.strictEqual(primaries.length, 2, 'Test total length');
+    assert.strictEqual(primaries[0], 'id', 'Test id field');
+    assert.strictEqual(primaries[1], 'name', 'Test name field');
+});
+
 // Test init function
 QUnit.test('a.model.init', function(assert) {
     assert.expect(9);
