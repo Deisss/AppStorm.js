@@ -13770,7 +13770,12 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
             for(var i=0, l=templates.length; i<l; ++i) {
                 var tmpl = templates[i];
                 if(p in tmpl && typeof(tmpl[p]) === typeof(this.params[p])) {
-                    this.params[p] = tmpl[p];
+                    // Special case for array
+                    if(a.isArray(tmpl[p])) {
+                        this.params[p] = a.union(this.params[p], tmpl[p]);
+                    } else {
+                        this.params[p] = tmpl[p];
+                    }
                 }
             }
 

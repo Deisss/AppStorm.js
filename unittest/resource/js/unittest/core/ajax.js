@@ -1104,6 +1104,45 @@ QUnit.asyncTest('a.ajax.before', function(assert) {
     request.send();
 });
 
+// Test ajax before multiple
+QUnit.asyncTest('a.ajax.before-multiple', function(assert) {
+    assert.expect(1);
+
+    // First modifier
+    a.setAjaxBefore('unittest-before-2', function(params) {
+        params.url = './resource/data/ajax/test';
+        return params;
+    });
+    a.setAjaxBefore('unittest-before-3', function(params) {
+        params.url += '.json';
+        return params;
+    });
+
+    // Adding template
+    a.setTemplateAjaxOptions('unittest-bef2', {
+        before: ['unittest-before-2']
+    });
+    a.setTemplateAjaxOptions('unittest-bef3', {
+        before: ['unittest-before-3']
+    });
+
+    var request = new a.ajax({
+            url: './resource/data/ajax/model.json',
+            template: ['GET', 'json', 'unittest-bef2', 'unittest-bef3']
+    }, function(data, status) {
+        // If those tests works, it means the url has been changed
+        // by the before as expected
+        assert.strictEqual(data.note.to, 'me', 'Test url content is OK');
+
+        QUnit.start();
+        
+    }, function(url, status) {
+        assert.strictEqual(true, false, 'Should not fail');
+    });
+    
+    request.send();
+});
+
 // Test ajax after request
 QUnit.asyncTest('a.ajax.after', function(assert) {
     assert.expect(1);
