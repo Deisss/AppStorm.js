@@ -732,8 +732,35 @@ QUnit.test('a.model.validate', function(assert) {
     assert.strictEqual(t1.get('id'), 2);
 });
 
-QUnit.test('a.model.requests', function(assert) {
-    assert.expect(1);
-    // TODO
-    assert.ok(1==1);
+
+// Allow string regex as a test
+QUnit.test('a.model.validate-string', function(assert) {
+    assert.expect(5);
+
+    var unittest = a.model('a.model.validate-string', {
+        name: {
+            init: 'hello',
+            validate: '^[a-fA-F0-9]+$'
+        }
+    });
+
+    var t = unittest();
+
+    assert.strictEqual(t.get('name'), 'hello', 'Test init value');
+
+    t.set('name', 'zzz');
+
+    assert.strictEqual(t.get('name'), 'hello', 'Test second value');
+
+    t.set('name', 'aaa');
+
+    assert.strictEqual(t.get('name'), 'aaa', 'Test third value');
+
+    t.set('name', 'abcdefABCDEF0123456789');
+
+    assert.strictEqual(t.get('name'), 'abcdefABCDEF0123456789', 'Test 4th value');
+
+    t.set('name', 'abcdefABCDEF0123456789 ');
+
+    assert.strictEqual(t.get('name'), 'abcdefABCDEF0123456789', 'Test 5th value');
 });

@@ -21853,13 +21853,6 @@ a.binding = (function() {
 
 ************************************************************************ */
 
-/*
-TODO:
-  Check doit pouvoir accepter un tableau
-
-  Accepter un pattern comme validation d'un élément du model
-*/
-
 
 /*
  * Property available element :
@@ -21887,21 +21880,15 @@ TODO:
  * @param name {String}                     The model name to create
  * @param properties {Object}               The properties associated to the
  *                                          model.
- * @param requests {Object}                 The server side associated requests
- *                                          to manipulate the model, save it...
- * @param forms {Object}                    The rendering configuration to use
- *                                          in association with requests
 */
-a.model = function(name, properties, requests, forms) {
+a.model = function(name, properties) {
     // Only allow new name (already existing name just give already existing
     // model definition)
     if(a.isString(name)) {
         if(!a.modelPooler.get(name)) {
             // Register model into pooler
             a.modelPooler.set(name, {
-                properties: properties,
-                requests: requests,
-                forms: forms
+                properties: properties
             });
 
             // Register model into ajax
@@ -22110,9 +22097,7 @@ a.modelPooler.createTemporaryInstance = function(name) {
     var model = a.extend(
             new a.modelInstance(
                 name,
-                a.clone(instanceType.properties),
-                a.clone(instanceType.requests),
-                a.clone(instanceType.forms)
+                a.clone(instanceType.properties)
             ),
             new a.eventEmitter('a.model')
         );
@@ -22248,32 +22233,18 @@ a.modelPooler.deleteInstance = function(instance) {
  * @param name {String}                     The model name to create
  * @param properties {Object}               The properties associated to the
  *                                          model.
- * @param requests {Object}                 The server side associated requests
- *                                          to manipulate the model, save it...
- * @param forms {Object}                    The rendering configuration to use
- *                                          in association with requests
 */
-a.modelInstance = function(name, properties, requests, forms) {
+a.modelInstance = function(name, properties) {
     this.name = name || '';
     this.properties = {};
     this.snapshot   = {};
-    this.requests   = {};
-    this.forms      = {};
 
     // Internal unique id tracer
-    this.uid        = a.uniqueId();
-    this.nid        = name + '-' + this.uid;
+    this.uid = a.uniqueId();
+    this.nid = name + '-' + this.uid;
 
     if(a.isTrueObject(properties)) {
         this.properties = a.deepClone(properties);
-    }
-
-    if(a.isTrueObject(requests)) {
-        this.requests = a.deepClone(requests);
-    }
-
-    if(a.isTrueObject(forms)) {
-        this.forms = a.deepClone(forms);
     }
 }
 
@@ -22392,8 +22363,13 @@ a.modelInstance.prototype = {
                 }
             }
 
-            // VALIDATE TEST
+            // VALIDATE TEST - function
             if(a.isFunction(validate) && validate(value, old) !== true) {
+                return;
+
+            // VALIDATE TEST - regex
+            } else if(a.isString(validate)
+                        && !(new RegExp(validate, 'gi').test(value))) {
                 return;
             }
 
@@ -22599,38 +22575,6 @@ a.modelInstance.prototype = {
         }
 
         return difference;
-    },
-
-    /**
-     * Get one of the associated model request.
-     *
-     * @method request
-     *
-     * @param name {String}                 The request name to get
-     * @return {Object | null}              The request base found
-    */
-    request: function(name) {
-        // TODO: here we take the existing request, and create a ready to use
-        // object
-        var input  = this.requests[name] || {},
-            output = {type: 'json'};
-
-        output.method = input.method;
-        output.url    = input.url;
-
-        return output;
-    },
-
-    /**
-     * Get one of the associated model form.
-     *
-     * @method form
-     *
-     * @param name {String}                 The form name to get
-     * @return {Object | null}              The form found
-    */
-    form: function(name) {
-        return this.forms[name] || {};
     }
 };
 
