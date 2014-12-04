@@ -782,8 +782,8 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
         assert.strictEqual(data.get('text'), 'something long', 'Test text');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
         
@@ -808,8 +808,8 @@ QUnit.asyncTest('a.ajax.model-undefined', function(assert) {
         assert.strictEqual(data.id, 20, 'Test id');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
         
@@ -841,8 +841,8 @@ QUnit.asyncTest('a.ajax.model-wrong', function(assert) {
         assert.strictEqual(data.get('name'), 'hello');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
         
@@ -887,8 +887,8 @@ QUnit.asyncTest('a.ajax.model-shared', function(assert) {
         assert.strictEqual(first.get('text'), 'something long', 'Test text');
         
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
     }, function(url, status) {
@@ -953,8 +953,8 @@ QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
                                                             'test text 3');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
     }, function(url, status) {
@@ -1011,8 +1011,8 @@ QUnit.asyncTest('a.ajax.model-list', function(assert) {
                                                             'Test text 3');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
         
@@ -1055,8 +1055,8 @@ QUnit.asyncTest('a.ajax.model-list-undefined', function(assert) {
         assert.strictEqual(data[2].get('name'), 'hello24', 'Test name 3');
 
         // We clear
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
 
         QUnit.start();
 

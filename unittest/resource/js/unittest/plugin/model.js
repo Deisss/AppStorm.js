@@ -2,12 +2,12 @@
 
 QUnit.module('plugin/model.js', {
     setup: function() {
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
     },
     teardown: function() {
-        a.modelManager.clear();
-        a.modelPooler.clear();
+        a.model.manager.clear();
+        a.model.pooler.clear();
     }
 });
 
@@ -392,7 +392,7 @@ QUnit.test('a.model.primary', function(assert) {
         }
     });
 
-    var primaries = a.modelPooler.getPrimary('unittest-primary');
+    var primaries = a.model.pooler.getPrimary('unittest-primary');
 
     assert.strictEqual(primaries.length, 2, 'Test total length');
     assert.strictEqual(primaries[0], 'id', 'Test id field');
@@ -560,21 +560,21 @@ QUnit.test('a.model.snapshot', function(assert) {
 });
 
 // Test model manager
-QUnit.test('a.modelManager', function(assert) {
+QUnit.test('a.model.manager', function(assert) {
     assert.expect(7);
 
-    var model = a.model('modelmanagertest', {}, null);
+    var model = a.model('model.managertest', {}, null);
 
     var instance1 = new model(),
         instance2 = new model();
 
-    var storedInstance1 = a.modelManager.get(instance1.uid),
-        storedInstance2 = a.modelManager.get(instance2.uid);
+    var storedInstance1 = a.model.manager.get(instance1.uid),
+        storedInstance2 = a.model.manager.get(instance2.uid);
 
     assert.strictEqual(storedInstance1.uid, instance1.uid);
     assert.strictEqual(storedInstance2.uid, instance2.uid);
 
-    var list = a.modelManager.getByName('modelmanagertest');
+    var list = a.model.manager.getByName('model.managertest');
 
     // We test the list element before removing everything inside
     strictEqual(list.length, 2);
@@ -586,11 +586,11 @@ QUnit.test('a.modelManager', function(assert) {
         assert.strictEqual(list[0].uid, instance2.uid);
     }
 
-    a.modelManager.remove(storedInstance1.uid);
-    assert.strictEqual(a.modelManager.get(instance1.uid), null);
-    assert.strictEqual(a.modelManager.get(instance2.uid).uid, instance2.uid);
+    a.model.manager.remove(storedInstance1.uid);
+    assert.strictEqual(a.model.manager.get(instance1.uid), null);
+    assert.strictEqual(a.model.manager.get(instance2.uid).uid, instance2.uid);
 
-    a.modelManager.remove(storedInstance2.uid);
+    a.model.manager.remove(storedInstance2.uid);
 });
 
 
@@ -623,7 +623,7 @@ QUnit.asyncTest('a.model.model-multiple', function(assert) {
 });
 
 
-// Test modelManager searchInstance function
+// Test model.manager searchInstance function
 QUnit.test('a.model.searchInstance', function(assert) {
     assert.expect(2);
 
