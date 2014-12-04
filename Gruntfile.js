@@ -50,6 +50,8 @@ module.exports = function(grunt) {
           'appstorm/plugin/state.protocol.js',
           'appstorm/plugin/binding.js',
           'appstorm/plugin/model.js',
+          'appstorm/plugin/model.manager.js',
+          'appstorm/plugin/model.pooler.js',
           'appstorm/plugin/template.js',
           'appstorm/plugin/module.js',
 
