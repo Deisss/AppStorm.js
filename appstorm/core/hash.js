@@ -162,6 +162,17 @@ a.hash = new function() {
     };
 
     /**
+     * Retrieve the current system hash (getHash alias)
+     *
+     * @method get
+     *
+     * @return {String | null}         The hash, or null if nothing is set
+    */
+    this.get = function() {
+        return getCurrentPageHash();
+    };
+
+    /**
      * Get the previous page hash (can be null)
      *
      * @method getPreviousHash
