@@ -19,7 +19,8 @@
 
 // From: http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
 // Adding 'uber basic' support of querySelectorAll for IE browsers
-if(document.all && ! ('querySelectorAll' in document)) {
+// Only if user does not make usage of any library like jQuery
+if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
     // IE7 support for querySelectorAll in 274 bytes. Supports multiple / grouped selectors and the attribute selector with a "for" attribute. http://www.codecouch.com/
     (function(d,s){d=document,s=d.createStyleSheet();d.querySelectorAll=function(r,c,i,j,a){a=d.all,c=[],r=r.replace(/\[for\b/gi,'[htmlFor').split(',');for(i=r.length;i--;){s.addRule(r[i],'k:v');for(j=a.length;j--;)a[j].currentStyle.k&&c.push(a[j]);s.removeRule(0)}return c}})()
 }
