@@ -185,11 +185,11 @@ a.form = (function() {
      * @return {a.modelInstance}                A new or existing instance
     */
     function getModel(idOrModelName) {
-        var model = a.modelManager.get(idOrModelName);
+        var model = a.model.manager.get(idOrModelName);
         if(model) {
             return model;
         } else {
-            return a.modelPooler.createTemporaryInstance(idOrModelName);
+            return a.model.pooler.createTemporaryInstance(idOrModelName);
         }
     };
 

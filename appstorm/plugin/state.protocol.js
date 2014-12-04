@@ -180,7 +180,7 @@ a.state.protocol = new function() {
     // You must provide 'model://name:uri' where name is the model name
     // and uri the resources url you're trying to use...
     a.state.protocol.add('model', function(state, index) {
-        // TODO: make model instance by using a.modelManager
+        // TODO: make model instance by using a.model.manager
         // From that model, get the request
         // As the user has to submit model://name:uri
     }, false);

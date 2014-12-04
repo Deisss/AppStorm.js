@@ -114,7 +114,7 @@
     function getOrCreateModel(name, primaries, content) {
         if(a.isNone(primaries) || (a.isArray(primaries) && 
             primaries.length === 0)) {
-            return a.modelPooler.createInstance(name);
+            return a.model.pooler.createInstance(name);
         } else {
             var search = {};
             // Adding primaries to search
@@ -128,12 +128,12 @@
             // Adding last model search
             search['modelName'] = name;
 
-            var found = a.modelPooler.searchInstance(search);
+            var found = a.model.pooler.searchInstance(search);
 
             if(found.length > 0) {
                 return found[0];
             } else {
-                return a.modelPooler.createInstance(name);
+                return a.model.pooler.createInstance(name);
             }
         }
     };
@@ -304,7 +304,7 @@
                             ' not found, empty object recieve from pooler';
 
             // We get primary elements from model
-            var primaries = a.modelPooler.getPrimary(modelName);
+            var primaries = a.model.pooler.getPrimary(modelName);
 
             // Model not found
             if(primaries === null) {

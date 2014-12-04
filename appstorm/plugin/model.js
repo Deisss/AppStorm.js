@@ -30,6 +30,10 @@
  *   - pattern {String}     the regex pattern to check
  *   - validate {Function}  the function to use for validate input.
  *                          Must return true and false value to validate or not
+ *                          Validate can also act like pattern (string regex)
+ *                          but it's more recommanded to use pattern instead
+ *   - many {Boolean}       Indicate if check should expect an array instead
+ *                          of a single value.
  *   - transform {Function} the transformation to apply before setting data
  *   - event {String}       the event to raise on any change
  *   - apply {Function}     the apply element
@@ -49,9 +53,9 @@ a.model = function(name, properties) {
     // Only allow new name (already existing name just give already existing
     // model definition)
     if(a.isString(name)) {
-        if(!a.modelPooler.get(name)) {
+        if(!a.model.pooler.get(name)) {
             // Register model into pooler
-            a.modelPooler.set(name, {
+            a.model.pooler.set(name, {
                 properties: properties
             });
 
@@ -66,11 +70,11 @@ a.model = function(name, properties) {
             // We return a function embed to create new instance
             // from variable
             return function() {
-                return a.modelPooler.createInstance(name);
+                return a.model.pooler.createInstance(name);
             };
         } else {
             // We directly create a new model
-            return a.modelPooler.createInstance(name);
+            return a.model.pooler.createInstance(name);
         }
 
     // Name is a search query system
@@ -80,11 +84,11 @@ a.model = function(name, properties) {
             if(instances && a.isArray(instances)) {
                 var i = instances.length;
                 while(i--) {
-                    a.modelPooler.deleteInstance(instances[i]);
+                    a.model.pooler.deleteInstance(instances[i]);
                 }
             }
         } else {
-            return a.modelPooler.searchInstance(name);
+            return a.model.pooler.searchInstance(name);
         }
     }
 };
@@ -94,282 +98,6 @@ a.model = function(name, properties) {
 
 
 
-
-
-
-
-/**
- * A model manager helps to keep a trace of every model currently used by the
- * application.
- *
- * @class modelManager
- * @namespace a
- * @constructor
-*/
-a.modelManager = {
-    /**
-     * Store a pointer to every instance of every model created.
-     * @property _store
-     * @type Object
-     * @default {}
-    */
-    _store: a.mem.getInstance('app.model.instance'),
-
-    /**
-     * Store a new model into the modelManager.
-     *
-     * @method set
-     *
-     * @param model {Object}                The new model to store
-    */
-    set: function(model) {
-        this._store.set(model.uid, model);
-    },
-
-    /**
-     * Get a model from it's uid (the unique id is automatically generated
-     * for every model, it's available threw myModelInstance.uid)
-     *
-     * @method get
-     *
-     * @param uid {Integer}                 The unique id to search related
-     *                                      model from
-     * @return {Object | null}              The related model found, or null if
-     *                                      nothing is found
-    */
-    get: function(uid) {
-        return this._store.get(uid);
-    },
-
-    /**
-     * Remove a model from store.
-     *
-     * @method remove
-     *
-     * @param uid {Integer}                 The uid to remove
-    */
-    remove: function(uid) {
-        this._store.remove(uid);
-    },
-
-    /**
-     * Get the full model list
-     *
-     * @method list
-     *
-     * @return {Array}                      The list of stored models
-    */
-    list: function() {
-        return this._store.list();
-    },
-
-    /**
-     * Remove all existing model from store
-     *
-     * @method clear
-    */
-    clear: function() {
-        this._store.clear();
-    },
-
-    /**
-     * Get all models related to a given namespace. For example, if you create
-     * a.model('user'), this function helps to find all *user* model created.
-     *
-     * @method getByName
-     *
-     * @param name {String}                 The model name to find
-     * @return {Array}                      The array with all model instance
-     *                                      related to this name
-    */
-    getByName: function(name) {
-        if(!name || !a.isString(name)) {
-            return [];
-        }
-
-        var result = [];
-
-        a.each(this._store.list(), function(element) {
-            if(element.name === name) {
-                result.push(element);
-            }
-        });
-
-        return result;
-    }
-};
-
-
-
-
-
-
-
-
-
-
-
-/**
- * A model pooler aims to create a storage space to keep every model type
- * existing.
- *
- * @class modelPooler
- * @namespace a
- * @constructor
-*/
-a.modelPooler = a.mem.getInstance('app.model.type');
-
-/**
- * Simple function to generate new instance from a base
- *
- * @method createInstance
- *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
- *                                          if model name is not defined
-*/
-a.modelPooler.createInstance = function(name) {
-    var model = this.createTemporaryInstance(name);
-
-    if(!a.isNull(model)) {
-        // Adding model to modelManager system
-        a.modelManager.set(model);
-    }
-
-    return model;
-};
-
-
-/**
- * Simple function to generate new instance from a base. This instance is not
- * stored into a.modelManager.
- * NOTE: this function should not be used, please use createInstance instead.
- *
- * @method createInstance
- *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
- *                                          if model name is not defined
-*/
-a.modelPooler.createTemporaryInstance = function(name) {
-    var instanceType = this.get(name);
-
-    if(!instanceType) {
-        return null;
-    }
-
-    var model = a.extend(
-            new a.modelInstance(
-                name,
-                a.clone(instanceType.properties)
-            ),
-            new a.eventEmitter('a.model')
-        );
-
-    // Resetting model
-    model.init();
-
-    // Returning freshly created model
-    return model;
-};
-
-/**
- * From a given query, get back the existing stored model
- *
- * @method searchInstance
- *
- * @param query {Object}                    The query to search inside
- * @return {a.modelInstance | null}         The single instance found,
- *                                          or a list of instances, or null
-*/
-a.modelPooler.searchInstance = function(query) {
-    var name = query.modelName || query.model || query.name || null;
-
-    // Faster search
-    var models;
-    if(name && a.isString(name)) {
-    	models = a.modelManager.getByName(name);
-    } else {
-    	var list = a.modelManager.list(),
-    		models = [];
-    	a.each(list, function(element) {
-    		models.push(element);
-    	});
-    }
-
-    // We remove the first searched element
-    if(query.modelName) {
-        delete query.modelName;
-    } else if(query.model) {
-        delete query.model;
-    } else if(query.name) {
-        delete query.name;
-    }
-
-    for(var key in query) {
-        var value = query[key],
-            i = models.length;
-
-        while(i--) {
-            var model = models[i];
-            // The model is not related to searched value
-            if(!a.isTrueObject(value) && model.get(key) !== value) {
-                models.splice(i, 1);
-            // The value is an object itself, we should check deeper inside
-            } else if(a.isTrueObject(value)) {
-
-            }
-        }
-    }
-
-    return models;
-};
-
-
-/**
- * Search primary keys inside a model, to be able to perform a search
- * after.
- *
- * @method getPrimary
- *
- * @param name {String}                     The model name to get related
- *                                          primary
- * @return {Array | null}                   Array if it has been found, null
- *                                          if there is any problem
-*/
-a.modelPooler.getPrimary = function(name) {
-    var instanceType = this.get(name);
-
-    if(!instanceType) {
-        return null;
-    }
-
-    var properties = instanceType.properties,
-        results = [];
-
-    for(var key in properties) {
-        var property = properties[key];
-        if(('primary' in property) && property['primary'] === true) {
-            results.push(key);
-        }
-    }
-
-    return results;
-};
-
-
-/**
- * Delete an existing instance.
- *
- * @method deleteInstance
- *
- * @param instance {Object}                 The instance to delete
-*/
-a.modelPooler.deleteInstance = function(instance) {
-    if(a.isTrueObject(instance) && instance.uid) {
-        a.modelManager.remove(instance.uid);
-    }
-};
 
 
 
@@ -593,7 +321,7 @@ a.modelInstance.prototype = {
     */
     clone: function() {
         var data = a.deepClone(this.toObject()),
-            instance = a.modelPooler.createInstance(this.name);
+            instance = a.model.pooler.createInstance(this.name);
 
         instance.fromObject(data);
         return instance;
@@ -752,7 +480,7 @@ a.modelInstance.prototype = {
 (function() {
     // From a given uid, get the linked model
     a.parameter.addParameterType('model',  function(uid) {
-        return a.modelManager.get(uid);
+        return a.model.manager.get(uid);
     });
 
     // This helps to get model uid from a given model
