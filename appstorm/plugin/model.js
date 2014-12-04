@@ -138,7 +138,7 @@ a.modelInstance = function(name, properties) {
     if(a.isTrueObject(properties)) {
         this.properties = a.deepClone(properties);
     }
-}
+};
 
 
 a.modelInstance.prototype = {
