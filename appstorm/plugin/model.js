@@ -127,9 +127,12 @@ a.model = function(name, properties) {
  *                                          model.
 */
 a.modelInstance = function(name, properties) {
-    this.name = name || '';
+    this.modelName  = name || '';
     this.properties = {};
     this.snapshot   = {};
+    // List properties originally found in the model
+    // by default which cannot be changed by user
+    this.originalContent = [];
 
     // Internal unique id tracer
     this.uid = a.uniqueId();
@@ -137,6 +140,10 @@ a.modelInstance = function(name, properties) {
 
     if(a.isTrueObject(properties)) {
         this.properties = a.deepClone(properties);
+    }
+
+    for(var key in this) {
+        this.originalContent.push(key);
     }
 };
 
@@ -226,7 +233,7 @@ a.modelInstance.prototype = {
                 }
 
                 var instance = value instanceof a.modelInstance;
-                if(instance && check !== value.name) {
+                if(instance && check !== value.modelName) {
                     return;
                 } else if(!instance && check !== typeof(value)) {
                     return;
@@ -268,6 +275,11 @@ a.modelInstance.prototype = {
             // We can apply property value now
             property['value'] = value;
 
+            // If it's possible, we also update the 'direct' value
+            if(!a.contains(this.originalContent, key)) {
+                this[key] = value;
+            }
+
             // APPLY TEST
             if(a.isFunction(apply)) {
                 apply(value, old);
@@ -282,6 +294,39 @@ a.modelInstance.prototype = {
         }
     },
 
+    /**
+     * Watch a model property for changes
+     *
+     * @method watch
+     *
+     * @param key {String}                  The model key to watch
+     * @param fct {Function}                The function to bind
+    */
+    watch: function(key, fct) {
+        if(a.isString(key) && a.isFunction(fct)) {
+            a.watch.call(this, this.properties[key]['value'], fct);
+        } else {
+            a.console.error('Impossible to watch property ' + key + ' from '
+                + this.modelName + ' model', 1);
+        }
+    },
+
+    /**
+     * Unwatch a mdoel property changes
+     *
+     * @method unwatch
+     *
+     * @param key {String}                  The model key to stop watching
+     * @param fct {Function}                The function to unbind
+    */
+    unwatch: function(key, fct) {
+        if(a.isString(key) && a.isFunction(fct)) {
+            a.unwatch.call(this, this.properties[key]['value'], fct);
+        } else {
+            a.console.error('Impossible to unwatch property ' + key + ' from '
+                + this.modelName + ' model', 1);
+        }
+    },
 
     /**
      * Check if a given key exist or not in model.
@@ -303,6 +348,15 @@ a.modelInstance.prototype = {
         for(var property in this.properties) {
             this.properties[property]['value'] = 
                     this.properties[property]['init'] || null;
+
+            // Now we push data into directly the model itself
+            if(!a.contains(this.originalContent, property)) {
+                this[property] = this.get(property);
+            } else {
+                a.console.error('a.model: ' + this.modelName + ' has a '
+                    + 'property ' + key + ' in conflict with internal '
+                    + 'model data, please change property name', 1);
+            }
         }
 
         // Save current setted data
@@ -321,7 +375,7 @@ a.modelInstance.prototype = {
     */
     clone: function() {
         var data = a.deepClone(this.toObject()),
-            instance = a.model.pooler.createInstance(this.name);
+            instance = a.model.pooler.createInstance(this.modelName);
 
         instance.fromObject(data);
         return instance;

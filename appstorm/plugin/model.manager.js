@@ -111,7 +111,7 @@ a.model.manager = {
         var result = [];
 
         a.each(this._store.list(), function(element) {
-            if(element.name === name) {
+            if(element.modelName === name) {
                 result.push(element);
             }
         });

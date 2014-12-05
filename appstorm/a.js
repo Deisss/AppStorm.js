@@ -222,10 +222,22 @@ a.extend = function(object, source, guard) {
  * @method watch
  * @see https://github.com/melanke/Watch.JS/
  *
- * @param                                   See Watch.JS
+ * @param                                   See Watch.JS documentation
 */
 a.watch = function() {
-    watch.apply(this, arguments);
+    WatchJS.watch.apply(this, arguments);
+};
+
+/**
+ * Alias for Watch.JS
+ *
+ * @method unwatch
+ * @see https://github.com/melanke/Watch.JS/
+ *
+ * @param                                   See Watch.JS documentation
+*/
+a.unwatch = function() {
+    WatchJS.unwatch.apply(this, arguments);
 };
 
 /**

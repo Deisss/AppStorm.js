@@ -692,13 +692,16 @@ QUnit.test('a.model.searchInstance-no-name', function(assert) {
     var getTest1 = a.model({id: 2}),
         getTest2 = a.model({id: 3});
 
-    assert.strictEqual(getTest2[0].name, 'unittest-searchInstance-no-name');
+    assert.strictEqual(getTest2[0].modelName,
+                                    'unittest-searchInstance-no-name');
     assert.strictEqual(getTest2[0].uid, test2.uid);
     assert.strictEqual(getTest1.length, 2);
     assert.strictEqual(getTest1[0].uid, test1.uid);
-    assert.strictEqual(getTest1[0].name, 'unittest-searchInstance-no-name');
+    assert.strictEqual(getTest1[0].modelName,
+                                    'unittest-searchInstance-no-name');
     assert.strictEqual(getTest1[1].uid, test3.uid);
-    assert.strictEqual(getTest1[1].name, 'unittest-searchInstance-no-name2');
+    assert.strictEqual(getTest1[1].modelName,
+                                    'unittest-searchInstance-no-name2');
 });
 
 
@@ -763,4 +766,28 @@ QUnit.test('a.model.validate-string', function(assert) {
     t.set('name', 'abcdefABCDEF0123456789 ');
 
     assert.strictEqual(t.get('name'), 'abcdefABCDEF0123456789', 'Test 5th value');
+});
+
+
+// Test model direct value
+QUnit.test('a.model.direct-property', function(assert) {
+    assert.expect(4);
+
+    var test = a.model('a.model.direct-property', {
+        name: {
+            nullable: true,
+            init: 'hello'
+        },
+        supertest: {
+            nullable: true,
+            init: 25
+        }
+    });
+
+    var z = a.model('a.model.direct-property');
+
+    assert.strictEqual(z.name, 'hello', 'Test direct name');
+    assert.strictEqual(z.supertest, 25, 'Test direct supertest');
+    assert.strictEqual(z.get('name'), 'hello', 'Indirect test name');
+    assert.strictEqual(z.get('supertest'), 25, 'Indirect test supertest');
 });
