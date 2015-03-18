@@ -692,7 +692,16 @@ a.state.chain = new function() {
                             ' is not valid (data is not a valid system)', 1);
         }
 
-
+        // Loading partials
+        a.each(partials, function(uri, name) {
+            sync.addCallback(function(chain) {
+                a.template.partial(name, uri, function() {
+                    chain.next();
+                }, function() {
+                    chain.error();
+                });
+            });
+        });
 
         // Loading HTML
         sync.addCallback(a.scope(function(chain) {
@@ -710,17 +719,6 @@ a.state.chain = new function() {
             this._storm.html = url;
             a.template.get(url, {}, chain.next, chain.error);
         }, this));
-
-        // Loading partials
-        a.each(partials, function(uri, name) {
-            sync.addCallback(function(chain) {
-                a.template.partial(name, uri, function() {
-                    chain.next();
-                }, function() {
-                    chain.error();
-                });
-            });
-        });
 
 
         sync.start();

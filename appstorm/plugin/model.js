@@ -173,7 +173,30 @@ a.modelInstance.prototype = {
     */
     type: function(key) {
         var p = this.properties[key];
-        return p ? p['type'] : null;
+        if(!p) {
+            return 'text';
+        }
+
+        if(p['type']) {
+            return p['type'];
+
+        // Now we try to guess
+        } else if(p['primary'] === true) {
+            return 'hidden';
+        } else if(a.isArray(p['check'])) {
+            return 'select';
+        } else if(p['check']) {
+            var content = p['check'].toLowerCase();
+            if(content === 'boolean') {
+                return 'checkbox';
+            } else if(content === 'number' || content === 'float' || 
+                content === 'double' || content === 'integer') {
+                return 'number';
+            }
+            // TODO: add the lastest HTML like date, phone...
+        }
+
+        return 'text';
     },
 
     /**
@@ -210,6 +233,7 @@ a.modelInstance.prototype = {
                 pattern   = property['pattern'],
                 transform = property['transform'],
                 validate  = property['validate'],
+                many      = property['many'] || false,
                 old       = property['value'];
 
 
@@ -221,6 +245,9 @@ a.modelInstance.prototype = {
                 return;
             }
 
+            // TODO: one of the solution here is to convert value into
+            // an array (except in case of many = true) and then
+            // try to check it
             // CHECK TEST - basic typeof test
             // CHECK TEST - model check error (we do allow complex sub type)
             if(a.isString(check)) {
@@ -256,9 +283,18 @@ a.modelInstance.prototype = {
 
             // PATTERN TEST
             if(!a.isNone(value) && a.isString(pattern) && pattern) {
-                var reg = new RegExp(pattern, 'g');
-                if(!reg.test(value)) {
-                    return;
+                if(many === true && a.isArray(value)) {
+                    for(var i=0, l=value.length; i<l; ++i) {
+                        var reg = new RegExp(pattern, 'g');
+                        if(!reg.test(value[i])) {
+                            return;
+                        }
+                    }
+                } else {
+                    var reg = new RegExp(pattern, 'g');
+                    if(!reg.test(value)) {
+                        return;
+                    }
                 }
             }
 

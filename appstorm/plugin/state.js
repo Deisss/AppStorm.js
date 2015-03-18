@@ -880,6 +880,18 @@ a.state = new function() {
     };
 
     /**
+     * Mostly for testing purpose, but this return the currently
+     * loaded states (all of them).
+     * NOTE: you should avoid using it in production site, may be changed
+     * without any notice
+     *
+     * @return The array with all loaded states.
+    */
+    this.__loaded = function() {
+        return loaded;
+    };
+
+    /**
      * Test a hash is existing into states.
      *
      * @param hashExists

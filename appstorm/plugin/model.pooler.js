@@ -9,9 +9,7 @@
         plugin/model.manager.js
     ]
 
-    Events : [
-        init: {}
-    ]
+    Events : []
 
     Description:
         Provide a model storage system, and keep a trace of model created

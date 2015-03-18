@@ -9916,7 +9916,8 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
  * gilbueno.mail@gmail.com
  *
  * WORKS WITH:
- * IE 9+, FF 4+, SF 5+, WebKit, CH 7+, OP 12+, BESEN, Rhino 1.7+
+ * IE8*, IE 9+, FF 4+, SF 5+, WebKit, CH 7+, OP 12+, BESEN, Rhino 1.7+
+ * For IE8 (and other legacy browsers) WatchJS will use dirty checking  
  *
  * FORK:
  * https://github.com/melanke/Watch.JS
@@ -9942,13 +9943,22 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
 }(function () {
 
     var WatchJS = {
-        noMore: false
+        noMore: false,        // use WatchJS.suspend(obj) instead
+        useDirtyCheck: false // use only dirty checking to track changes.
     },
     lengthsubjects = [];
+    
+    var dirtyChecklist = [];
+    var pendingChanges = []; // used coalesce changes from defineProperty and __defineSetter__
+    
+    var supportDefineProperty = false;
+    try {
+        supportDefineProperty = Object.defineProperty && Object.defineProperty({},'x', {});
+    } catch(ex) {  /* not supported */  }
 
     var isFunction = function (functionToCheck) {
-            var getType = {};
-            return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]';
+        var getType = {};
+        return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]';
     };
 
     var isInt = function (x) {
@@ -9959,6 +9969,10 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         return Object.prototype.toString.call(obj) === '[object Array]';
     };
 
+    var isObject = function(obj) {
+        return {}.toString.apply(obj) === '[object Object]';
+    };
+    
     var getObjDiff = function(a, b){
         var aplus = [],
         bplus = [];
@@ -10012,40 +10026,43 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
             copy[attr] = obj[attr];
         }
 
-        return copy;
+        return copy;        
 
     }
 
     var defineGetAndSet = function (obj, propName, getter, setter) {
         try {
-
-            
             Object.observe(obj, function(changes) {
                 changes.forEach(function(change) {
                     if (change.name === propName) {
                         setter(change.object[change.name]);
                     }
                 });
-            });
-            
-        } catch(e) {
-
+            });            
+        } 
+        catch(e) {
             try {
-                    Object.defineProperty(obj, propName, {
-                            get: getter,
-                            set: setter,
-                            enumerable: true,
-                            configurable: true
-                    });
-            } catch(e2) {
+                Object.defineProperty(obj, propName, {
+                    get: getter,
+                    set: function(value) {        
+                        setter.call(this,value,true); // coalesce changes
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+            } 
+            catch(e2) {
                 try{
                     Object.prototype.__defineGetter__.call(obj, propName, getter);
-                    Object.prototype.__defineSetter__.call(obj, propName, setter);
-                } catch(e3) {
-                    throw new Error("watchJS error: browser not supported :/")
+                    Object.prototype.__defineSetter__.call(obj, propName, function(value) {
+                        setter.call(this,value,true); // coalesce changes
+                    });
+                } 
+                catch(e3) {
+                    observeDirtyChanges(obj,propName,setter);
+                    //throw new Error("watchJS error: browser not supported :/")
                 }
             }
-
         }
     };
 
@@ -10062,6 +10079,15 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         }
     };
 
+    var observeDirtyChanges = function(obj,propName,setter) {
+        dirtyChecklist[dirtyChecklist.length] = {
+            prop:       propName,
+            object:     obj,
+            orig:       clone(obj[propName]),
+            callback:   setter
+        }        
+    }
+    
     var watch = function () {
 
         if (isFunction(arguments[1])) {
@@ -10081,26 +10107,28 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
             return;
         }
 
-        var props = [];
-
-
         if(isArray(obj)) {
-            for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
-                props.push(prop); //put in the props
-            }
-        } else {
-            for (var prop2 in obj) { //for each attribute if obj is an object
-				if (prop2 == "$val") {
-					continue;
-				}
-
-                if (Object.prototype.hasOwnProperty.call(obj, prop2)) {
-                    props.push(prop2); //put in the props
+            defineWatcher(obj, "__watchall__", watcher, level); // watch all changes on the array
+            if (level===undefined||level > 0) {
+                for (var prop = 0; prop < obj.length; prop++) { // watch objects in array
+                   watchAll(obj[prop],watcher,level, addNRemove);
                 }
             }
+        } 
+        else {
+            var prop,props = [];
+            for (prop in obj) { //for each attribute if obj is an object
+                if (prop == "$val" || (!supportDefineProperty && prop === 'watchers')) {
+                    continue;
+                }
+
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+                    props.push(prop); //put in the props
+                }
+            }
+            watchMany(obj, props, watcher, level, addNRemove); //watch all items of the props
         }
 
-        watchMany(obj, props, watcher, level, addNRemove); //watch all items of the props
 
         if (addNRemove) {
             pushToLengthSubjects(obj, "$$watchlengthsubjectroot", watcher, level);
@@ -10160,7 +10188,7 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         }
 
         if (isArray(obj)) {
-            var props = [];
+            var props = ['__watchall__'];
             for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
                 props.push(prop); //put in the props
             }
@@ -10193,18 +10221,139 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         }
     };
 
+    var timeouts = [],
+        timerID = null;
+    function clearTimerID() {
+        timerID = null;
+        for(var i=0; i< timeouts.length; i++) {
+            timeouts[i]();
+        }
+        timeouts.length = 0;
+    }
+    var getTimerID= function () {
+        if (!timerID)  {
+            timerID = setTimeout(clearTimerID);
+        }
+        return timerID;
+    }
+    var registerTimeout = function(fn) { // register function to be called on timeout
+        if (timerID==null) getTimerID();
+        timeouts[timeouts.length] = fn;
+    }
+    
+    // Track changes made to an array, object or an object's property 
+    // and invoke callback with a single change object containing type, value, oldvalue and array splices
+    // Syntax: 
+    //      trackChange(obj, callback, recursive, addNRemove)
+    //      trackChange(obj, prop, callback, recursive, addNRemove)
+    var trackChange = function() {
+        var fn = (isFunction(arguments[2])) ? trackProperty : trackObject ;
+        fn.apply(this,arguments);
+    }
+
+    // track changes made to an object and invoke callback with a single change object containing type, value and array splices
+    var trackObject= function(obj, callback, recursive, addNRemove) {
+        var change = null,lastTimerID = -1;
+        var isArr = isArray(obj);
+        var level,fn = function(prop, action, newValue, oldValue) {
+            var timerID = getTimerID();
+            if (lastTimerID!==timerID) { // check if timer has changed since last update
+                lastTimerID = timerID;
+                change = {
+                    type: 'update'
+                }
+                change['value'] = obj;
+                change['splices'] = null;
+                registerTimeout(function() {
+                    callback.call(this,change);
+                    change = null;
+                });
+            }
+            // create splices for array changes
+            if (isArr && obj === this && change !== null)  {                
+                if (action==='pop'||action==='shift') {
+                    newValue = [];
+                    oldValue = [oldValue];
+                }
+                else if (action==='push'||action==='unshift') {
+                    newValue = [newValue];
+                    oldValue = [];
+                }
+                else if (action!=='splice') { 
+                    return; // return here - for reverse and sort operations we don't need to return splices. a simple update will do
+                }
+                if (!change.splices) change.splices = [];
+                change.splices[change.splices.length] = {
+                    index: prop,
+                    deleteCount: oldValue ? oldValue.length : 0,
+                    addedCount: newValue ? newValue.length : 0,
+                    added: newValue,
+                    deleted: oldValue
+                };
+            }
+
+        }  
+        level = (recursive==true) ? undefined : 0;        
+        watchAll(obj,fn, level, addNRemove);
+    }
+    
+    // track changes made to the property of an object and invoke callback with a single change object containing type, value, oldvalue and splices
+    var trackProperty = function(obj,prop,callback,recursive, addNRemove) { 
+        if (obj && prop) {
+            watchOne(obj,prop,function(prop, action, newvalue, oldvalue) {
+                var change = {
+                    type: 'update'
+                }
+                change['value'] = newvalue;
+                change['oldvalue'] = oldvalue;
+                if (recursive && isObject(newvalue)||isArray(newvalue)) {
+                    trackObject(newvalue,callback,recursive, addNRemove);
+                }               
+                callback.call(this,change);
+            },0)
+            
+            if (recursive && isObject(obj[prop])||isArray(obj[prop])) {
+                trackObject(obj[prop],callback,recursive, addNRemove);
+            }                           
+        }
+    }
+    
+    
     var defineWatcher = function (obj, prop, watcher, level) {
-
-        var val = obj[prop];
-
-        watchFunctions(obj, prop);
-
+        var newWatcher = false;
+        var isArr = isArray(obj);
+        
         if (!obj.watchers) {
             defineProp(obj, "watchers", {});
+            if (isArr) {
+                // watch array functions
+                watchFunctions(obj, function(index,action,newValue, oldValue) {
+                    addPendingChange(obj, index, action,newValue, oldValue);
+                    if (level !== 0 && newValue && (isObject(newValue) || isArray(newValue))) {
+                        var i,n, ln, wAll, watchList = obj.watchers[prop];
+                        if ((wAll = obj.watchers['__watchall__'])) {
+                            watchList = watchList ? watchList.concat(wAll) : wAll;
+                        }
+                        ln = watchList ?  watchList.length : 0;
+                        for (i = 0; i<ln; i++) {
+                            if (action!=='splice') {
+                                watchAll(newValue, watchList[i], (level===undefined)?level:level-1);
+                            }
+                            else {
+                                // watch spliced values
+                                for(n=0; n < newValue.length; n++) {
+                                    watchAll(newValue[n], watchList[i], (level===undefined)?level:level-1);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         if (!obj.watchers[prop]) {
             obj.watchers[prop] = [];
+            if (!isArr) newWatcher = true;
         }
 
         for (var i=0; i<obj.watchers[prop].length; i++) {
@@ -10213,43 +10362,67 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
             }
         }
 
+        obj.watchers[prop].push(watcher); //add the new watcher to the watchers array
 
-        obj.watchers[prop].push(watcher); //add the new watcher in the watchers array
+        if (newWatcher) {
+            var val = obj[prop];            
+            var getter = function () {
+                return val;                        
+            };
 
-
-        var getter = function () {
-            return val;
-        };
-
-
-        var setter = function (newval) {
-            var oldval = val;
-            val = newval;
-
-            if (level !== 0 && obj[prop]){
-                // watch sub properties
-                watchAll(obj[prop], watcher, (level===undefined)?level:level-1);
-            }
-
-            watchFunctions(obj, prop);
-
-            if (!WatchJS.noMore){
-                //if (JSON.stringify(oldval) !== JSON.stringify(newval)) {
-                if (oldval !== newval) {
-                    callWatchers(obj, prop, "set", newval, oldval);
-                    WatchJS.noMore = false;
+            var setter = function (newval, delayWatcher) {
+                var oldval = val;
+                val = newval;                
+                if (level !== 0 
+                    && obj[prop] && (isObject(obj[prop]) || isArray(obj[prop]))
+                    && !obj[prop].watchers) {
+                    // watch sub properties
+                    var i,ln = obj.watchers[prop].length; 
+                    for(i=0; i<ln; i++) {
+                        watchAll(obj[prop], obj.watchers[prop][i], (level===undefined)?level:level-1);
+                    }
                 }
-            }
-        };
 
-        defineGetAndSet(obj, prop, getter, setter);
+                //watchFunctions(obj, prop);
+                
+                if (isSuspended(obj, prop)) {
+                    resume(obj, prop);
+                    return;
+                }
+
+                if (!WatchJS.noMore){ // this does not work with Object.observe
+                    //if (JSON.stringify(oldval) !== JSON.stringify(newval)) {
+                    if (oldval !== newval) {
+                        if (!delayWatcher) {
+                            callWatchers(obj, prop, "set", newval, oldval);
+                        }
+                        else {
+                            addPendingChange(obj, prop, "set", newval, oldval);
+                        }
+                        WatchJS.noMore = false;
+                    }
+                }
+            };
+
+            if (WatchJS.useDirtyCheck) {
+                observeDirtyChanges(obj,prop,setter);
+            }
+            else {
+                defineGetAndSet(obj, prop, getter, setter);
+            }
+        }
 
     };
 
     var callWatchers = function (obj, prop, action, newval, oldval) {
         if (prop !== undefined) {
-            for (var wr=0; wr<obj.watchers[prop].length; wr++) {
-                obj.watchers[prop][wr].call(obj, prop, action, newval, oldval);
+            var ln, wl, watchList = obj.watchers[prop];
+            if ((wl = obj.watchers['__watchall__'])) {
+                watchList = watchList ? watchList.concat(wl) : wl;
+            }
+            ln = watchList ? watchList.length : 0;
+            for (var wr=0; wr< ln; wr++) {
+                watchList[wr].call(obj, prop, action, newval, oldval);
             }
         } else {
             for (var prop in obj) {//call all
@@ -10260,46 +10433,133 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         }
     };
 
-    // @todo code related to "watchFunctions" is certainly buggy
     var methodNames = ['pop', 'push', 'reverse', 'shift', 'sort', 'slice', 'unshift', 'splice'];
-    var defineArrayMethodWatcher = function (obj, prop, original, methodName) {
-        defineProp(obj[prop], methodName, function () {
-            var response = original.apply(obj[prop], arguments);
-            watchOne(obj, obj[prop]);
+    var defineArrayMethodWatcher = function (obj, original, methodName, callback) {
+        defineProp(obj, methodName, function () {
+            var index = 0;
+            var i,newValue, oldValue, response;                        
+            // get values before splicing array 
+            if (methodName === 'splice') {
+               var start = arguments[0];
+               var end = start + arguments[1];
+               oldValue = obj.slice(start,end);
+               newValue = [];
+               for(i=2;i<arguments.length;i++) {
+                   newValue[i-2] = arguments[i];
+               }
+               index = start;
+            } 
+            else {
+                newValue = arguments.length > 0 ? arguments[0] : undefined;
+            } 
+
+            response = original.apply(obj, arguments);
             if (methodName !== 'slice') {
-                callWatchers(obj, prop, methodName,arguments);
+                if (methodName === 'pop') {
+                    oldValue = response;
+                    index = obj.length;
+                }
+                else if (methodName === 'push') {
+                    index = obj.length-1;
+                }
+                else if (methodName === 'shift') {
+                    oldValue = response;
+                }
+                else if (methodName !== 'unshift' && newValue===undefined) {
+                    newValue = response;
+                }
+                callback.call(obj, index, methodName,newValue, oldValue)
             }
             return response;
         });
     };
 
-    var watchFunctions = function(obj, prop) {
+    var watchFunctions = function(obj, callback) {
 
-        if ((!obj[prop]) || (obj[prop] instanceof String) || (!isArray(obj[prop]))) {
+        if (!isFunction(callback) || !obj || (obj instanceof String) || (!isArray(obj))) {
             return;
         }
 
         for (var i = methodNames.length, methodName; i--;) {
             methodName = methodNames[i];
-            defineArrayMethodWatcher(obj, prop, obj[prop][methodName], methodName);
+            defineArrayMethodWatcher(obj, obj[methodName], methodName, callback);
         }
 
     };
 
     var unwatchOne = function (obj, prop, watcher) {
-        for (var i=0; i<obj.watchers[prop].length; i++) {
-            var w = obj.watchers[prop][i];
-
-            if(w == watcher) {
-                obj.watchers[prop].splice(i, 1);
+        if (obj.watchers[prop]) {
+            if (watcher===undefined) {
+                delete obj.watchers[prop]; // remove all property watchers
+            }
+            else {
+                for (var i=0; i<obj.watchers[prop].length; i++) {
+                    var w = obj.watchers[prop][i];
+    
+                    if (w == watcher) {
+                        obj.watchers[prop].splice(i, 1);
+                    }
+                }
             }
         }
-
         removeFromLengthSubjects(obj, prop, watcher);
+        removeFromDirtyChecklist(obj, prop);
     };
+    
+    // suspend watchers until next update cycle
+    var suspend = function(obj, prop) {
+        if (obj.watchers) {
+            var name = '__wjs_suspend__'+(prop!==undefined ? prop : '');
+            obj.watchers[name] = true;
+        }
+    }
+    
+    var isSuspended = function(obj, prop) {
+        return obj.watchers 
+               && (obj.watchers['__wjs_suspend__'] || 
+                   obj.watchers['__wjs_suspend__'+prop]);
+    }
+    
+    // resumes preivously suspended watchers
+    var resume = function(obj, prop) {
+        registerTimeout(function() {
+            delete obj.watchers['__wjs_suspend__'];
+            delete obj.watchers['__wjs_suspend__'+prop];
+        })
+    }
+
+    var pendingTimerID = null;
+    var addPendingChange = function(obj,prop, mode, newval, oldval) {
+        pendingChanges[pendingChanges.length] = {
+            obj:obj,
+            prop: prop,
+            mode: mode,
+            newval: newval,
+            oldval: oldval
+        };
+        if (pendingTimerID===null) {
+            pendingTimerID = setTimeout(applyPendingChanges);
+        }
+    };
+    
+    
+    var applyPendingChanges = function()  {
+        // apply pending changes
+        var change = null;
+        pendingTimerID = null;
+        for(var i=0;i < pendingChanges.length;i++) {
+            change = pendingChanges[i];
+            callWatchers(change.obj, change.prop, change.mode, change.newval, change.oldval);
+        }
+        if (change) {
+            pendingChanges = [];
+            change = null;
+        }        
+    }
 
     var loop = function(){
 
+        // check for new or deleted props
         for(var i=0; i<lengthsubjects.length; i++) {
 
             var subj = lengthsubjects[i];
@@ -10337,9 +10597,41 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
             }
 
         }
+        
+        // start dirty check
+        var n, value;
+        if (dirtyChecklist.length > 0) {
+            for (var i = 0; i < dirtyChecklist.length; i++) {
+                n = dirtyChecklist[i];
+                value = n.object[n.prop];
+                if (!compareValues(n.orig, value)) {
+                    n.orig = clone(value);
+                    n.callback(value);
+                }
+            }
+        }
 
     };
 
+    var compareValues =  function(a,b) {
+        var i, state = true;
+        if (a!==b)  {
+            if (isObject(a)) {
+                for(i in a) {
+                    if (!supportDefineProperty && i==='watchers') continue;
+                    if (a[i]!==b[i]) {
+                        state = false;
+                        break;
+                    };
+                }
+            }
+            else {
+                state = false;
+            }
+        }
+        return state;
+    }
+    
     var pushToLengthSubjects = function(obj, prop, watcher, level){
 
         var actual;
@@ -10370,12 +10662,32 @@ b[c[e].seq]=1,x(c[e].callback,d,c[e].combo,c[e].seq)):g||x(c[e].callback,d,c[e].
         }
 
     };
+    
+    var removeFromDirtyChecklist = function(obj, prop){
+        var notInUse;
+        for (var i=0; i<dirtyChecklist.length; i++) {
+            var n = dirtyChecklist[i];
+            var watchers = n.object.watchers;
+            notInUse = (
+                n.object == obj 
+                && n.prop == prop 
+                && watchers
+                && ( !watchers[prop] || watchers[prop].length == 0 )
+            );
+            if (notInUse)  {
+                dirtyChecklist.splice(i, 1);
+            }
+        }
+
+    };    
 
     setInterval(loop, 50);
 
     WatchJS.watch = watch;
     WatchJS.unwatch = unwatch;
     WatchJS.callWatchers = callWatchers;
+    WatchJS.suspend = suspend; // suspend watchers    
+    WatchJS.onChange = trackChange;  // track changes made to object or  it's property and return a single change object
 
     return WatchJS;
 
@@ -19933,6 +20245,18 @@ a.state = new function() {
     };
 
     /**
+     * Mostly for testing purpose, but this return the currently
+     * loaded states (all of them).
+     * NOTE: you should avoid using it in production site, may be changed
+     * without any notice
+     *
+     * @return The array with all loaded states.
+    */
+    this.__loaded = function() {
+        return loaded;
+    };
+
+    /**
      * Test a hash is existing into states.
      *
      * @param hashExists
@@ -20696,7 +21020,16 @@ a.state.chain = new function() {
                             ' is not valid (data is not a valid system)', 1);
         }
 
-
+        // Loading partials
+        a.each(partials, function(uri, name) {
+            sync.addCallback(function(chain) {
+                a.template.partial(name, uri, function() {
+                    chain.next();
+                }, function() {
+                    chain.error();
+                });
+            });
+        });
 
         // Loading HTML
         sync.addCallback(a.scope(function(chain) {
@@ -20714,17 +21047,6 @@ a.state.chain = new function() {
             this._storm.html = url;
             a.template.get(url, {}, chain.next, chain.error);
         }, this));
-
-        // Loading partials
-        a.each(partials, function(uri, name) {
-            sync.addCallback(function(chain) {
-                a.template.partial(name, uri, function() {
-                    chain.next();
-                }, function() {
-                    chain.error();
-                });
-            });
-        });
 
 
         sync.start();
@@ -22033,7 +22355,30 @@ a.modelInstance.prototype = {
     */
     type: function(key) {
         var p = this.properties[key];
-        return p ? p['type'] : null;
+        if(!p) {
+            return 'text';
+        }
+
+        if(p['type']) {
+            return p['type'];
+
+        // Now we try to guess
+        } else if(p['primary'] === true) {
+            return 'hidden';
+        } else if(a.isArray(p['check'])) {
+            return 'select';
+        } else if(p['check']) {
+            var content = p['check'].toLowerCase();
+            if(content === 'boolean') {
+                return 'checkbox';
+            } else if(content === 'number' || content === 'float' || 
+                content === 'double' || content === 'integer') {
+                return 'number';
+            }
+            // TODO: add the lastest HTML like date, phone...
+        }
+
+        return 'text';
     },
 
     /**
@@ -22070,6 +22415,7 @@ a.modelInstance.prototype = {
                 pattern   = property['pattern'],
                 transform = property['transform'],
                 validate  = property['validate'],
+                many      = property['many'] || false,
                 old       = property['value'];
 
 
@@ -22081,6 +22427,9 @@ a.modelInstance.prototype = {
                 return;
             }
 
+            // TODO: one of the solution here is to convert value into
+            // an array (except in case of many = true) and then
+            // try to check it
             // CHECK TEST - basic typeof test
             // CHECK TEST - model check error (we do allow complex sub type)
             if(a.isString(check)) {
@@ -22116,9 +22465,18 @@ a.modelInstance.prototype = {
 
             // PATTERN TEST
             if(!a.isNone(value) && a.isString(pattern) && pattern) {
-                var reg = new RegExp(pattern, 'g');
-                if(!reg.test(value)) {
-                    return;
+                if(many === true && a.isArray(value)) {
+                    for(var i=0, l=value.length; i<l; ++i) {
+                        var reg = new RegExp(pattern, 'g');
+                        if(!reg.test(value[i])) {
+                            return;
+                        }
+                    }
+                } else {
+                    var reg = new RegExp(pattern, 'g');
+                    if(!reg.test(value)) {
+                        return;
+                    }
                 }
             }
 
@@ -22539,9 +22897,7 @@ a.model.manager = {
         plugin/model.manager.js
     ]
 
-    Events : [
-        init: {}
-    ]
+    Events : []
 
     Description:
         Provide a model storage system, and keep a trace of model created
@@ -22712,6 +23068,592 @@ a.model.pooler.deleteInstance = function(instance) {
 };
 
 ;/* ************************************************************************
+
+    License: MIT Licence
+
+    Dependencies : [
+        a.js
+        core/message.js
+        plugin/model.js
+    ]
+
+    Events : []
+
+    Description:
+        Provide a model rendering system, aims to quickly create forms
+        and related data presentation. For a quicker bindings.
+
+************************************************************************ */
+
+// TODO: DO PRESENTATION TEXT HERE
+/**
+    Provide a model rendering system, aims to quickly create forms
+    and related data presentation. For a quicker bindings.
+*/
+a.model.template = {
+    engine: 'raw',
+
+    generator: a.mem.getInstance('app.model.template.engine'),
+    descriptor: a.mem.getInstance('app.model.template.render'),
+
+    /**
+     * Get the render descriptor, able to render the given element
+     * in the current situation (regarding engine, current template...).
+     * YOU SHOULD NOT USE THIS FUNCTION BY YOURSELF
+     *
+     * @method getDescriptor
+     * @private
+     *
+     * @param type {String}                 The main type, can be one of the
+     *                                      following: column, row, fieldset,
+     *                                      input
+     * @param subtype {String}              Mostly for input field, the subtype
+     *                                      like 'text', 'checkbox', 'radio',
+     *                                      but input, is also a generic name
+     *                                      so it can also be 'textarea',
+     *                                      'select', ...
+     * @param key {String}                  In case of input type, it should be
+     *                                      the model key to get, in any other
+     *                                      cases, the current row/column
+     * @param template {Object}             The template currently selected
+     *                                      by user
+     * @return {Function}                   The most appropriate function found
+     *                                      to apply rendering.
+    */
+    getDescriptor: function(type, subtype, key, template) {
+        // Template rendering
+        var renderTmpl = (('rendering' in template) &&
+                a.isTrueObject(template.rendering))? template.rendering : null,
+        // Engine rendering
+            engine = a.model.template.generator.get(a.model.template.engine),
+            renderNgin = (('rendering' in engine) &&
+                a.isTrueObject(engine.rendering)) ? engine.rendering : null;
+
+        // If engine is not found, we raise error
+        if(a.isNone(engine) || a.isNone(renderNgin)) {
+            a.console.error('a.model.template.getDescriptor: unable to find ' +
+                a.model.template.engine + ' engine', 1);
+        }
+
+        var error = 'a.model.template.getDescriptor: unable to ' +
+                    'find descriptor for ' + key + ' with engine ' + 
+                    a.model.template.engine + ' and template ' + 
+                    template.templateName;
+
+        // Structure elements like row, columns...
+        if(type === 'column' || type === 'row' || type === 'fieldset' ||
+            type === 'clearfix') {
+            // Exact match search
+            var exact = type + key;
+
+            // 1: we search for specific row number, first in template,
+            // second in engine
+            if(renderTmpl && a.isFunction(renderTmpl[exact])) {
+                return renderTmpl[exact];
+            } else if(renderNgin && a.isFunction(renderNgin[exact])) {
+                return renderNgin[exact];
+            }
+
+            // 2: we search for generic row, first in template,
+            // second in engine
+            if(renderTmpl && a.isFunction(renderTmpl[type])) {
+                return renderTmpl[type];
+            } else if(renderNgin && a.isFunction(renderNgin[type])) {
+                return renderNgin[type];
+            } else {
+                a.console.error(error, 1);
+                return null;
+            }
+
+        } else if(type === 'input') {
+            if(renderTmpl) {
+                // 1: we search for a direct model key binded into the template
+                // we dont do the same in the engine (no sense to have it in
+                // engine level)
+                if(a.isFunction(renderTmpl[key])) {
+                    return renderTmpl[key];
+
+                // 2: We search for a direct sub-type in the template
+                } else if(a.isFunction(renderTmpl[subtype])) {
+                    return renderTmpl[subtype];
+                }
+            }
+
+            // 3: we search for a direct sub-type in the engine
+            if(renderNgin && a.isFunction(renderNgin[subtype])) {
+                return renderNgin[subtype];
+            }
+
+            // 4: still nothing found, we go for a direct search, first in
+            // template, second in engine
+            if(renderTmpl && a.isFunction(renderTmpl[type])) {
+                return renderTmpl[type];
+            } else if(renderNgin && a.isFunction(renderNgin[type])) {
+                return renderNgin[type];
+            } else {
+                a.console.error(error, 1);
+                return null;
+            }
+
+        } else {
+            a.console.error('a.model.template.getDescriptor: The type ' + type
+                + ' is unknow', 1);
+            return null;
+        }
+        // POUR INPUT:
+        // 1: on cherche dans le template s'il n'existe pas
+        // le nom de la clef du modèle (rendering custom)
+        // 2: on cherche dans le template s'il n'existe pas
+        // un 'type' => exemple "textarea" ou "text" ou "checkbox"
+        // ou "select" ou "hidden"
+        // dans le template
+        // 3: on cherche dans l'engine pour cette bestiole
+        // 4: on cherche dans le template le type global: input, textarea...
+        // 5: on cherche dans l'engine le template input, textarea...
+        // 6: on print un message d'erreur...
+
+        // POUR COLUMN:
+        // 1: on cherche le column1/2/3 dans le template
+        // 2: on cherche le column1/2/3 dans l'engine
+        // 3: on cherche le column dans template
+        // 4: on cherche le column dans l'engine
+
+        // POUR ROW:
+        // 1: on cherche le row1/2/3 dans le template
+        // 2: on cherche le row1/2/3 dans l'engine
+        // 3: on cherche le row dans template
+        // 4: on cherche le row dans l'engine
+    },
+
+    output: {
+        /**
+         * Print a single input on output (including label)
+         *
+         * @method input
+         *
+         * @param model 
+        */
+        input: function(model, propertyName, parameters, template) {
+            var type = model.type(propertyName),
+                value = model.get(propertyName),
+                descriptor = a.model.template.getDescriptor(
+                            'input', type, propertyName, template);
+
+            // We got a function as result, so we can continue
+            if(a.isFunction(descriptor)) {
+                // TODO: get the label content
+                // TODO: create lblClass
+                // TODO: create iptClass
+                var label = propertyName,
+                    lblClass = '',
+                    iptClass = '';
+                return descriptor.call(this, model, propertyName, type, label,
+                                value, lblClass, iptClass, parameters);
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Print a column system (like on bootstrap or fundation)
+         * YOU SHOULD NOT USE THIS FUNCTION, GO ON MODEL FUNCTION
+         *
+         * @method column
+         * @private
+         *
+         * @param model {a.model.instance}  The model to present to user
+         * @param number {Integer}          The column separator (1 to 12)
+         * @param template {Object}         The template object
+         * @param extra {Object}            Any extra elements (the position
+         *                                  left/right for example)
+         * @return {DOMelement | null}      The dom element created (can
+         *                                  be also null)
+        */
+        column: function(model, number, template, extra) {
+            var descriptor = a.model.template.getDescriptor(
+                'column', null, number, template);
+
+            // We got a function as result, so we can continue
+            if(a.isFunction(descriptor)) {
+                return descriptor.call(this, number, extra);
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Print a single line content.
+         * YOU SHOULD NOT USE THIS FUNCTION, GO ON MODEL FUNCTION
+         *
+         * @method row
+         * @private
+         *
+         * @param model {a.model.instance}  The model to bind
+         * @param row {String}              The line properties
+         * @param number {Integer}          The current row number
+         * @param template {Object}         The template object
+         * @return {DOMElement}             The row full of content
+        */
+        row: function(model, row, number, template) {
+            var properties = row.split('&&'),
+                line = null,
+                descriptor = a.model.template.getDescriptor(
+                    'row', null, number, template);
+
+            // We search for a text align
+            var position = null,
+                possiblePosition = ['left', 'right', 'justify', 'center'];
+            // We got exactly one position, it's the line element
+            // which may handle left/right positioning
+            if(properties.length === 1) {
+                var separator = properties[0].split('::');
+                for(var y=0, u=separator.length; y<u; ++y) {
+                    var tmp = a.trim(separator[y]);
+                    if(a.contains(possiblePosition, tmp)) {
+                        position = tmp;
+                    }
+                }
+            }
+
+            if(a.isFunction(descriptor)) {
+                line = descriptor.call(this, number, template, {
+                    position: position
+                });
+            } else {
+                line = document.createElement('div');
+            }
+
+            for(var i=0, l=properties.length; i<l; ++i) {
+                var element = a.trim(properties[i]);
+
+                // Now we cut the parameters
+                // We erase position
+                position = null;
+                var cut = element.split('::'),
+                    column = null;
+
+                // treatment for special case '::col3' which makes a blank
+                // div spacer
+                if(cut[0] === '' && cut[1].indexOf('col') === 0) {
+                    // We create an empty column
+                    column = this.column.call(this, model, cut[1], template);
+                    if(column) {
+                        // TODO: check if it's the only way
+                        // Special treatment to make space appearing
+                        // column.innerHTML = '&nbsp;';
+                        line.appendChild(column);
+                        continue;
+                    }
+                }
+
+                // We got some extra parameters
+                // We are searching here ONLY for column system
+                if(cut.length > 1) {
+                    // First we search a position placement
+                    var j = cut.length,
+                        k = cut.length;
+                    while(j--) {
+                        cut[j] = a.trim(cut[j]);
+                        if(a.contains(possiblePosition, cut[j])) {
+                            position = cut[j];
+                        }
+                    }
+                    for(j=0; j<k; ++j) {
+                        var el = cut[j];
+                        // User request to create column system
+                        if(el.indexOf('col') === 0) {
+                            column = this.column.call(this, model, el,
+                                            template, {position: position});
+                        }
+                    }
+                }
+
+                var input = this.input.call(this, model, cut[0],
+                                                cut.splice(1), template);
+
+                if(column) {
+                    column.appendChild(input);
+                    line.appendChild(column);
+                } else {
+                    line.appendChild(input);
+                }
+            }
+
+            // We add the clearfix if needed
+            var clearfix = a.model.template.getDescriptor('clearfix', null,
+                number, template);
+            if(a.isFunction(clearfix)) {
+                line.appendChild(clearfix.call(this, number, template));
+            }
+
+            return line;
+        },
+
+        /**
+         * Render a fieldset inside the given model.
+         * YOU SHOULD NOT USE THIS FUNCTION, GO ON MODEL FUNCTION
+         *
+         * @method fieldset
+         * @private
+         *
+         * @param model {a.model.instance}  The model to render
+         * @param row {Array}               The row current value
+         * @param number {Integer}          The current row number
+         * @param template {Object}         The current template to render
+         * @return {DOMElement}             The fieldset created
+        */
+        fieldset: function(model, row, number, template) {
+            var fieldset = a.model.template.getDescriptor('fieldset', 
+                null, number, template);
+
+            for(var i=0, l=row.length; i<l; ++i) {
+                var element = a.trim(row[i]),
+                    line = null;
+                if(element[i].indexOf('legend')) {
+                    // TODO: do the legend line here
+                } else {
+                    line = this.row.call(this, model, element, i, template);
+                }
+                if(line) {
+                    fieldset.appendChild(line);
+                }
+            }
+
+            return fieldset;
+        },
+
+        /**
+         * Render a given model, regarding the given template, and the
+         * current global rendering engine
+         *
+         * @method model
+         *
+         * @param model {a.model.instance}  The model to render
+         * @param templateName {String}     The template to use for rendering
+         * @return {Array}                  A list of DOMElement to append
+         *                                  to current HTML as rendering system
+        */
+        model: function(model, templateName) {
+            var tmpl = a.model.template.descriptor.get(templateName);
+
+            if(!tmpl) {
+                a.console.error('a.model.template.output.model: The template '+
+                    templateName + ' could not be found', 1);
+                return;
+            }
+
+            var content = tmpl.template,
+                render = [];
+
+            // Adding a little extra
+            tmpl.templateName = templateName;
+
+            for(var i=0, l=content.length; i<l; ++i) {
+                // It's a fieldset
+                if(a.isArray(content[i])) {
+                    render.push(this.fieldset.call(this, model, content[i],
+                        i, content));
+                } else {
+                    render.push(this.row.call(this, model, content[i], i,
+                                                                content));
+                }
+            }
+
+            return render;
+        }
+    }
+};
+
+
+
+
+/*
+ * -----------------
+ *   RAW RENDERING
+ * -----------------
+*/
+(function() {
+    a.model.template.generator.set('raw', {
+        rendering: {
+            /**
+             * Render a single row element
+             *
+             * @method row
+             *
+             * @param number {Integer}      The current row number
+             * @param template {Object}     The template currently printed
+             * @param extra {Object}        Any special element, here only
+             *                              'extra.position' can be passed
+             *                              defining the text content position
+             * @return {DOMElement}         The row element created
+            */
+            row: function(number, template, extra) {
+                var row = document.createElement('div');
+
+                if(a.isString(extra.position)) {
+                    row.style.textAlign = extra.position;
+                }
+
+                return row;
+            },
+
+            /**
+             * Render a clearfix element
+             *
+             * @method clearfix
+             *
+             * @return {DOMElement | null}  The clearfix element to clear the
+             *                              float problem
+            */
+            clearfix: function() {
+                var div = document.createElement('div');
+                div.style.clear = 'both';
+                div.style.height = '0px';
+                div.style.overflow = 'hidden';
+                return div;
+            },
+
+            /**
+             * Render a column separator
+             *
+             * @method column
+             *
+             * @param number {Integer}      The col space (from 1 to 12)
+             * @return {DOMElement}         The column system created
+            */
+            column: function(number, extra) {
+                var div = document.createElement('div');
+
+                // Convert col-xs, col-md, col3 things into number
+                number = parseInt(number.match(/[0-9]+/)[0], 10);
+
+                // Creating real system
+                var real = Math.round(number * 8.33333333 * 100000) / 100000;
+                div.style.styleFloat = 'left';
+                div.style.cssFloat = 'left';
+                div.style.width = real + '%';
+
+                if(a.isString(extra.position)) {
+                    div.style.textAlign = extra.position;
+                }
+
+                return div;
+            },
+
+            /**
+             * Generate a reset button
+             *
+             * @method reset
+             *
+             * @param value {String | null} The value to put instead of 'reset'
+             * @return {DOMElement}         The button
+            */
+            reset: function(value) {
+                var reset = document.createElement('input');
+                reset.type = 'reset';
+                if(value) {
+                    reset.value = value;
+                }
+                return reset;
+            },
+
+            /**
+             * Create a submit button
+             *
+             * @method submit
+             *
+             * @param value {String | null} The value to put instead of 'send'
+             * @return {DOMElement}         The button
+            */
+            submit: function(value) {
+                var submit = document.createElement('submit');
+                submit.type = 'submit';
+                if(value) {
+                    submit.value = value;
+                }
+                return submit;
+            },
+
+            /**
+             * Render an input
+             *
+             * @method input
+             *
+             * @param model {a.model.instance} The model to get data from
+             * @param name {String}         The input name to validate, like
+             *                              'login' or 'password'
+             * @param type {String}         The input type, like text
+             * @param label {String}        The label to show to user
+             * @param value {String | null} The value to start with
+             * @param lblClass {String}     The label class to add
+             * @param iptClass {String}     The input class to add
+             * @param extra {Array}         Extra parameters (any kind)
+             * @return {DOMElement}         The dom element created
+            */
+            input: function(model, name, type, label, value, lblClass,
+                iptClass, extra) {
+                var staticElement = a.contains(extra, 'static');
+
+                var div = document.createElement('div'),
+                    lbl = document.createElement('label'),
+                    ipt = null;
+
+                var id = 'model-' + name;
+
+                lbl.for = id;
+                lbl.className = lblClass;
+                lbl.innerHTML = label;
+
+                if(staticElement) {
+                    ipt = document.createElement('p');
+                    ipt.innerHTML = value || '';
+                } else if(type === 'textarea') {
+                    ipt = document.createElement('textarea');
+                    ipt.innerHTML = value || '';
+                } else if(type === 'select') {
+                    ipt = document.createElement('select');
+
+                    // We add all sub elements into the select
+                    // TODO: get check elements
+                    var check = ['opt1', 'opt2'];
+                    // TODO: add currently selected
+                    for(var i=0, l=check.length; i<l; ++i) {
+                        var option = document.createElement('option');
+                        option.value = check[i];
+                        option.innerHTML = check[i];
+                        ipt.appendChild(option);
+                    }
+                } else {
+                    ipt = document.createElement('input');
+                    ipt.type = type;
+                    // TODO: be able to have more than once
+                    ipt.placeholder = label;
+                    ipt.value = value || '';
+                }
+
+                ipt.id = id;
+                ipt.className = iptClass;
+
+                if(!staticElement) {
+                    ipt.name = name;
+                    ipt.id = id;
+
+                    // Applying extra parameters
+                    for(var i=0, l=extra.length; i<l; ++i) {
+                        var content = a.trim(extra[i]);
+                        if(content === 'disable' || content === 'disabled') {
+                            ipt.disabled = true;
+                        }
+                    }
+                }
+
+                div.appendChild(lbl);
+                div.appendChild(ipt);
+                return div;
+            }
+        }
+    });
+})();;/* ************************************************************************
 
     License: MIT Licence
 

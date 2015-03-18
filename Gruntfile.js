@@ -52,6 +52,7 @@ module.exports = function(grunt) {
           'appstorm/plugin/model.js',
           'appstorm/plugin/model.manager.js',
           'appstorm/plugin/model.pooler.js',
+          'appstorm/plugin/model.template.js',
           'appstorm/plugin/template.js',
           'appstorm/plugin/module.js',
 
