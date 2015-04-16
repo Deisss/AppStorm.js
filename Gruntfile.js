@@ -1,4 +1,46 @@
 module.exports = function(grunt) {
+
+  var appstormFiles = [
+    'appstorm/a.js',
+
+    'appstorm/core/mem.js',
+    'appstorm/core/environment.js',
+    'appstorm/core/console.js',
+    'appstorm/core/debugger.js',
+    'appstorm/core/message.js',
+    'appstorm/core/parser.js',
+    'appstorm/core/timer.js',
+    'appstorm/core/dom.js',
+    'appstorm/core/hash.js',
+    'appstorm/core/ajax.js',
+    'appstorm/core/loader.js',
+    'appstorm/core/route.js',
+    'appstorm/core/parameter.js',
+    'appstorm/core/acl.js',
+    'appstorm/core/mock.js',
+
+    'appstorm/plugin/keyboard.js',
+    'appstorm/plugin/callback.js',
+    'appstorm/plugin/storage.js',
+    'appstorm/plugin/translate.js',
+    'appstorm/plugin/form.js',
+    'appstorm/plugin/state.js',
+    'appstorm/plugin/state.chain.js',
+    'appstorm/plugin/state.type.js',
+    'appstorm/plugin/state.protocol.js',
+    'appstorm/plugin/binding.js',
+    'appstorm/plugin/model.js',
+    'appstorm/plugin/model.manager.js',
+    'appstorm/plugin/model.pooler.js',
+    'appstorm/plugin/model.template.js',
+    'appstorm/plugin/template.js',
+    'appstorm/plugin/module.js',
+
+
+    // Last loaded - ready event
+    'appstorm/r.js'
+  ];
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -12,7 +54,7 @@ module.exports = function(grunt) {
       options: {
         separator: ';'
       },
-      dist: {
+      withDependencies: {
         src: [
           // Coming from Bower
           'appstorm/vendor/lodash/lodash.compat.js',
@@ -20,48 +62,13 @@ module.exports = function(grunt) {
           'appstorm/vendor/mousetrap/mousetrap.min.js',
           'appstorm/vendor/watch/watch.js',
           'appstorm/vendor/document-register-element/build/document-register-element.js',
-
-          'appstorm/a.js',
-
-          'appstorm/core/mem.js',
-          'appstorm/core/environment.js',
-          'appstorm/core/console.js',
-          'appstorm/core/debugger.js',
-          'appstorm/core/message.js',
-          'appstorm/core/parser.js',
-          'appstorm/core/timer.js',
-          'appstorm/core/dom.js',
-          'appstorm/core/hash.js',
-          'appstorm/core/ajax.js',
-          'appstorm/core/loader.js',
-          'appstorm/core/route.js',
-          'appstorm/core/parameter.js',
-          'appstorm/core/acl.js',
-          'appstorm/core/mock.js',
-
-          'appstorm/plugin/keyboard.js',
-          'appstorm/plugin/callback.js',
-          'appstorm/plugin/storage.js',
-          'appstorm/plugin/translate.js',
-          'appstorm/plugin/form.js',
-          'appstorm/plugin/state.js',
-          'appstorm/plugin/state.chain.js',
-          'appstorm/plugin/state.type.js',
-          'appstorm/plugin/state.protocol.js',
-          'appstorm/plugin/binding.js',
-          'appstorm/plugin/model.js',
-          'appstorm/plugin/model.manager.js',
-          'appstorm/plugin/model.pooler.js',
-          'appstorm/plugin/model.template.js',
-          'appstorm/plugin/template.js',
-          'appstorm/plugin/module.js',
-
-
-          // Last loaded - ready event
-          'appstorm/r.js'
-        ],
+        ].concat(appstormFiles),
         dest: './appstorm.concat.js',
         nonull: true,
+      },
+      withoutDependencies: {
+        src: appstormFiles,
+        dest: './appstorm-without-dependencies.concat.js'
       }
     },
 
@@ -71,7 +78,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          './appstorm.min.js': ['<%= concat.dist.dest %>']
+          './appstorm.min.js': ['<%= concat.withDependencies.dest %>'],
+          './appstorm-without-dependencies.min.js': ['<%= concat.withoutDependencies.dest %>']
         }
       }
     },
@@ -116,7 +124,7 @@ module.exports = function(grunt) {
           paths: 'appstorm',
           //themedir: 'path/to/custom/theme/', // What theme?
           outdir: 'appstorm/doc',
-          exclude: 'doc,vendor,<%= concat.dist.dest %>,appstorm/appstorm.min.js'
+          exclude: 'doc,vendor,<%= concat.withDependencies.dest %>,<%= concat.withoutDependencies.dest %>,appstorm/appstorm.min.js'
         }
       }
     }
@@ -138,7 +146,10 @@ module.exports = function(grunt) {
 
 
   // Since complete is not ready to be used yet, define simpler default
-  grunt.registerTask('default', ['bower', 'concat', 'uglify']);
+  grunt.registerTask('default', ['bower', 'concat:withDependencies', 'uglify']);
 
+  // Different builds
+  grunt.registerTask('with', ['bower', 'concat:withDependencies', 'uglify']);
+  grunt.registerTask('without', ['bower', 'concat:withoutDependencies', 'uglify']);
 };
 
