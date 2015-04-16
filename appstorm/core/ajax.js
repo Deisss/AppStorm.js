@@ -485,7 +485,8 @@
                 }
                 // Any 200 status will be validated
                 if(requestScope.request.readyState === 4) {
-                    var great = (status >= 200 && status < 400);
+                    // 0: on local filesystem, a HTTP 200 is given as 0
+                    var great = (status >= 200 && status < 400) || status === 0;
                     if(great) {
                         // Everything went fine
                         requestScope.success(
