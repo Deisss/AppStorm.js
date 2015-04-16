@@ -486,7 +486,11 @@
                 // Any 200 status will be validated
                 if(requestScope.request.readyState === 4) {
                     // 0: on local filesystem, a HTTP 200 is given as 0
-                    var great = (status >= 200 && status < 400) || status === 0;
+                    var great = (status >= 200 && status < 400) || status === 0 || status === 1223;
+                    // IE9 Bug as reported in jQuery.
+                    if (status === 1223) {
+                        status = 204;
+                    }
                     if(great) {
                         // Everything went fine
                         requestScope.success(
