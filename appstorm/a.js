@@ -17,7 +17,7 @@
 /*
  * Bind AppStorm.JS to underscore
 */
-window.appstorm = window.a = _.noConflict();
+window.appstorm = window.a = _.cloneDeep(_.noConflict());
 /**
  * The core url (for vendor loading)
  *
