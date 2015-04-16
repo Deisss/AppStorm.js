@@ -905,7 +905,7 @@ a.state = new function() {
     };
 
     /**
-     * Inject an object to given to next state.
+     * Inject an object for next state.
      *
      * @method inject
      *
