@@ -179,8 +179,12 @@ a.acl = a.extend(new function() {
 ------------------------------
 */
 (function() {
+    Handlebars.registerHelper('AclRole', function(options) {
+        return new Handlebars.SafeString(a.acl.getCurrentRole());
+    });
+
     // Allow to check role is allowed or not
-    Handlebars.registerHelper('isAllowed', function(minimumRole, currentRole,
+    Handlebars.registerHelper('AclIsAllowed', function(minimumRole, currentRole,
                                                                     options) {
         // We allow 2 or 3 parameters mode !
         options = a.isString(currentRole) ? options : currentRole;
@@ -195,7 +199,7 @@ a.acl = a.extend(new function() {
     });
 
     // Allow to check role is refused or not
-    Handlebars.registerHelper('isRefused', function(minimumRole, currentRole,
+    Handlebars.registerHelper('AclIsRefused', function(minimumRole, currentRole,
                                                                     options) {
         // We allow 2 or 3 parameters mode !
         options = a.isString(currentRole) ? options : currentRole;
@@ -204,7 +208,7 @@ a.acl = a.extend(new function() {
 
         // We check role is allowed or not
         if(a.acl.isAllowed(minimumRole, currentRole)) {
-            options.inverse(this);
+            return options.inverse(this);
         }
         return options.fn(this);
     });
