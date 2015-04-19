@@ -11,9 +11,12 @@
 
 
 /*
- * Bind AppStorm.JS to underscore
+ * Bind AppStorm.JS to lodash.
+ * Note: in node module, we need to deep clone it (does not seems to be
+ * needed for chrome/firefox/others version)
 */
 window.appstorm = window.a = _.cloneDeep(_.noConflict());
+
 /**
  * The core url (for vendor loading)
  *
