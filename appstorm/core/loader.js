@@ -196,7 +196,9 @@ a.loader = (function() {
             header : {}     //Allowed type : any kind of object | key => value
         };
 
-        a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+        a.console.storm('log', 'a.loader',
+                'loading resource from url ```' + uri + '```', 3);
+
         if(!a.isNone(args)) {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
@@ -269,7 +271,10 @@ a.loader = (function() {
         jsonp: function(uri, callback, args, error){
             var type = (a.isTrueObject(args) && args.type) ? args.type
                         : 'text/javascript';
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+
+            a.console.storm('log', 'a.loader',
+                    'loading resource from url ```' + uri + '```', 3);
+
             appendElementToHeader(document.createElement('script'), {
                     type : type,
                     src : uri
@@ -356,7 +361,9 @@ a.loader = (function() {
                 return;
             }
 
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            a.console.storm('log', 'a.loader',
+                    'loading resource from url ```' + uri + '```', 3);
+
             appendElementToHeader(document.createElement('link'), {
                     rel  : 'stylesheet',
                     type : 'text/css',
@@ -423,11 +430,12 @@ a.loader = (function() {
         */
         javafx: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
-                var error =  'a.loader.javafx: the system need args.code ';
+                var error =  'The system need args.code ';
                     error += 'and args.name setted to be able to load any ';
                     error += 'javafx resource... This uri will not be ';
-                    error += 'loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.javafx', error, 2);
                 return;
             }
 
@@ -480,11 +488,12 @@ a.loader = (function() {
         */
         flash: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'a.loader.flash: the system need args ';
-                    error += 'parameters: rootId, id, setted to be able ';
+                var error =  'The system need args ';
+                    error += 'parameters: rootId and id, setted to be able ';
                     error += 'to load any flash resource... This uri ';
-                    error += 'will not be loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'will not be loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.flash', error, 2);
                 return;
             }
 
@@ -533,11 +542,12 @@ a.loader = (function() {
         */
         silverlight: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'a.loader.silverlight: the system need args ';
+                var error =  'The system need args ';
                     error += 'parameters: rootId, id, setted to be able ';
                     error += 'to load any silverlight resource... This uri ';
-                    error += 'will not be loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'will not be loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.silverlight', error, 2);
                 return;
             }
 
@@ -545,7 +555,9 @@ a.loader = (function() {
                 return;
             }
 
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            a.console.storm('log', 'a.loader',
+                    'loading resource from url ```' + uri + '```', 3);
+
             var obj  = document.createElement('object');
             obj.id   = args.id;
             obj.data = 'data:application/x-silverlight-2,'
