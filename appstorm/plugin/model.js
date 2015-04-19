@@ -333,8 +333,9 @@ a.modelInstance.prototype = {
         if(a.isString(key) && a.isFunction(fct)) {
             a.watch.call(this, this.properties[key]['value'], fct);
         } else {
-            a.console.error('Impossible to watch property ' + key + ' from '
-                + this.modelName + ' model', 1);
+            a.console.storm('error', 'a.model.watch', 'Unable to watch the ' +
+                'property ```' + key + '``` for model ```' + this.modelName +
+                '```', 1);
         }
     },
 
@@ -350,8 +351,9 @@ a.modelInstance.prototype = {
         if(a.isString(key) && a.isFunction(fct)) {
             a.unwatch.call(this, this.properties[key]['value'], fct);
         } else {
-            a.console.error('Impossible to unwatch property ' + key + ' from '
-                + this.modelName + ' model', 1);
+            a.console.storm('error', 'a.model.unwatch', 'Unable to unwatch ' +
+                'the property ```' + key + '``` for model ```' +
+                this.modelName + '```', 1);
         }
     },
 
@@ -380,9 +382,10 @@ a.modelInstance.prototype = {
             if(!a.contains(this.originalContent, property)) {
                 this[property] = this.get(property);
             } else {
-                a.console.error('a.model: ' + this.modelName + ' has a '
-                    + 'property ' + key + ' in conflict with internal '
-                    + 'model data, please change property name', 1);
+                a.console.storm('error', 'a.model', 'The model ```' +
+                        this.modelName + '``` has the property ```' + key + 
+                        '``` which is in conflict with internal model system.'+
+                        ' Please change the property name...', 1);
             }
         }
 
