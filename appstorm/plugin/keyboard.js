@@ -87,7 +87,7 @@ a.keyboard = (function(mt) {
 
     // No mousetrap support, create dummy empty object
     if(a.isNone(mt)) {
-        a.console.error('a.keyboard: error, Mousetrap is undefined!', 1);
+        a.console.storm('error', 'a.keyboard', 'Mousetrap is undefined!', 1);
         var nullFunction = function() {};
         return {
             bind: nullFunction,

@@ -10,8 +10,6 @@
 /**
  * Manipulate HTML form by with a simple system.
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:form">here</a>
- *
  * @class form
  * @static
  * @namespace a
@@ -145,10 +143,10 @@ a.form = (function() {
         }
 
         if(a.isNone(error) || error === '') {
-            var errorMessage  = 'A data-error tag has not been setted for ';
-                errorMessage += id + ' with value ' + value + 'n can\'t ';
-                errorMessage += 'proceed error message';
-            a.console.warn(errorMessage, 3);
+            var errorMessage  = 'A data-error tag has not been setted for id ';
+                errorMessage += '```' + id + '``` with value ```' +value+'```';
+                errorMessage += '.Cannot proceed error message...';
+            a.console.storm('warn', 'a.form', errorMessage, 3);
         }
 
         // Translate error if possible
@@ -397,8 +395,6 @@ a.form = (function() {
                 }
             };
 
-            a.console.log('a.form.get: found element list:', 3);
-            a.console.log(outputList, 3);
             return outputList;
         },
 
@@ -492,9 +488,10 @@ a.form = (function() {
                 if(tagName == 'input'
                         && !a.contains(allowedTypes, type)
                         && !a.isNone(type)) {
-                    var errorSupport =  'Type ' + type + ' for input ' + name;
-                        errorSupport += ' not recognized or not supported';
-                    a.console.warn(errorSupport, 3);
+                    var errorSupport =  'Type ```' + type +
+                        errorSupport += '``` for input ```' + name + '```';
+                        errorSupport += 'is not recognized and/or supported';
+                    a.console.storm('warn', 'a.form.validate', errorSupport,3);
                     continue;
                 }
 
@@ -560,8 +557,6 @@ a.form = (function() {
                 }
             }
 
-            a.console.log('a.form.validate: found error list:', 3);
-            a.console.log(errorList, 3);
             return errorList;
         },
 
