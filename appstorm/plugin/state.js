@@ -55,9 +55,9 @@ a.state = new function() {
     */
     function getError(state, status) {
         if(!state) {
-            a.console.error('A state error has occurs, ' +
-                            'with no state linked to it...', 1);
-            a.console.error(a.getStackTrace(), 1);
+            a.console.storm('error', 'An error has occurs, with no ' +
+                    'state linked to it... Below the stack trace', 1);
+            a.console.error(a.getStackTrace());
         }
         var id = (state) ? state.id: null;
         // Convert to str
@@ -122,12 +122,12 @@ a.state = new function() {
 
         // Get the error
         var raiseError   = getError(state, status),
-            messageError = 'a.state.raiseError: an error occurs, but ' +
+            messageError = 'An error occurs, but ' +
                            'no error function/hash inside the state '+
-                           'where existing to handle it. Please ' +
-                           'check your error handler (state-id: ' + id +
-                           ', status: ' + status +
-                           ', resource: ' + resource + ')';
+                           'can handle it. Please ' +
+                           'check your error handler for the state ```' + id +
+                           '```, HTTP status code ```' + status + '```, and ' +
+                           'resource ```' + resource + '```';
 
         // Raising global message
         // TODO: make state able to send requests, and make THIS as state
@@ -143,12 +143,12 @@ a.state = new function() {
 
             // No handler to catch error, we raise an error on console
             } else {
-                a.console.error(messageError, 1);
+                a.console.storm('error', 'a.state', messageError, 1);
             }
 
         // Nothing exist, we alert user
         } else {
-            a.console.error(messageError, 1);
+            a.console.storm('error', 'a.state', messageError, 1);
         }
     };
 
@@ -309,8 +309,9 @@ a.state = new function() {
                 if(testAcl(parents)) {
                     result.push(parents); 
                 } else {
-                    a.console.log('a.state.foundHashState: acl has been ' +
-                                'refused for state id ' + state.id, 3);
+                    a.console.storm('log', 'a.state.foundHashState', 
+                            'Acl have been refused for state ```' + state.id +
+                            '```', 3);
                 }
             }
         }
@@ -622,9 +623,9 @@ a.state = new function() {
 
             // No way to handle it
             } else {
-                a.console.error('state ' + this.id
-                        + ': unable to proceed flash message "' 
-                        + this._storm.flash + '"', 1);
+                a.console.storm('error', 'a.state', 'The state ```' + this.id +
+                        '``` was unable to proceed flash message ```' +
+                        this._storm.flash + '```', 1);
             }
         }, state);
 
@@ -643,8 +644,9 @@ a.state = new function() {
                 }
                 parent.children.push(state);
             } else {
-                a.console.error('a.state.add: unable to found parent ' + 
-                    state.parent + ' for state ' + state.id);
+                a.console.storm('error', 'a.state.add', 'Unable to find ' +
+                        'the parent ```' + state.parent + '``` for state ```' +
+                        state.id + '```', 1);
             }
         } else {
             state.parent = null;
