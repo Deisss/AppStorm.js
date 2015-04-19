@@ -488,7 +488,7 @@ a.form = (function() {
                 if(tagName == 'input'
                         && !a.contains(allowedTypes, type)
                         && !a.isNone(type)) {
-                    var errorSupport =  'Type ```' + type +
+                    var errorSupport =  'Type ```' + type;
                         errorSupport += '``` for input ```' + name + '```';
                         errorSupport += 'is not recognized and/or supported';
                     a.console.storm('warn', 'a.form.validate', errorSupport,3);
