@@ -16451,7 +16451,32 @@ if(a.isString(a.url) && a.url.length > 0) {
     */
     var concurrentConsoleAccess = false,
         browser = a.environment.get('browser'),
-        cssSupport = testBrowserSupportCSS(browser);
+        cssSupport = testBrowserSupportCSS(browser),
+        // Used only when system does not support groupCollapsed/group system
+        // in console
+        indent = 0;
+
+    if (win.console) {
+        if (!a.isFunction(win.console.groupCollapsed)) {
+            win.console.groupCollapsed = function() {
+                win.console.log(arguments);
+                indent += 1;
+            }
+        }
+
+        if (!a.isFunction(win.console.group)) {
+            win.console.group = function() {
+                win.console.log(arguments);
+                indent += 1;
+            }
+        }
+
+        if (!a.isFunction(win.console.groupEnd)) {
+            win.console.groupEnd = function() {
+                indent -= 1;
+            }
+        }
+    }
 
     /**
      * Regex used for markdown parsing.
@@ -16568,6 +16593,14 @@ if(a.isString(a.url) && a.url.length > 0) {
             styles = styles.concat(first.format.styles(first.match));
         }
 
+        // Correcting the indent if the group system
+        // does not exist
+        if (indent > 0) {
+            for (var i = 0, l = indent.length; i < l; ++i) {
+                str = '  ' + str;
+            }
+        }
+
         if (cssSupport) {
             return [str].concat(styles);
         } else {
@@ -16665,6 +16698,12 @@ if(a.isString(a.url) && a.url.length > 0) {
 
         var cs = win.console[entry.type],
             source = entry.source;
+
+        // Rollback to log if user is accessing something not existing
+        // like 'table' may be in this category on some browser...
+        if (a.isNone(cs)) {
+            cs = win.console['log'];
+        }
 
         // Test if the log is allowed to be printed or not
         if (testMinimumType(entry.type) &&
