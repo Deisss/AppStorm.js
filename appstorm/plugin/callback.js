@@ -19,8 +19,6 @@ a.callback = {};
  * Load many functions at same time,
  * when they all finish raise the final callback
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
- *
  * @class synchronizer
  * @namespace a.callback
  * @constructor
@@ -259,19 +257,18 @@ a.callback.synchronizerInstance.prototype = {
 
 // Alias
 a.callback.synchronizerInstance.prototype.success =
-                                a.callback.synchronizerInstance.prototype.next;
+        a.callback.synchronizerInstance.prototype.next;
 a.callback.synchronizerInstance.prototype.done    =
-                                a.callback.synchronizerInstance.prototype.next;
+        a.callback.synchronizerInstance.prototype.next;
 a.callback.synchronizerInstance.prototype.fail    =
-                                a.callback.synchronizerInstance.prototype.stop;
+        a.callback.synchronizerInstance.prototype.stop;
 a.callback.synchronizerInstance.prototype.error   =
-                                a.callback.synchronizerInstance.prototype.stop;
+        a.callback.synchronizerInstance.prototype.stop;
 
 
 /**
- * Load many functions one by one, when last one finish raise the final callback
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
+ * Load many functions one by one, when last one finish raise the final
+ * callback
  *
  * @class chainer
  * @namespace a.callback
@@ -280,13 +277,13 @@ a.callback.synchronizerInstance.prototype.error   =
 */
 a.callback.chainer = function(callbacks, success, error) {
     return a.extend(
-            new a.callback.chainerInstance(
-                callbacks,
-                success,
-                error
-            ),
-            new a.eventEmitter('a.callback.chainer')
-        );
+        new a.callback.chainerInstance(
+            callbacks,
+            success,
+            error
+        ),
+        new a.eventEmitter('a.callback.chainer')
+    );
 };
 
 
@@ -500,10 +497,10 @@ a.callback.chainerInstance.prototype = {
 
 // Alias
 a.callback.chainerInstance.prototype.success =
-                                a.callback.chainerInstance.prototype.next;
+        a.callback.chainerInstance.prototype.next;
 a.callback.chainerInstance.prototype.done    =
-                                a.callback.chainerInstance.prototype.next;
+        a.callback.chainerInstance.prototype.next;
 a.callback.chainerInstance.prototype.fail    =
-                                a.callback.chainerInstance.prototype.stop;
+        a.callback.chainerInstance.prototype.stop;
 a.callback.chainerInstance.prototype.error   =
-                                a.callback.chainerInstance.prototype.stop;
+        a.callback.chainerInstance.prototype.stop;
