@@ -2,10 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : []
-
-    Events : []
-
     Description:
         Main AppStorm.JS functionality, create some needed system to help plugin or user
 
