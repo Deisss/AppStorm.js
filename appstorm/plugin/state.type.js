@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        plugin/state.js
-    ]
-
-    Events : []
-
     Description:
         State type to manage custom system type.
 

@@ -2,17 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/message.js
-        plugin/callback.js
-        plugin/translate.js
-    ]
-
-    Events: [
-    ]
-
     Description:
         Manipulate the page history and templates.
         We define here some usefull function to catch some important event.

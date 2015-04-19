@@ -2,15 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-    ]
-
-    Events : [
-        init: {}
-    ]
-
     Description:
         Provide a model based system to create and manage models threw
         application lifetime

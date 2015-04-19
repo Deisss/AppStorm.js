@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/dom.js
-    ]
-
-    Events : []
-
     Description:
         Manage translation
 

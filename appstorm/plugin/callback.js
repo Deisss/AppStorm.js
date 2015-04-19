@@ -2,23 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        core/console.js
-    ]
-
-    Events : [
-        synchronizer : {
-            a.callback.synchronizer.success,
-            a.callback.synchronizer.error
-        },
-        chainer : {
-            a.callback.chainer.success
-            a.callback.chainer.error
-        }
-    ]
-
     Description:
         Simple synchronizer/chainer for callback list of functions
         synchronizer : Load many functions at same time, when they all finish

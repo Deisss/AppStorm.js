@@ -2,16 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-        core/console.js
-
-        ** Mousetrap IS NEEDED AND IS EXTERNAL LIBRARY **
-    ]
-
-    Events : []
-
     Description:
         Simple wrapper for Mousetrap to have unified interface with
         AppStorm.JS system: it does provide multi binding for one key

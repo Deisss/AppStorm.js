@@ -2,15 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-        plugin/model.manager.js
-    ]
-
-    Events : []
-
     Description:
         Provide a model storage system, and keep a trace of model created
         (threw a.model.manager)

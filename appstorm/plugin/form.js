@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        plugin/translate.js
-    ]
-
-    Events : []
-
     Description:
         Manipulate HTML form by with a simple system.
 

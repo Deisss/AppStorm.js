@@ -2,16 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-    ]
-
-    Events : [
-        init: {}
-    ]
-
     Description:
         Keep a trace of every created model, to be able to search them
         with ease.

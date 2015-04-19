@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-    ]
-
-    Events : []
-
     Description:
         Provide a model rendering system, aims to quickly create forms
         and related data presentation. For a quicker bindings.

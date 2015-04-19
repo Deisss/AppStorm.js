@@ -2,21 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/parser.js
-        core/message.js
-        core/loader.js
-    ]
-
-    Events : [
-        a.storage.add : {key : the key, value : the value}
-        a.storage.remove : {key : the key}
-        a.storage.temporary.change : {engine : the engine choosed by system}
-        a.storage.persistent.change : {engine : the engine choosed by system}
-    ]
-
     Description:
         Storage capacities, allow to manage many storage to get quick access
         to everything

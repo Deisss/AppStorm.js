@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        plugin/state.js
-    ]
-
-    Events : []
-
     Description:
         State protocol management, allow to define custom hashtag response/
         treatment
