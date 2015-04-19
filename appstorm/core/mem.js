@@ -239,19 +239,13 @@ a.mem = (function() {
 })();
 
 
-// After running, we try to add the appstorm root url if possible
-if(a.isString(a.url) && a.url.length > 0) {
-    a.mem.set('app.url', a.url);
-}
-
-
 /*
 ------------------------------
   HANDLEBARS HELPERS
 ------------------------------
 */
 (function() {
-    // Get environment elements
+    // Get mem elements
     Handlebars.registerHelper('mem', function(value) {
         return new Handlebars.SafeString(a.mem.get(value));
     });

@@ -87,7 +87,7 @@ a.parser = {
                              arguments.toString() + ')';
                 a.console.error(unable, 1);
                 // Debug stack trace in case of debug mode
-                if(a.environment.get('debug')) {
+                if(a.environment.get('app.debug')) {
                     a.console.error(a.getStackTrace(), 1);
                 }
                 return '';
@@ -110,7 +110,7 @@ a.parser = {
                              'unable to parse (value: ' + value + ')';
                 a.console.error(unable, 1);
                 // Debug stack trace in case of debug mode
-                if(a.environment.get('debug')) {
+                if(a.environment.get('app.debug')) {
                     a.console.error(a.getStackTrace(), 1);
                 }
                 return null;
@@ -150,7 +150,7 @@ a.parser = {
                                  'unable to stringify (value: ' + value + ')';
                     a.console.error(unable, 1);
                     // Debug stack trace in case of debug mode
-                    if(a.environment.get('debug')) {
+                    if(a.environment.get('app.debug')) {
                         a.console.error(a.getStackTrace(), 1);
                     }
                 }
@@ -190,7 +190,7 @@ a.parser = {
                                  ', reason' + doc.parseError.reason + ')';
                     a.console.error(unable, 1);
                     // Debug stack trace in case of debug mode
-                    if(a.environment.get('debug')) {
+                    if(a.environment.get('app.debug')) {
                         a.console.error(a.getStackTrace(), 1);
                     }
 

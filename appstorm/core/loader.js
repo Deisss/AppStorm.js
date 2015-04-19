@@ -392,7 +392,7 @@ a.loader = (function() {
             args.type = 'raw';
 
             // In debug mode, we disallow cache
-            if(a.environment.get('debug') === true) {
+            if(a.environment.get('app.debug') === true) {
                 args.cache = false;
             }
 

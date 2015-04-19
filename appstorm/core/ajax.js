@@ -191,7 +191,7 @@
         };
 
         // We override the cache by the "default" value
-        if(a.environment.get('cache') === true) {
+        if(a.environment.get('ajax.cache') === true) {
             this.params.cache = true;
         }
 

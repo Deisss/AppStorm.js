@@ -4,7 +4,6 @@
 
     Dependencies : [
         a.js
-        core/environment.js
         core/console.js
         core/dom.js
     ]

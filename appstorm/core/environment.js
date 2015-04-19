@@ -31,10 +31,50 @@
 a.environment = a.mem.getInstance('app.environment');
 
 // Default data
-a.environment.set('verbose', 2);
-a.environment.set('console', 'log');
-a.environment.set('cache', false);
 
+// The application state, debug/production
+a.environment.set('app.debug', false);
+// The console verbosity (from 1 to 3, 3 most verbose, 1 less verbose)
+a.environment.set('console.verbose', 2);
+// The console minimum log level (from log to error)
+a.environment.set('console.minimum', 'log');
+// The ajax cache system
+a.environment.set('ajax.cache', false);
+
+// The application url
+if(a.isString(a.url) && a.url.length > 0) {
+    a.mem.set('app.url', a.url);
+}
+
+/*
+------------------------------
+  BROWSER HELPERS
+------------------------------
+*/
+(function() {
+    var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+    var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+        // At least Safari 3+: "[object HTMLElementConstructor]"
+    var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+    var isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
+
+    var browser = 'other';
+    if (isOpera) {
+        browser = 'opera';
+    } else if (isFirefox) {
+        browser = 'firefox';
+    } else if (isSafari) {
+        browser = 'safari';
+    } else if (isChrome) {
+        browser = 'chrome';
+    } else if (isIE) {
+        browser = 'ie';
+    }
+
+    a.environment.set('browser', browser);
+})();
 
 /*
 ------------------------------
