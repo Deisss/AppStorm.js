@@ -15707,10 +15707,6 @@ typeof define&&define.amd&&define(function(){return c})})(window,document);
 
     License: MIT Licence
 
-    Dependencies : []
-
-    Events : []
-
     Description:
         Main AppStorm.JS functionality, create some needed system to help plugin or user
 
@@ -16097,12 +16093,6 @@ a.getAjaxAfter = function(name) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-    ]
-
-    Events : []
-
     Description:
         Provide easy store object, with global prefix value system on top of it
 
@@ -16110,7 +16100,7 @@ a.getAjaxAfter = function(name) {
 
 
 /**
- * Provide easy store object, with global prefix value system on top of it
+ * Provide easy store object, with global prefix value system on top of it.
  *
  * @class mem
  * @static
@@ -16348,14 +16338,6 @@ a.mem = (function() {
 
     License: MIT Licence
 
-    Dependencies: [
-        a.js
-        core/mem.js
-    ]
-
-    Events: [
-    ]
-
     Description:
         Environment functionnality, to get access to some basic
         'main options' for system
@@ -16365,10 +16347,8 @@ a.mem = (function() {
 
 /**
  * Main environment data store, allow to globally define some global
- * rules for managing global environment variable
- *
- * Examples:
- *     <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:environment">here</a>
+ * rules for managing global environment variable. Use the a.mem object
+ * for others type of variables.
  *
  * @class environment
  * @static
@@ -16439,13 +16419,6 @@ if(a.isString(a.url) && a.url.length > 0) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-    ]
-
-    Events : []
-
     Description:
         Debugger functionnality including nested group system like console
         usually provide
@@ -16487,23 +16460,23 @@ if(a.isString(a.url) && a.url.length > 0) {
      * All credit goes to him !!!!!
     */
     var formats = [{
-        regex: /\*([^\*]+)\*/,
-        replacer: function(m, p1) {
-            return cssSupport ? '%c' + p1 + '%c' : p1;
-        },
-        styles: function() {
-            return ['font-style: italic', ''];
-         }
-    }, {
-        regex: /\_([^\_]+)\_/,
+        regex: /\*\*([^\*]+)\*\*/,
         replacer: function(m, p1) {
             return cssSupport ? '%c' + p1 + '%c' : p1;
         },
         styles: function() {
             return ['font-weight: bold', ''];
+         }
+    }, {
+        regex: /\_\_([^\_]+)\_\_/,
+        replacer: function(m, p1) {
+            return cssSupport ? '%c' + p1 + '%c' : p1;
+        },
+        styles: function() {
+            return ['font-style: italic', ''];
         }
     }, {
-        regex: /\`([^\`]+)\`/,
+        regex: /\`\`\`([^\`]+)\`\`\`/,
         replacer: function(m, p1) {
             return cssSupport ? '%c' + p1 + '%c' : p1;
         },
@@ -16810,7 +16783,7 @@ if(a.isString(a.url) && a.url.length > 0) {
      * Debugger is a wrapper around window.console to provide a more
      * structured way to access and use group system provided by console.
      *
-     * @class console
+     * @class debugger
      * @static
      * @namespace a
     */
@@ -17003,14 +16976,6 @@ if(a.isString(a.url) && a.url.length > 0) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-        core/debugger.js
-    ]
-
-    Events : []
-
     Description:
         Console functionnality, based on debugger.js, it provides basic
         map surround normal console stuff, including markdown template
@@ -17019,10 +16984,10 @@ if(a.isString(a.url) && a.url.length > 0) {
 
 
 /**
- * wrapper for system console, allowing to use console even if there is not console support on given browser.
- * Also, it does provide a trace utility in case of bug/check
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:console">here</a>
+ * Wrapper for system console, allowing to use console even if there is no
+ * console support on given browser.
+ * Also, it does provide a trace utility in case of bug/check to recover all
+ * passed log to it.
  *
  * @class console
  * @static
@@ -17035,26 +17000,6 @@ if(a.isString(a.url) && a.url.length > 0) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-    ]
-
-    Events : [
-        a.message.add {
-            type : the type listeners (like "a.storage.add"),
-            function : the associated function
-        }
-        a.message.remove {
-            type : the type listeners (like "a.storage.add"),
-            function : the associated function
-        }
-        a.message.removeAll {
-            type : the type listeners (like "a.storage.add")
-        }
-        a.message.clear {}
-    ]
-
     Description:
         Define one reusable object (eventEmitter)
         and create a root event system (message)
@@ -17065,9 +17010,8 @@ if(a.isString(a.url) && a.url.length > 0) {
 
 
 /**
- * Simple hash change checker to allow creating multi-page system
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
+ * Simple message/event system allowing to exchange data across elements threw
+ * events.
  *
  * @class eventEmitter
  * @constructor
@@ -17113,15 +17057,16 @@ a.eventEmitter.prototype = {
     bind: function(type, fn, scope, once, clear) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = '.bind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'The type ```' + type + '``` cannot be bind';
+            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
             return;
         }
 
         // The function is invalid (not a function)
         if(!a.isFunction(fn)) {
-            var msg = '.bind: unable to bind function, this is not a function';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'unable to bind function, ```' + fn +
+                    '``` is not a function';
+            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
             return;
         }
 
@@ -17177,8 +17122,8 @@ a.eventEmitter.prototype = {
     unbind: function(type, fn) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = '.unbind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'The type ```' + type + '``` cannot be unbind';
+            a.console.storm('warn', this.eventBaseName + '.unbind', msg, 1);
             return;
         }
 
@@ -17358,14 +17303,6 @@ a.message = new a.eventEmitter('a.message');
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-        core/console.js
-    ]
-
-    Events : []
-
     Description:
         Provide parsing/stringify functionnality for JSON and XML format
 
@@ -17416,9 +17353,7 @@ G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b
 a.parser = {
     /**
      * Basic JSON handler wich prevent from 'no data' or 'wrong data' input,
-     * with a log message to check
-     *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
+     * with a log message to check.
      *
      * @class json
      * @static
@@ -17438,13 +17373,12 @@ a.parser = {
             try {
                 return JSON.stringify.apply(null, arguments);
             } catch(e) {
-                var unable = 'a.parser.json.stringify: ' +
-                             'unable to stringify (value: ' +
-                             arguments.toString() + ')';
-                a.console.error(unable, 1);
+                var error = 'Unable to stringify the value ```' +
+                        arguments.toString() + '```. Below the stack trace.';
+                a.console.storm('error', 'a.parser.json.stringify', error, 1);
                 // Debug stack trace in case of debug mode
                 if(a.environment.get('app.debug')) {
-                    a.console.error(a.getStackTrace(), 1);
+                    a.console.error(a.getStackTrace());
                 }
                 return '';
             }
@@ -17462,12 +17396,12 @@ a.parser = {
             try {
                 return JSON.parse(value);
             } catch(e) {
-                var unable = 'a.parser.json.parse: ' +
-                             'unable to parse (value: ' + value + ')';
-                a.console.error(unable, 1);
+                var error = 'Unable to parse the value ```' + value +
+                        '```. Below the stack trace.';
+                a.console.storm('error', 'a.parser.json.parse', error, 1);
                 // Debug stack trace in case of debug mode
                 if(a.environment.get('app.debug')) {
-                    a.console.error(a.getStackTrace(), 1);
+                    a.console.error(a.getStackTrace());
                 }
                 return null;
             }
@@ -17476,9 +17410,7 @@ a.parser = {
 
     /**
      * Basic XML handler wich prevent from 'no data' or 'wrong data' input,
-     * with a log message to check
-     *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
+     * with a log message to check.
      *
      * @class xml
      * @static
@@ -17502,19 +17434,19 @@ a.parser = {
                     var serializer = new window.XMLSerializer();
                     return serializer.serializeToString(value);
                 } catch(e) {
-                    var unable = 'a.parser.xml.stringify: ' +
-                                 'unable to stringify (value: ' + value + ')';
-                    a.console.error(unable, 1);
+                    var error = 'Unable to stringify the value ```' + value +
+                            '```. Below the stack trace.';
+                    a.console.storm('error', 'a.parser.xml.stringify',
+                            error, 1);
                     // Debug stack trace in case of debug mode
                     if(a.environment.get('app.debug')) {
-                        a.console.error(a.getStackTrace(), 1);
+                        a.console.error(a.getStackTrace());
                     }
                 }
             }
 
-            var noParserFound = 'a.parser.xml.stringify: ' +
-                                'unable to find any parser available';
-            a.console.error(noParserFound, 1);
+            a.console.storm('error', 'a.parser.xml.stringify', 
+                'Unable to find any parser for stringify xml...', 1);
             return '';
         },
 
@@ -17541,13 +17473,13 @@ a.parser = {
                 doc.async = false;
                 doc.loadXML(value);
                 if (doc.parseError.errorCode != 0) {
-                    var unable = 'a.parser.xml.parse: ' +
-                                 'unable to parse (value: ' + value +
-                                 ', reason' + doc.parseError.reason + ')';
-                    a.console.error(unable, 1);
+                    var error = 'Unable to parse the value ```' + value +
+                            '```, reason ```' + doc.parseError.reason + '```' +
+                            '. Below the stack trace.';
+                    a.console.storm('error', 'a.parser.xml.parse', error, 1);
                     // Debug stack trace in case of debug mode
                     if(a.environment.get('app.debug')) {
-                        a.console.error(a.getStackTrace(), 1);
+                        a.console.error(a.getStackTrace());
                     }
 
                     return null;
@@ -17557,9 +17489,8 @@ a.parser = {
                 return (new DOMParser()).parseFromString(value, 'text/xml');
             }
 
-            var noParserFound = 'a.parser.xml.parse: ' +
-                                'unable to find any parser available';
-            a.console.error(noParserFound, 1);
+            a.console.storm('error', 'a.parser.xml.parse', 
+                'Unable to find any parser for parsing xml...', 1);
             return null;
         }
     }
@@ -17568,16 +17499,6 @@ a.parser = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        core/console.js
-    ]
-
-    Events : [
-        a.timer.tick : null (no data)
-    ]
-
     Description:
         Simple timer system, provide a single timer for many bindings
 
@@ -17585,8 +17506,6 @@ a.parser = {
 
 /**
  * Simple timer system, provide a single timer for many bindings
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:timer">here</a>
  *
  * @class timer
  * @static
@@ -17646,9 +17565,10 @@ a.timer = (function() {
 
             if(!a.isNumber(timeout) || timeout <= 0) {
                 timeout = 1000;
-                a.console.warn('The timeout has not been setted properly ' +
-                                    'into timer, timeout has been ' +
-                                    'setted to 1000ms', 1);
+                a.console.storm('warn', 'a.timer.add', 'The timeout has not ' +
+                                    'been setted properly ' +
+                                    ', timeout has been rollback to ' +
+                                    '```1000ms``` value', 1);
             }
 
             // Store the new entry
@@ -17724,12 +17644,6 @@ a.timer = (function() {
 })();;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-    ]
-
-    Events : []
 
     Description:
         Provide a really basic dom manipulation plugin.
@@ -18950,18 +18864,6 @@ a.dom.children.prototype = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-    ]
-
-    Events : [
-        a.hash {
-            value: The new hash value
-            old:   The previous hash value
-        }
-    ]
-
     Description:
         Manipulate page hash, be able to retrieve also the list of hash
         previously used.
@@ -18972,8 +18874,6 @@ a.dom.children.prototype = {
 /**
  * Manipulate page hash, be able to retrieve also the list of hash previously
  * used.
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
  *
  * @class hash
  * @static
@@ -19160,22 +19060,6 @@ a.hash = new function() {
 a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/parser.js
-        core/message.js
-    ]
-
-    Events : [
-        a.ajax : {
-            success : boolean (true fine, false error)
-            status : http code result
-            url : the url used (before data join)
-            method : the method used
-            params : the parameters used for request
-        }
-    ]
 
     Description:
         Send a request to server side
@@ -19459,15 +19343,15 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         // User is asking for a model convertion
         if(params['model']) {
             var modelName = params['model'],
-                errorStr = 'a.ajax: Model ' + modelName +
-                            ' not found, empty object recieve from pooler';
+                errorStr = 'Model ' + modelName +
+                            ' not found, empty object recieve Model Pooler';
 
             // We get primary elements from model
             var primaries = a.model.pooler.getPrimary(modelName);
 
             // Model not found
             if(primaries === null) {
-                a.console.error(errorStr, 1);
+                a.console.storm('error', 'a.ajax', errorStr, 1);
 
             // No primaries into the model, we create new model
             } else if(params['many'] === true && a.isArray(result)) {
@@ -19480,7 +19364,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                         model.fromObject(data);
                         content.push(model);
                     } else {
-                        a.console.error(errorStr, 1);
+                        a.console.storm('error', 'a.ajax', errorStr, 1);
                     }
                 }
                 // We replace
@@ -19495,7 +19379,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                     model.fromObject(result);
                     result = model;
                 } else {
-                    a.console.error(errorStr, 1);
+                    a.console.storm('error', 'a.ajax', errorStr, 1);
                 }
             }
         }
@@ -19778,16 +19662,6 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/timer.js
-        core/environment.js
-        core/ajax.js
-    ]
-
-    Events : []
-
     Description:
         Dynamic loader for many files type
 
@@ -19795,9 +19669,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
 
 /**
- * Dynamic loader for many files type
- *
- * Examples: <a href='http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:loader'>here</a>
+ * Dynamic loader for many files type.
  *
  * @class loader
  * @static
@@ -19972,7 +19844,9 @@ a.loader = (function() {
             header : {}     //Allowed type : any kind of object | key => value
         };
 
-        a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+        a.console.storm('log', 'a.loader',
+                'Loading resource from url ```' + uri + '```', 3);
+
         if(!a.isNone(args)) {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
@@ -20045,7 +19919,10 @@ a.loader = (function() {
         jsonp: function(uri, callback, args, error){
             var type = (a.isTrueObject(args) && args.type) ? args.type
                         : 'text/javascript';
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+
+            a.console.storm('log', 'a.loader',
+                    'Loading resource from url ```' + uri + '```', 3);
+
             appendElementToHeader(document.createElement('script'), {
                     type : type,
                     src : uri
@@ -20132,7 +20009,9 @@ a.loader = (function() {
                 return;
             }
 
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            a.console.storm('log', 'a.loader',
+                    'Loading resource from url ```' + uri + '```', 3);
+
             appendElementToHeader(document.createElement('link'), {
                     rel  : 'stylesheet',
                     type : 'text/css',
@@ -20199,11 +20078,12 @@ a.loader = (function() {
         */
         javafx: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
-                var error =  'a.loader.javafx: the system need args.code ';
+                var error =  'The system need args.code ';
                     error += 'and args.name setted to be able to load any ';
                     error += 'javafx resource... This uri will not be ';
-                    error += 'loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.javafx', error, 2);
                 return;
             }
 
@@ -20256,11 +20136,12 @@ a.loader = (function() {
         */
         flash: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'a.loader.flash: the system need args ';
-                    error += 'parameters: rootId, id, setted to be able ';
+                var error =  'The system need args ';
+                    error += 'parameters: rootId and id, setted to be able ';
                     error += 'to load any flash resource... This uri ';
-                    error += 'will not be loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'will not be loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.flash', error, 2);
                 return;
             }
 
@@ -20309,11 +20190,12 @@ a.loader = (function() {
         */
         silverlight: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'a.loader.silverlight: the system need args ';
+                var error =  'The system need args ';
                     error += 'parameters: rootId, id, setted to be able ';
                     error += 'to load any silverlight resource... This uri ';
-                    error += 'will not be loaded: ' + uri;
-                a.console.warn(error, 3);
+                    error += 'will not be loaded ```' + uri + '```';
+
+                a.console.storm('warn', 'a.loader.silverlight', error, 2);
                 return;
             }
 
@@ -20321,7 +20203,9 @@ a.loader = (function() {
                 return;
             }
 
-            a.console.log('a.loader: load resource (url: ' + uri + ')', 3);
+            a.console.storm('log', 'a.loader',
+                    'Loading resource from url ```' + uri + '```', 3);
+
             var obj  = document.createElement('object');
             obj.id   = args.id;
             obj.data = 'data:application/x-silverlight-2,'
@@ -20372,14 +20256,6 @@ a.loader = (function() {
 }());;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/hash.js
-        core/mem.js
-    ]
-
-    Events : []
 
     Description:
         Manage action related to hash change.
@@ -20588,12 +20464,6 @@ a.route = new function() {
 ;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-    ]
-
-    Events : []
 
     Description:
         Provide a way to manipulate, extract and replace parameters like
@@ -20914,13 +20784,6 @@ a.parameter = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-    ]
-
-    Events : []
-
     Description:
         Provide a simple ACL rules checker to create different application
         behavior regarding user role
@@ -21128,13 +20991,6 @@ a.acl = a.extend(new function() {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/parameter.js
-    ]
-
-    Events : []
-
     Description:
         The object is faking a server behavior to skip server creation during
         client creation. It provide a simple emulation of server side.
@@ -21338,16 +21194,6 @@ a.mock = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-        core/console.js
-
-        ** Mousetrap IS NEEDED AND IS EXTERNAL LIBRARY **
-    ]
-
-    Events : []
-
     Description:
         Simple wrapper for Mousetrap to have unified interface with
         AppStorm.JS system: it does provide multi binding for one key
@@ -21356,10 +21202,8 @@ a.mock = {
 ************************************************************************ */
 
 /**
- * Simple wrapper for Mousetrap to have unified
- * interface with other AppStorm.JS system
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:keyboard">here</a>
+ * Simple wrapper for Mousetrap to have unified interface with other part
+ * of AppStorm.JS.
  *
  * @class keyboard
  * @static
@@ -21433,7 +21277,7 @@ a.keyboard = (function(mt) {
 
     // No mousetrap support, create dummy empty object
     if(a.isNone(mt)) {
-        a.console.error('a.keyboard: error, Mousetrap is undefined!', 1);
+        a.console.storm('error', 'a.keyboard', 'Mousetrap is undefined!', 1);
         var nullFunction = function() {};
         return {
             bind: nullFunction,
@@ -21551,23 +21395,6 @@ a.keyboard = (function(mt) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        core/console.js
-    ]
-
-    Events : [
-        synchronizer : {
-            a.callback.synchronizer.success,
-            a.callback.synchronizer.error
-        },
-        chainer : {
-            a.callback.chainer.success
-            a.callback.chainer.error
-        }
-    ]
-
     Description:
         Simple synchronizer/chainer for callback list of functions
         synchronizer : Load many functions at same time, when they all finish
@@ -21584,8 +21411,6 @@ a.callback = {};
 /**
  * Load many functions at same time,
  * when they all finish raise the final callback
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
  *
  * @class synchronizer
  * @namespace a.callback
@@ -21825,19 +21650,18 @@ a.callback.synchronizerInstance.prototype = {
 
 // Alias
 a.callback.synchronizerInstance.prototype.success =
-                                a.callback.synchronizerInstance.prototype.next;
+        a.callback.synchronizerInstance.prototype.next;
 a.callback.synchronizerInstance.prototype.done    =
-                                a.callback.synchronizerInstance.prototype.next;
+        a.callback.synchronizerInstance.prototype.next;
 a.callback.synchronizerInstance.prototype.fail    =
-                                a.callback.synchronizerInstance.prototype.stop;
+        a.callback.synchronizerInstance.prototype.stop;
 a.callback.synchronizerInstance.prototype.error   =
-                                a.callback.synchronizerInstance.prototype.stop;
+        a.callback.synchronizerInstance.prototype.stop;
 
 
 /**
- * Load many functions one by one, when last one finish raise the final callback
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:callback">here</a>
+ * Load many functions one by one, when last one finish raise the final
+ * callback
  *
  * @class chainer
  * @namespace a.callback
@@ -21846,13 +21670,13 @@ a.callback.synchronizerInstance.prototype.error   =
 */
 a.callback.chainer = function(callbacks, success, error) {
     return a.extend(
-            new a.callback.chainerInstance(
-                callbacks,
-                success,
-                error
-            ),
-            new a.eventEmitter('a.callback.chainer')
-        );
+        new a.callback.chainerInstance(
+            callbacks,
+            success,
+            error
+        ),
+        new a.eventEmitter('a.callback.chainer')
+    );
 };
 
 
@@ -22066,31 +21890,16 @@ a.callback.chainerInstance.prototype = {
 
 // Alias
 a.callback.chainerInstance.prototype.success =
-                                a.callback.chainerInstance.prototype.next;
+        a.callback.chainerInstance.prototype.next;
 a.callback.chainerInstance.prototype.done    =
-                                a.callback.chainerInstance.prototype.next;
+        a.callback.chainerInstance.prototype.next;
 a.callback.chainerInstance.prototype.fail    =
-                                a.callback.chainerInstance.prototype.stop;
+        a.callback.chainerInstance.prototype.stop;
 a.callback.chainerInstance.prototype.error   =
-                                a.callback.chainerInstance.prototype.stop;
+        a.callback.chainerInstance.prototype.stop;
 ;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/console.js
-        core/parser.js
-        core/message.js
-        core/loader.js
-    ]
-
-    Events : [
-        a.storage.add : {key : the key, value : the value}
-        a.storage.remove : {key : the key}
-        a.storage.temporary.change : {engine : the engine choosed by system}
-        a.storage.persistent.change : {engine : the engine choosed by system}
-    ]
 
     Description:
         Storage capacities, allow to manage many storage to get quick access
@@ -22105,8 +21914,6 @@ a.callback.chainerInstance.prototype.error   =
 /**
  * Storage capacities, allow to manage many storage to get quick
  * access to everything
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
  *
  * @class storage
  * @static
@@ -22126,8 +21933,9 @@ a.storage = {
     */
     debugGet: function(element, key, value) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element + 
-              '.get: get element (key: ' + key + ', value: ' + value + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.get',
+                    'Get the element ```' + key + '``` with value ```' + value+
+                    '```', 3);
         }
     },
 
@@ -22143,8 +21951,8 @@ a.storage = {
     */
     printError: function(element, key) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element +
-                '.get: unable to find key (' + key + ') in store', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.get',
+                    'Unable to find the key ```' + key + '``` in store...', 3);
         }
     },
 
@@ -22161,8 +21969,9 @@ a.storage = {
     */
     debugSet: function(element, key, value) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element +
-              '.set: add element (key: ' + key + ', value: ' + value + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.set',
+                    'Add the element key ```' + key + '``` with value ```' +
+                    value + '```', 3);
         }
     },
 
@@ -22178,8 +21987,8 @@ a.storage = {
     */
     debugRemove: function(element, key) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element + 
-                '.remove: remove element (key: ' + key + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.remove',
+                    'Remove the element ```' + key + '```', 3);
         }
     },
 
@@ -22190,9 +21999,7 @@ a.storage = {
 
 
 /**
- * Cookie functionnality, manipulate cookie with a simplified interface
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Cookie functionnality, manipulate cookie with a simplified interface.
  *
  * @class cookie
  * @static
@@ -22296,9 +22103,7 @@ a.storage.type.cookie = new function() {
 
 
 /**
- * Cookie functionnality, manipulate cookie with a simplified interface
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Cookie functionnality, manipulate cookie with a simplified interface.
  *
  * @class cookie
  * @static
@@ -22311,9 +22116,7 @@ a.storage.cookie = a.storage.type.cookie;
 
 
 /**
- * LocalStorage HTML5 support
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * LocalStorage HTML5 support.
  *
  * @class localStorage
  * @static
@@ -22413,9 +22216,7 @@ a.storage.type.localStorage = new function() {
 
 
 /**
- * globalStorage HTML5 support (old)
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * globalStorage HTML5 support (old).
  *
  * @class globalStorage
  * @static
@@ -22520,9 +22321,7 @@ a.storage.type.globalStorage = new function() {
 
 
 /**
- * memory object (so if page close, everything is lost)
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * memory object (so if page close, everything is lost).
  *
  * @class memory
  * @static
@@ -22579,9 +22378,8 @@ a.storage.type.memory = new function() {
 
 
 /**
- * Memory store functionnality, manipulate memory storage class with a simplified interface
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Memory store functionnality, manipulate memory storage class with a
+ * simplified interface.
  *
  * @class memory
  * @static
@@ -22594,9 +22392,7 @@ a.storage.memory = a.storage.type.memory;
 
 
 /**
- * sessionStorage HTML5 support
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * sessionStorage HTML5 support.
  *
  * @class sessionStorage
  * @static
@@ -22696,9 +22492,7 @@ a.storage.type.sessionStorage = new function() {
 
 
 /**
- * userData IE support (old)
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * userData IE support (old).
  *
  * @class userData
  * @static
@@ -22815,9 +22609,7 @@ a.storage.type.userData = new function() {
 
 
 /**
- * flash external storage
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * flash external storage.
  *
  * @class flash
  * @static
@@ -22980,9 +22772,7 @@ a.storage.type.flash = new function() {
 
 
 /**
- * silverlight external storage
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * silverlight external storage.
  *
  * @class silverlight
  * @static
@@ -23146,9 +22936,7 @@ a.storage.type.silverlight = new function() {
 
 
 /**
- * javafx external storage
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * javafx external storage.
  *
  * @class javafx
  * @static
@@ -23307,9 +23095,7 @@ a.storage.type.javafx = new function() {
 ************************* */
 // TEMPORARY STORE SEARCH
 /**
- * Select the best temp storage available
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Select the best temp storage available.
  *
  * @class temporary
  * @static
@@ -23322,8 +23108,8 @@ a.storage.temporary = (function() {
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log('a.storage.temporary: choosing storage ' + 
-                    a.storage.type[temp].engine, 3);
+            a.console.storm('info', 'a.storage.temporary', 'Choosing the ' +
+                    'storage ```' + a.storage.type[temp].engine + '```', 3);
             a.message.dispatch('a.storage.temporary.change', 
                             { engine : temp });
             return a.storage.type[temp];
@@ -23337,9 +23123,7 @@ a.storage.temporary = (function() {
 
 // EXTERNAL STORE SEARCH
 /**
- * Select the best external storage available
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Select the best external storage available.
  *
  * @class external
  * @static
@@ -23387,28 +23171,30 @@ a.storage.external = (function() {
         start : function(callback) {
             var silvt = a.storage.type.silverlight,
                 flash = a.storage.type.flash,
-                javax = a.storage.type.javafx;
-
-            var cs = 'a.storage.external: choosing storage ';
+                javax = a.storage.type.javafx,
+                source= 'a.storage.external',
+                cs    = 'Choosing the storage ';
 
             // Loading silverlight
             silvt.start(function(svtSupport) {
                 if(svtSupport) {
-                    a.console.log(cs + 'silverlight', 3);
+                    a.console.storm('info', source, cs + 'silverlight', 3);
                     startCallback(silvt, callback);
                 } else {
                     // Loading flash
                     flash.start(function(flashSupport) {
                         if(flashSupport) {
-                            a.console.log(cs + 'flash', 3);
+                            a.console.storm('info', source, cs + 'flash', 3);
                             startCallback(flash, callback);
                         } else {
                             javax.start(function(javaxSupport) {
                                 if(javaxSupport) {
-                                    a.console.log(cs + 'javafx', 3);
+                                    a.console.storm('info', source, cs +
+                                            'javafx', 3);
                                     startCallback(javax, callback);
                                 } else {
-                                    a.console.warn(cs + 'NONE AVAILABLE', 3);
+                                    a.console.storm('info', source, cs +
+                                            'NONE AVAILABLE', 3);
                                 }
                             });
                         }
@@ -23422,9 +23208,7 @@ a.storage.external = (function() {
 
 // PERSISTENT STORE SEARCH
 /**
- * Select the best long term storage available
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:storage">here</a>
+ * Select the best long term storage available.
  *
  * @class persistent
  * @static
@@ -23437,8 +23221,8 @@ a.storage.persistent = (function() {
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log('a.storage.persistent: choosing storage ' + 
-                                    a.storage.type[temp].engine, 3);
+            a.console.storm('info', 'a.storage.persistent', 'Choosing the ' +
+                'storage ```' + a.storage.type[temp].engine + '```', 3);
             a.message.dispatch('a.storage.persistent.change', 
                                     { engine : temp });
             return a.storage.type[temp];
@@ -23532,14 +23316,6 @@ a.storage.remove  = a.storage.persistent.remove;
 })();;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/console.js
-        core/dom.js
-    ]
-
-    Events : []
 
     Description:
         Manage translation
@@ -23756,9 +23532,10 @@ a.translate = a.i18n = (function() {
     */
     function setLanguage(lang, update) {
         if(!a.isString(lang) || !lang) {
-            a.console.error('a.translate.setLanguage: setting a non-string ' +
-                            'lang, or empty string, as default translate: ',
-                            'Test non-string value is refused', 1);
+            a.console.storm('error', 'a.translate.setLanguage', 'Setting a ' +
+                    'non-string lang, or empty string, as default translate: ',
+                            '```' + lang + '```. Cannot proceed', 1);
+            a.console.error(lang);
         } else {
             language = lang;
 
@@ -23996,13 +23773,6 @@ a.translate = a.i18n = (function() {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        plugin/translate.js
-    ]
-
-    Events : []
-
     Description:
         Manipulate HTML form by with a simple system.
 
@@ -24010,8 +23780,6 @@ a.translate = a.i18n = (function() {
 
 /**
  * Manipulate HTML form by with a simple system.
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:form">here</a>
  *
  * @class form
  * @static
@@ -24146,10 +23914,10 @@ a.form = (function() {
         }
 
         if(a.isNone(error) || error === '') {
-            var errorMessage  = 'A data-error tag has not been setted for ';
-                errorMessage += id + ' with value ' + value + 'n can\'t ';
-                errorMessage += 'proceed error message';
-            a.console.warn(errorMessage, 3);
+            var errorMessage  = 'A data-error tag has not been setted for id ';
+                errorMessage += '```' + id + '``` with value ```' +value+'```';
+                errorMessage += '.Cannot proceed error message...';
+            a.console.storm('warn', 'a.form', errorMessage, 3);
         }
 
         // Translate error if possible
@@ -24398,8 +24166,6 @@ a.form = (function() {
                 }
             };
 
-            a.console.log('a.form.get: found element list:', 3);
-            a.console.log(outputList, 3);
             return outputList;
         },
 
@@ -24493,9 +24259,10 @@ a.form = (function() {
                 if(tagName == 'input'
                         && !a.contains(allowedTypes, type)
                         && !a.isNone(type)) {
-                    var errorSupport =  'Type ' + type + ' for input ' + name;
-                        errorSupport += ' not recognized or not supported';
-                    a.console.warn(errorSupport, 3);
+                    var errorSupport =  'Type ```' + type;
+                        errorSupport += '``` for input ```' + name + '```';
+                        errorSupport += 'is not recognized and/or supported';
+                    a.console.storm('warn', 'a.form.validate', errorSupport,3);
                     continue;
                 }
 
@@ -24561,8 +24328,6 @@ a.form = (function() {
                 }
             }
 
-            a.console.log('a.form.validate: found error list:', 3);
-            a.console.log(errorList, 3);
             return errorList;
         },
 
@@ -24629,7 +24394,14 @@ a.form = (function() {
         }
     };
 
-})();;
+})();;/* ************************************************************************
+
+    License: MIT Licence
+
+    Description:
+        State main manager.
+
+************************************************************************ */
 
 // dependencies: a.parameter, a.acl, a.hash
 
@@ -24679,9 +24451,9 @@ a.state = new function() {
     */
     function getError(state, status) {
         if(!state) {
-            a.console.error('A state error has occurs, ' +
-                            'with no state linked to it...', 1);
-            a.console.error(a.getStackTrace(), 1);
+            a.console.storm('error', 'An error has occurs, with no ' +
+                    'state linked to it... Below the stack trace', 1);
+            a.console.error(a.getStackTrace());
         }
         var id = (state) ? state.id: null;
         // Convert to str
@@ -24746,12 +24518,12 @@ a.state = new function() {
 
         // Get the error
         var raiseError   = getError(state, status),
-            messageError = 'a.state.raiseError: an error occurs, but ' +
+            messageError = 'An error occurs, but ' +
                            'no error function/hash inside the state '+
-                           'where existing to handle it. Please ' +
-                           'check your error handler (state-id: ' + id +
-                           ', status: ' + status +
-                           ', resource: ' + resource + ')';
+                           'can handle it. Please ' +
+                           'check your error handler for the state ```' + id +
+                           '```, HTTP status code ```' + status + '```, and ' +
+                           'resource ```' + resource + '```';
 
         // Raising global message
         // TODO: make state able to send requests, and make THIS as state
@@ -24767,12 +24539,12 @@ a.state = new function() {
 
             // No handler to catch error, we raise an error on console
             } else {
-                a.console.error(messageError, 1);
+                a.console.storm('error', 'a.state', messageError, 1);
             }
 
         // Nothing exist, we alert user
         } else {
-            a.console.error(messageError, 1);
+            a.console.storm('error', 'a.state', messageError, 1);
         }
     };
 
@@ -24933,8 +24705,9 @@ a.state = new function() {
                 if(testAcl(parents)) {
                     result.push(parents); 
                 } else {
-                    a.console.log('a.state.foundHashState: acl has been ' +
-                                'refused for state id ' + state.id, 3);
+                    a.console.storm('log', 'a.state.foundHashState', 
+                            'Acl have been refused for state ```' + state.id +
+                            '```', 3);
                 }
             }
         }
@@ -25223,7 +24996,8 @@ a.state = new function() {
         state.flash = a.scope(function(message) {
             // We go for an inside flash
             if(a.isString(this._storm.flash) && this._storm.flash) {
-                var entry = this.entry || this.target || this.el || this.dom || null;
+                var entry = this.entry || this.target || this.el || this.dom ||
+                        null;
 
                 if(a.isFunction(entry)) {
                     entry = entry.call(this);
@@ -25245,9 +25019,9 @@ a.state = new function() {
 
             // No way to handle it
             } else {
-                a.console.error('state ' + this.id
-                        + ': unable to proceed flash message "' 
-                        + this._storm.flash + '"', 1);
+                a.console.storm('error', 'a.state', 'The state ```' + this.id +
+                        '``` was unable to proceed flash message ```' +
+                        this._storm.flash + '```', 1);
             }
         }, state);
 
@@ -25266,8 +25040,9 @@ a.state = new function() {
                 }
                 parent.children.push(state);
             } else {
-                a.console.error('a.state.add: unable to found parent ' + 
-                    state.parent + ' for state ' + state.id);
+                a.console.storm('error', 'a.state.add', 'Unable to find ' +
+                        'the parent ```' + state.parent + '``` for state ```' +
+                        state.id + '```', 1);
             }
         } else {
             state.parent = null;
@@ -25595,13 +25370,6 @@ a.state = new function() {
 })();;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        plugin/state.js
-    ]
-
-    Events : []
 
     Description:
         State loading/unloading sequence manager.
@@ -26020,10 +25788,10 @@ a.state.chain = new function() {
 
             // Parsed is probably null, it means the content is not ready to show
             } else {
-                a.console.error('request cannot be proceed, state: '
-                    + state.id + ', data request: ' + name +
-                    ', url parsing may have fail... It can be ' +
-                    'some missing parameters', 3);
+                a.console.storm('error', 'a.state.chain', 'Request cannot ' +
+                        'be proceed, url parsing have fail. It can be ' +
+                        ' related to some missing parameters. Request: ```' +
+                        name + '```, state: ```' + state.id + '```', 2);
             }
         };
     };
@@ -26106,8 +25874,6 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        //a.console.log('loading');
-        //a.console.log(this);
         try {
             var result = {},
                 hashs  = getValidHash(this),
@@ -26282,8 +26048,8 @@ a.state.chain = new function() {
             sync.addCallback(generateDataLoader(this, null, this.data, null,
                                                         null, null));
         } else {
-            a.console.error('a.state.chain:include: The state ' + this.id +
-                            ' is not valid (data is not a valid system)', 1);
+            a.console.storm('error', 'a.state.chain.include', 'The state ```' +
+                    this.id + '``` is not valid (data is not valid)', 1);
         }
 
         // Loading partials
@@ -26549,8 +26315,6 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        //a.console.log('unloading');
-        //a.console.log(this);
         if(testAsync(this.async, 'preUnload')) {
             this.preUnload.apply(this, arguments);
             return;
@@ -26768,13 +26532,6 @@ a.state.chain = new function() {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        plugin/state.js
-    ]
-
-    Events : []
-
     Description:
         State type to manage custom system type.
 
@@ -26857,13 +26614,6 @@ a.state.type = new function() {
 ;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        plugin/state.js
-    ]
-
-    Events : []
 
     Description:
         State protocol management, allow to define custom hashtag response/
@@ -27450,15 +27200,6 @@ a.binding = (function() {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-    ]
-
-    Events : [
-        init: {}
-    ]
-
     Description:
         Provide a model based system to create and manage models threw
         application lifetime
@@ -27790,8 +27531,9 @@ a.modelInstance.prototype = {
         if(a.isString(key) && a.isFunction(fct)) {
             a.watch.call(this, this.properties[key]['value'], fct);
         } else {
-            a.console.error('Impossible to watch property ' + key + ' from '
-                + this.modelName + ' model', 1);
+            a.console.storm('error', 'a.model.watch', 'Unable to watch the ' +
+                'property ```' + key + '``` for model ```' + this.modelName +
+                '```', 1);
         }
     },
 
@@ -27807,8 +27549,9 @@ a.modelInstance.prototype = {
         if(a.isString(key) && a.isFunction(fct)) {
             a.unwatch.call(this, this.properties[key]['value'], fct);
         } else {
-            a.console.error('Impossible to unwatch property ' + key + ' from '
-                + this.modelName + ' model', 1);
+            a.console.storm('error', 'a.model.unwatch', 'Unable to unwatch ' +
+                'the property ```' + key + '``` for model ```' +
+                this.modelName + '```', 1);
         }
     },
 
@@ -27837,9 +27580,10 @@ a.modelInstance.prototype = {
             if(!a.contains(this.originalContent, property)) {
                 this[property] = this.get(property);
             } else {
-                a.console.error('a.model: ' + this.modelName + ' has a '
-                    + 'property ' + key + ' in conflict with internal '
-                    + 'model data, please change property name', 1);
+                a.console.storm('error', 'a.model', 'The model ```' +
+                        this.modelName + '``` has the property ```' + key + 
+                        '``` which is in conflict with internal model system.'+
+                        ' Please change the property name...', 1);
             }
         }
 
@@ -28036,16 +27780,6 @@ a.modelInstance.prototype = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-    ]
-
-    Events : [
-        init: {}
-    ]
-
     Description:
         Keep a trace of every created model, to be able to search them
         with ease.
@@ -28155,15 +27889,6 @@ a.model.manager = {
 };;/* ************************************************************************
 
     License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-        plugin/model.manager.js
-    ]
-
-    Events : []
 
     Description:
         Provide a model storage system, and keep a trace of model created
@@ -28337,24 +28062,18 @@ a.model.pooler.deleteInstance = function(instance) {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        plugin/model.js
-    ]
-
-    Events : []
-
     Description:
         Provide a model rendering system, aims to quickly create forms
         and related data presentation. For a quicker bindings.
 
 ************************************************************************ */
 
-// TODO: DO PRESENTATION TEXT HERE
 /**
-    Provide a model rendering system, aims to quickly create forms
-    and related data presentation. For a quicker bindings.
+ * Provide a model rendering system, aims to quickly create forms
+ * and related data presentation. For a quicker bindings.
+ *
+ * @class template
+ * @namespace a.model
 */
 a.model.template = {
     engine: 'raw',
@@ -28395,16 +28114,19 @@ a.model.template = {
             renderNgin = (('rendering' in engine) &&
                 a.isTrueObject(engine.rendering)) ? engine.rendering : null;
 
+        var source = 'a.model.template.getDescriptor';
+
         // If engine is not found, we raise error
         if(a.isNone(engine) || a.isNone(renderNgin)) {
-            a.console.error('a.model.template.getDescriptor: unable to find ' +
-                a.model.template.engine + ' engine', 1);
+            a.console.storm('error', source, 
+                    'Unable to find the ```' + a.model.template.engine + '```'+
+                    ' engine', 1);
         }
 
-        var error = 'a.model.template.getDescriptor: unable to ' +
-                    'find descriptor for ' + key + ' with engine ' + 
-                    a.model.template.engine + ' and template ' + 
-                    template.templateName;
+        var error = 'Unable to find descriptor for ```' + key + '```' +
+                    ' with engine ```' + 
+                    a.model.template.engine + '``` and template ```' + 
+                    template.templateName + '```';
 
         // Structure elements like row, columns...
         if(type === 'column' || type === 'row' || type === 'fieldset' ||
@@ -28427,7 +28149,7 @@ a.model.template = {
             } else if(renderNgin && a.isFunction(renderNgin[type])) {
                 return renderNgin[type];
             } else {
-                a.console.error(error, 1);
+                a.console.storm('error', source, error, 1);
                 return null;
             }
 
@@ -28457,13 +28179,13 @@ a.model.template = {
             } else if(renderNgin && a.isFunction(renderNgin[type])) {
                 return renderNgin[type];
             } else {
-                a.console.error(error, 1);
+                a.console.storm('error', source, error, 1);
                 return null;
             }
 
         } else {
-            a.console.error('a.model.template.getDescriptor: The type ' + type
-                + ' is unknow', 1);
+            a.console.storm('error', 'a.model.template.getDescriptor', 
+                    'The type ```' + type + '``` is unknow', 1);
             return null;
         }
         // POUR INPUT:
@@ -28703,8 +28425,9 @@ a.model.template = {
             var tmpl = a.model.template.descriptor.get(templateName);
 
             if(!tmpl) {
-                a.console.error('a.model.template.output.model: The template '+
-                    templateName + ' could not be found', 1);
+                a.console.storm('error', 'a.model.template.output.model', 
+                        'The template ```' + templateName + '```' +
+                        ' could not be found', 1);
                 return;
             }
 
@@ -28923,17 +28646,6 @@ a.model.template = {
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/message.js
-        plugin/callback.js
-        plugin/translate.js
-    ]
-
-    Events: [
-    ]
-
     Description:
         Manipulate the page history and templates.
         We define here some usefull function to catch some important event.
@@ -28997,20 +28709,23 @@ a.template = {
 
         // Crash if handlebars is not found
         if(!handler) {
-            a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
+            a.console.storm('error', fctName, 'Unable to find Handlebars.js!', 
+                    1);
             return;
         }
 
         var partialsStore = this._part;
 
         if(a.isString(partialsStore[name])) {
-            a.console.log(fctName +': loading ' + name + ' from cache', 3);
+            a.console.storm('log', fctName, 'Loading ```' + name + '``` from '+
+                    'cache', 3);
 
             if(a.isFunction(callback)) {
                 callback(name, partialsStore[name]);
             }
         } else if(options && options.noloading == true) {
-            a.console.log(fctName +': loading ' + name + ' from parameter', 3);
+            a.console.storm('log', fctName, 'Loading ```' + name + '``` from '+
+                    'parameter', 3);
             partialsStore[name] = uri;
             handler.registerPartial(name, uri);
 
@@ -29020,7 +28735,8 @@ a.template = {
             }
         } else {
             a.loader.html(uri, function(content) {
-                a.console.log(fctName +': loading ' + name + ' from url', 3);
+                a.console.storm('log', fctName, 'Loading ```' + name + '```' +
+                        ' from url', 3);
                 partialsStore[name] = content;
                 handler.registerPartial(name, content);
 
@@ -29054,7 +28770,8 @@ a.template = {
 
         // Crash if handlebars is not found
         if(!handler) {
-            a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
+            a.console.storm('error', fctName, 'Unable to find Handlebars.js!',
+                    1);
             return;
         }
 
@@ -29095,7 +28812,8 @@ a.template = {
         // If the template is already listed into existing template,
         // directly load
         if(a.isString(this._tmpl[hash])) {
-            a.console.log(fctName +': loading ' + hash + ' from cache', 3);
+            a.console.storm('log', fctName, 'Loading ```' + hash + '``` from' +
+                    ' cache', 3);
             callCallback(callback, hash, data);
             return;
         }
@@ -29104,8 +28822,8 @@ a.template = {
         if(document.getElementById(hash)) {
             // We add it to template list registered to go quicker next time
             if(!this._tmpl[hash]) {
-                a.console.log(
-                    fctName + ': loading ' + hash + ' from inner html page',3);
+                a.console.storm('log', fctName, 'Loading ```' + hash + '```' +
+                        ' from inner html page', 3);
                 this._tmpl[hash] = a.dom.id(hash).html();
             }
 
@@ -29118,8 +28836,8 @@ a.template = {
         if(document.getElementById(orig)) {
             // We add it to template list registered to go quicker next time
             if(!this._tmpl[orig]) {
-                a.console.log(
-                    fctName + ': loading ' + orig + ' from inner html page',3);
+                a.console.storm('log', fctName, 'Loading ```' + orig + '``` ' +
+                        'from inner html page', 3);
                 this._tmpl[orig] = a.dom.id(orig).html();
             }
 
@@ -29139,8 +28857,8 @@ a.template = {
         };
 
         // We use the loader to retrieve file from server side
-        a.console.log(
-            fctName + ': loading ' + uri + ' from external resource', 3);
+        a.console.storm('log', fctName, 'Loading ```' + uri + '``` from ' +
+                'external resource', 3);
         a.loader.html(uri, parse, {}, error);
     },
 

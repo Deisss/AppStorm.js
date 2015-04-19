@@ -217,9 +217,10 @@ a.translate = a.i18n = (function() {
     */
     function setLanguage(lang, update) {
         if(!a.isString(lang) || !lang) {
-            a.console.error('a.translate.setLanguage: setting a non-string ' +
-                            'lang, or empty string, as default translate: ',
-                            'Test non-string value is refused', 1);
+            a.console.storm('error', 'a.translate.setLanguage', 'Setting a ' +
+                    'non-string lang, or empty string, as default translate: ',
+                            '```' + lang + '```. Cannot proceed', 1);
+            a.console.error(lang);
         } else {
             language = lang;
 
