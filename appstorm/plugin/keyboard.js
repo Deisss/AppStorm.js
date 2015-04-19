@@ -10,10 +10,8 @@
 ************************************************************************ */
 
 /**
- * Simple wrapper for Mousetrap to have unified
- * interface with other AppStorm.JS system
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:keyboard">here</a>
+ * Simple wrapper for Mousetrap to have unified interface with other part
+ * of AppStorm.JS.
  *
  * @class keyboard
  * @static
