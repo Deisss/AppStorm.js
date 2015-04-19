@@ -300,15 +300,15 @@
         // User is asking for a model convertion
         if(params['model']) {
             var modelName = params['model'],
-                errorStr = 'a.ajax: Model ' + modelName +
-                            ' not found, empty object recieve from pooler';
+                errorStr = 'Model ' + modelName +
+                            ' not found, empty object recieve Model Pooler';
 
             // We get primary elements from model
             var primaries = a.model.pooler.getPrimary(modelName);
 
             // Model not found
             if(primaries === null) {
-                a.console.error(errorStr, 1);
+                a.console.storm('error', 'a.ajax', errorStr, 1);
 
             // No primaries into the model, we create new model
             } else if(params['many'] === true && a.isArray(result)) {
@@ -321,7 +321,7 @@
                         model.fromObject(data);
                         content.push(model);
                     } else {
-                        a.console.error(errorStr, 1);
+                        a.console.storm('error', 'a.ajax', errorStr, 1);
                     }
                 }
                 // We replace
@@ -336,7 +336,7 @@
                     model.fromObject(result);
                     result = model;
                 } else {
-                    a.console.error(errorStr, 1);
+                    a.console.storm('error', 'a.ajax', errorStr, 1);
                 }
             }
         }
