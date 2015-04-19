@@ -249,6 +249,12 @@
         var cs = win.console[entry.type],
             source = entry.source;
 
+        // Rollback to log if user is accessing something not existing
+        // like 'table' may be in this category on some browser...
+        if (a.isNone(cs)) {
+            cs = win.console['log'];
+        }
+
         // Test if the log is allowed to be printed or not
         if (testMinimumType(entry.type) &&
                 testMinimumVerbose(source, entry.verbose)) {
