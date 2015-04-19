@@ -80,15 +80,16 @@ a.eventEmitter.prototype = {
     bind: function(type, fn, scope, once, clear) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = '.bind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'The type ```' + type + '``` cannot be bind';
+            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
             return;
         }
 
         // The function is invalid (not a function)
         if(!a.isFunction(fn)) {
-            var msg = '.bind: unable to bind function, this is not a function';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'unable to bind function, ```' + fn +
+                    '``` is not a function';
+            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
             return;
         }
 
@@ -144,8 +145,8 @@ a.eventEmitter.prototype = {
     unbind: function(type, fn) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = '.unbind: the type cannot be bind (type: ' + type + ')';
-            a.console.warn(this.eventBaseName + msg, 1);
+            var msg = 'The type ```' + type + '``` cannot be unbind';
+            a.console.storm('warn', this.eventBaseName + '.unbind', msg, 1);
             return;
         }
 
