@@ -72,13 +72,12 @@ a.parser = {
             try {
                 return JSON.stringify.apply(null, arguments);
             } catch(e) {
-                var unable = 'a.parser.json.stringify: ' +
-                             'unable to stringify (value: ' +
-                             arguments.toString() + ')';
-                a.console.error(unable, 1);
+                var error = 'Unable to stringify the value ```' +
+                        arguments.toString() + '```. Below the stack trace.';
+                a.console.storm('error', 'a.parser.json.stringify', error, 1);
                 // Debug stack trace in case of debug mode
                 if(a.environment.get('app.debug')) {
-                    a.console.error(a.getStackTrace(), 1);
+                    a.console.error(a.getStackTrace());
                 }
                 return '';
             }
@@ -96,12 +95,12 @@ a.parser = {
             try {
                 return JSON.parse(value);
             } catch(e) {
-                var unable = 'a.parser.json.parse: ' +
-                             'unable to parse (value: ' + value + ')';
-                a.console.error(unable, 1);
+                var error = 'Unable to parse the value ```' + value +
+                        '```. Below the stack trace.';
+                a.console.storm('error', 'a.parser.json.parse', error, 1);
                 // Debug stack trace in case of debug mode
                 if(a.environment.get('app.debug')) {
-                    a.console.error(a.getStackTrace(), 1);
+                    a.console.error(a.getStackTrace());
                 }
                 return null;
             }
@@ -134,19 +133,19 @@ a.parser = {
                     var serializer = new window.XMLSerializer();
                     return serializer.serializeToString(value);
                 } catch(e) {
-                    var unable = 'a.parser.xml.stringify: ' +
-                                 'unable to stringify (value: ' + value + ')';
-                    a.console.error(unable, 1);
+                    var error = 'Unable to stringify the value ```' + value +
+                            '```. Below the stack trace.';
+                    a.console.storm('error', 'a.parser.xml.stringify',
+                            error, 1);
                     // Debug stack trace in case of debug mode
                     if(a.environment.get('app.debug')) {
-                        a.console.error(a.getStackTrace(), 1);
+                        a.console.error(a.getStackTrace());
                     }
                 }
             }
 
-            var noParserFound = 'a.parser.xml.stringify: ' +
-                                'unable to find any parser available';
-            a.console.error(noParserFound, 1);
+            a.console.storm('error', 'a.parser.xml.stringify', 
+                'Unable to find any parser for stringify xml...', 1);
             return '';
         },
 
@@ -173,13 +172,13 @@ a.parser = {
                 doc.async = false;
                 doc.loadXML(value);
                 if (doc.parseError.errorCode != 0) {
-                    var unable = 'a.parser.xml.parse: ' +
-                                 'unable to parse (value: ' + value +
-                                 ', reason' + doc.parseError.reason + ')';
-                    a.console.error(unable, 1);
+                    var error = 'Unable to parse the value ```' + value +
+                            '```, reason ```' + doc.parseError.reason + '```' +
+                            '. Below the stack trace.';
+                    a.console.storm('error', 'a.parser.xml.parse', error, 1);
                     // Debug stack trace in case of debug mode
                     if(a.environment.get('app.debug')) {
-                        a.console.error(a.getStackTrace(), 1);
+                        a.console.error(a.getStackTrace());
                     }
 
                     return null;
@@ -189,9 +188,8 @@ a.parser = {
                 return (new DOMParser()).parseFromString(value, 'text/xml');
             }
 
-            var noParserFound = 'a.parser.xml.parse: ' +
-                                'unable to find any parser available';
-            a.console.error(noParserFound, 1);
+            a.console.storm('error', 'a.parser.xml.parse', 
+                'Unable to find any parser for parsing xml...', 1);
             return null;
         }
     }
