@@ -54,16 +54,19 @@ a.model.template = {
             renderNgin = (('rendering' in engine) &&
                 a.isTrueObject(engine.rendering)) ? engine.rendering : null;
 
+        var source = 'a.model.template.getDescriptor';
+
         // If engine is not found, we raise error
         if(a.isNone(engine) || a.isNone(renderNgin)) {
-            a.console.error('a.model.template.getDescriptor: unable to find ' +
-                a.model.template.engine + ' engine', 1);
+            a.console.storm('error', source, 
+                    'Unable to find the ```' + a.model.template.engine + '```'+
+                    ' engine', 1);
         }
 
-        var error = 'a.model.template.getDescriptor: unable to ' +
-                    'find descriptor for ' + key + ' with engine ' + 
-                    a.model.template.engine + ' and template ' + 
-                    template.templateName;
+        var error = 'Unable to find descriptor for ```' + key + '```' +
+                    ' with engine ```' + 
+                    a.model.template.engine + '``` and template ```' + 
+                    template.templateName + '```';
 
         // Structure elements like row, columns...
         if(type === 'column' || type === 'row' || type === 'fieldset' ||
@@ -86,7 +89,7 @@ a.model.template = {
             } else if(renderNgin && a.isFunction(renderNgin[type])) {
                 return renderNgin[type];
             } else {
-                a.console.error(error, 1);
+                a.console.storm('error', source, error, 1);
                 return null;
             }
 
@@ -116,13 +119,13 @@ a.model.template = {
             } else if(renderNgin && a.isFunction(renderNgin[type])) {
                 return renderNgin[type];
             } else {
-                a.console.error(error, 1);
+                a.console.storm('error', source, error, 1);
                 return null;
             }
 
         } else {
-            a.console.error('a.model.template.getDescriptor: The type ' + type
-                + ' is unknow', 1);
+            a.console.storm('error', 'a.model.template.getDescriptor', 
+                    'The type ```' + type + '``` is unknow', 1);
             return null;
         }
         // POUR INPUT:
@@ -362,8 +365,9 @@ a.model.template = {
             var tmpl = a.model.template.descriptor.get(templateName);
 
             if(!tmpl) {
-                a.console.error('a.model.template.output.model: The template '+
-                    templateName + ' could not be found', 1);
+                a.console.storm('error', 'a.model.template.output.model', 
+                        'The template ```' + templateName + '```' +
+                        ' could not be found', 1);
                 return;
             }
 
