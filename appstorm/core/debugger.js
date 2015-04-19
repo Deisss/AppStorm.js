@@ -366,7 +366,7 @@
      * Debugger is a wrapper around window.console to provide a more
      * structured way to access and use group system provided by console.
      *
-     * @class console
+     * @class debugger
      * @static
      * @namespace a
     */

@@ -9,9 +9,7 @@
 
 
 /**
- * Dynamic loader for many files type
- *
- * Examples: <a href='http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:loader'>here</a>
+ * Dynamic loader for many files type.
  *
  * @class loader
  * @static

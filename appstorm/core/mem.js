@@ -9,7 +9,7 @@
 
 
 /**
- * Provide easy store object, with global prefix value system on top of it
+ * Provide easy store object, with global prefix value system on top of it.
  *
  * @class mem
  * @static

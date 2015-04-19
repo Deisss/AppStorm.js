@@ -12,9 +12,8 @@
 
 
 /**
- * Simple hash change checker to allow creating multi-page system
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
+ * Simple message/event system allowing to exchange data across elements threw
+ * events.
  *
  * @class eventEmitter
  * @constructor

@@ -52,9 +52,7 @@ G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b
 a.parser = {
     /**
      * Basic JSON handler wich prevent from 'no data' or 'wrong data' input,
-     * with a log message to check
-     *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
+     * with a log message to check.
      *
      * @class json
      * @static
@@ -112,9 +110,7 @@ a.parser = {
 
     /**
      * Basic XML handler wich prevent from 'no data' or 'wrong data' input,
-     * with a log message to check
-     *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:parser">here</a>
+     * with a log message to check.
      *
      * @class xml
      * @static

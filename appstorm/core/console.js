@@ -10,10 +10,10 @@
 
 
 /**
- * wrapper for system console, allowing to use console even if there is not console support on given browser.
- * Also, it does provide a trace utility in case of bug/check
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:console">here</a>
+ * Wrapper for system console, allowing to use console even if there is no
+ * console support on given browser.
+ * Also, it does provide a trace utility in case of bug/check to recover all
+ * passed log to it.
  *
  * @class console
  * @static

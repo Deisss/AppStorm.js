@@ -10,8 +10,6 @@
 /**
  * Simple timer system, provide a single timer for many bindings
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:timer">here</a>
- *
  * @class timer
  * @static
  * @namespace a
@@ -70,9 +68,10 @@ a.timer = (function() {
 
             if(!a.isNumber(timeout) || timeout <= 0) {
                 timeout = 1000;
-                a.console.warn('The timeout has not been setted properly ' +
-                                    'into timer, timeout has been ' +
-                                    'setted to 1000ms', 1);
+                a.console.storm('warn', 'a.timer.add', 'The timeout has not ' +
+                                    'been setted properly ' +
+                                    ', timeout has been rollback to ' +
+                                    '```1000ms``` value', 1);
             }
 
             // Store the new entry

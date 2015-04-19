@@ -11,10 +11,8 @@
 
 /**
  * Main environment data store, allow to globally define some global
- * rules for managing global environment variable
- *
- * Examples:
- *     <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:environment">here</a>
+ * rules for managing global environment variable. Use the a.mem object
+ * for others type of variables.
  *
  * @class environment
  * @static

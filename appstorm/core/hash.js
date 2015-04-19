@@ -13,8 +13,6 @@
  * Manipulate page hash, be able to retrieve also the list of hash previously
  * used.
  *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:plugins:page">here</a>
- *
  * @class hash
  * @static
  * @namespace a
