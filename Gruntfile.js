@@ -1,5 +1,8 @@
 module.exports = function(grunt) {
 
+  // Detect windows
+  var isWin = /^win/.test(process.platform);
+
   var appstormFiles = [
     'appstorm/a.js',
 
@@ -112,7 +115,7 @@ module.exports = function(grunt) {
       tasks: ['jshint', 'qunit']
     },
 
-    yuidoc: {
+    /*yuidoc: {
       compile: {
         name: '<%= pkg.name %>',
         description: '<%= pkg.description %>',
@@ -125,23 +128,45 @@ module.exports = function(grunt) {
           exclude: 'doc,vendor,<%= concat.withDependencies.dest %>,<%= concat.withoutDependencies.dest %>,appstorm/appstorm.min.js'
         }
       }
-    }
+    }*/
+
+    mkdir: {
+      doxx: {
+        options: {
+          create: ['docs', 'docs/core', 'docs/plugin']
+        }
+      }
+    },
+
+    
+    exec: {
+      remove_doxx: {
+        cmd: 'rm -rf ./docs'
+      },
+      install_doxx: {
+        cmd: 'doxx --source appstorm --target docs --ignore vendor'
+      }
+  }
 
   });
 
+  // Code
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-bower-task');
-  grunt.loadNpmTasks('grunt-contrib-yuidoc');
+
+  // Documentation
+  //grunt.loadNpmTasks('grunt-contrib-yuidoc');
+  grunt.loadNpmTasks('grunt-mkdir');
+  grunt.loadNpmTasks('grunt-exec');
 
   grunt.registerTask('test', ['jshint', 'qunit']);
 
-  grunt.registerTask('doc', ['yuidoc']);
-
-
+  //grunt.registerTask('doc', ['yuidoc']);
+  grunt.registerTask('doc', ['exec:remove_doxx', 'mkdir:doxx', 'exec:install_doxx']);
 
   // Since complete is not ready to be used yet, define simpler default
   grunt.registerTask('default', ['bower', 'concat:withDependencies', 'uglify']);
