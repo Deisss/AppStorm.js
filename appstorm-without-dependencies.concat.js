@@ -742,7 +742,573 @@ if(a.isString(a.url) && a.url.length > 0) {
     Events : []
 
     Description:
-        Console functionnality, the system will automatically choose what kind of console is acceptable or not
+        Debugger functionnality including nested group system like console
+        usually provide
+
+************************************************************************ */
+
+(function (win, a) {
+    'use strict';
+
+    /**
+     * Test if browser support or not the CSS in console.
+     *
+     * @method testBrowserSupportCSS
+     * @private
+     *
+     * @param browser {String}              The browser name (firefox, ...)
+     * @return                              True it does support, false it
+     *                                      does not support...
+    */
+    function testBrowserSupportCSS(browser) {
+        // TODO: Maybe too simple test...
+        // IE does not support it...
+        return (browser === 'opera' || browser === 'firefox' ||
+                browser === 'chrome');
+    }
+
+    /**
+     * We can have only one element printing at a time.
+     * This variable is a kind of lock for this.
+    */
+    var concurrentConsoleAccess = false,
+        browser = a.environment.get('browser'),
+        cssSupport = testBrowserSupportCSS(browser);
+
+    /**
+     * Regex used for markdown parsing.
+     *
+     * Strongly inspired by: https://github.com/adamschwartz/log
+     * All credit goes to him !!!!!
+    */
+    var formats = [{
+        regex: /\*([^\*]+)\*/,
+        replacer: function(m, p1) {
+            return cssSupport ? '%c' + p1 + '%c' : p1;
+        },
+        styles: function() {
+            return ['font-style: italic', ''];
+         }
+    }, {
+        regex: /\_([^\_]+)\_/,
+        replacer: function(m, p1) {
+            return cssSupport ? '%c' + p1 + '%c' : p1;
+        },
+        styles: function() {
+            return ['font-weight: bold', ''];
+        }
+    }, {
+        regex: /\`([^\`]+)\`/,
+        replacer: function(m, p1) {
+            return cssSupport ? '%c' + p1 + '%c' : p1;
+        },
+        styles: function() {
+            return ['background: rgb(255, 255, 219); padding: 1px 5px; border: 1px solid rgba(0, 0, 0, 0.1)', ''];
+        }
+    }, {
+        regex: /\[c\=(?:\"|\')?((?:(?!(?:\"|\')\]).)*)(?:\"|\')?\]((?:(?!\[c\]).)*)\[c\]/,
+        replacer: function(m, p1, p2) {
+            return cssSupport ? '%c' + p2 + '%c' : p2;
+        },
+        styles: function(match) {
+            return [match[1], ''];
+        }
+    }];
+
+
+    /**
+     * Detect if there is some markdown to parse...
+     * @see https://github.com/adamschwartz/log
+     *
+     * @method hasMarkdownMatches
+    */
+    function hasMarkdownMatches(str) {
+        var has = false;
+
+        for (var i = 0, l = formats.length; i < l && !has; ++i) {
+            if (formats[i].regex.test(str)) {
+                has = true;
+            }
+        }
+
+        return has;
+    };
+
+    /**
+     * Get ordered matches for every markdown existing.
+     * @see https://github.com/adamschwartz/log
+     *
+     * @method getOrderedMarkdownMatches
+     * @private
+     *
+     * @param str {String}                  The string to markdown
+     * @return {Array}                      The matches found
+    */
+    function getOrderedMarkdownMatches(str) {
+        var matches = [];
+
+        // Testing
+        a.each(formats, function(format) {
+            var match = str.match(format.regex);
+            if (match) {
+                matches.push({
+                    format: format,
+                    match: match
+                });
+            }
+        });
+
+
+        // Sorting
+        matches = a.sortBy(matches, function(entry) {
+            return entry.match.index;
+        });
+
+        return matches;
+    }
+
+    /**
+     * Parse the value and replace it by correct CSS rules.
+     *
+     * @method markdown
+     * @private
+     *
+     * @param str {String}                  The value to modify it's markdown
+     * @return {Array}                      The value with CSS replaced as an
+    */
+    function markdown(str) {
+        if (!a.isString(str)) {
+            return [str];
+        }
+
+        var first, matches, styles;
+        styles = [];
+        while (hasMarkdownMatches(str)) {
+            matches = getOrderedMarkdownMatches(str);
+            first = matches[0];
+            str = str.replace(first.format.regex, first.format.replacer);
+            styles = styles.concat(first.format.styles(first.match));
+        }
+
+        if (cssSupport) {
+            return [str].concat(styles);
+        } else {
+            return [str];
+        }
+    }
+
+    /**
+     * Test the minimum type for a given log.
+     * Like we can test the 'log' can be printed or not according
+     * to current verbose parameter configured in a.environment.
+     *
+     * @method testMinimumType
+     * @private
+     *
+     * @param currentType                   The level to test
+     * @return                              True the minimum level is OK for
+     *                                      current test, false the minimum
+     *                                      level is too high for current test.
+    */
+    function testMinimumType(currentType) {
+        var minimumType = a.environment.get('console.minimum');
+        switch (minimumType) {
+        case 'error':
+            if (currentType !== 'error') {
+                return false;
+            }
+            break;
+        case 'warning':
+        case 'warn':
+            if (currentType !== 'warn' &&
+                    currentType !== 'warning' &&
+                    currentType !== 'error') {
+                return false;
+            }
+            break;
+        case 'info':
+            if (currentType === 'log') {
+                return false;
+            }
+            break;
+        default:
+            break;
+        }
+        return true;
+    }
+
+    /**
+     * Test the minimum allowed verbose level.
+     *
+     * @method testMinimumVerbose
+     * @private
+     *
+     * @param currentSource                 The source (may change the verbose)
+     * @param currentVerbose                The verbose level to test
+     * @return                              The verbose level is allowed for
+     *                                      the current configured verbose
+    */
+    function testMinimumVerbose(currentSource, currentVerbose) {
+        var cv = 'console.verbose',
+            minimumGlobalVerbose = a.environment.get(cv),
+            minimumSourceVerbose = a.environment.get(cv + '-' +
+                currentSource);
+
+        if (minimumGlobalVerbose === null && minimumSourceVerbose === null) {
+            return true;
+        }
+
+        // This part can override the default verbose level.
+        if (currentSource && minimumSourceVerbose !== null) {
+            return currentVerbose <= minimumSourceVerbose;
+        }
+
+        return currentVerbose <= minimumGlobalVerbose;
+    }
+
+    /**
+     * Print a single log on console (if console is available).
+     *
+     * @method output
+     * @private
+     *
+     * @param entry                         The log to print on console
+    */
+    function output(entry) {
+        // We can't print anything if the console does not exist...
+        if (a.isNone(win.console) || !a.isFunction(win.console.log)) {
+            return;
+        }
+
+        // This does not work for printing groups
+        if (entry.type === 'group') {
+            return;
+        }
+
+        var cs = win.console[entry.type],
+            source = entry.source;
+
+        // Test if the log is allowed to be printed or not
+        if (testMinimumType(entry.type) &&
+                testMinimumVerbose(source, entry.verbose)) {
+
+            // This is the most common case
+            // In this particular case, we can do many things...
+            if (entry.args.length === 1) {
+                // We try to call the console with the markdown style...
+                cs.apply(win.console, markdown(entry.args[0]));
+
+            // In this case we can't really do something...
+            } else {
+                cs.apply(win.console, entry.args);
+            }
+        }
+    }
+
+    /**
+     * Generate from the type, source and value the related storm printing.
+     *
+     * @param type {String}                 The type (log, warn, error,...)
+     * @param source {String}               The source (the function/object
+     *                                      name)
+     * @param value {String}                The usual log.
+     * @return {String}                     The markdown version for all
+     *                                      AppStorm.JS messages
+    */
+    function storm(type, source, value) {
+        // Content got one empty string at beginning to insert
+        // %c with join at the beginning of string
+        var content = '',
+            white = 'color:white;',
+            padding = (browser === 'firefox') ? 'padding:3px;' :
+                    'padding:1px;';
+
+        switch (type) {
+        case 'log':
+            content += '[c="' + padding + 'background:#2d89ef;' + white +
+                    '"]   LOG   [c]';
+            break;
+        case 'info':
+            content += '[c="' + padding + 'background:#00a300;' + white +
+                    '"]  INFO.  [c]';
+            break;
+        case 'warn':
+        case 'warning':
+            content += '[c="' + padding + 'background:#ffc40d;' + white +
+                    '"]  WARN.  [c]';
+            break;
+        case 'error':
+            content += '[c="' + padding + 'background:#ee1111;' + white +
+                    '"]  ERROR  [c]';
+            break;
+        }
+
+        if (source) {
+            content += '[c="' + padding + 'background:#666;' + white + '"]  ' +
+                    source + '  [c]';
+        }
+
+        content += '[c="background:inherits;color:inherits;"] [c]' + value;
+
+        return content;
+    }
+
+    /**
+     * Register a new log.
+     *
+     * @method register
+     * @private
+     *
+     * @param type                      The log type (log, warn, info...)
+     * @param args                      The log data
+    */
+    function register(type, args) {
+        // If nothing is set, the verbose level is consider as
+        // critical - must be printed
+        var verbose = 1,
+            source = '';
+
+        if (args.length > 0 && a.isTrueObject(args[0]) &&
+                args[0]['storm'] === true) {
+            verbose = parseInt(args[0].verbose, 10);
+            source = args[0].source;
+
+            // In the storm case, we create specific rendering
+            var textMarkdown = storm(type, source, args[0].value);
+
+            // The first element is the log, others are CSS
+            args = [textMarkdown];
+        }
+
+        // Creating the data structure
+        var data = {
+            type: type,
+            verbose: verbose,
+            source: source,
+            args: args
+        };
+
+        this.logs.push(data);
+
+        // We clear if there is too much logs
+        while(this.logs.length > 2000) {
+            this.logs.shift();
+        }
+
+        // On direct case we print it
+        if (this.isDirect) {
+            output(data);
+        }
+    }
+
+    /*
+     * Debugger is a wrapper around window.console to provide a more
+     * structured way to access and use group system provided by console.
+     *
+     * @class console
+     * @static
+     * @namespace a
+    */
+    a.debugger = function (name, collapsed, parent) {
+        this.name = name;
+        this.collapsed = collapsed || false;
+        this.parent = parent || null;
+        this.logs = [];
+        this.isDirect = true;
+    };
+
+    a.debugger.prototype = {
+        /**
+         * Create a group inside this debugger
+         *
+         * @method group
+         *
+         * @param name {String}                 The new sub group name
+         * @param collapsed {Boolean | null}    If we should collapse or not when
+         *                                      printing to console
+         * @return {a.debugger}                 The debugger associated or null
+         *                                      value if group is not allowed
+        */
+        group: function (name, collapsed) {
+            // In direct mode there is no group support
+            if (this.isDirect) {
+                return null;
+            }
+            var root = new a.debugger(name, collapsed, this);
+            this.logs.push({
+                type: 'group',
+                args: root
+            });
+            return root;
+        },
+
+        /**
+         * Render the group and all sub groups into console
+         *
+         * @method print
+        */
+        print: function () {
+            // In direct mode there is no print support
+            if (this.isDirect) {
+                return;
+            }
+            // Somebody is already using it... We have to wait a while
+            if (this.parent === null && concurrentConsoleAccess === true) {
+                setTimeout(this.print, 50);
+                return;
+            }
+
+            var cs = win.console;
+
+            // The root (the original one), lock the console
+            // to not pollute with other eventual print
+            if (this.parent === null) {
+                concurrentConsoleAccess = true;
+            }
+
+            // Starting groups
+            if (this.collapsed === true) {
+                cs.groupCollapsed(this.name);
+            } else {
+                cs.group(this.name);
+            }
+
+            // Loggings
+            a.each(this.logs, function(log) {
+                if (log.type === 'group') {
+                    var group = log.args;
+                    group.print();
+                }else {
+                    output(log);
+                }
+            });
+
+            // Ending group
+            cs.groupEnd();
+
+            if (this.parent == null) {
+                concurrentConsoleAccess = false;
+            }
+        },
+
+        /**
+         * Print into console as a table
+         *
+         * @method table
+         *
+         * @param any {Object}              Anything to send to console
+        */
+        table: function() {
+            register.call(this, 'table',
+                    Array.prototype.slice.call(arguments));
+        },
+
+        /**
+         * Log something into console
+         *
+         * @method log
+         *
+         * @param any {Object}              Anything to send to console
+        */
+        log: function() {
+            register.call(this, 'log', Array.prototype.slice.call(arguments));
+        },
+
+        /**
+         * Log something into console
+         *
+         * @method warn
+         *
+         * @param any {Object}              Anything to send to console
+        */
+        warn: function() {
+            register.call(this, 'warn', Array.prototype.slice.call(arguments));
+        },
+
+        /**
+         * Log something into info
+         *
+         * @method info
+         *
+         * @param any {Object}              Anything to send to console
+        */
+        info: function() {
+            register.call(this, 'info', Array.prototype.slice.call(arguments));
+        },
+
+        /**
+         * Log something into error
+         *
+         * @method error
+         *
+         * @param any {Object}              Anything to send to console
+        */
+        error: function() {
+            register.call(this, 'error',
+                    Array.prototype.slice.call(arguments));
+        },
+
+        /**
+         * Specific AppStorm.JS debug element, allowing to print
+         * nice message on the console.
+         *
+         * @param level {String}            The level like log, info, error...
+         * @param source {String}           The object source raising this
+         *                                  log
+         * @param log {String}              The log message
+         * @param verbose {Integer}         The verbose (1, 2, 3)
+        */
+        storm: function(level, source, log, verbose) {
+            register.call(this, level, [{
+                storm: true,
+                source: source || '',
+                verbose: verbose || 1,
+                value: log || ''
+            }]);
+        },
+
+        /**
+         * Get the current trace stored into debugger
+         *
+         * @method trace
+         *
+         * @param type {String | null}      The type like log, info... If null,
+         *                                  We get all trace...
+         * @return {Array}                  The tracelog currently stored
+        */
+        trace: function(type) {
+            if (a.isString(type)) {
+                return a.filter(this.logs, function(el) {
+                    return el.type === type;
+                });
+            }
+            return this.logs;
+        },
+
+        /**
+         * Clear the debugger
+         *
+         * @method clear
+        */
+        clear: function() {
+            this.logs = [];
+        }
+    };
+})(window, window.appstorm);;/* ************************************************************************
+
+    License: MIT Licence
+
+    Dependencies : [
+        a.js
+        core/environment.js
+        core/debugger.js
+    ]
+
+    Events : []
+
+    Description:
+        Console functionnality, based on debugger.js, it provides basic
+        map surround normal console stuff, including markdown template
 
 ************************************************************************ */
 
@@ -757,364 +1323,9 @@ if(a.isString(a.url) && a.url.length > 0) {
  * @static
  * @namespace a
 */
-a.console = (function() {
-    "use strict";
-
-    // Store some data if console.log is not available
-    var __data = {log : [], warn : [], info : [], error : []};
-
-    /**
-     * Output to console any given value. If console is not ready, the content will be stored into object, the list function allow to access stored content in this case
-     *
-     * @method __out
-     * @private
-     *
-     * @param type {String} The type, like "log", "warn", "info", "error", ...
-     * @param value {Mixed} The value to output
-     * @param level {Integer | null} Indicate the message priority level, can be null
-     * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
-    */
-    function __out(type, value, level, appear) {
-        // Rollback to log in case of problem
-        if(!a.isArray(__data[type])) {
-            type = "log";
-        }
-        __data[type].push(value);
-
-        // Bug: IE does not support testing variable existence if they are not scopped with the root (here window)
-        if(!a.isNone(window.console) && a.isFunction(window.console.log) && appear !== false) {
-            // We disable log depending of console level.
-            // If no console, or log level, we allow all
-            switch(a.environment.get("console")) {
-                case "error":
-                    if(type !== "error") {
-                        break;
-                    }
-                case "warning":
-                case "warn":
-                    if(type !== "warn" && type !== "error") {
-                        break;
-                    }
-                case "info":
-                    if(type === "log") {
-                        break;
-                    }
-                default:
-                    var print = true,
-                        found = false;
-
-                    // We search for fine verbose element
-                    if(a.isString(value) && value.indexOf(":") >= 0) {
-                        var name     = value.substr(0, value.indexOf(":")),
-                            splitted = name.split("."),
-                            i        = splitted.length;
-
-                        // We go from full array recomposed, to only first item
-                        while(i--) {
-                            var key = "verbose-" + splitted.join("."),
-                                en  = a.environment.get(key);
-
-                            if(!a.isNone(en)) {
-                                found = true;
-                                print = (en < level) ? false : true;
-                                break;
-                            }
-
-                            // We don't find any, we go one level up
-                            splitted.pop();
-                        }
-                    }
-
-                    // Check the verbose state to know if we should print or not
-                    if(!found && !a.isNone(a.environment.get("verbose")) && !a.isNone(level)) {
-                        var iverb = parseInt(a.environment.get("verbose"), 10);
-                        if(iverb < level) {
-                            print = false;
-                        }
-                    }
-                    if(print) {
-                        window.console[type](value);
-                    }
-                    break;
-            };
-        }
-
-        // If data exceed limit, we remove some
-        while(__data[type].length > 2000) {
-            __data[type].shift();
-        }
-    };
-
-    return {
-        /**
-         * Log data
-         *
-         * @method log
-         *
-         * @param value {Mixed} The value to log on debug
-         * @param level {Integer | null} Indicate the message priority level, can be null
-         * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
-        */
-        log : function(value, level, appear) {      __out("log", value, level, appear); },
-
-        /**
-         * Warning data
-         *
-         * @method warn
-         *
-         * @param value {Mixed} The value to warning on debug
-         * @param level {Integer | null} Indicate the message priority level, can be null
-         * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
-        */
-        warn : function(value, level, appear) { __out("warn", value, level, appear);    },
-
-        /**
-         * Information data
-         *
-         * @method info
-         *
-         * @param value {Mixed} The value to inform on debug
-         * @param level {Integer | null} Indicate the message priority level, can be null
-         * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
-        */
-        info : function(value, level, appear) { __out("info", value, level, appear);    },
-
-        /**
-         * Error data
-         *
-         * @method error
-         *
-         * @param value {Mixed} The value to error on debug
-         * @param level {Integer | null} Indicate the message priority level, can be null
-         * @param appear {Boolean | null} Indicate if the console should handle or not the message (mostly used for unit test...)
-        */
-        error : function(value, level, appear) {    __out("error", value, level, appear);   },
-
-        /**
-         * List all currently stored content
-         *
-         * @method trace
-         *
-         * @param type {String | null} The string type (can be null)
-         * @return The stored data, the object got 4 properties : log, info, warn, error
-        */
-        trace : function(type) {
-            return (a.isString(type) && type in __data) ? __data[type] : __data;
-        },
-
-        /**
-         * Clear the stored content
-         *
-         * @method clear
-        */
-        clear : function() {
-            __data = {log : [], warn : [], info : [], error : []};
-        }
-    };
-}());
-;/* ************************************************************************
-
-    License: MIT Licence
-
-    Dependencies : [
-        a.js
-        core/environment.js
-    ]
-
-    Events : []
-
-    Description:
-        Debugger functionnality including nested group system like console
-        usually provide
-
-************************************************************************ */
-
 (function(win, a) {
-    'use strict';
-
-    var concurrentConsoleAccess = false;
-
-    /*
-     * Debugger is a wrapper around window.console to provide a more
-     * structured way to access and use group system provided by console.
-     *
-     * @class console
-     * @static
-     * @namespace a
-    */
-    a.debugger = function(name, collapsed, parent) {
-        this._name = name;
-        this._collapsed = collapsed || false;
-        this._parent = parent || null;
-        this._logs = [];
-    };
-
-    a.debugger.prototype = {
-        /**
-         * Create a group inside this debugger
-         *
-         * @method group
-         *
-         * @param name {String}                 The new sub group name
-         * @param collapsed {Boolean | null}    If we should collapse or not when
-         *                                      printing to console
-         * @return {a.debugger}                 The debugger associated
-        */
-        group: function(name, collapsed) {
-            var debug = new a.debugger(name, collapsed, this);
-            this._logs.push({
-                type: 'group',
-                args: debug
-            });
-            return debug;
-        },
-
-        /**
-         * Render the group and all sub groups into console
-         *
-         * @method print
-         *
-         * @param level {String | null}     The minimum level to print element
-         *                                  on console
-        */
-        print: function(level) {
-            // Somebody is already using it... We have to wait a while
-            if(this._parent === null && concurrentConsoleAccess === true) {
-                setTimeout(this.print, 50);
-                return;
-            }
-
-            // Take care of level if needed
-            // Quit if needed to render this debugger
-            if(level) {
-                switch(a.environment.get('console')) {
-                    case 'error':
-                        if(level !== 'error') {
-                            return;
-                        }
-                    case 'warning':
-                    case 'warn':
-                        if(level !== 'warn' && level !== 'error') {
-                            return;
-                        }
-                    case 'info':
-                        if(level === 'log') {
-                            return;
-                        }
-                }
-            }
-
-            // The root (the original one), lock the console
-            // to not pollute with other eventual print
-            if(this._parent === null) {
-                concurrentConsoleAccess = true;
-            }
-
-            // Starting groups
-            if(this._collapsed === true) {
-                console.groupCollapsed(this._name);
-            } else {
-                console.group(this._name);
-            }
-
-            // Loggings
-            var logs = this._logs;
-            for(var i=0, l=logs.length; i<l; ++i) {
-                var log = logs[i],
-                    type = log['type'];
-
-                if(type === 'group') {
-                    var group = log['args'];
-                    group.print();
-                }else if(typeof(win.console[type]) !== 'undefined') {
-                    var fct = win.console[type];
-                    fct.apply(null, log['args']);
-                }
-            }
-
-            // Ending group
-            console.groupEnd();
-
-            if(this._parent == null) {
-                concurrentConsoleAccess = false;
-            }
-        },
-
-        /**
-         * Log something into console
-         *
-         * @method log
-         *
-         * @param any {Object}              Anything to send to console
-        */
-        log: function() {
-
-            this._logs.push({
-                type: 'log',
-                args: Array.prototype.slice.call(arguments)
-            });
-        },
-
-        /**
-         * Log something into console
-         *
-         * @method warn
-         *
-         * @param any {Object}              Anything to send to console
-        */
-        warn: function() {
-            this._logs.push({
-                type: 'warn',
-                args: Array.prototype.slice.call(arguments)
-            });
-        },
-
-        /**
-         * Log something into info
-         *
-         * @method info
-         *
-         * @param any {Object}              Anything to send to console
-        */
-        info: function() {
-            this._logs.push({
-                type: 'info',
-                args: Array.prototype.slice.call(arguments)
-            });
-        },
-
-        /**
-         * Log something into error
-         *
-         * @method error
-         *
-         * @param any {Object}              Anything to send to console
-        */
-        error: function() {
-            this._logs.push({
-                type: 'error',
-                args: Array.prototype.slice.call(arguments)
-            });
-        },
-
-        /**
-         * Get the current trace stored into debugger
-         *
-         * @return {Array}                  The tracelog currently stored
-        */
-        trace: function() {
-            return this._logs;
-        },
-
-        /**
-         * Clear the debugger
-         *
-         * @method clear
-        */
-        clear: function() {
-            this._logs = [];
-        }
-    };
+    a.console = new a.debugger('console', true, null);
+    a.console.isDirect = true;
 })(window, window.appstorm);;/* ************************************************************************
 
     License: MIT Licence
