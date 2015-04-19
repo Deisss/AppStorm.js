@@ -34,7 +34,32 @@
     */
     var concurrentConsoleAccess = false,
         browser = a.environment.get('browser'),
-        cssSupport = testBrowserSupportCSS(browser);
+        cssSupport = testBrowserSupportCSS(browser),
+        // Used only when system does not support groupCollapsed/group system
+        // in console
+        indent = 0;
+
+    if (win.console) {
+        if (!a.isFunction(win.console.groupCollapsed)) {
+            win.console.groupCollapsed = function() {
+                win.console.log(arguments);
+                indent += 1;
+            }
+        }
+
+        if (!a.isFunction(win.console.group)) {
+            win.console.group = function() {
+                win.console.log(arguments);
+                indent += 1;
+            }
+        }
+
+        if (!a.isFunction(win.console.groupEnd)) {
+            win.console.groupEnd = function() {
+                indent -= 1;
+            }
+        }
+    }
 
     /**
      * Regex used for markdown parsing.
@@ -149,6 +174,14 @@
             first = matches[0];
             str = str.replace(first.format.regex, first.format.replacer);
             styles = styles.concat(first.format.styles(first.match));
+        }
+
+        // Correcting the indent if the group system
+        // does not exist
+        if (indent > 0) {
+            for (var i = 0, l = indent.length; i < l; ++i) {
+                str = '  ' + str;
+            }
         }
 
         if (cssSupport) {
