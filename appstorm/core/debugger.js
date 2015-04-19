@@ -50,23 +50,23 @@
      * All credit goes to him !!!!!
     */
     var formats = [{
-        regex: /\*([^\*]+)\*/,
-        replacer: function(m, p1) {
-            return cssSupport ? '%c' + p1 + '%c' : p1;
-        },
-        styles: function() {
-            return ['font-style: italic', ''];
-         }
-    }, {
-        regex: /\_([^\_]+)\_/,
+        regex: /\*\*([^\*]+)\*\*/,
         replacer: function(m, p1) {
             return cssSupport ? '%c' + p1 + '%c' : p1;
         },
         styles: function() {
             return ['font-weight: bold', ''];
+         }
+    }, {
+        regex: /\_\_([^\_]+)\_\_/,
+        replacer: function(m, p1) {
+            return cssSupport ? '%c' + p1 + '%c' : p1;
+        },
+        styles: function() {
+            return ['font-style: italic', ''];
         }
     }, {
-        regex: /\`([^\`]+)\`/,
+        regex: /\`\`\`([^\`]+)\`\`\`/,
         replacer: function(m, p1) {
             return cssSupport ? '%c' + p1 + '%c' : p1;
         },
