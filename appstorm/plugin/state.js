@@ -599,7 +599,8 @@ a.state = new function() {
         state.flash = a.scope(function(message) {
             // We go for an inside flash
             if(a.isString(this._storm.flash) && this._storm.flash) {
-                var entry = this.entry || this.target || this.el || this.dom || null;
+                var entry = this.entry || this.target || this.el || this.dom ||
+                        null;
 
                 if(a.isFunction(entry)) {
                     entry = entry.call(this);
