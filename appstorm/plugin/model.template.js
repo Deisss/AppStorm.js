@@ -8,10 +8,12 @@
 
 ************************************************************************ */
 
-// TODO: DO PRESENTATION TEXT HERE
 /**
-    Provide a model rendering system, aims to quickly create forms
-    and related data presentation. For a quicker bindings.
+ * Provide a model rendering system, aims to quickly create forms
+ * and related data presentation. For a quicker bindings.
+ *
+ * @class template
+ * @namespace a.model
 */
 a.model.template = {
     engine: 'raw',
