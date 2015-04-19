@@ -65,20 +65,23 @@ a.template = {
 
         // Crash if handlebars is not found
         if(!handler) {
-            a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
+            a.console.storm('error', fctName, 'Unable to find Handlebars.js!', 
+                    1);
             return;
         }
 
         var partialsStore = this._part;
 
         if(a.isString(partialsStore[name])) {
-            a.console.log(fctName +': loading ' + name + ' from cache', 3);
+            a.console.storm('log', fctName, 'Loading ```' + name + '``` from '+
+                    'cache', 3);
 
             if(a.isFunction(callback)) {
                 callback(name, partialsStore[name]);
             }
         } else if(options && options.noloading == true) {
-            a.console.log(fctName +': loading ' + name + ' from parameter', 3);
+            a.console.storm('log', fctName, 'Loading ```' + name + '``` from '+
+                    'parameter', 3);
             partialsStore[name] = uri;
             handler.registerPartial(name, uri);
 
@@ -88,7 +91,8 @@ a.template = {
             }
         } else {
             a.loader.html(uri, function(content) {
-                a.console.log(fctName +': loading ' + name + ' from url', 3);
+                a.console.storm('log', fctName, 'Loading ```' + name + '```' +
+                        ' from url', 3);
                 partialsStore[name] = content;
                 handler.registerPartial(name, content);
 
@@ -122,7 +126,8 @@ a.template = {
 
         // Crash if handlebars is not found
         if(!handler) {
-            a.console.error(fctName + ': unable to find Handlebars.JS !', 1);
+            a.console.storm('error', fctName, 'Unable to find Handlebars.js!',
+                    1);
             return;
         }
 
@@ -163,7 +168,8 @@ a.template = {
         // If the template is already listed into existing template,
         // directly load
         if(a.isString(this._tmpl[hash])) {
-            a.console.log(fctName +': loading ' + hash + ' from cache', 3);
+            a.console.storm('log', fctName, 'Loading ```' + hash + '``` from' +
+                    ' cache', 3);
             callCallback(callback, hash, data);
             return;
         }
@@ -172,8 +178,8 @@ a.template = {
         if(document.getElementById(hash)) {
             // We add it to template list registered to go quicker next time
             if(!this._tmpl[hash]) {
-                a.console.log(
-                    fctName + ': loading ' + hash + ' from inner html page',3);
+                a.console.storm('log', fctName, 'Loading ```' + hash + '```' +
+                        ' from inner html page', 3);
                 this._tmpl[hash] = a.dom.id(hash).html();
             }
 
@@ -186,8 +192,8 @@ a.template = {
         if(document.getElementById(orig)) {
             // We add it to template list registered to go quicker next time
             if(!this._tmpl[orig]) {
-                a.console.log(
-                    fctName + ': loading ' + orig + ' from inner html page',3);
+                a.console.storm('log', fctName, 'Loading ```' + orig + '``` ' +
+                        'from inner html page', 3);
                 this._tmpl[orig] = a.dom.id(orig).html();
             }
 
@@ -207,8 +213,8 @@ a.template = {
         };
 
         // We use the loader to retrieve file from server side
-        a.console.log(
-            fctName + ': loading ' + uri + ' from external resource', 3);
+        a.console.storm('log', fctName, 'Loading ```' + uri + '``` from ' +
+                'external resource', 3);
         a.loader.html(uri, parse, {}, error);
     },
 

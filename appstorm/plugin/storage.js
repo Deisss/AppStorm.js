@@ -34,8 +34,9 @@ a.storage = {
     */
     debugGet: function(element, key, value) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element + 
-              '.get: get element (key: ' + key + ', value: ' + value + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.get',
+                    'Get the element ```' + key + '``` with value ```' + value+
+                    '```', 3);
         }
     },
 
@@ -51,8 +52,8 @@ a.storage = {
     */
     printError: function(element, key) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element +
-                '.get: unable to find key (' + key + ') in store', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.get',
+                    'Unable to find the key ```' + key + '``` in store...', 3);
         }
     },
 
@@ -69,8 +70,9 @@ a.storage = {
     */
     debugSet: function(element, key, value) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element +
-              '.set: add element (key: ' + key + ', value: ' + value + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.set',
+                    'Add the element key ```' + key + '``` with value ```' +
+                    value + '```', 3);
         }
     },
 
@@ -86,8 +88,8 @@ a.storage = {
     */
     debugRemove: function(element, key) {
         if(key !== '_support_t') {
-            a.console.log('a.storage.type.' + element + 
-                '.remove: remove element (key: ' + key + ')', 3);
+            a.console.storm('log', 'a.storage.type.' + element + '.remove',
+                    'Remove the element ```' + key + '```', 3);
         }
     },
 
@@ -1207,8 +1209,8 @@ a.storage.temporary = (function() {
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log('a.storage.temporary: choosing storage ' + 
-                    a.storage.type[temp].engine, 3);
+            a.console.storm('info', 'a.storage.temporary', 'Choosing the ' +
+                    'storage ```' + a.storage.type[temp].engine + '```', 3);
             a.message.dispatch('a.storage.temporary.change', 
                             { engine : temp });
             return a.storage.type[temp];
@@ -1270,28 +1272,30 @@ a.storage.external = (function() {
         start : function(callback) {
             var silvt = a.storage.type.silverlight,
                 flash = a.storage.type.flash,
-                javax = a.storage.type.javafx;
-
-            var cs = 'a.storage.external: choosing storage ';
+                javax = a.storage.type.javafx,
+                source= 'a.storage.external',
+                cs    = 'Choosing the storage ';
 
             // Loading silverlight
             silvt.start(function(svtSupport) {
                 if(svtSupport) {
-                    a.console.log(cs + 'silverlight', 3);
+                    a.console.storm('info', source, cs + 'silverlight', 3);
                     startCallback(silvt, callback);
                 } else {
                     // Loading flash
                     flash.start(function(flashSupport) {
                         if(flashSupport) {
-                            a.console.log(cs + 'flash', 3);
+                            a.console.storm('info', source, cs + 'flash', 3);
                             startCallback(flash, callback);
                         } else {
                             javax.start(function(javaxSupport) {
                                 if(javaxSupport) {
-                                    a.console.log(cs + 'javafx', 3);
+                                    a.console.storm('info', source, cs +
+                                            'javafx', 3);
                                     startCallback(javax, callback);
                                 } else {
-                                    a.console.warn(cs + 'NONE AVAILABLE', 3);
+                                    a.console.storm('info', source, cs +
+                                            'NONE AVAILABLE', 3);
                                 }
                             });
                         }
@@ -1318,8 +1322,8 @@ a.storage.persistent = (function() {
     for(var i=0, l=store.length; i<l; ++i) {
         var temp = store[i];
         if(a.storage.type[temp].support) {
-            a.console.log('a.storage.persistent: choosing storage ' + 
-                                    a.storage.type[temp].engine, 3);
+            a.console.storm('info', 'a.storage.persistent', 'Choosing the ' +
+                'storage ```' + a.storage.type[temp].engine + '```', 3);
             a.message.dispatch('a.storage.persistent.change', 
                                     { engine : temp });
             return a.storage.type[temp];
