@@ -629,19 +629,13 @@ a.mem = (function() {
 })();
 
 
-// After running, we try to add the appstorm root url if possible
-if(a.isString(a.url) && a.url.length > 0) {
-    a.mem.set('app.url', a.url);
-}
-
-
 /*
 ------------------------------
   HANDLEBARS HELPERS
 ------------------------------
 */
 (function() {
-    // Get environment elements
+    // Get mem elements
     Handlebars.registerHelper('mem', function(value) {
         return new Handlebars.SafeString(a.mem.get(value));
     });
@@ -678,10 +672,53 @@ if(a.isString(a.url) && a.url.length > 0) {
 a.environment = a.mem.getInstance('app.environment');
 
 // Default data
-a.environment.set('verbose', 2);
-a.environment.set('console', 'log');
-a.environment.set('cache', false);
 
+// The application state, debug/production
+a.environment.set('app.debug', false);
+// The console verbosity (from 1 to 3, 3 most verbose, 1 less verbose)
+a.environment.set('console.verbose', 2);
+// The console minimum log level (from log to error)
+a.environment.set('console.minimum', 'log');
+// The ajax cache system
+a.environment.set('ajax.cache', false);
+
+// The application url
+if(a.isString(a.url) && a.url.length > 0) {
+    a.mem.set('app.url', a.url);
+}
+
+/*
+------------------------------
+  BROWSER HELPERS
+------------------------------
+*/
+(function() {
+    // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+    var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    // Firefox 1.0+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    // At least Safari 3+: "[object HTMLElementConstructor]"
+    var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+    // Chrome 1+
+    var isChrome = !!window.chrome && !isOpera;
+    // At least IE6
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+    var browser = 'other';
+    if (isOpera) {
+        browser = 'opera';
+    } else if (isFirefox) {
+        browser = 'firefox';
+    } else if (isSafari) {
+        browser = 'safari';
+    } else if (isChrome) {
+        browser = 'chrome';
+    } else if (isIE) {
+        browser = 'ie';
+    }
+
+    a.environment.set('browser', browser);
+})();
 
 /*
 ------------------------------
@@ -1490,7 +1527,7 @@ a.parser = {
                              arguments.toString() + ')';
                 a.console.error(unable, 1);
                 // Debug stack trace in case of debug mode
-                if(a.environment.get('debug')) {
+                if(a.environment.get('app.debug')) {
                     a.console.error(a.getStackTrace(), 1);
                 }
                 return '';
@@ -1513,7 +1550,7 @@ a.parser = {
                              'unable to parse (value: ' + value + ')';
                 a.console.error(unable, 1);
                 // Debug stack trace in case of debug mode
-                if(a.environment.get('debug')) {
+                if(a.environment.get('app.debug')) {
                     a.console.error(a.getStackTrace(), 1);
                 }
                 return null;
@@ -1553,7 +1590,7 @@ a.parser = {
                                  'unable to stringify (value: ' + value + ')';
                     a.console.error(unable, 1);
                     // Debug stack trace in case of debug mode
-                    if(a.environment.get('debug')) {
+                    if(a.environment.get('app.debug')) {
                         a.console.error(a.getStackTrace(), 1);
                     }
                 }
@@ -1593,7 +1630,7 @@ a.parser = {
                                  ', reason' + doc.parseError.reason + ')';
                     a.console.error(unable, 1);
                     // Debug stack trace in case of debug mode
-                    if(a.environment.get('debug')) {
+                    if(a.environment.get('app.debug')) {
                         a.console.error(a.getStackTrace(), 1);
                     }
 
@@ -3397,7 +3434,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         };
 
         // We override the cache by the "default" value
-        if(a.environment.get('cache') === true) {
+        if(a.environment.get('ajax.cache') === true) {
             this.params.cache = true;
         }
 
@@ -4215,7 +4252,7 @@ a.loader = (function() {
             args.type = 'raw';
 
             // In debug mode, we disallow cache
-            if(a.environment.get('debug') === true) {
+            if(a.environment.get('app.debug') === true) {
                 args.cache = false;
             }
 
@@ -5138,8 +5175,12 @@ a.acl = a.extend(new function() {
 ------------------------------
 */
 (function() {
+    Handlebars.registerHelper('AclRole', function(options) {
+        return new Handlebars.SafeString(a.acl.getCurrentRole());
+    });
+
     // Allow to check role is allowed or not
-    Handlebars.registerHelper('isAllowed', function(minimumRole, currentRole,
+    Handlebars.registerHelper('AclIsAllowed', function(minimumRole, currentRole,
                                                                     options) {
         // We allow 2 or 3 parameters mode !
         options = a.isString(currentRole) ? options : currentRole;
@@ -5154,7 +5195,7 @@ a.acl = a.extend(new function() {
     });
 
     // Allow to check role is refused or not
-    Handlebars.registerHelper('isRefused', function(minimumRole, currentRole,
+    Handlebars.registerHelper('AclIsRefused', function(minimumRole, currentRole,
                                                                     options) {
         // We allow 2 or 3 parameters mode !
         options = a.isString(currentRole) ? options : currentRole;
@@ -5163,7 +5204,7 @@ a.acl = a.extend(new function() {
 
         // We check role is allowed or not
         if(a.acl.isAllowed(minimumRole, currentRole)) {
-            options.inverse(this);
+            return options.inverse(this);
         }
         return options.fn(this);
     });
@@ -7578,7 +7619,6 @@ a.storage.remove  = a.storage.persistent.remove;
 
     Dependencies : [
         a.js
-        core/environment.js
         core/console.js
         core/dom.js
     ]
@@ -13315,434 +13355,5 @@ a.template = {
             chain.next();
         }
     }, true);
-})();;/* ************************************************************************
-
-    License: MIT Licence
-
-    Dependencies : [
-        a.js
-        plugin/template.js
-    ]
-
-    Events : [
-    ]
-
-    Description:
-        Provide a module system to act like web components stuff
-
-************************************************************************ */
-
-
-/*
-a.module
-
-*/
-
-
-
-a.module = function(name, proto) {
-    if(a.modulePooler.get(name)) {
-        return a.modulePooler.createInstance(name);
-    } else {
-        // At least one '-' and no '.'
-        var testModuleName = new RegExp('^[a-zA-Z0-9\_]+\-[a-zA-Z0-9\-\_]+$',
-                                                                    'gi');
-
-        if(!testModuleName.test(name)) {
-            a.console.error('a.module: unable to create module, the name '
-                + name + ' does not fit recommandation. It must contains '
-                + 'one of the following a-z, A-Z, 0-9, "-" and "_". But it '
-                + 'must contains at least one "-"', 1);
-            return;
-        }
-
-        // Generating initial content
-        var content = {
-            prototype: ('prototype' in proto) ? proto.prototype:
-                                    Object.create(HTMLElement.prototype)
-        };
-
-        // TODO: pour les propriétés (getter et setter)
-        // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/defineProperty
-
-        // TODO: check chaque propriété
-        // http://kangax.github.io/compat-table/es5/
-
-        // Ptete a voir (template engine de polymer)
-        // https://github.com/Polymer/TemplateBinding
-
-        if('extends' in proto) {
-            content.extends = proto.extends;
-        }
-        var content = {
-            prototype: Object.create(
-                ('prototype' in proto) ? proto.prototype: HTMLElement.prototype
-            , {
-                /**
-                 * Unload all bindings associated to module
-                 *
-                 * @method unloadBindings
-                */
-                unloadBindings: function() {
-
-                },
-                /**
-                 * Load all bindings associated to new state
-                 *
-                 * @method loadBindings
-                 *
-                 * @param bindings {Object}      List of bindings to apply
-                */
-                loadBindings: function(bindings) {
-                    for(var i in bindings) {
-
-                    }
-                },
-                unloadTemplate: function() {
-                    // Removing previous dom
-                    while(this.firstChild) {
-                        this.removeChild(this.firstChild);
-                    }
-                },
-                loadTemplate: function(content) {
-                    // Pushing dom
-                    var dom = a.template.htmlToDom(content);
-                    for(var i=0, l=dom.length; i<l; ++i) {
-                        this.appendChild(dom[i]);
-                    }
-                },
-                load: function(name) {
-                    // We are in multiple template type
-                    if(!a.isString(proto.template)) {
-                        if(!(name in proto.template)) {
-                            a.console.error(this.tagName.toLowerCase() + ' is '
-                                + 'unable to load, as the state name ' + name
-                                + ' cannot be found in template variable', 1);
-                            return;
-                        }
-                    }
-
-                    this.unloadBindings();
-                    if(a.isString(proto.template)) {
-                        this.loadTemplate(proto.template);
-                        this.loadBindings(proto.bind);
-                    } else if(a.isTrueObject(proto.template) &&
-                                (name in proto.template)) {
-                        this.loadTemplate(proto.template[name]);
-                        this.loadBindings(proto.bind[name]);
-                    }
-                },
-
-                fire: function(name, data) {
-                    // Raise an event, maybe replace by dispatch
-                },
-
-                /*
-                 * ---------------------------
-                 *   CREATE NEW DOM ELEMENT
-                 * ---------------------------
-                */
-                createdCallback: {value: function() {
-                    // There is a template
-                    if(a.isString(proto.template)) {
-                        this.load(proto.template);
-                    } else if(a.isTrueObject(proto.template)) {
-                        if(proto.init) {
-                            this.load(proto.init);
-                        } else {
-                            var keys = Object.keys(proto.template);
-                            if(keys.length > 0) {
-                                this.load(proto.template[keys[0]]);
-                            }
-                        }
-                    }
-                    // TODO: link to a.modulePooler ? or do it in attachedCallback ?
-
-                    // Start the init function
-                    if(a.isFunction(proto.created)) {
-                        proto.created.call(this);
-                    }
-                }},
-
-                /*
-                 * ---------------------------
-                 *   ATTACHING INTO DOM
-                 * ---------------------------
-                */
-                attachedCallback: {value: function() {
-                    // TODO: here we bind click and so on...
-                    console.log('live on DOM ;-) ');
-                    if(a.isFunction(proto.attached)) {
-                        proto.attached.call(this);
-                    }
-                }},
-
-                /*
-                 * ---------------------------
-                 *   DETACHING FROM DOM
-                 * ---------------------------
-                */
-                detachedCallback: {value: function() {
-                    console.log('leaving the DOM :-( )');
-
-                    a.moduleManager.remove(this.uid);
-
-                    if(a.isFunction(proto.detached)) {
-                        proto.detached.call(this);
-                    }
-                }},
-
-                /*
-                 * ---------------------------
-                 *   ATTRIBUTE CHANGED
-                 * ---------------------------
-                */
-                attributeChangedCallback: {value: function(name, old, value) {
-                    if(a.isFunction(proto.attachedFunction)) {
-                        proto.attributeChanged.call(this);
-                    }
-                    /*if (old == null) {
-                        console.log(
-                            'got a new attribute ', name,
-                            ' with value ', value
-                        );
-                    } else if (value == null) {
-                        console.log(
-                            'somebody removed ', name,
-                            ' its value was ', old
-                        );
-                    } else {
-                        console.log(
-                            name,
-                            ' changed from ', old,
-                            ' to ', value
-                        );
-                    }*/
-                }}
-            })
-        };
-
-        // UID support
-        Object.defineProperty(content, 'uid', {
-            value: a.uniqueId(),
-            enumerable: false,
-            configurable: false,
-            writable: false
-        });
-
-        // Creating final document
-        var module = document.registerElement(name, content);
-        a.modulePooler.set(name, module);
-        return module;
-    }
-};
-
-/**
- * A module manager helps to keep a trace of every module currently used by the
- * application.
- *
- * @class moduleManager
- * @namespace a
- * @constructor
-*/
-a.moduleManager = {
-    /**
-     * Store a pointer to every instance of every module created.
-     * @property _store
-     * @type Object
-     * @default {}
-    */
-    _store: a.mem.getInstance('app.module.instance'),
-
-    /**
-     * Store a new module into the moduleManager.
-     *
-     * @method set
-     *
-     * @param module {Object}               The new module to store
-    */
-    set: function(module) {
-        this._store.set(module.uid, module);
-    },
-
-    /**
-     * Get a module from it's uid (the unique id is automatically generated
-     * for every module, it's available threw myModuleInstance.uid)
-     *
-     * @method get
-     *
-     * @param uid {Integer}                 The unique id to search related
-     *                                      module from
-     * @return {Object | null}              The related module found, or null
-     *                                      if nothing is found
-    */
-    get: function(uid) {
-        return this._store.get(uid);
-    },
-
-    /**
-     * Remove a module from store.
-     *
-     * @method remove
-     *
-     * @param uid {Integer}                 The uid to remove
-    */
-    remove: function(uid) {
-        this._store.remove(uid);
-    },
-
-    /**
-     * Remove all existing module from store
-     *
-     * @method clear
-    */
-    clear: function() {
-        this._store.clear();
-    },
-
-    /**
-     * Get all modules related to a given name. For example, if you create
-     * a.module('x-user'), this function helps to find all *x-user* module
-     * created.
-     *
-     * @method getByName
-     *
-     * @param name {String}                 The module name to find
-     * @return {Array}                      The array with all module instance
-     *                                      related to this name
-    */
-    getByName: function(name) {
-        if(!name || !a.isString(name)) {
-            return [];
-        }
-
-        name = name.toLowerCase();
-
-        var result = [];
-
-        a.each(this._store.list(), function(element) {
-            if(element.tagName.toLowerCase() === name) {
-                result.push(element);
-            }
-        });
-
-        return result;
-    }
-};
-
-
-
-
-
-
-
-/**
- * A module pooler aims to create a storage space to keep every module type
- * existing.
- *
- * @class modulePooler
- * @namespace a
- * @constructor
-*/
-a.modulePooler = a.mem.getInstance('app.module.type');
-
-/**
- * Simple function to generate new instance from a base
- *
- * @method createInstance
- *
- * @param name {String}                     The module type we want to create
- * @return {Object | null}                  The module instance created, or
- *                                          null if model name is not defined
-*/
-a.modulePooler.createInstance = function(name) {
-    var module = this.createTemporaryInstance(name);
-
-    if(!a.isNull(module)) {
-        // Adding module to moduleManager system
-        a.moduleManager.set(module);
-    }
-
-    return module;
-};
-
-
-/**
- * Simple function to generate new instance from a base. This instance is not
- * stored into a.moduleManager.
- * NOTE: this function should not be used, please use createInstance instead.
- *
- * @method createInstance
- *
- * @param name {String}                     The module type we want to create
- * @return {Object | null}                  The module instance created, or
- *                                          null if module name is not defined
-*/
-a.modulePooler.createTemporaryInstance = function(name) {
-    var instanceType = this.get(name);
-
-    if(!instanceType) {
-        return null;
-    }
-
-    // Returning freshly created module
-    return document.createElement(name);
-};
-
-/**
- * From a given query, get back the existing stored module
- *
- * @method searchInstance
- *
- * @param query {Object}                    The query to search inside
- * @return {a.modelInstance | null}         The single instance found,
- *                                          or a list of instances, or null
-*/
-a.modulePooler.searchInstance = function(query) {
-    var modules = a.model.manager.getByName(query.moduleName || query.module ||
-                                          query.name);
-
-    // We remove the first searched element
-    if(query.moduleName) {
-        delete query.moduleName;
-    } else if(query.module) {
-        delete query.module;
-    } else if(query.name) {
-        delete query.name;
-    }
-
-    for(var key in query) {
-        var value = query[key],
-            i = modules.length;
-
-        while(i--) {
-            var module = modules[i];
-            // The module is not related to searched value
-            if(module.get(key) !== value) {
-                modules.splice(i, 1);
-            }
-        }
-    }
-
-    if(modules.length == 0) {
-        return null;
-    } else if(modules.length == 1) {
-        return modules[0];
-    }
-    return modules;
-};
-
-
-/**
- * Delete an existing instance.
- *
- * @method deleteInstance
- *
- * @param instance {Object}                 The instance to delete
-*/
-a.modulePooler.deleteInstance = function(instance) {
-    if(a.isTrueObject(instance) && instance.uid) {
-        a.moduleManager.remove(instance.uid);
-    }
-};;// Final script, appstorm is ready
+})();;// Final script, appstorm is ready
 a.message.dispatch('ready');

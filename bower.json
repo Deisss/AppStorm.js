@@ -23,7 +23,6 @@
     "watch": "latest",
     "lodash": "latest",
     "mousetrap": "latest",
-    "handlebars": "~1.3.0",
-    "document-register-element": "git://github.com/WebReflection/document-register-element.git"
+    "handlebars": "~1.3.0"
   }
 }

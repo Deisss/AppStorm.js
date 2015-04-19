@@ -34,7 +34,6 @@ module.exports = function(grunt) {
     'appstorm/plugin/model.pooler.js',
     'appstorm/plugin/model.template.js',
     'appstorm/plugin/template.js',
-    'appstorm/plugin/module.js',
 
 
     // Last loaded - ready event
@@ -57,11 +56,10 @@ module.exports = function(grunt) {
       withDependencies: {
         src: [
           // Coming from Bower
-          'appstorm/vendor/lodash/lodash.compat.js',
+          'appstorm/vendor/lodash/lodash.js',
           'appstorm/vendor/handlebars/handlebars.js',
           'appstorm/vendor/mousetrap/mousetrap.min.js',
           'appstorm/vendor/watch/watch.js',
-          'appstorm/vendor/document-register-element/build/document-register-element.js',
         ].concat(appstormFiles),
         dest: './appstorm.concat.js',
         nonull: true,
