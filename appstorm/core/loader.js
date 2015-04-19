@@ -197,7 +197,7 @@ a.loader = (function() {
         };
 
         a.console.storm('log', 'a.loader',
-                'loading resource from url ```' + uri + '```', 3);
+                'Loading resource from url ```' + uri + '```', 3);
 
         if(!a.isNone(args)) {
             if(a.contains(htmlMethods, args.method) ) {
@@ -273,7 +273,7 @@ a.loader = (function() {
                         : 'text/javascript';
 
             a.console.storm('log', 'a.loader',
-                    'loading resource from url ```' + uri + '```', 3);
+                    'Loading resource from url ```' + uri + '```', 3);
 
             appendElementToHeader(document.createElement('script'), {
                     type : type,
@@ -362,7 +362,7 @@ a.loader = (function() {
             }
 
             a.console.storm('log', 'a.loader',
-                    'loading resource from url ```' + uri + '```', 3);
+                    'Loading resource from url ```' + uri + '```', 3);
 
             appendElementToHeader(document.createElement('link'), {
                     rel  : 'stylesheet',
@@ -556,7 +556,7 @@ a.loader = (function() {
             }
 
             a.console.storm('log', 'a.loader',
-                    'loading resource from url ```' + uri + '```', 3);
+                    'Loading resource from url ```' + uri + '```', 3);
 
             var obj  = document.createElement('object');
             obj.id   = args.id;
