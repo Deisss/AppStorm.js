@@ -419,10 +419,10 @@ a.state.chain = new function() {
 
             // Parsed is probably null, it means the content is not ready to show
             } else {
-                a.console.error('request cannot be proceed, state: '
-                    + state.id + ', data request: ' + name +
-                    ', url parsing may have fail... It can be ' +
-                    'some missing parameters', 3);
+                a.console.storm('error', 'a.state.chain', 'Request cannot ' +
+                        'be proceed, url parsing have fail. It can be ' +
+                        ' related to some missing parameters. Request: ```' +
+                        name + '```, state: ```' + state.id + '```', 2);
             }
         };
     };
@@ -505,8 +505,6 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        //a.console.log('loading');
-        //a.console.log(this);
         try {
             var result = {},
                 hashs  = getValidHash(this),
@@ -681,8 +679,8 @@ a.state.chain = new function() {
             sync.addCallback(generateDataLoader(this, null, this.data, null,
                                                         null, null));
         } else {
-            a.console.error('a.state.chain:include: The state ' + this.id +
-                            ' is not valid (data is not a valid system)', 1);
+            a.console.storm('error', 'a.state.chain.include', 'The state ```' +
+                    this.id + '``` is not valid (data is not valid)', 1);
         }
 
         // Loading partials
@@ -948,8 +946,6 @@ a.state.chain = new function() {
     },
     // Content
     function() {
-        //a.console.log('unloading');
-        //a.console.log(this);
         if(testAsync(this.async, 'preUnload')) {
             this.preUnload.apply(this, arguments);
             return;
