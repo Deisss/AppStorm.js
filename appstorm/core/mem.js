@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-    ]
-
-    Events : []
-
     Description:
         Provide easy store object, with global prefix value system on top of it
 

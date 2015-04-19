@@ -2,26 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-    ]
-
-    Events : [
-        a.message.add {
-            type : the type listeners (like "a.storage.add"),
-            function : the associated function
-        }
-        a.message.remove {
-            type : the type listeners (like "a.storage.add"),
-            function : the associated function
-        }
-        a.message.removeAll {
-            type : the type listeners (like "a.storage.add")
-        }
-        a.message.clear {}
-    ]
-
     Description:
         Define one reusable object (eventEmitter)
         and create a root event system (message)

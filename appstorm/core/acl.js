@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-    ]
-
-    Events : []
-
     Description:
         Provide a simple ACL rules checker to create different application
         behavior regarding user role

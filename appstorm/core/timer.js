@@ -2,16 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/message.js
-        core/console.js
-    ]
-
-    Events : [
-        a.timer.tick : null (no data)
-    ]
-
     Description:
         Simple timer system, provide a single timer for many bindings
 

@@ -2,16 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/console.js
-        core/timer.js
-        core/environment.js
-        core/ajax.js
-    ]
-
-    Events : []
-
     Description:
         Dynamic loader for many files type
 

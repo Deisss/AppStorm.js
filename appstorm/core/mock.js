@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/parameter.js
-    ]
-
-    Events : []
-
     Description:
         The object is faking a server behavior to skip server creation during
         client creation. It provide a simple emulation of server side.

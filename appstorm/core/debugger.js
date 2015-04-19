@@ -2,13 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-    ]
-
-    Events : []
-
     Description:
         Debugger functionnality including nested group system like console
         usually provide

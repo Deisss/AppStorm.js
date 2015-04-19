@@ -2,12 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-    ]
-
-    Events : []
-
     Description:
         Provide a really basic dom manipulation plugin.
         This helps to use appstorm by itself without any jQuery or others.

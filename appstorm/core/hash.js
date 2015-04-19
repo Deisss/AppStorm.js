@@ -2,18 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/mem.js
-    ]
-
-    Events : [
-        a.hash {
-            value: The new hash value
-            old:   The previous hash value
-        }
-    ]
-
     Description:
         Manipulate page hash, be able to retrieve also the list of hash
         previously used.

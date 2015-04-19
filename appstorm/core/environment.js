@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies: [
-        a.js
-        core/mem.js
-    ]
-
-    Events: [
-    ]
-
     Description:
         Environment functionnality, to get access to some basic
         'main options' for system

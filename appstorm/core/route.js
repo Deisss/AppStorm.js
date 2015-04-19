@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/hash.js
-        core/mem.js
-    ]
-
-    Events : []
-
     Description:
         Manage action related to hash change.
 

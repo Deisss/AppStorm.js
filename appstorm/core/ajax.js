@@ -2,22 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/parser.js
-        core/message.js
-    ]
-
-    Events : [
-        a.ajax : {
-            success : boolean (true fine, false error)
-            status : http code result
-            url : the url used (before data join)
-            method : the method used
-            params : the parameters used for request
-        }
-    ]
-
     Description:
         Send a request to server side
 

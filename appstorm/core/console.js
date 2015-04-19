@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-        core/debugger.js
-    ]
-
-    Events : []
-
     Description:
         Console functionnality, based on debugger.js, it provides basic
         map surround normal console stuff, including markdown template

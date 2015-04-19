@@ -2,14 +2,6 @@
 
     License: MIT Licence
 
-    Dependencies : [
-        a.js
-        core/environment.js
-        core/console.js
-    ]
-
-    Events : []
-
     Description:
         Provide parsing/stringify functionnality for JSON and XML format
 
