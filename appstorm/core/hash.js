@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -12,10 +12,6 @@
 /**
  * Manipulate page hash, be able to retrieve also the list of hash previously
  * used.
- *
- * @class hash
- * @static
- * @namespace a
 */
 a.hash = new function() {
     var previousHash  = null,
@@ -27,12 +23,11 @@ a.hash = new function() {
     store.set('history', traceHashList);
 
     /**
-     * Retrieve the current system hash
+     * Retrieve the current system hash.
      *
-     * @method getCurrentPageHash
      * @private
      *
-     * @return {String | null}              The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
      */
     function getCurrentPageHash() {
         var h = window.location.hash;
@@ -41,12 +36,11 @@ a.hash = new function() {
 
 
     /**
-     * Store the latest event appearing into a store
+     * Store the latest event appearing into a store.
      *
-     * @method registerNewHash
      * @private
      *
-      @param hash {String}                  The new hash incoming
+      @param {String} hash                  The new hash incoming
     */
     function registerNewHash(hash) {
         store.set('current', hash);
@@ -64,9 +58,8 @@ a.hash = new function() {
     };
 
     /**
-     * Check for existing hash, call the callback if there is any change
+     * Check for existing hash, call the callback if there is any change.
      *
-     * @method checkAndComputeHashChange
      * @private
      */
     function checkAndComputeHashChange(evt) {
@@ -117,9 +110,7 @@ a.hash = new function() {
      * Fake the hashtag change (can be usefull sometimes), it really apply
      * hash change, but does not change the browser hashtag.
      *
-     * @method fake
-     *
-     * @param currentHash {String}          The hash to fake
+     * @param {String} currentHash          The hash to fake
     */
     this.fake = function(currentHash) {
         if(previousHash != currentHash) {
@@ -137,44 +128,36 @@ a.hash = new function() {
     };
 
     /**
-     * Retrieve the current system hash
+     * Retrieve the current system hash.
      *
-     * @method getHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
      */
     this.getHash = function() {
         return getCurrentPageHash();
     };
 
     /**
-     * Retrieve the current system hash (getHash alias)
+     * Retrieve the current system hash (getHash alias).
      *
-     * @method get
-     *
-     * @return {String | null}         The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
     */
     this.get = function() {
         return getCurrentPageHash();
     };
 
     /**
-     * Get the previous page hash (can be null)
+     * Get the previous page hash (can be null).
      *
-     * @method getPreviousHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
     */
     this.getPreviousHash = function() {
         return previousHash;
     };
 
     /**
-     * Force the system to set a specific hash
+     * Force the system to set a specific hash.
      *
-     * @method setPreviousHash
-     *
-     * @param value {String}            The hash to set
+     * @param {String} value                The hash to set
      */
     this.setPreviousHash = function(value) {
         previousHash = value;
@@ -182,12 +165,10 @@ a.hash = new function() {
     };
 
     /**
-     * Get list of existing previous hash used into system
+     * Get list of existing previous hash used into system.
      *
-     * @method trace
-     *
-     * @return {Array}                  An array with all hash
-     *                                  done since beginning
+     * @return {Array}                      An array with all hash
+     *                                      done since beginning
     */
     this.trace = function() {
         return traceHashList;

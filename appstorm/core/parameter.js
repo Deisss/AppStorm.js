@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -13,14 +13,12 @@
  * Provide a way to manipulate, extract and replace parameters like
  * {{id: [a-fA-F0-9]+}} as regular expression. This is intensly used
  * by appstorm to check and manipulate parameters inside state plugin.
- *
- * @class parameter
- * @static
- * @namespace a
 */
 a.parameter = {
     /**
      * Store cached function to use as replacement method.
+     *
+     * @private
      * @property _fct
      * @type Object
      * @default {}
@@ -30,10 +28,8 @@ a.parameter = {
     /**
      * From a given string, we extract parameter inside.
      *
-     * @method extract
-     *
-     * @param input {String}                The string to extract param from
-     * @param customRegex {RegExp | null}   A new regex to replace current one
+     * @param {String} input                The string to extract param from
+     * @param {RegExp | Null} customRegex   A new regex to replace current one
      * @return {Array}                      An array with every element as
      *                                      object key: name (the key name),
      *                                      regex (the linked regex),
@@ -84,12 +80,10 @@ a.parameter = {
     /**
      * Replace a parameter at a specific position.
      *
-     * @method replace
-     *
-     * @param input {String}                The string to use as replacement
-     * @param param {Object}                An extracted parameter from
+     * @param {String} input                The string to use as replacement
+     * @param {Object} param                An extracted parameter from
      *                                      extract function
-     * @param custom {String | null}        A custom string to add to system
+     * @param {String | Null} custom        A custom string to add to system
      * @return {String}                     The string replaced with new
      *                                      content
     */
@@ -104,10 +98,8 @@ a.parameter = {
     /**
      * Convert a parameter string into a regex string.
      *
-     * @method convert
-     *
-     * @param input {String}                The string to convert
-     * @param customRegex {RegExp | null}   A custom regex if needed
+     * @param {String} input                The string to convert
+     * @param {RegExp | Null} customRegex   A custom regex if needed
      * @return {String}                     The converted string ready to be
      *                                      used as regex tester.
     */
@@ -129,12 +121,10 @@ a.parameter = {
      * values and bring the new object with, for every regex, the corresponding
      * values.
      *
-     * @method getValues
-     *
-     * @param input {String}                The input value to extract data
+     * @param {String} input                The input value to extract data
      *                                      from
-     * @param internal {String}             The original string regex
-     * @param extract {Object}              The extracted object
+     * @param {String} internal             The original string regex
+     * @param {Object} extract              The extracted object
      * @return {Object}                     The extracted object with values
      *                                      found
     */
@@ -173,15 +163,13 @@ a.parameter = {
      *   It also can manage different function loader threw addParameterType,
      *   so it can takes variable content not only from page hash...
      *
-     * @method extrapolate
-     *
-     * @param input {String}                The string to replace parameters
+     * @param {String} input                The string to replace parameters
      *                                      inside
-     * @param hash {String}                 The current string, to extract
+     * @param {String} hash                 The current string, to extract
      *                                      parameters from.
-     * @param internal {String}             The hashtag stored internally
+     * @param {String} internal             The hashtag stored internally
      *                                      (with parameters)
-     * @param escape {Boolean | null}       Indicate if system should escape
+     * @param {Boolean | Null} escape       Indicate if system should escape
      *                                      content to string before sending
      *                                      back, it means if yes, the system
      *                                      will send back '[object object]'
@@ -280,10 +268,8 @@ a.parameter = {
      * Here the name will be memory, and the function: the function which will
      * be used to find corresponding name data.
      *
-     * @method addParameterType
-     *
-     * @param name {String}                 The parameter type (like 'memory')
-     * @param fct {Function}                The function to apply when this
+     * @param {String} name                 The parameter type (like 'memory')
+     * @param {Function} fct                The function to apply when this
      *                                      parameter type is found
     */
     addParameterType: function(name, fct) {
@@ -295,9 +281,7 @@ a.parameter = {
     /**
      * Unregister a function parameter (should almost never been in fact...).
      *
-     * @method removeParameterType
-     *
-     * @param name {String}                 The function name to remove
+     * @param {String} name                 The function name to remove
     */
     removeParameterType: function(name) {
         delete this._fct[name];

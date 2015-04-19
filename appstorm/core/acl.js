@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -11,21 +11,15 @@
 
 /**
  * Provide a simple ACL rules checker to create different application
- * behavior regarding user role
- *
- * @class acl
- * @static
- * @namespace a
+ * behavior regarding user role.
 */
 a.acl = a.extend(new function() {
     var mem = a.mem.getInstance('app.acl');
 
     /**
-     * Set the current user role
+     * Set the current user role.
      *
-     * @method setCurrentRole
-     *
-     * @param role {String}                 The role to set as 'current' one
+     * @param {String} role                 The role to set as 'current' one
     */
     this.setCurrentRole = function(role) {
         mem.set('current', role);
@@ -34,9 +28,7 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Get the current user role stored
-     *
-     * @method getCurrentRole
+     * Get the current user role stored.
      *
      * @return {String}                     The role found, or an empty
      *                                      string if nothing has been found
@@ -64,9 +56,7 @@ a.acl = a.extend(new function() {
      * Note also you can't pass an object: {{isSuperAdmin user}} will not work
      * if user is not the role in string you want to check...
      *
-     * @method setRoleList
-     *
-     * @param roleList {Array}              The role list to store
+     * @param {Array} roleList              The role list to store
     */
     this.setRoleList = function(roleList) {
         if(a.isArray(roleList)) {
@@ -89,11 +79,9 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Get the current role list
+     * Get the current role list.
      *
-     * @method getRoleList
-     *
-     * @return {Array | null}               The current role list stored, or
+     * @return {Array | Null}               The current role list stored, or
      *                                      null if nothing is found
     */
     this.getRoleList = function() {
@@ -101,12 +89,10 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Check if current role is allowed compare to given minimum role
+     * Check if current role is allowed compare to given minimum role.
      *
-     * @method isAllowed
-     *
-     * @param minimumRole {String}          The minimum role to check
-     * @param currentRole {String | null}   The current role, if undefined, it
+     * @param {String} minimumRole          The minimum role to check
+     * @param {String | Null} currentRole   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
@@ -139,12 +125,10 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Check if current role is refused compare to given minimum role
+     * Check if current role is refused compare to given minimum role.
      *
-     * @method isRefused
-     *
-     * @param minimumRole {String}          The minimum role to check
-     * @param currentRole {String | null}   The current role, if undefined, it
+     * @param {String} minimumRole          The minimum role to check
+     * @param {String | null} currentRole   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
@@ -155,8 +139,6 @@ a.acl = a.extend(new function() {
 
     /**
      * Clear the full ACL rules
-     *
-     * @method clear
     */
     this.clear = function() {
         mem.clear();

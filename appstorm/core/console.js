@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -14,10 +14,6 @@
  * console support on given browser.
  * Also, it does provide a trace utility in case of bug/check to recover all
  * passed log to it.
- *
- * @class console
- * @static
- * @namespace a
 */
 (function(win, a) {
     a.console = new a.debugger('console', true, null);

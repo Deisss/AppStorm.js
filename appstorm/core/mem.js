@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -10,21 +10,16 @@
 
 /**
  * Provide easy store object, with global prefix value system on top of it.
- *
- * @class mem
- * @static
- * @namespace a
 */
 a.mem = (function() {
     var store = {};
 
     /**
-     * Sanitize a key to generate a 'usable' key
+     * Sanitize a key to generate a 'usable' key.
      *
-     * @method sanitizeKey
      * @private
      *
-     * @param key {String}                  The key string to sanitize
+     * @param {String} key                  The key string to sanitize
      * @return {String}                     The key sanitize
     */
     function sanitizeKey(key) {
@@ -52,13 +47,12 @@ a.mem = (function() {
     };
 
     /**
-     * Get a stored element
+     * Get a stored element.
      *
-     * @method getFromStore
      * @private
      *
-     * @param key {String}                  The key to retrieve value from
-     * @return {Object | null}              null in case of not found, and
+     * @param {String} key                  The key to retrieve value from
+     * @return {Object | Null}              null in case of not found, and
      *                                      the stored value if found
     */
     function getFromStore(key) {
@@ -73,12 +67,11 @@ a.mem = (function() {
     };
 
     /**
-     * Get the full stored elements
+     * Get the full stored elements.
      *
-     * @method listFromStore
      * @private
      *
-     * @param prefix {String}               The prefix to use as 'search from
+     * @param {String} prefix               The prefix to use as 'search from
      *                                      that point'
      * @return {Object}                     A key value object with all values
      *                                      found matching prefix
@@ -101,13 +94,12 @@ a.mem = (function() {
     };
 
     /**
-     * Store a new element, or erase a previous element
+     * Store a new element, or erase a previous element.
      *
-     * @method setToStore
      * @private
      *
-     * @param key {String}                  The key to set value linked to
-     * @param value {Object}                The value to associate to key
+     * @param {String} key                  The key to set value linked to
+     * @param {Object} value                The value to associate to key
     */
     function setToStore(key, value) {
         key = sanitizeKey(key);
@@ -117,12 +109,11 @@ a.mem = (function() {
     };
 
     /**
-     * Remove an element from store
+     * Remove an element from store.
      *
-     * @method removeFromStore
      * @private
      *
-     * @param key {String}                  The key to erase from store
+     * @param {String} key                  The key to erase from store
     */
     function removeFromStore(key) {
         key = sanitizeKey(key);
@@ -131,10 +122,11 @@ a.mem = (function() {
 
 
     /**
-     * Clear the full store
+     * Clear the full store.
      *
-     * @method clearStore
      * @private
+     *
+     * @param {String} prefix               The prefix to clear.
     */
     function clearStore(prefix) {
         for(var key in store) {
@@ -145,7 +137,13 @@ a.mem = (function() {
     };
 
 
-    // Generic object to derivate from prefix element
+    /**
+     * Generic object to derivate from prefix element.
+     *
+     * @private
+     *
+     * @param {String} prefix               The prefix
+    */
     var genericObject = function(prefix) {
         this.prefix = prefix;
     };
@@ -153,12 +151,10 @@ a.mem = (function() {
     // Create the default prototype instance
     genericObject.prototype = {
         /**
-         * Get a stored element
+         * Get a stored element.
          *
-         * @method get
-         *
-         * @param key {String}              The key to retrieve value from
-         * @return {Object | null}          null in case of not found, and
+         * @param {String} key              The key to retrieve value from
+         * @return {Object | Null}          null in case of not found, and
          *                                  the stored value if found
         */
         get: function(key) {
@@ -168,8 +164,6 @@ a.mem = (function() {
         /**
          * Get the full currently stored elements.
          *
-         * @method list
-         *
          * @return {Object}                  An object of all currently stored
          *                                   elements
         */
@@ -178,32 +172,26 @@ a.mem = (function() {
         },
 
         /**
-         * Store a new element, or erase a previous element
+         * Store a new element, or erase a previous element.
          *
-         * @method set
-         *
-         * @param key {String}              The key to set value linked to
-         * @param value {Object}            The value to associate to key
+         * @param {String} key              The key to set value linked to
+         * @param {Object} value            The value to associate to key
         */
         set: function(key, value) {
             setToStore(this.prefix + '.' + key, value);
         },
 
         /**
-         * Remove an element from store
+         * Remove an element from store.
          *
-         * @method remove
-         *
-         * @param key {String}              The key to erase from store
+         * @param {String} key              The key to erase from store
         */
         remove: function(key) {
             removeFromStore(this.prefix + '.' + key);
         },
 
         /**
-         * Clear everything stored inside store
-         *
-         * @method clear
+         * Clear everything stored inside store.
         */
         clear: function() {
             // Must be a string not empty...
@@ -215,13 +203,10 @@ a.mem = (function() {
 
     var defaultInstance = new genericObject('');
 
-    // We add the last missing part: get your own genericObject
     /**
-     * Retrieve a custom mem object to manipulate from root prefix
+     * Retrieve a custom mem object to manipulate from root prefix.
      *
-     * @method getInstance
-     *
-     * @param prefix {String}               The prefix to use as base
+     * @param {String} prefix               The prefix to use as base
      * @return {Object}                     An instance ready to use
     */
     defaultInstance.getInstance = function(prefix) {

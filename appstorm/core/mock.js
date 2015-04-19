@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -11,15 +11,12 @@
 /**
  * The object is faking a server behavior to skip server creation during
  * client creation. It provide a simple emulation of server side.
- *
- * @class mock
- * @static
- * @namespace a
 */
 a.mock = {
     /**
      * Store the existing mock to use with application
      *
+     * @private
      * @property _mock
      * @type Array
      * @default []
@@ -27,7 +24,7 @@ a.mock = {
     _mock: [],
 
     /**
-     * Rollback to default content (nothing)
+     * Rollback to default content (nothing).
      *
      * @method clear
     */
@@ -38,12 +35,10 @@ a.mock = {
     /**
      * Add a new mock to system
      *
-     * @method add
-     *
-     * @param method {String}               The HTTP method (GET/POST/PUT/...)
-     * @param url {String}                  The url to catch
-     * @param result {Object | Function}    The attempted result
-     * @param model {String | null}         The model linked to the answer. Use
+     * @param {String} method               The HTTP method (GET/POST/PUT/...)
+     * @param {String} url                  The url to catch
+     * @param {Object | Function} result    The attempted result
+     * @param {String | null} model         The model linked to the answer. Use
      *                                      's' at the end if it's a list of...
     */
     add: function(method, url, result, model) {
@@ -64,11 +59,9 @@ a.mock = {
     /**
      * Get an existing result from model
      *
-     * @method get
-     *
-     * @param method {String}               The HTTP method (GET/POST/PUT/...)
-     * @param url {String}                  The url to catch
-     * @return {Object | null}              The result associated to mock
+     * @param {String} method               The HTTP method (GET/POST/PUT/...)
+     * @param {String} url                  The url to catch
+     * @return {Object | Null}              The result associated to mock
     */
     get: function(method, url) {
         var mocks = a.mock._mock,
@@ -88,11 +81,9 @@ a.mock = {
 
     /**
      * Get all mock related to model, and merge their content (= get a unique
-     * object containing ALL properties found)
+     * object containing ALL properties found).
      *
-     * @method merge
-     *
-     * @param model {String}                The model name to search
+     * @param {String} model                The model name to search
      * @return {Object}                     The merge realise, or an empty
      *                                      object if trouble
     */
@@ -157,8 +148,6 @@ a.mock = {
      * It is sorted by model type... If the model type is using a 's', for
      * now it still linked like this, as it was with a 's', we keep that for
      * saying 'those url returns array'.
-     *
-     * @method map
      *
      * @return {Object}                     A related object
     */

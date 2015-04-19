@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -10,10 +10,6 @@
 
 /**
  * Dynamic loader for many files type.
- *
- * @class loader
- * @static
- * @namespace a
 */
 a.loader = (function() {
     'use strict';
@@ -26,14 +22,13 @@ a.loader = (function() {
         htmlMethods   = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 
     /**
-     * Check the cache, and launch callback if uri is already listed in cache
+     * Check the cache, and launch callback if uri is already listed in cache.
      *
-     * @method checkInternalCache
      * @private
      * @async
      *
-     * @param uri {String}                  The path to access data
-     * @param callback {Function | null}    The callback to apply after loader
+     * @param {String} uri                  The path to access data
+     * @param {Function | Null} callback    The callback to apply after loader
      * @return {Boolean}                    True if it's already inside cache,
      *                                      and false in other case
     */
@@ -57,13 +52,12 @@ a.loader = (function() {
     };
 
     /**
-     * Insert into cache if needed the uri
+     * Insert into cache if needed the uri.
      *
-     * @method populateInternalCache
      * @private
      *
-     * @param uri {String}                  The path to access data
-     * @param args {Object}                 The arguments to check if cache
+     * @param {String} uri                  The path to access data
+     * @param {Object} args                 The arguments to check if cache
      *                                      is specified and policy to use
     */
     function populateInternalCache(uri, args) {
@@ -75,20 +69,19 @@ a.loader = (function() {
     };
 
     /**
-     * Append to header the given tag, used by JS and CSS loader especially
+     * Append to header the given tag, used by JS and CSS loader especially.
      *
-     * @method appendElementToHeader
      * @private
      * @async
      *
-     * @param el {DOM}                      A createElement type result
-     * @param options {Object}              HTML Options to add to link
+     * @param {DOMElement} el               A createElement type result
+     * @param {Object} options              HTML Options to add to link
      *                                      appended
-     * @param callback {Function | null}    The callback to apply after loader
-     * @param uri {String}                  The path to access data
-     * @param args {Object | null}          The arguments to check if cache
+     * @param {Function | Null} callback    The callback to apply after loader
+     * @param {String} uri                  The path to access data
+     * @param {Object | Null} args          The arguments to check if cache
      *                                      is specified and policy to use
-     * @param error {Function | null}       The callback to raise in case
+     * @param {Function | Null} error       The callback to raise in case
      *                                      of problem (never used)
     */
     function appendElementToHeader(el, options, callback, uri, args, error) {
@@ -129,15 +122,13 @@ a.loader = (function() {
             el.onload = cb;
         }
 
-        /*
-         * Hack for old Firefox/webkit browsers
-         * (who does not have onload on link elements)
-         *
-         * Note : using 'onload' in document.createElement('link')
-         * is not always enough
-         *
-         * By default, too many browser got this bug, so we always activate it
-        */
+        // Hack for old Firefox/webkit browsers
+        // (who does not have onload on link elements)
+        //
+        // Note : using 'onload' in document.createElement('link')
+        // is not always enough
+        //
+        // By default, too many browser got this bug, so we always activate it
         if(options.type === 'text/css') {
             var currentCSS = document.styleSheets.length;
             nCSS++;
@@ -157,20 +148,19 @@ a.loader = (function() {
     };
 
     /**
-     * load some data threw AJAX
+     * load some data threw AJAX.
      *
-     * @method performAjaxLoading
      * @private
      * @async
      *
-     * @param uri {String}                  The data path
-     * @param callback {Function | null}    The callback to apply in
+     * @param {String} uri                  The data path
+     * @param {Function | Null} callback    The callback to apply in
      *                                      case of success
-     * @param args {Object | null}          An ajax argument object,
+     * @param {Object | Null} args          An ajax argument object,
      *                                      not all of them are used
      *                                      (some are automatically generated
      *                                      and cannot be changed)
-     * @param error {Function | null}       The callback to apply
+     * @param {Function | Null} error       The callback to apply
      *                                      in case of error
     */
     function performAjaxLoading(uri, callback, args, error) {
@@ -221,15 +211,14 @@ a.loader = (function() {
 
     return {
         /**
-         * Javascript loader
+         * Javascript loader.
          *
-         * @method js
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -243,15 +232,14 @@ a.loader = (function() {
         },
 
         /**
-         * JSONP loader
+         * JSONP loader.
          *
-         * @method jsonp
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -271,15 +259,14 @@ a.loader = (function() {
         },
 
         /**
-         * JSON loader
+         * JSON loader.
          *
-         * @method json
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -301,15 +288,14 @@ a.loader = (function() {
         },
 
         /**
-         * XML loader
+         * XML loader.
          *
-         * @method xml
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -331,15 +317,14 @@ a.loader = (function() {
         },
 
         /**
-         * CSS loader
+         * CSS loader.
          *
-         * @method css
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -361,16 +346,15 @@ a.loader = (function() {
         },
 
         /**
-         * HTML loader
+         * HTML loader.
          * NOTE : only valid XHTML is accepted !
          *
-         * @method html
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -400,23 +384,22 @@ a.loader = (function() {
         },
 
         /**
-         * JavaFX loader
+         * JavaFX loader.
          *
-         * @method javafx
          * @async
          *
-         * @param uri {String}               The path for given jar files to
+         * @param {String} uri               The path for given jar files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   javaFX (like javascript name...),
          *                                   we need : args.code (the main to
          *                                   start), args.id (the id of
          *                                   project). args.width and height
          *                                   are optional
         */
-        javafx: function(uri, callback, args, error) {
+        javafx: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
                 var error =  'The system need args.code ';
                     error += 'and args.name setted to be able to load any ';
@@ -462,19 +445,18 @@ a.loader = (function() {
         },
 
         /**
-         * Flash loader
+         * Flash loader.
          *
-         * @method flash
          * @async
          *
-         * @param uri {String}               The path for given swf files to
+         * @param {String} uri               The path for given swf files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   Flash
         */
-        flash: function(uri, callback, args, error) {
+        flash: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 var error =  'The system need args ';
                     error += 'parameters: rootId and id, setted to be able ';
@@ -514,18 +496,17 @@ a.loader = (function() {
         },
 
         /**
-         * Silverlight loader
+         * Silverlight loader.
          *
-         * @method silverlight
          * @async
          *
-         * @param uri {String}               The path for given xap files to
+         * @param {String} uri               The path for given xap files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success (NOTE: silverlight
          *                                   is not able to fire load event,
          *                                   so it's not true here...)
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   Silverlight
         */
         silverlight: function(uri, callback, args, error) {
@@ -583,11 +564,9 @@ a.loader = (function() {
         },
 
         /**
-         * Get the cache trace loaded
+         * Get the cache trace loaded.
          *
-         * @method trace
-         *
-         * @return {Array} The cache trace
+         * @return {Array}                  The cache trace
         */
         trace: function() {
             return internalCache;

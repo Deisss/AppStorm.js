@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -13,10 +13,6 @@
  * Main environment data store, allow to globally define some global
  * rules for managing global environment variable. Use the a.mem object
  * for others type of variables.
- *
- * @class environment
- * @static
- * @namespace a
 */
 a.environment = a.mem.getInstance('app.environment');
 
@@ -36,7 +32,7 @@ if(a.isString(a.url) && a.url.length > 0) {
     a.mem.set('app.url', a.url);
 }
 
-/*
+/*!
 ------------------------------
   BROWSER HELPERS
 ------------------------------
@@ -51,7 +47,7 @@ if(a.isString(a.url) && a.url.length > 0) {
     // Chrome 1+
     var isChrome = !!window.chrome && !isOpera;
     // At least IE6
-    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isIE = (document.all && !isChrome && !isOpera && !isSafari && !isFirefox) || !!document.documentMode;
 
     var browser = 'other';
     if (isOpera) {
@@ -74,9 +70,6 @@ if(a.isString(a.url) && a.url.length > 0) {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    // Get environment elements
-    Handlebars.registerHelper('environment', function(value) {
-        return new Handlebars.SafeString(a.environment.get(value));
-    });
-})();
+Handlebars.registerHelper('environment', function(value) {
+    return new Handlebars.SafeString(a.environment.get(value));
+});

@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -11,9 +11,11 @@
 ************************************************************************ */
 
 
-// From: http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
-// Adding 'uber basic' support of querySelectorAll for IE browsers
-// Only if user does not make usage of any library like jQuery
+/*!
+ * From: http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
+ * Adding 'uber basic' support of querySelectorAll for IE browsers
+ * Only if user does not make usage of any library like jQuery
+*/
 if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
     // IE7 support for querySelectorAll in 274 bytes. Supports multiple / grouped selectors and the attribute selector with a "for" attribute. http://www.codecouch.com/
     (function(d,s){d=document,s=d.createStyleSheet();d.querySelectorAll=function(r,c,i,j,a){a=d.all,c=[],r=r.replace(/\[for\b/gi,'[htmlFor').split(',');for(i=r.length;i--;){s.addRule(r[i],'k:v');for(j=a.length;j--;)a[j].currentStyle.k&&c.push(a[j]);s.removeRule(0)}return c}})()
@@ -25,20 +27,14 @@ if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
  * This helps to use appstorm by itself without any jQuery or others.
  * It really not the best, but it does work well, and already pretty 
  * usefull!
- *
- * @class dom
- * @static
- * @namespace a
 */
 a.dom = {
     /**
-     * USE ONLY IF YOU HAVE JQUERY, OR DONT CARE OLD BROWSER (IE 8 and +)
-     * Use direct jquery or querySelectorAll to select items
+     * USE ONLY IF YOU HAVE JQUERY, OR DON'T CARE OLD BROWSER (IE 8 and +)
+     * Use direct jquery or querySelectorAll to select items.
      *
-     * @method query
-     *
-     * @param check {String}                The string to search for
-     * @param dom {DOMElement}              The dom to search inside
+     * @param {String} check                The string to search for
+     * @param {DOMElement} dom              The dom to search inside
      * @return {a.dom.children}             A chainable object
     */
     query: function(check, dom) {
@@ -52,11 +48,9 @@ a.dom = {
     },
 
     /**
-     * Embed a dom element into a.dom system
+     * Embed a dom element into a.dom system.
      *
-     * @method el
-     *
-     * @param element {DOMElement}          A dom element to work with
+     * @param {DOMElement} element          A dom element to work with
      * @return {a.dom.children}             A chainable object
     */
     el: function(element) {
@@ -104,11 +98,9 @@ a.dom = {
     },
 
     /**
-     * Find element by id, or a list of ids (separator: ',', or an array)
+     * Find element by id, or a list of ids (separator: ',', or an array).
      *
-     * @method id
-     *
-     * @param id {String | Array}           The id(s) to search
+     * @param {String | Array} id           The id(s) to search
      * @return {a.dom.children}             A chainable object
     */
     id: function(id) {
@@ -117,13 +109,11 @@ a.dom = {
 
     /**
      * Find elements by classname, or a list of classname
-     * (separator: ',', or an array)
+     * (separator: ',', or an array).
      *
-     * @method cls
-     *
-     * @param clsname {String | Array}      The classname(s) to search
+     * @param {String | Array} clsname      The classname(s) to search
      *                                      (like 'active', 'container', ...)
-     * @param dom {DOMElement | null}       The init dom to start searching
+     * @param {DOMElement | null} dom       The init dom to start searching
      *                                      from or null to use document
      * @return {a.dom.children}             A chainable object
     */
@@ -133,12 +123,10 @@ a.dom = {
 
     /**
      * Find elemnts by their tagname, or a list of tagname
-     * (separator: ',', or an array)
+     * (separator: ',', or an array).
      *
-     * @method tag
-     *
-     * @param name {String | Array}         The tag(s) to search (input, a,...)
-     * @param dom {DOMElement | null}       The init dom to start searching
+     * @param {String | Array} name         The tag(s) to search (input, a,...)
+     * @param {DOMElement | Null} dom       The init dom to start searching
      *                                      from, or null to use document
      * @return {a.dom.children}             A chainable object
     */
@@ -177,17 +165,15 @@ a.dom = {
     },
 
     /**
-     * Find elements by attribute name
+     * Find elements by attribute name.
      *
-     * @method attr
-     *
-     * @param name {String | Array}         The attribute name to search
-     * @param value {String | null}         The attribute value (can be empty)
-     * @param dom {DOMElement}              The dom to start search from
+     * @param {String | Array} name         The attribute name to search
+     * @param {String | Null} value         The attribute value (can be empty)
+     * @param {DOMElement} dom              The dom to start search from
      * @return {a.dom.children}             A chainable object
     */
     attr: function(name, value, dom) {
-        /*
+        /*!
          * -----------------------------------
          *   Detect parameter chain
          * -----------------------------------
@@ -210,9 +196,11 @@ a.dom = {
         }
 
         /**
-         * From a string or an array, get a string version
+         * From a string or an array, get a string version.
          *
-         * @param str {String | Array}      Separate elements
+         * @private
+         *
+         * @param {String | Array} str      Separate elements
          * @return {Array}                  The split version
         */
         function stringToArray(str) {
@@ -223,8 +211,10 @@ a.dom = {
          * Append elements to parentList only if there are not already
          * inside collection.
          *
-         * @param parentList {Array}        The arrays to append elements to
-         * @param children {Array}          The list of elements to append
+         * @private
+         *
+         * @param {Array} parentList        The arrays to append elements to
+         * @param {Array} children          The list of elements to append
         */
         function appendList(parentList, children) {
             a.each(children, function(child) {
@@ -234,7 +224,7 @@ a.dom = {
             });
         };
 
-        /*
+        /*!
          * -----------------------------------
          *   Recursive attribute search
          * -----------------------------------
@@ -260,7 +250,7 @@ a.dom = {
             }
         }
 
-        /*
+        /*!
          * -----------------------------------
          *   Recursive value search
          * -----------------------------------
@@ -286,7 +276,7 @@ a.dom = {
             }
         }
 
-        /*
+        /*!
          * -----------------------------------
          *   Select elements regarding search
          * -----------------------------------
@@ -375,7 +365,7 @@ a.dom = {
 
 /**
  * Unified event system for DOM element (to have always the same behavior
- * between all browser)
+ * between all browser).
 */
 a.dom.event = function(e) {
     e = e || window.event;
@@ -389,12 +379,12 @@ a.dom.event = function(e) {
     this.originalEvent = e;
 };
 
-/**
+/*!
  * Event prototype
 */
 a.dom.event.prototype = {
     /**
-     * Stop event propagation
+     * Stop event propagation.
     */
     stopPropagation: function() {
         var e = this.originalEvent;
@@ -406,7 +396,7 @@ a.dom.event.prototype = {
     },
 
     /**
-     * Prevent default behavior
+     * Prevent default behavior.
     */
     preventDefault: function() {
         var e = this.originalEvent;
@@ -419,12 +409,10 @@ a.dom.event.prototype = {
 
 
 /**
- * Generic function to use for converting event to appstorm event type
+ * Generic function to use for converting event to appstorm event type.
  *
- * @method eventBinder
- *
- * @param fn {Function}                     The function to encaps
- * @param scope {Object | null}             The scope to apply if possible
+ * @param {Function} fn                     The function to encaps
+ * @param {Object | Null} scope             The scope to apply if possible
  * @return {Function}                       The binded function
 */
 a.dom.eventBinder = function(fn, scope) {
@@ -441,12 +429,15 @@ a.dom.eventBinder = function(fn, scope) {
 
 
 /**
- * Abstract layer for binding event with DOM
+ * Abstract layer for binding event with DOM.
 */
 a.dom.eventListener = new function() {
     var store = [];
 
-    // Add binder between true event and function catch
+    /**
+     * Add binder between true event and function catch
+     * @private
+    */
     function addListener(el, type, fn, scope) {
         var binder = new a.dom.eventBinder(fn, scope || null);
         store.push({
@@ -458,7 +449,10 @@ a.dom.eventListener = new function() {
         return binder;
     };
 
-    // Destroy stored binder reference
+    /**
+     * Destroy stored binder reference
+     * @private
+    */
     function removeListener(el, type, fn) {
         var s = store,
             i = s.length,
@@ -475,25 +469,43 @@ a.dom.eventListener = new function() {
     };
 
     // New browser
+    /**
+     * @private
+    */
     function addEventListener(el, type, fn, scope) {
         el.addEventListener(type,    addListener(el, type, fn, scope), false);
     };
+    /**
+     * @private
+    */
     function removeEventListener(el, type, fn) {
         el.removeEventListener(type, removeListener(el, type, fn), false);
     };
 
     // IE
+    /**
+     * @private
+    */
     function attachEvent(el, type, fn, scope) {
         el.attachEvent('on' + type, addListener(el, type, fn, scope));
     };
+    /**
+     * @private
+    */
     function detachEvent(el, type, fn) {
         el.detachEvent('on' + type, removeListener(el, type, fn));
     };
 
     // Old Browsers
+    /**
+     * @private
+    */
     function rawBindEvent(el, type, fn, scope) {
         el['on' + type] = addListener(el, type, fn, scope);
     };
+    /**
+     * @private
+    */
     function rawUnbindEvent(el, type, fn) {
         removeListener(el, type, fn);
         el['on' + type] = null;
@@ -544,9 +556,9 @@ a.dom.eventListener = new function() {
 
 
 /**
- * Handle recursive sub-search
+ * Handle recursive sub-search.
  *
- * @param elementList {Array}               The list of elements to use
+ * @param {Array} elementList               The list of elements to use
 */
 a.dom.children = function(elementList) {
     elementList = a.isUndefined(elementList.length) ?
@@ -560,14 +572,12 @@ a.dom.children = function(elementList) {
 
 a.dom.children.prototype = {
     /**
-     * Perform a recursive task to select sub children using a.dom
+     * Perform a recursive task to select sub children using a.dom.
      *
      * The first parameter must be the a.dom to use
      * Other parameters are parameter to pass to this function
-     * The last parameter should be the dom to use for search
+     * The last parameter should be the dom to use for search.
      *
-     * @method _perform
-     * @chainable
      * @private
     */
     _perform: function() {
@@ -610,12 +620,10 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Get a single DOM element
+     * Get a single DOM element.
      *
-     * @method get
-     *
-     * @param index {Integer}               The index to retrieve
-     * @return {DOMElement | null}          The dom element linked or null
+     * @param {Integer} index               The index to retrieve
+     * @return {DOMElement | Null}          The dom element linked or null
      *                                      if not found
     */
     get: function(index) {
@@ -623,9 +631,7 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Get the DOM elements stored
-     *
-     * @method getElements
+     * Get the DOM elements stored.
      *
      * @return {Array}                      The element list stored
     */
@@ -634,24 +640,22 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select sub-id elements
+     * Select sub-id elements.
      *
-     * @method id
      * @chainable
      *
-     * @param id {String}                   The id or list of ids to search
+     * @param {String} id                   The id or list of ids to search
     */
     id: function(id) {
         return this._perform(a.dom.id, id);
     },
 
     /**
-     * Select sub-class elements
+     * Select sub-class elements.
      *
-     * @method cls
      * @chainable
      *
-     * @param clsname {String}              The class or list of classes to
+     * @param {String} clsname              The class or list of classes to
      *                                      search
     */
     cls: function(clsname) {
@@ -661,12 +665,10 @@ a.dom.children.prototype = {
     /**
      * Get or set style for given elements
      *
-     * @method css
-     *
-     * @param rule {String}                 The CSS rule we are working with
-     * @param value {String}                The value to set (can be empty for
+     * @param {String} rule                 The CSS rule we are working with
+     * @param {String} value                The value to set (can be empty for
      *                                      get)
-     * @return {String | null}              The CSS value found in case of get
+     * @return {String | Null}              The CSS value found in case of get
     */
     css: function(rule, value) {
         rule = rule || '';
@@ -710,12 +712,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Add a class to elements
+     * Add a class to elements.
      *
-     * @method addClass
      * @chainable
      *
-     * @param classname {String}            The classname to append to every
+     * @param {String} classname            The classname to append to every
      *                                      elements
     */
     addClass: function(classname) {
@@ -732,12 +733,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Test if all elements got classname or not
+     * Test if all elements got classname or not.
      *
-     * @method hasClass
      * @chainable
      *
-     * @param classname {String}            The classname to test on every
+     * @param {String} classname            The classname to test on every
      *                                      elements
     */
     hasClass: function(classname) {
@@ -755,12 +755,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Remove a class element
+     * Remove a class element.
      *
-     * @method removeClass
      * @chainable
      *
-     * @param classname {String}            The classname to remove on every
+     * @param {String} classname            The classname to remove on every
      *                                      elements
     */
     removeClass: function(classname) {
@@ -779,12 +778,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * toggle a class element
+     * toggle a class element.
      *
-     * @method toggleClass
      * @chainable
      *
-     * @param classname {String}            The classname to toggle on every
+     * @param {String} classname            The classname to toggle on every
      *                                      elements
     */
     toggleClass: function(classname) {
@@ -807,12 +805,11 @@ a.dom.children.prototype = {
     /**
      * Bind element event to given function (like click, submit...).
      *
-     * @method bind
      * @chainable
      *
-     * @param binding {String | Array}      The event/list to apply to
-     * @param fct {Function}                The handler to receive event
-     * @param scope {Object | null}         The scope to apply
+     * @param {String | Array} binding      The event/list to apply to
+     * @param {Function} fct                The handler to receive event
+     * @param {Object | Null} scope         The scope to apply
     */
     bind: function(binding, fct, scope) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -831,13 +828,12 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Unbind element event to given function (like click, submit...)
+     * Unbind element event to given function (like click, submit...).
      *
-     * @method unbind
      * @chainable
      *
-     * @param binding {String | Array}      The event/list to remove
-     * @param fct {Function}                The handler of event
+     * @param {String | Array} binding      The event/list to remove
+     * @param {Function} fct                The handler of event
     */
     unbind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
@@ -857,39 +853,36 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select sub-tag elements
+     * Select sub-tag elements.
      *
-     * @method tag
      * @chainable
      *
-     * @param name {String}                 The tag or list of tags to search
+     * @param {String} name                 The tag or list of tags to search
     */
     tag: function(name) {
         return this._perform(a.dom.tag, name);
     },
 
     /**
-     * Select sub-attributes elements
+     * Select sub-attributes elements.
      *
-     * @method attr
      * @chainable
      *
-     * @param attribute {String}            The attribute or list of
+     * @param {String} attribute            The attribute or list of
      *                                      attributes to search
-     * @param value {String | null}         The value to use, can be empty
+     * @param {String | Null} value         The value to use, can be empty
     */
     attr: function(attribute, value) {
         return this._perform(a.dom.attr, attribute, value);
     },
 
     /**
-     * Append or get attribute
+     * Append or get attribute.
      *
-     * @method attribute
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     attribute: function(attribute, value) {
         var attributes = 
@@ -934,26 +927,24 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Same as attribute, but for data- HTML5 tag
+     * Same as attribute, but for data- HTML5 tag.
      *
-     * @method data
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     data: function(attribute, value) {
         return this.attribute('data-' + attribute, value);
     },
 
     /**
-     * Same as data or attribute, but multi tag check
+     * Same as data or attribute, but multi tag check.
      *
-     * @method appstorm
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     appstorm: function(attribute, value) {
         // TODO: attribute does not handle ',' and array delimiter
@@ -964,9 +955,8 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Move to the parent element for every element stored
+     * Move to the parent element for every element stored.
      *
-     * @method parent
      * @chainable
     */
     parent: function() {
@@ -987,12 +977,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select direct children of all stored elements
+     * Select direct children of all stored elements.
      *
-     * @method children
      * @chainable
      *
-     * @param types {Array | null}          The nodeTypes to keep (default: 3)
+     * @param {Array | Null} types          The nodeTypes to keep (default: 3)
     */
     children: function(types) {
         var elementList = this.elementList,
@@ -1023,9 +1012,8 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select all sub elements
-     *
-     * @method all
+     * Select all sub elements.
+     *=
      * @chainable
     */
     all: function() {
@@ -1057,12 +1045,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Insert before selected element
+     * Insert before selected element.
      *
-     * @method insertBefore
      * @chainable
      *
-     * @param element {DOMElement}          The element to insert
+     * @param {DOMElement} element          The element to insert
     */
     insertBefore: function(element) {
         var dom = a.dom.el(element),
@@ -1077,12 +1064,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Insert after selected element
+     * Insert after selected element.
      *
-     * @method insertAfter
      * @chainable
      *
-     * @param element {DOMElement}          The element to insert
+     * @param {DOMElement} element          The element to insert
     */
     insertAfter: function(element) {
         var dom = a.dom.el(element),
@@ -1097,9 +1083,8 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Empty all elements stored
+     * Empty all elements stored.
      *
-     * @method empty
      * @chainable
     */
     empty: function() {
@@ -1112,12 +1097,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Remove element from content
+     * Remove element from content.
      *
-     * @method remove
      * @chainable
      *
-     * @param element {DOMElement}          The element to remove
+     * @param {DOMElement} element          The element to remove
     */
     remove: function(element) {
         var dom = a.dom.el(element),
@@ -1134,12 +1118,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Append element to the existing content
+     * Append element to the existing content.
      *
-     * @method append
      * @chainable
      *
-     * @param element {DOMElement}          The element to append
+     * @param {DOMElement} element          The element to append
     */
     append: function(element) {
         var dom = a.dom.el(element),
@@ -1154,12 +1137,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Replace the existing content with given element
+     * Replace the existing content with given element.
      *
-     * @method replace
      * @chainable
      *
-     * @param element {DOMElement}          The element to append
+     * @param {DOMElement} element          The element to append
     */
     replace: function(element) {
         this.empty();
@@ -1167,13 +1149,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Set inside the current elements the content, or get the current html
+     * Set inside the current elements the content, or get the current html.
      *
-     * @method html
-     *
-     * @param content {String | null}       The content to set, or nothing to
+     * @param {String | Null} content       The content to set, or nothing to
      *                                      get
-     * @return {String | null}              The current content, or null
+     * @return {String | Null}              The current content, or null
     */
     html: function(content) {
         if(!a.isUndefined(content)) {
@@ -1196,12 +1176,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Apply on each elements the given function
+     * Apply on each elements the given function.
      *
-     * @method each
      * @chainable
      *
-     * @param fct {Function}                The function to apply to elements
+     * @param {Function} fct                The function to apply to elements
      * Other parameters are passed to every function call as arguments
     */
     each: function() {

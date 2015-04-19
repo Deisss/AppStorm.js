@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -8,11 +8,7 @@
 ************************************************************************ */
 
 /**
- * Simple timer system, provide a single timer for many bindings
- *
- * @class timer
- * @static
- * @namespace a
+ * Simple timer system, provide a single timer for many bindings.
 */
 a.timer = (function() {
     'use strict';
@@ -52,16 +48,16 @@ a.timer = (function() {
 
     return {
         /**
-         * Register a function for regular timer tick
+         * Register a function for regular timer tick.
          *
-         * @method add
          * @async
          *
-         * @param fct {Function}        The function to bind
-         * @param scope {Object | null} The scope to use when calling function
-         * @param timeout {Integer}     The timeout between two call
-         * @return {Integer}            A generated id used to access
-         *                              this entry
+         * @param {Function} fct            The function to bind
+         * @param {Object | Null} scope     The scope to use when calling
+         *                                  function
+         * @param {Integer} timeout         The timeout between two call
+         * @return {Integer}                A generated id used to access
+         *                                  this entry
         */
         add: function(fct, scope, timeout) {
             var id = a.uniqueId();
@@ -87,16 +83,16 @@ a.timer = (function() {
         },
 
         /**
-         * Register a function for a single timer tick
+         * Register a function for a single timer tick.
          *
-         * @method once
          * @async
          *
-         * @param fct {Function}        The function to bind
-         * @param scope {Object | null} The scope to use when calling function
-         * @param timeout {Integer}     The timeout when calling function
-         * @return {Integer}            A generated id used to
-         *                              manipulate ticker access
+         * @param {Function} fct            The function to bind
+         * @param {Object | Null} scope     The scope to use when calling
+         *                                  function
+         * @param {Integer} timeout         The timeout when calling function
+         * @return {Integer}                A generated id used to
+         *                                  manipulate ticker access
         */
         once: function(fct, scope, timeout) {
             var id = this.add(
@@ -111,12 +107,10 @@ a.timer = (function() {
         },
 
         /**
-         * Get a function registred into the timer
+         * Get a function registred into the timer.
          *
-         * @method get
-         *
-         * @return {Object | null}      The object linked to id,
-         *                              or null if nothing is related to id
+         * @return {Object | Null}          The object linked to id, or null
+         *                                  if nothing is related to id
         */
         get: function(id) {
             var item = store[id];
@@ -124,21 +118,17 @@ a.timer = (function() {
         },
 
         /**
-         * Remove a function currently stored into the timer
+         * Remove a function currently stored into the timer.
          *
-         * @method remove
-         *
-         * @param id {Integer}         The id to delete
-         * @return {Boolean}           The item has been delete or not
+         * @param id {Integer}              The id to delete
+         * @return {Boolean}                The item has been delete or not
         */
         remove: function(id) {
             return delete store[id];
         },
 
         /**
-         * Clear the current timer
-         *
-         * @method clear
+         * Clear the current all timers.
         */
         clear: function() {
             store = {};

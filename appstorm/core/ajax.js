@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -11,22 +11,20 @@
 
 (function(a) {
     /**
-     * Ajax cache object, used to store cached request and retrieve it if possible
+     * Ajax cache object, used to store cached request and retrieve it if possible.
      *
-     * @class ajaxCache
-     * @namespace a
      * @private
     */
     var ajaxCache = {
         /**
-         * Add a new cached ajax elemen
+         * Add a new cached ajax element.
          *
-         * @method add
+         * @private
          *
-         * @param method {String}               GET/POST/PUT/DELETE/...
-         * @param url {String}                  The url to catch
-         * @param results {Object}              The related result
-         * @param timeout {Integer}             The timeout (in ms)
+         * @param {String} method               GET/POST/PUT/DELETE/...
+         * @param {String} url                  The url to catch
+         * @param {Object} results              The related result
+         * @param {Integer} timeout             The timeout (in ms)
         */
         add: function(method, url, results, timeout) {
             if(timeout <= 0) {
@@ -50,13 +48,13 @@
         },
 
         /**
-         * Get a previously cached element
+         * Get a previously cached element.
          *
-         * @method get
+         * @private
          *
-         * @param method {String}               GET/POST/PUT/DELETE/...
-         * @param url {String}                  The url to catch
-         * @return {Object | null}              Return the previously stored
+         * @param {String} method               GET/POST/PUT/DELETE/...
+         * @param {String} url                  The url to catch
+         * @return {Object | Null}              Return the previously stored
          *                                      element or null if nothing is
          *                                      found
         */
@@ -84,13 +82,12 @@
      * Help to get a new model, or update an existing one, regarding
      * primary keys inside a model.
      *
-     * @method getOrCreateModel
      * @private
      *
-     * @param name {String}                 The model name to search instance
-     * @param primaries {Array}             List of primary key inside the
+     * @param {String} name                 The model name to search instance
+     * @param {Array} primaries             List of primary key inside the
      *                                      model
-     * @param content {Object}              The content of current model
+     * @param {Object} content              The content of current model
      *                                      data (containing the primary
      *                                      key's data to match)
      * @return {a.modelInstance}            The new model created
@@ -123,20 +120,13 @@
     };
 
     /**
-     * Ajax object to call server
+     * Ajax object to call server.
      *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:ajax">here</a>
-     *
-     * @class ajax
-     * @namespace a
-     * @constructor
-     * @async
-     *
-     * @param options {Object}                  An option map to change
+     * @param {Object} options                  An option map to change
      *                                          the behaviour of component
-     * @param success {Function}                The success function called
+     * @param {Function} success                The success function called
      *                                          in case of async
-     * @param error {Function}                  The error function called in
+     * @param {Function} error                  The error function called in
      *                                          case of async
     */
     a.ajax = function(options, success, error) {
@@ -260,13 +250,13 @@
     };
 
     /**
-     * Parse the data to return the formated object (if needed)
+     * Parse the data to return the formated object (if needed).
      *
-     * @method parseResult
+     * @private
      *
-     * @param params {Object}                   The parameter list from
+     * @param {Object} params                   The parameter list from
      *                                          configuration ajax
-     * @param http {Object}                     The xmlHttpRequest started
+     * @param {Object} http                     The xmlHttpRequest started
      * @return {Object | String}                The parsed results
     */
     a.ajax.prototype.parseResult = function(params, http) {
@@ -357,9 +347,7 @@
     };
 
     /**
-     * Manually abort the request
-     *
-     * @method abort
+     * Manually abort the request.
     */
     a.ajax.prototype.abort = function() {
         try {
@@ -368,9 +356,7 @@
     };
 
     /**
-     * Send the ajax request
-     *
-     * @method send
+     * Send the ajax request.
     */
     a.ajax.prototype.send = function() {
         var method = this.params.method.toUpperCase();

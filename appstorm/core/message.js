@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -14,10 +14,6 @@
 /**
  * Simple message/event system allowing to exchange data across elements threw
  * events.
- *
- * @class eventEmitter
- * @constructor
- * @namespace a
 */
 a.eventEmitter = function(base) {
     this.eventList = {};
@@ -27,9 +23,8 @@ a.eventEmitter = function(base) {
 
 a.eventEmitter.prototype = {
     /**
-     * Clear the event listeners which don't have any function added
+     * Clear the event listeners which don't have any function added.
      *
-     * @method clearEventType
      * @private
     */
     clearEventType: function() {
@@ -44,16 +39,14 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Bind a function to an event type
+     * Bind a function to an event type.
      *
-     * @method bind
-     *
-     * @param type {String}                 The event type
-     * @param fn {Function}                 The function to bind to event
-     * @param scope {Object | null}         The scope to bind to function
-     * @param once {Boolean | null}         If we should start it only once or
+     * @param {String} type                 The event type
+     * @param {Function} fn                 The function to bind to event
+     * @param {Object | Null} scope         The scope to bind to function
+     * @param {Boolean | Null} once         If we should start it only once or
      *                                      not
-     * @param clear {Boolean | null}        If the current bind can be clear or
+     * @param {Boolean | Null} clear        If the current bind can be clear or
      *                                      not (you still can use unbind)
     */
     bind: function(type, fn, scope, once, clear) {
@@ -99,14 +92,12 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Adding a listener only once
+     * Adding a listener only once.
      *
-     * @method bindOnce
-     *
-     * @param type {String}                 The event type
-     * @param fn {Function}                 The function to bind to event
-     * @param scope {Object | null}         The scope to bind to function
-     * @param clear {Boolean | null}        If the current bind can be clear or
+     * @param {String} type                 The event type
+     * @param {Function} fn                 The function to bind to event
+     * @param {Object | Null} scope         The scope to bind to function
+     * @param {Boolean | Null} clear        If the current bind can be clear or
      *                                      not (you still can use unbind)
     */
     bindOnce: function(type, fn, scope, clear) {
@@ -114,12 +105,10 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Removing a listener to a specific message type
+     * Removing a listener to a specific message type.
      *
-     * @method unbind
-     *
-     * @param type {String} The event name
-     * @param fn {Function} The function to detach
+     * @param {String} type                 The event name
+     * @param {Function} fn                 The function to detach
     */
     unbind: function(type, fn) {
         // The type is invalid (empty string or not a string)
@@ -157,11 +146,9 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Remove all listeners for a given type
+     * Remove all listeners for a given type.
      *
-     * @method unbindAll
-     *
-     * @param type {String} The event type to remove
+     * @param {String} type                 The event type to remove
     */
     unbindAll: function(type) {
         if(!a.isNone(this.eventList[type])) {
@@ -180,9 +167,7 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Clear all listeners from all event type
-     *
-     * @method clear
+     * Clear all listeners from all event type.
     */
     clear: function() {
         var c = this.eventBaseName + '.clear';
@@ -198,12 +183,11 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Call an event, according to it's type
+     * Call an event, according to it's type.
      *
-     * @method dispatch
-     *
-     * @param type {String} The event name to dispatch
-     * @param data {Object} Anything you want to pass threw this event
+     * @param {String} type                 The event name to dispatch
+     * @param {Object} data                 Anything you want to pass threw
+     *                                      this event
     */
     dispatch: function(type, data) {
         var dispatcher = this.eventList[type];
@@ -223,20 +207,12 @@ a.eventEmitter.prototype = {
 
 
 /**
- * The bus system to exchange message globally between all application object
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
- *
- * @class message
- * @static
- * @requires eventEmitter
- * @uses eventEmitter
- * @namespace a
+ * The bus system to exchange message globally between all application object.
 */
 a.message = new a.eventEmitter('a.message');
 
 
-/*
+/*!
 ------------------------------
   SPECIFIC READY
 ------------------------------
@@ -246,13 +222,11 @@ a.message = new a.eventEmitter('a.message');
         tmp = [];
 
     /**
-     * Internal function to call function regarding it's scope
-     *
-     * @method internalCall
+     * Internal function to call function regarding it's scope.
      * @private
      *
-     * @param func {Function}               The function to call
-     * @param scope {Object | null}         The potential scope (optional)
+     * @param {Function} func               The function to call
+     * @param {Object | Null} scope         The potential scope (optional)
     */
     function internalCall(func, scope) {
         setTimeout(function() {
@@ -276,13 +250,11 @@ a.message = new a.eventEmitter('a.message');
     });
 
     /**
-     * Alias mostly used for appstorm ready event
+     * Alias mostly used for appstorm ready event.
      *
-     * @method on
-     *
-     * @param name {String}                     The event name
-     * @param func {Function}                   The function to start
-     * @param scope {Object | null}             The scope to apply (optional)
+     * @param {String} name                     The event name
+     * @param {Function} func                   The function to start
+     * @param {Object | Null} scope             The scope to apply (optional)
     */
     a.on = function(name, func, scope) {
         var evt = name.toLowerCase();

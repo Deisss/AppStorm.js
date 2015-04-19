@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -14,10 +14,9 @@
     /**
      * Test if browser support or not the CSS in console.
      *
-     * @method testBrowserSupportCSS
      * @private
      *
-     * @param browser {String}              The browser name (firefox, ...)
+     * @param {String} browser              The browser name (firefox, ...)
      * @return                              True it does support, false it
      *                                      does not support...
     */
@@ -28,10 +27,8 @@
                 browser === 'chrome');
     }
 
-    /**
-     * We can have only one element printing at a time.
-     * This variable is a kind of lock for this.
-    */
+    // We can have only one element printing at a time.
+    // This variable is a kind of lock for this.
     var concurrentConsoleAccess = false,
         browser = a.environment.get('browser'),
         cssSupport = testBrowserSupportCSS(browser),
@@ -61,7 +58,7 @@
         }
     }
 
-    /**
+    /*!
      * Regex used for markdown parsing.
      *
      * Strongly inspired by: https://github.com/adamschwartz/log
@@ -106,7 +103,10 @@
      * Detect if there is some markdown to parse...
      * @see https://github.com/adamschwartz/log
      *
-     * @method hasMarkdownMatches
+     * @private
+     *
+     * @param {String} str                  The string to search markdown in
+     * @return {Boolean}                    True, markdown exist, false not.
     */
     function hasMarkdownMatches(str) {
         var has = false;
@@ -124,10 +124,9 @@
      * Get ordered matches for every markdown existing.
      * @see https://github.com/adamschwartz/log
      *
-     * @method getOrderedMarkdownMatches
      * @private
      *
-     * @param str {String}                  The string to markdown
+     * @param {String} str                  The string to markdown
      * @return {Array}                      The matches found
     */
     function getOrderedMarkdownMatches(str) {
@@ -156,10 +155,9 @@
     /**
      * Parse the value and replace it by correct CSS rules.
      *
-     * @method markdown
      * @private
      *
-     * @param str {String}                  The value to modify it's markdown
+     * @param {String} str                  The value to modify it's markdown
      * @return {Array}                      The value with CSS replaced as an
     */
     function markdown(str) {
@@ -196,11 +194,10 @@
      * Like we can test the 'log' can be printed or not according
      * to current verbose parameter configured in a.environment.
      *
-     * @method testMinimumType
      * @private
      *
-     * @param currentType                   The level to test
-     * @return                              True the minimum level is OK for
+     * @param currentType {String}          The level to test
+     * @return {Boolean}                    True the minimum level is OK for
      *                                      current test, false the minimum
      *                                      level is too high for current test.
     */
@@ -234,12 +231,11 @@
     /**
      * Test the minimum allowed verbose level.
      *
-     * @method testMinimumVerbose
      * @private
      *
-     * @param currentSource                 The source (may change the verbose)
-     * @param currentVerbose                The verbose level to test
-     * @return                              The verbose level is allowed for
+     * @param currentSource {String}        The source (may change the verbose)
+     * @param currentVerbose {Integer}      The verbose level to test
+     * @return {Boolean}                    The verbose level is allowed for
      *                                      the current configured verbose
     */
     function testMinimumVerbose(currentSource, currentVerbose) {
@@ -263,10 +259,9 @@
     /**
      * Print a single log on console (if console is available).
      *
-     * @method output
      * @private
      *
-     * @param entry                         The log to print on console
+     * @param entry {Object}                The log to print on console
     */
     function output(entry) {
         // We can't print anything if the console does not exist...
@@ -308,10 +303,12 @@
     /**
      * Generate from the type, source and value the related storm printing.
      *
-     * @param type {String}                 The type (log, warn, error,...)
-     * @param source {String}               The source (the function/object
+     * @private
+     *
+     * @param {String} type                 The type (log, warn, error,...)
+     * @param {String} source               The source (the function/object
      *                                      name)
-     * @param value {String}                The usual log.
+     * @param {String} value                The usual log.
      * @return {String}                     The markdown version for all
      *                                      AppStorm.JS messages
     */
@@ -355,12 +352,11 @@
 
     /**
      * Register a new log.
-     *
-     * @method register
+     *=
      * @private
      *
-     * @param type                      The log type (log, warn, info...)
-     * @param args                      The log data
+     * @param type {String}                 The log type (log, warn, info...)
+     * @param args {Object}                 The log data
     */
     function register(type, args) {
         // If nothing is set, the verbose level is consider as
@@ -404,10 +400,6 @@
     /*
      * Debugger is a wrapper around window.console to provide a more
      * structured way to access and use group system provided by console.
-     *
-     * @class debugger
-     * @static
-     * @namespace a
     */
     a.debugger = function (name, collapsed, parent) {
         this.name = name;
@@ -419,12 +411,10 @@
 
     a.debugger.prototype = {
         /**
-         * Create a group inside this debugger
+         * Create a group inside this debugger.
          *
-         * @method group
-         *
-         * @param name {String}                 The new sub group name
-         * @param collapsed {Boolean | null}    If we should collapse or not when
+         * @param {String} name                 The new sub group name
+         * @param {Boolean | Null} collapsed    If we should collapse or not when
          *                                      printing to console
          * @return {a.debugger}                 The debugger associated or null
          *                                      value if group is not allowed
@@ -443,9 +433,7 @@
         },
 
         /**
-         * Render the group and all sub groups into console
-         *
-         * @method print
+         * Render the group and all sub groups into console.
         */
         print: function () {
             // In direct mode there is no print support
@@ -492,11 +480,9 @@
         },
 
         /**
-         * Print into console as a table
+         * Print into console as a table.
          *
-         * @method table
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         table: function() {
             register.call(this, 'table',
@@ -504,44 +490,36 @@
         },
 
         /**
-         * Log something into console
+         * Log something into console.
          *
-         * @method log
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         log: function() {
             register.call(this, 'log', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into console
+         * Log something into console.
          *
-         * @method warn
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         warn: function() {
             register.call(this, 'warn', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into info
+         * Log something into info.
          *
-         * @method info
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         info: function() {
             register.call(this, 'info', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into error
+         * Log something into error.
          *
-         * @method error
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         error: function() {
             register.call(this, 'error',
@@ -552,11 +530,11 @@
          * Specific AppStorm.JS debug element, allowing to print
          * nice message on the console.
          *
-         * @param level {String}            The level like log, info, error...
-         * @param source {String}           The object source raising this
+         * @param {String} level            The level like log, info, error...
+         * @param {String} source           The object source raising this
          *                                  log
-         * @param log {String}              The log message
-         * @param verbose {Integer}         The verbose (1, 2, 3)
+         * @param {String} log              The log message
+         * @param {Integer} verbose         The verbose (1, 2, 3)
         */
         storm: function(level, source, log, verbose) {
             register.call(this, level, [{
@@ -568,11 +546,9 @@
         },
 
         /**
-         * Get the current trace stored into debugger
+         * Get the current trace stored into debugger.
          *
-         * @method trace
-         *
-         * @param type {String | null}      The type like log, info... If null,
+         * @param {String | Null} type      The type like log, info... If null,
          *                                  We get all trace...
          * @return {Array}                  The tracelog currently stored
         */
@@ -586,9 +562,7 @@
         },
 
         /**
-         * Clear the debugger
-         *
-         * @method clear
+         * Clear the debugger.
         */
         clear: function() {
             this.logs = [];

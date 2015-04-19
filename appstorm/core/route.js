@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -10,10 +10,6 @@
 
 /**
  * Manage action related to hash change.
- *
- * @class route
- * @static
- * @namespace a
 */
 a.route = new function() {
     var mem = a.mem.getInstance('app.route');
@@ -21,10 +17,9 @@ a.route = new function() {
     /**
      * Parse the action parameter.
      *
-     * @method getAction
      * @private
      *
-     * @param action {String}               The action to filter
+     * @param {String} action               The action to filter
      * @return {String}                     'leave' or 'enter' depending on
      *                                      what is found in action parameter
     */
@@ -35,12 +30,11 @@ a.route = new function() {
     /**
      * bind a function to a hash.
      *
-     * @method bind
      * @chainable
      *
-     * @param hash {String}                 The hash to register
-     * @param fct {Function}                The function to bind
-     * @param action {String | null}        The action element, if we use this
+     * @param {String} hash                 The hash to register
+     * @param {Function} fct                The function to bind
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -61,12 +55,11 @@ a.route = new function() {
     /**
      * Remove a binding with a previous hash associated.
      *
-     * @param unbind
      * @chainable
      *
-     * @param hash {String}                 The hash to remove function from
-     * @param fct {Function}                The function to unbind
-     * @param action {String | null}        The action element, if we use this
+     * @param {String} hash                 The hash to remove function from
+     * @param {Function} fct                The function to unbind
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -88,12 +81,11 @@ a.route = new function() {
      * The otherwise function is used when no function are linked to a given
      * hash.
      *
-     * @method otherwise
      * @chainable
      *
-     * @param fct {Function}                The function to use when otherwise
+     * @param {Function} fct                The function to use when otherwise
      *                                      is meet
-     * @param action {String | null}        The action element, if we use this
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -111,10 +103,8 @@ a.route = new function() {
     /**
      * Navigate to a given hashtag.
      *
-     * @method go
-     *
-     * @param hash {String}                 The hashtag to navigate to
-     * @param parameters {Object}           Any parameters to give to state
+     * @param {String} hash                 The hashtag to navigate to
+     * @param {Object} parameters           Any parameters to give to state
      *                                      system as temp data. This is an
      *                                      equivalent to a.state.inject func.
     */
@@ -123,9 +113,9 @@ a.route = new function() {
             a.state.inject(parameters);
         }
         if(hash) {
-            /*if( ('history' in window) && history.pushState ) {
-                window.history.pushState(parameters || {}, null, '#' + hash);
-            } else {*/
+            //if( ('history' in window) && history.pushState ) {
+            //    window.history.pushState(parameters || {}, null, '#' + hash);
+            //} else {
                 window.location.href = '#' + hash;
             //}
         }
@@ -144,8 +134,8 @@ a.route = new function() {
      *
      * @method fake
      *
-     * @param hash {String}                 The hashtag to navigate to
-     * @param parameters {Object}           Any parameters to give to state
+     * @param {String} hash                 The hashtag to navigate to
+     * @param {Object} parameters           Any parameters to give to state
      *                                      system as temp data. This is an
      *                                      equivalent to a.state.inject func.
     */
@@ -159,7 +149,7 @@ a.route = new function() {
     };
 
     /**
-     * Allow to go back one time into history 
+     * Go back one time into history.
     */
     this.back = function() {
         window.history.back();
@@ -168,11 +158,10 @@ a.route = new function() {
     /**
      * Apply change to hash on enter or leave position.
      *
-     * @method callApplyHashChange
      * @private
      *
-     * @param hash {String}                 The hash to load/unload
-     * @param leaveOrEnterString {String}   The enter/leave state
+     * @param {String} hash                 The hash to load/unload
+     * @param {String} leaveOrEnterString   The enter/leave state
     */
     function callApplyHashChange(hash, leaveOrEnterString) {
         var action  = mem.get(leaveOrEnterString + '.hash') || {},
