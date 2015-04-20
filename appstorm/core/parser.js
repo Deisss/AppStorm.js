@@ -122,7 +122,7 @@ a.parser = {
                 }
                 doc.async = false;
                 doc.loadXML(value);
-                if (doc.parseError.errorCode != 0) {
+                if (doc.parseError.errorCode !== 0) {
                     var error = 'Unable to parse the value ```' + value +
                             '```, reason ```' + doc.parseError.reason + '```' +
                             '. Below the stack trace.';
@@ -160,6 +160,7 @@ a.parser = {
  *
  * It seems JSON3 fully bind at all times, so we change... 
 */
+/* jshint ignore:start */
 
 // BEGIN JSON3 - only if json is not supported
 if(a.isNone(JSON) && (a.isNone(JSON.parser) || a.isNone(JSON.stringify)) ) {
@@ -184,3 +185,5 @@ G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b
 
 // END JSON3
 }
+
+/* jshint ignore:end */

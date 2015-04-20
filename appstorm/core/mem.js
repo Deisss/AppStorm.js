@@ -46,7 +46,7 @@ a.mem = (function() {
             key = key.substr(0, key.length - 1);
         }
         return key;
-    };
+    }
 
     /**
      * Get a stored element.
@@ -66,7 +66,7 @@ a.mem = (function() {
             }
         }
         return null;
-    };
+    }
 
     /**
      * Get the full stored elements.
@@ -93,7 +93,7 @@ a.mem = (function() {
             });
             return partialStore;
         }
-    };
+    }
 
     /**
      * Store a new element, or erase a previous element.
@@ -108,7 +108,7 @@ a.mem = (function() {
         if(key) {
             store[key] = value;
         }
-    };
+    }
 
     /**
      * Remove an element from store.
@@ -120,7 +120,7 @@ a.mem = (function() {
     function removeFromStore(key) {
         key = sanitizeKey(key);
         delete store[key];
-    };
+    }
 
 
     /**
@@ -136,7 +136,7 @@ a.mem = (function() {
                 delete store[key];
             }
         }
-    };
+    }
 
 
     /**

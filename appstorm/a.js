@@ -41,7 +41,7 @@ a.url = '';
 a.scope = function(fct, scope) {
     return function() {
         return fct.apply(scope, arguments);
-    }
+    };
 };
 
 /**
@@ -134,11 +134,11 @@ a.deepClone = function(obj) {
         // Array cloning
         if(a.isArray(obj)) {
             var l = obj.length,
-                r = new Array(l);
+                y = new Array(l);
             for(var i = 0; i < l; ++i) {
-                r[i] = a.deepClone(obj[i]);
+                y[i] = a.deepClone(obj[i]);
             }
-            return r;
+            return y;
 
         // Object cloning
         } else {
@@ -203,8 +203,8 @@ a.extend = function(object, source, guard) {
         argsLength = args.length,
         type = typeof guard;
 
-    if ((type == 'number' || type == 'string') && args[3]
-                                && args[3][guard] === source) {
+    if ((type == 'number' || type == 'string') && args[3] &&
+            args[3][guard] === source) {
         argsLength = 2;
     }
     while (++argsIndex < argsLength) {

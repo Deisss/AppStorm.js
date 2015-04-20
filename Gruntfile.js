@@ -118,13 +118,7 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      files: [
-        'Gruntfile.js',
-        'appstorm/a.js',
-        'unittest/resource/js/unittest/core/**/*.js',
-        'unittest/resource/js/unittest/plugin/**/*.js',
-        'example'
-      ],
+      files: ['appstorm/core/ajax.js'],
       options: {
         // options here to override JSHint defaults
         globals: {
@@ -247,6 +241,7 @@ module.exports = function(grunt) {
    *   TESTS
    * -----------------------
   */
+  grunt.registerTask('hint', ['jshint']);
   grunt.registerTask('test', ['jshint', 'qunit']);
 
   /*

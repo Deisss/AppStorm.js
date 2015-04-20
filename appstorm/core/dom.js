@@ -16,10 +16,12 @@
  * Adding 'uber basic' support of querySelectorAll for IE browsers
  * Only if user does not make usage of any library like jQuery
 */
+/* jshint ignore:start */
 if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
     // IE7 support for querySelectorAll in 274 bytes. Supports multiple / grouped selectors and the attribute selector with a "for" attribute. http://www.codecouch.com/
     (function(d,s){d=document,s=d.createStyleSheet();d.querySelectorAll=function(r,c,i,j,a){a=d.all,c=[],r=r.replace(/\[for\b/gi,'[htmlFor').split(',');for(i=r.length;i--;){s.addRule(r[i],'k:v');for(j=a.length;j--;)a[j].currentStyle.k&&c.push(a[j]);s.removeRule(0)}return c}})()
 }
+/* jshint ignore:end */
 
 
 /**
@@ -136,9 +138,8 @@ a.dom = {
         // Remove string from name
         dom = (a.isTrueObject(dom)) ? dom : document;
 
-        var tagList = a.isString(name)
-                        ? name.replace(/ /g,'').split(',')
-                        : name,
+        var tagList = a.isString(name) ? name.replace(/ /g,'').split(',') :
+                name,
             domList = [],
             i       = tagList.length;
 
@@ -147,8 +148,8 @@ a.dom = {
                 var chainElement = this.tag(tagList[i], dom),
                     elements  = chainElement.getElements();
 
-                a.each(elements, function(element) {
-                    if(!a.contains(domList, element)) {
+                a.each(elements, function (element) {
+                    if (!a.contains(domList, element)) {
                         domList.push(element);
                     }
                 });
@@ -207,7 +208,7 @@ a.dom = {
         */
         function stringToArray(str) {
             return a.isString(str) ? str.replace(/ /g,'').split(',') : str;
-        };
+        }
 
         /**
          * Append elements to parentList only if there are not already
@@ -224,7 +225,7 @@ a.dom = {
                     parentList.push(child);
                 }
             });
-        };
+        }
 
         /*!
          * -----------------------------------
@@ -239,16 +240,16 @@ a.dom = {
 
             // In case of multi attribute, we apply recursive search
             if(i > 1) {
-                var domList   = [];
+                var doms = [];
 
                 while(i--) {
-                    var chainList   = this.attr(attributeList[i], value, dom),
-                        elementList = chainList.getElements();
-                    appendList(domList, elementList);
+                    var chains      = this.attr(attributeList[i], value, dom),
+                        elements    = chains.getElements();
+                    appendList(doms, elements);
                 }
 
                 // Returning element parsed
-                return new a.dom.children(domList);
+                return new a.dom.children(doms);
             }
         }
 
@@ -261,20 +262,20 @@ a.dom = {
         // If value = array, or a string with ',', we do recursive search
         if(value && (a.isArray(value) || value.indexOf(',') > 0)) {
             var valueList = stringToArray(value),
-                i         = valueList.length;
+                j         = valueList.length;
 
             // In case of multi value, we apply recursive search
-            if(i > 1) {
-                var domList   = [];
+            if(j > 1) {
+                var oDom = [];
 
-                while(i--) {
-                    var chainList   = this.attr(name, valueList[i], dom),
-                        elementList = chainList.getElements();
-                    appendList(domList, elementList);
+                while(j--) {
+                    var oChains   = this.attr(name, valueList[j], dom),
+                        oElements = oChains.getElements();
+                    appendList(oDom, oElements);
                 }
 
                 // Returning element parsed
-                return new a.dom.children(domList);
+                return new a.dom.children(oDom);
             }
         }
 
@@ -307,20 +308,19 @@ a.dom = {
         } else if(dom.querySelectorAll) {
             // We get [class="ok"] or [class] depending on value setted or not
 
-            var search = isStringValue
-                            ? '[' + name + '="' + value + '"]'
-                            : '[' + name + ']';
+            var search = isStringValue ? '[' + name + '="' + value + '"]' :
+                '[' + name + ']';
 
             domList = dom.querySelectorAll(search);
 
         // Complex version, for older browser
         } else {
             var allList = dom.getElementsByTagName('*'),
-                i       = allList.length;
+                k       = allList.length;
 
-            while(i--) {
+            while(k--) {
                 // Select element (faster)
-                var el    = allList[i],
+                var el    = allList[k],
                     // Check the attribute exist or not
                     found = el.getAttribute(name);
 
@@ -407,7 +407,7 @@ a.dom.event.prototype = {
         }
         e.returnValue = false;
     }
-}
+};
 
 
 /**
@@ -433,8 +433,10 @@ a.dom.eventBinder = function(fn, scope) {
 /**
  * Abstract layer for binding event with DOM.
 */
-a.dom.eventListener = new function() {
-    var store = [];
+a.dom.eventListener = (function() {
+    var store = [],
+        bind = null,
+        unbind = null;
 
     /**
      * Add binder between true event and function catch
@@ -449,7 +451,7 @@ a.dom.eventListener = new function() {
             bn:   binder
         });
         return binder;
-    };
+    }
 
     /**
      * Destroy stored binder reference
@@ -468,7 +470,7 @@ a.dom.eventListener = new function() {
             }
         }
         return binder;
-    };
+    }
 
     // New browser
     /**
@@ -476,13 +478,13 @@ a.dom.eventListener = new function() {
     */
     function addEventListener(el, type, fn, scope) {
         el.addEventListener(type,    addListener(el, type, fn, scope), false);
-    };
+    }
     /**
      * @private
     */
     function removeEventListener(el, type, fn) {
         el.removeEventListener(type, removeListener(el, type, fn), false);
-    };
+    }
 
     // IE
     /**
@@ -490,13 +492,13 @@ a.dom.eventListener = new function() {
     */
     function attachEvent(el, type, fn, scope) {
         el.attachEvent('on' + type, addListener(el, type, fn, scope));
-    };
+    }
     /**
      * @private
     */
     function detachEvent(el, type, fn) {
         el.detachEvent('on' + type, removeListener(el, type, fn));
-    };
+    }
 
     // Old Browsers
     /**
@@ -504,28 +506,31 @@ a.dom.eventListener = new function() {
     */
     function rawBindEvent(el, type, fn, scope) {
         el['on' + type] = addListener(el, type, fn, scope);
-    };
+    }
     /**
      * @private
     */
     function rawUnbindEvent(el, type, fn) {
         removeListener(el, type, fn);
         el['on' + type] = null;
-    };
-
-
+    }
 
     if(a.isFunction(window.addEventListener)) {
-        this.bind   = addEventListener;
-        this.unbind = removeEventListener;
+        bind   = addEventListener;
+        unbind = removeEventListener;
     } else if(a.isFunction(document.attachEvent)) {
-        this.bind   = attachEvent;
-        this.unbind = detachEvent;
+        bind   = attachEvent;
+        unbind = detachEvent;
     } else {
-        this.bind   = rawBindEvent;
-        this.unbind = rawUnbindEvent;
+        bind   = rawBindEvent;
+        unbind = rawUnbindEvent;
     }
-};
+
+    return {
+        bind: bind,
+        unbind: unbind
+    };
+})();
 
 
 
@@ -691,10 +696,10 @@ a.dom.children.prototype = {
         if(a.isUndefined(value)) {
             var cssList     = [],
                 elementList = this.elementList,
-                i           = elementList.length;
+                j           = elementList.length;
 
-            while(i--) {
-                var data = elementList[i].style[rule];
+            while(j--) {
+                var data = elementList[j].style[rule];
                 if(!a.isNone(data)) {
                     cssList.push(data);
                 }
@@ -818,7 +823,7 @@ a.dom.children.prototype = {
             i        = bindList.length;
 
         while(i--) {
-            if(!bindList[i] || bindList[i] == '') {
+            if(!bindList[i] || bindList[i] === '') {
                 continue;
             }
             this.each(function(evt) {
@@ -842,7 +847,7 @@ a.dom.children.prototype = {
             i        = bindList.length;
 
         while(i--) {
-            if(!bindList[i] || bindList[i] == '') {
+            if(!bindList[i] || bindList[i] === '') {
                 continue;
             }
 
@@ -950,10 +955,8 @@ a.dom.children.prototype = {
     */
     appstorm: function(attribute, value) {
         // TODO: attribute does not handle ',' and array delimiter
-        return this.attribute(
-              'data-' + attribute
-            + ',a-'   + attribute
-            + ','     + attribute, value);
+        return this.attribute('data-' + attribute + ',a-'   + attribute +
+                ',' + attribute, value);
     },
 
     /**

@@ -51,7 +51,7 @@ a.loader = (function() {
         }
 
         return false;
-    };
+    }
 
     /**
      * Insert into cache if needed the uri.
@@ -68,7 +68,7 @@ a.loader = (function() {
             return;
         }
         internalCache.push(uri);
-    };
+    }
 
     /**
      * Append to header the given tag, used by JS and CSS loader especially.
@@ -115,8 +115,8 @@ a.loader = (function() {
             el.addEventListener('load', cb, false);
         } else if(el.readyState) {
             el.onreadystatechange = function() {
-                if (this.readyState == 'complete'
-                        || this.readyState == 'loaded') {
+                if (this.readyState == 'complete' ||
+                        this.readyState == 'loaded') {
                     cb();
                 }
             };
@@ -134,20 +134,18 @@ a.loader = (function() {
         if(options.type === 'text/css') {
             var currentCSS = document.styleSheets.length;
             nCSS++;
-            var cssLoad = a.timer.add(
-                function() {
-                    if (document.styleSheets.length > (currentCSS + nCSS-1)) {
-                        nCSS--;
-                        a.timer.remove(cssLoad);
-                        cb();
-                    }   
-                }
-            , null, 50);
+            var cssLoad = a.timer.add(function() {
+                if (document.styleSheets.length > (currentCSS + nCSS-1)) {
+                    nCSS--;
+                    a.timer.remove(cssLoad);
+                    cb();
+                }   
+            }, null, 50);
         }
 
         // Inserting document into header
         document.getElementsByTagName('head')[0].appendChild(el);
-    };
+    }
 
     /**
      * load some data threw AJAX.
@@ -183,8 +181,8 @@ a.loader = (function() {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
             }
-            if(!a.isNone(args.type)
-                && (args.type == 'json' || args.type == 'xml') ) {
+            if(!a.isNone(args.type) &&
+                    (args.type == 'json' || args.type == 'xml') ) {
                 options.type = args.type;
             }
             if(a.isTrueObject(args.data)) {
@@ -209,7 +207,7 @@ a.loader = (function() {
         // Loading data
         var er = (a.isFunction(error)) ? error : function(){};
         (new a.ajax(options, handlerCallback, er)).send();
-    };
+    }
 
     return {
         /**
@@ -284,7 +282,7 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'application/json, text/javascript';
+            args.header.accept = 'application/json, text/javascript';
 
             performAjaxLoading(uri, callback, args, error);
         },
@@ -313,7 +311,7 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'application/xml, text/xml';
+            args.header.accept = 'application/xml, text/xml';
 
             performAjaxLoading(uri, callback, args, error);
         },
@@ -381,7 +379,7 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'text/html';
+            args.header.accept = 'text/html';
             performAjaxLoading(uri, callback, args, error);
         },
 
@@ -403,12 +401,12 @@ a.loader = (function() {
         */
         javafx: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
-                var error =  'The system need args.code ';
-                    error += 'and args.name setted to be able to load any ';
-                    error += 'javafx resource... This uri will not be ';
-                    error += 'loaded ```' + uri + '```';
+                var errorStr =  'The system need args.code ';
+                    errorStr += 'and args.name setted to be able to load any ';
+                    errorStr += 'javafx resource... This uri will not be ';
+                    errorStr += 'loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.javafx', error, 2);
+                a.console.storm('warn', 'a.loader.javafx', errorStr, 2);
                 return;
             }
 
@@ -460,12 +458,12 @@ a.loader = (function() {
         */
         flash: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'The system need args ';
-                    error += 'parameters: rootId and id, setted to be able ';
-                    error += 'to load any flash resource... This uri ';
-                    error += 'will not be loaded ```' + uri + '```';
+                var errorStr =  'The system need args ';
+                    errorStr +='parameters: rootId and id, setted to be able ';
+                    errorStr += 'to load any flash resource... This uri ';
+                    errorStr += 'will not be loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.flash', error, 2);
+                a.console.storm('warn', 'a.loader.flash', errorStr, 2);
                 return;
             }
 
@@ -513,12 +511,12 @@ a.loader = (function() {
         */
         silverlight: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'The system need args ';
-                    error += 'parameters: rootId, id, setted to be able ';
-                    error += 'to load any silverlight resource... This uri ';
-                    error += 'will not be loaded ```' + uri + '```';
+                var errorStr =  'The system need args ';
+                    errorStr += 'parameters: rootId, id, setted to be able ';
+                    errorStr +='to load any silverlight resource... This uri ';
+                    errorStr += 'will not be loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.silverlight', error, 2);
+                a.console.storm('warn', 'a.loader.silverlight', errorStr, 2);
                 return;
             }
 
@@ -531,7 +529,7 @@ a.loader = (function() {
 
             var obj  = document.createElement('object');
             obj.id   = args.id;
-            obj.data = 'data:application/x-silverlight-2,'
+            obj.data = 'data:application/x-silverlight-2,';
             obj.type = 'application/x-silverlight-2';
 
             if(!a.isArray(args.params)) {args.params = [];}
@@ -554,8 +552,8 @@ a.loader = (function() {
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0
-                    && !a.isNone(document.getElementById(args.id).Content)) {
+                if(max-- > 0 &&
+                        !a.isNone(document.getElementById(args.id).Content)) {
 
                     a.timer.remove(timer);
                     callback();

@@ -57,16 +57,16 @@ a.eventEmitter.prototype = {
     bind: function(type, fn, scope, once, clear) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = 'The type ```' + type + '``` cannot be bind';
-            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
+            var pbBind = 'The type ```' + type + '``` cannot be bind';
+            a.console.storm('warn', this.eventBaseName + '.bind', pbBind, 1);
             return;
         }
 
         // The function is invalid (not a function)
         if(!a.isFunction(fn)) {
-            var msg = 'unable to bind function, ```' + fn +
+            var notFunc = 'unable to bind function, ```' + fn +
                     '``` is not a function';
-            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
+            a.console.storm('warn', this.eventBaseName + '.bind', notFunc, 1);
             return;
         }
 
@@ -247,7 +247,7 @@ a.message = new a.eventEmitter('a.message');
                 func();
             }
         }, 0);
-    };
+    }
 
     a.message.bind('ready', function() {
         ready = true;

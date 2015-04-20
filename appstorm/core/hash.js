@@ -34,7 +34,7 @@ a.hash = new function() {
     function getCurrentPageHash() {
         var h = window.location.hash;
         return h ? h.substring(1) : null;
-    };
+    }
 
 
     /**
@@ -57,7 +57,7 @@ a.hash = new function() {
         while(traceHashList.length > 500) {
             traceHashList.shift();
         }
-    };
+    }
 
     /**
      * Check for existing hash, call the callback if there is any change.
@@ -88,7 +88,7 @@ a.hash = new function() {
             previousHash = currentHash;
             store.set('previous', previousHash);
         }
-    };
+    }
 
     // Initiate the system (when appstorm is ready !)
     a.on('ready', function() {

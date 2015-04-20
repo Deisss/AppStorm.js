@@ -41,20 +41,20 @@
             win.console.groupCollapsed = function() {
                 win.console.log(arguments);
                 indent += 1;
-            }
+            };
         }
 
         if (!a.isFunction(win.console.group)) {
             win.console.group = function() {
                 win.console.log(arguments);
                 indent += 1;
-            }
+            };
         }
 
         if (!a.isFunction(win.console.groupEnd)) {
             win.console.groupEnd = function() {
                 indent -= 1;
-            }
+            };
         }
     }
 
@@ -118,7 +118,7 @@
         }
 
         return has;
-    };
+    }
 
     /**
      * Get ordered matches for every markdown existing.
@@ -280,7 +280,7 @@
         // Rollback to log if user is accessing something not existing
         // like 'table' may be in this category on some browser...
         if (a.isNone(cs)) {
-            cs = win.console['log'];
+            cs = win.console.log;
         }
 
         // Test if the log is allowed to be printed or not
@@ -365,7 +365,7 @@
             source = '';
 
         if (args.length > 0 && a.isTrueObject(args[0]) &&
-                args[0]['storm'] === true) {
+                args[0].storm === true) {
             verbose = parseInt(args[0].verbose, 10);
             source = args[0].source;
 
@@ -482,7 +482,7 @@
             // Ending group
             cs.groupEnd();
 
-            if (this.parent == null) {
+            if (this.parent === null) {
                 concurrentConsoleAccess = false;
             }
         },

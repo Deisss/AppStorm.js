@@ -100,18 +100,19 @@ a.mock = {
 
         // Creating a final object containings all properties found
         while(i--) {
-            var mock = mocks[i];
+            var mock = mocks[i],
+                part = null;
 
             if(mock.model) {
                 // Single model
                 if(mock.model === model) {
-                    var part = a.isFunction(mock.result) ? mock.result() :
+                    part = a.isFunction(mock.result) ? mock.result() :
                                                                 mock.result;
                     result = a.assign(result, part);
 
                 // Multiple model
                 } else if(mock.model === model + 's') {
-                    var part = a.isFunction(mock.result) ? mock.result() :
+                    part = a.isFunction(mock.result) ? mock.result() :
                                                                 mock.result,
                         j = part.length;
                     while(j--) {

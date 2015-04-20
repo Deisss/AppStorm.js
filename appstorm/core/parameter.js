@@ -71,7 +71,7 @@ a.parameter = {
                 original:  a.trim(match[0]),
                 name:  a.trim(separated[0]),
                 regex: a.trim(separated[1]),
-                start: match['index']
+                start: match.index
             });
         }
 
@@ -183,8 +183,8 @@ a.parameter = {
         }
 
         // Only if there is some parameters in input
-        if (a.isString(input) && input
-                && input.indexOf('{{') >= 0 && input.indexOf('}}') >= 0) {
+        if (a.isString(input) && input && input.indexOf('{{') >= 0 &&
+                input.indexOf('}}') >= 0) {
 
             var emptyNameRegex = /\{\{(\s*\w+\s*)\}\}/gmi;
             // Param in input should be like this {{hash:name}} or
@@ -216,7 +216,7 @@ a.parameter = {
                     l=paramInternal.length;
                 for(; i<l; ++i) {
                     // match : the first item is direct string (not parsed)
-                    paramInternal[i]['value'] = match[i+1];
+                    paramInternal[i].value = match[i+1];
                 }
 
                 // We copy value from paramInternal to paramStr
@@ -225,9 +225,9 @@ a.parameter = {
                     for(i=0; i<l; ++i) {
                         // The paramStr is wrongly separate into
                         // hash: name (so regex is param name, and name type)
-                        if(paramInternal[i].name === paramStr[j].regex
-                                && paramStr[j].name === 'hash') {
-                            paramStr[j]['value'] = paramInternal[i]['value'];
+                        if(paramInternal[i].name === paramStr[j].regex &&
+                                paramStr[j].name === 'hash') {
+                            paramStr[j].value = paramInternal[i].value;
                         }
                     }
                 }
@@ -243,11 +243,11 @@ a.parameter = {
                     found = false;
 
                 // Replacing hashtag
-                if( (param.name === 'hash' || param.name === 'hashtag')
-                    && !a.isNone(param.value)) {
+                if( (param.name === 'hash' || param.name === 'hashtag') &&
+                        !a.isNone(param.value)) {
 
                     found = true;
-                    input = this.replace(input, param, param['value']);
+                    input = this.replace(input, param, param.value);
                 }
 
                 if(!found) {

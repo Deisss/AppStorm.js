@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -14,23 +14,20 @@
 ************************************************************************ */
 /**
  * Storage capacities, allow to manage many storage to get quick
- * access to everything
+ * access to everything.
  *
- * @class storage
- * @static
- * @namespace a
+ * @constructor
 */
 a.storage = {
     /**
-     * Debug on console the get item action
+     * Debug on console the get item action.
      *
-     * @method debugGet
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
-     * @param value {Mixed}                 The value to dump
+     * @param {String} key                  The key to debug
+     * @param {Mixed} value                 The value to dump
     */
     debugGet: function(element, key, value) {
         if(key !== '_support_t') {
@@ -41,14 +38,13 @@ a.storage = {
     },
 
     /**
-     * Debug on console the get item error action
+     * Debug on console the get item error action.
      *
-     * @method printError
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
+     * @param {String} key                  The key to debug
     */
     printError: function(element, key) {
         if(key !== '_support_t') {
@@ -58,15 +54,14 @@ a.storage = {
     },
 
     /**
-     * Debug on console the set item action
+     * Debug on console the set item action.
      *
-     * @method debugSet
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
-     * @param value {Mixed}                 The value to dump
+     * @param {String} key                  The key to debug
+     * @param {Mixed} value                 The value to dump
     */
     debugSet: function(element, key, value) {
         if(key !== '_support_t') {
@@ -77,14 +72,13 @@ a.storage = {
     },
 
     /**
-     * Debug on console the remove item action
+     * Debug on console the remove item action.
      *
-     * @method debugRemove
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
+     * @param {String} key                  The key to debug
     */
     debugRemove: function(element, key) {
         if(key !== '_support_t') {
@@ -98,13 +92,15 @@ a.storage = {
 };
 
 
-
+/*
+------------------------------
+  COOKIE
+------------------------------
+*/
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface.
  *
- * @class cookie
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.cookie = new function() {
     // Temporary desactivate event while making test
@@ -126,13 +122,11 @@ a.storage.type.cookie = new function() {
     this.engine = 'cookie';
 
     /**
-     * Set a new cookie, or delete a cookie using a too old expires
+     * Set a new cookie, or delete a cookie using a too old expires.
      *
-     * @method set
-     *
-     * @param name {String}                 The key to use
-     * @param value {Mixed}                 The value to store
-     * @param days {Integer}                Number of days before expires
+     * @param {String} name                 The key to use
+     * @param {Mixed} value                 The value to store
+     * @param {Integer} days                Number of days before expires
     */
     this.set = function(name, value, days) {
         var expires = '';
@@ -149,12 +143,10 @@ a.storage.type.cookie = new function() {
     };
 
     /**
-     * Get the stored cookie, return null if something went wrong
+     * Get the stored cookie, return null if something went wrong.
      *
-     * @method get
-     *
-     * @param name {String}                 The cookie name stored
-     * @return {Mixed}                      Any data stored inside cookie
+     * @param {String} name                 The cookie name stored
+     * @return {Mixed | Null}               Any data stored inside cookie
     */
     this.get = function(name) {
         if (document.cookie.length > 0) {
@@ -176,16 +168,19 @@ a.storage.type.cookie = new function() {
     };
 
     /**
-     * Remove a previously stored cookie
+     * Remove a previously stored cookie.
      *
-     * @method remove
-     *
-     * @param name {String}                 The cookie name to delete
+     * @param {String} name                 The cookie name to delete
     */
     this.remove = function(name) {
         a.storage.debugRemove('cookie', name);
         this.set(name, '', -1);
     };
+
+
+    /*!
+     * @private
+    */
 
     // Cookie
     // Testing the current
@@ -206,22 +201,22 @@ a.storage.type.cookie = new function() {
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface.
  *
- * @class cookie
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.cookie = a.storage.type.cookie;
 
 
 
 
-
+/*
+------------------------------
+  LOCAL STORAGE
+------------------------------
+*/
 /**
  * LocalStorage HTML5 support.
  *
- * @class localStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.localStorage = new function() {
     var support = false,
@@ -262,12 +257,10 @@ a.storage.type.localStorage = new function() {
     this.engine  = store;
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -285,12 +278,10 @@ a.storage.type.localStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -300,11 +291,9 @@ a.storage.type.localStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -316,12 +305,15 @@ a.storage.type.localStorage = new function() {
 
 
 
+/*
+------------------------------
+  GLOBAL STORAGE
+------------------------------
+*/
 /**
  * globalStorage HTML5 support (old).
  *
- * @class globalStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.globalStorage = new function() {
     var support  = false,
@@ -359,12 +351,10 @@ a.storage.type.globalStorage = new function() {
     this.engine = 'globalStorage';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -389,12 +379,10 @@ a.storage.type.globalStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -405,11 +393,9 @@ a.storage.type.globalStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -420,13 +406,15 @@ a.storage.type.globalStorage = new function() {
 };
 
 
-
+/*
+------------------------------
+  MEMORY STORE
+------------------------------
+*/
 /**
  * memory object (so if page close, everything is lost).
  *
- * @class memory
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.memory = new function() {
     var store = a.mem.getInstance('app.storage');
@@ -447,32 +435,26 @@ a.storage.type.memory = new function() {
     this.engine = 'memory';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = store.get;
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = store.set;
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = store.remove;
 };
@@ -482,22 +464,22 @@ a.storage.type.memory = new function() {
  * Memory store functionnality, manipulate memory storage class with a
  * simplified interface.
  *
- * @class memory
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.memory = a.storage.type.memory;
 
 
 
 
-
+/*
+------------------------------
+  SESSION STORAGE
+------------------------------
+*/
 /**
  * sessionStorage HTML5 support.
  *
- * @class sessionStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.sessionStorage = new function() {
     var support = false,
@@ -537,12 +519,10 @@ a.storage.type.sessionStorage = new function() {
     this.engine = ss;
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -560,12 +540,10 @@ a.storage.type.sessionStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -575,11 +553,9 @@ a.storage.type.sessionStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -591,13 +567,15 @@ a.storage.type.sessionStorage = new function() {
 
 
 
-
+/*
+------------------------------
+  USER DATA (Internet Explorer)
+------------------------------
+*/
 /**
  * userData IE support (old).
  *
- * @class userData
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.userData = new function() {
     var support = false,
@@ -654,12 +632,10 @@ a.storage.type.userData = new function() {
     this.engine = 'userData';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -676,12 +652,10 @@ a.storage.type.userData = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -692,11 +666,9 @@ a.storage.type.userData = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String} The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -708,13 +680,15 @@ a.storage.type.userData = new function() {
 };
 
 
-
+/*
+------------------------------
+  FLASH
+------------------------------
+*/
 /**
  * flash external storage.
  *
- * @class flash
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.flash = new function() {
     var support = false,
@@ -722,13 +696,12 @@ a.storage.type.flash = new function() {
         id      = 'flashstorage';
 
     /**
-     * Start flash and check availability
+     * Start flash and check availability.
      *
-     * @method includeFlash
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to call
+     * @param {Function | Null} callback    The callback function to call
      *                                      after loading
     */
     function includeFlash(callback) {
@@ -776,17 +749,13 @@ a.storage.type.flash = new function() {
      * Get the support state of flash.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
     this.support = function() {return support;};
 
     /**
-     * Get the ready state of flash object
-     *
-     * @method ready
+     * Get the ready state of flash object.
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -805,10 +774,9 @@ a.storage.type.flash = new function() {
      * Start (include and prepare) flash object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -816,12 +784,10 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -839,12 +805,10 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -855,11 +819,9 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -871,13 +833,15 @@ a.storage.type.flash = new function() {
 };
 
 
-
+/*
+------------------------------
+  SILVERLIGHT
+------------------------------
+*/
 /**
  * silverlight external storage.
  *
- * @class silverlight
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.silverlight = new function() {
     var support = false,
@@ -885,13 +849,12 @@ a.storage.type.silverlight = new function() {
         id      = 'silverlightstorage';
 
     /**
-     * Start silverlight and check availability
+     * Start silverlight and check availability.
      *
-     * @method includeSilverlight
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to
+     * @param {Function | Null} callback    The callback function to
      *                                      call after loading
     */
     function includeSilverlight(callback) {
@@ -938,8 +901,6 @@ a.storage.type.silverlight = new function() {
      * Get the support state of silverlight.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
@@ -947,8 +908,6 @@ a.storage.type.silverlight = new function() {
 
     /**
      * Get the ready state of silverlight object
-     *
-     * @method ready
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -967,10 +926,9 @@ a.storage.type.silverlight = new function() {
      * Start (include and prepare) silverlight object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -978,12 +936,10 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -1002,12 +958,10 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -1019,11 +973,9 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -1035,13 +987,15 @@ a.storage.type.silverlight = new function() {
 };
 
 
-
+/*
+------------------------------
+  JAVAFX
+------------------------------
+*/
 /**
  * javafx external storage.
  *
- * @class javafx
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.javafx = new function() {
     var support = false,
@@ -1051,11 +1005,10 @@ a.storage.type.javafx = new function() {
     /**
      * Start javaFX and check availability
      *
-     * @method includeJavaFX
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to
+     * @param {Function | Null} callback    The callback function to
      *                                      call after loading
     */
     function includeJavaFX(callback) {
@@ -1090,16 +1043,12 @@ a.storage.type.javafx = new function() {
      * Get the support state of javafx.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
     this.support = function() {return support;},
     /**
-     * Get the ready state of javafx object
-     *
-     * @method ready
+     * Get the ready state of javafx object.
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -1117,10 +1066,9 @@ a.storage.type.javafx = new function() {
      * Start (include and prepare) javafx object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -1128,12 +1076,10 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -1153,12 +1099,10 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -1170,11 +1114,9 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String} The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -1191,16 +1133,18 @@ a.storage.type.javafx = new function() {
 
 
 
-/* *************************
+/*! ************************
   POPULATING DATA FOR TEMPORARY AND PERSIST
 ************************* */
-// TEMPORARY STORE SEARCH
+/*
+------------------------------
+  TEMPORARY ALIAS
+------------------------------
+*/
 /**
  * Select the best temp storage available.
  *
- * @class temporary
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.temporary = (function() {
     'use strict';
@@ -1222,13 +1166,15 @@ a.storage.temporary = (function() {
 })();
 
 
-// EXTERNAL STORE SEARCH
+/*
+------------------------------
+  EXTERNAL ALIAS
+------------------------------
+*/
 /**
  * Select the best external storage available.
  *
- * @class external
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.external = (function() {
     'use strict';
@@ -1236,14 +1182,13 @@ a.storage.external = (function() {
     var started = false;
 
     /**
-     * Start the callback function if possible
+     * Start the callback function if possible.
      *
-     * @method startCallback
      * @private
      * @async
      *
-     * @param type {Object}                 The object to use for external
-     * @param callback {Function | null}    The function to launch if a
+     * @param {Object} type                 The object to use for external
+     * @param {Function | Null} callback    The function to launch if a
      *                                      store has been found
     */
     function startCallback(type, callback) {
@@ -1261,12 +1206,11 @@ a.storage.external = (function() {
 
     return {
         /**
-         * Start the external tool, try to find an available store
+         * Start the external tool, try to find an available store.
          *
-         * @method start
          * @async
          *
-         * @param callback {Function | null}    The function to launch if
+         * @param {Function | Null} callback    The function to launch if
          *                                      a store has been found
         */
         start : function(callback) {
@@ -1307,13 +1251,15 @@ a.storage.external = (function() {
 }());
 
 
-// PERSISTENT STORE SEARCH
+/*
+------------------------------
+  PERSISTENT ALIAS
+------------------------------
+*/
 /**
  * Select the best long term storage available.
  *
- * @class persistent
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.persistent = (function() {
     'use strict';
@@ -1365,21 +1311,10 @@ a.storage.remove  = a.storage.persistent.remove;
 
 /*
 ------------------------------
-  PARAMETERS TYPE ASSOCIATED
-------------------------------
-*/
-/*
-------------------------------
-  HANDLEBARS HELPERS
+  PARAMETERS HELPERS
 ------------------------------
 */
 (function() {
-    // Parameters type
-    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
-    a.parameter.addParameterType('memory',     a.storage.memory.get);
-    a.parameter.addParameterType('persistent', a.storage.persistent.get);
-    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
-
     // Default 'store' behavior
     function getGlobalStore(name) {
         var temp = a.storage.temporary.get(name);
@@ -1392,7 +1327,19 @@ a.storage.remove  = a.storage.persistent.remove;
     a.parameter.addParameterType('storage', getGlobalStore);
     a.parameter.addParameterType('store', getGlobalStore);
 
+    // Parameters type
+    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
+    a.parameter.addParameterType('memory',     a.storage.memory.get);
+    a.parameter.addParameterType('persistent', a.storage.persistent.get);
+    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
+})();
 
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
     // Handlebars type
     Handlebars.registerHelper('temporary', function(value) {
         return new Handlebars.SafeString(a.storage.temporary.get(value));
@@ -1409,7 +1356,11 @@ a.storage.remove  = a.storage.persistent.remove;
 
     // Default 'store' behavior, encaps into Handlebars SafeString
     function getHandlebarsStore(name) {
-        return new Handlebars.SafeString(getGlobalStore(name));
+        var temp = a.storage.temporary.get(name);
+        if(a.isNone(temp)) {
+            temp = a.storage.persistent.get(name);
+        }
+        return new Handlebars.SafeString(temp);
     };
 
     Handlebars.registerHelper('storage', getHandlebarsStore);

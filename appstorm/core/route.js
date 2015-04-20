@@ -27,7 +27,7 @@ a.route = new function() {
     */
     function getAction(action) {
         return (action == 'leave' || action == 'leaving') ? 'leave' : 'enter';
-    };
+    }
 
     /**
      * bind a function to a hash.
@@ -189,7 +189,7 @@ a.route = new function() {
                 otherwise.call(null, hash);
             }
         }
-    };
+    }
 
     // We bind the hash event system
     a.hash.bind('change', function(data) {

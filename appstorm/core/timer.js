@@ -43,7 +43,7 @@ a.timer = (function() {
                 }
             }
         }
-    };
+    }
 
     // Auto-start timer
     setInterval(tick, delay);

@@ -15712,6 +15712,9 @@ typeof define&&define.amd&&define(function(){return c})})(window,document);
 
 ************************************************************************ */
 
+/*!
+ * @private
+*/
 ;
 
 
@@ -15743,7 +15746,7 @@ a.url = '';
 a.scope = function(fct, scope) {
     return function() {
         return fct.apply(scope, arguments);
-    }
+    };
 };
 
 /**
@@ -15836,11 +15839,11 @@ a.deepClone = function(obj) {
         // Array cloning
         if(a.isArray(obj)) {
             var l = obj.length,
-                r = new Array(l);
+                y = new Array(l);
             for(var i = 0; i < l; ++i) {
-                r[i] = a.deepClone(obj[i]);
+                y[i] = a.deepClone(obj[i]);
             }
-            return r;
+            return y;
 
         // Object cloning
         } else {
@@ -15905,8 +15908,8 @@ a.extend = function(object, source, guard) {
         argsLength = args.length,
         type = typeof guard;
 
-    if ((type == 'number' || type == 'string') && args[3]
-                                && args[3][guard] === source) {
+    if ((type == 'number' || type == 'string') && args[3] &&
+            args[3][guard] === source) {
         argsLength = 2;
     }
     while (++argsIndex < argsLength) {
@@ -16092,7 +16095,7 @@ a.getAjaxAfter = function(name) {
             a.console.log(value.length);
         }
     });
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -16105,20 +16108,17 @@ a.getAjaxAfter = function(name) {
 /**
  * Provide easy store object, with global prefix value system on top of it.
  *
- * @class mem
- * @static
- * @namespace a
+ * @constructor
 */
 a.mem = (function() {
     var store = {};
 
     /**
-     * Sanitize a key to generate a 'usable' key
+     * Sanitize a key to generate a 'usable' key.
      *
-     * @method sanitizeKey
      * @private
      *
-     * @param key {String}                  The key string to sanitize
+     * @param {String} key                  The key string to sanitize
      * @return {String}                     The key sanitize
     */
     function sanitizeKey(key) {
@@ -16143,16 +16143,15 @@ a.mem = (function() {
             key = key.substr(0, key.length - 1);
         }
         return key;
-    };
+    }
 
     /**
-     * Get a stored element
+     * Get a stored element.
      *
-     * @method getFromStore
      * @private
      *
-     * @param key {String}                  The key to retrieve value from
-     * @return {Object | null}              null in case of not found, and
+     * @param {String} key                  The key to retrieve value from
+     * @return {Object | Null}              null in case of not found, and
      *                                      the stored value if found
     */
     function getFromStore(key) {
@@ -16164,15 +16163,14 @@ a.mem = (function() {
             }
         }
         return null;
-    };
+    }
 
     /**
-     * Get the full stored elements
+     * Get the full stored elements.
      *
-     * @method listFromStore
      * @private
      *
-     * @param prefix {String}               The prefix to use as 'search from
+     * @param {String} prefix               The prefix to use as 'search from
      *                                      that point'
      * @return {Object}                     A key value object with all values
      *                                      found matching prefix
@@ -16192,43 +16190,42 @@ a.mem = (function() {
             });
             return partialStore;
         }
-    };
+    }
 
     /**
-     * Store a new element, or erase a previous element
+     * Store a new element, or erase a previous element.
      *
-     * @method setToStore
      * @private
      *
-     * @param key {String}                  The key to set value linked to
-     * @param value {Object}                The value to associate to key
+     * @param {String} key                  The key to set value linked to
+     * @param {Object} value                The value to associate to key
     */
     function setToStore(key, value) {
         key = sanitizeKey(key);
         if(key) {
             store[key] = value;
         }
-    };
+    }
 
     /**
-     * Remove an element from store
+     * Remove an element from store.
      *
-     * @method removeFromStore
      * @private
      *
-     * @param key {String}                  The key to erase from store
+     * @param {String} key                  The key to erase from store
     */
     function removeFromStore(key) {
         key = sanitizeKey(key);
         delete store[key];
-    };
+    }
 
 
     /**
-     * Clear the full store
+     * Clear the full store.
      *
-     * @method clearStore
      * @private
+     *
+     * @param {String} prefix               The prefix to clear.
     */
     function clearStore(prefix) {
         for(var key in store) {
@@ -16236,10 +16233,16 @@ a.mem = (function() {
                 delete store[key];
             }
         }
-    };
+    }
 
 
-    // Generic object to derivate from prefix element
+    /**
+     * Generic object to derivate from prefix element.
+     *
+     * @private
+     *
+     * @param {String} prefix               The prefix
+    */
     var genericObject = function(prefix) {
         this.prefix = prefix;
     };
@@ -16247,12 +16250,10 @@ a.mem = (function() {
     // Create the default prototype instance
     genericObject.prototype = {
         /**
-         * Get a stored element
+         * Get a stored element.
          *
-         * @method get
-         *
-         * @param key {String}              The key to retrieve value from
-         * @return {Object | null}          null in case of not found, and
+         * @param {String} key              The key to retrieve value from
+         * @return {Object | Null}          null in case of not found, and
          *                                  the stored value if found
         */
         get: function(key) {
@@ -16262,8 +16263,6 @@ a.mem = (function() {
         /**
          * Get the full currently stored elements.
          *
-         * @method list
-         *
          * @return {Object}                  An object of all currently stored
          *                                   elements
         */
@@ -16272,32 +16271,26 @@ a.mem = (function() {
         },
 
         /**
-         * Store a new element, or erase a previous element
+         * Store a new element, or erase a previous element.
          *
-         * @method set
-         *
-         * @param key {String}              The key to set value linked to
-         * @param value {Object}            The value to associate to key
+         * @param {String} key              The key to set value linked to
+         * @param {Object} value            The value to associate to key
         */
         set: function(key, value) {
             setToStore(this.prefix + '.' + key, value);
         },
 
         /**
-         * Remove an element from store
+         * Remove an element from store.
          *
-         * @method remove
-         *
-         * @param key {String}              The key to erase from store
+         * @param {String} key              The key to erase from store
         */
         remove: function(key) {
             removeFromStore(this.prefix + '.' + key);
         },
 
         /**
-         * Clear everything stored inside store
-         *
-         * @method clear
+         * Clear everything stored inside store.
         */
         clear: function() {
             // Must be a string not empty...
@@ -16309,13 +16302,10 @@ a.mem = (function() {
 
     var defaultInstance = new genericObject('');
 
-    // We add the last missing part: get your own genericObject
     /**
-     * Retrieve a custom mem object to manipulate from root prefix
+     * Retrieve a custom mem object to manipulate from root prefix.
      *
-     * @method getInstance
-     *
-     * @param prefix {String}               The prefix to use as base
+     * @param {String} prefix               The prefix to use as base
      * @return {Object}                     An instance ready to use
     */
     defaultInstance.getInstance = function(prefix) {
@@ -16337,7 +16327,7 @@ a.mem = (function() {
     Handlebars.registerHelper('mem', function(value) {
         return new Handlebars.SafeString(a.mem.get(value));
     });
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -16352,10 +16342,6 @@ a.mem = (function() {
  * Main environment data store, allow to globally define some global
  * rules for managing global environment variable. Use the a.mem object
  * for others type of variables.
- *
- * @class environment
- * @static
- * @namespace a
 */
 a.environment = a.mem.getInstance('app.environment');
 
@@ -16375,7 +16361,7 @@ if(a.isString(a.url) && a.url.length > 0) {
     a.mem.set('app.url', a.url);
 }
 
-/*
+/*!
 ------------------------------
   BROWSER HELPERS
 ------------------------------
@@ -16390,7 +16376,7 @@ if(a.isString(a.url) && a.url.length > 0) {
     // Chrome 1+
     var isChrome = !!window.chrome && !isOpera;
     // At least IE6
-    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isIE = (document.all && !isChrome && !isOpera && !isSafari && !isFirefox) || !!document.documentMode;
 
     var browser = 'other';
     if (isOpera) {
@@ -16413,12 +16399,9 @@ if(a.isString(a.url) && a.url.length > 0) {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    // Get environment elements
-    Handlebars.registerHelper('environment', function(value) {
-        return new Handlebars.SafeString(a.environment.get(value));
-    });
-})();;/* ************************************************************************
+Handlebars.registerHelper('environment', function(value) {
+    return new Handlebars.SafeString(a.environment.get(value));
+});;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -16434,10 +16417,9 @@ if(a.isString(a.url) && a.url.length > 0) {
     /**
      * Test if browser support or not the CSS in console.
      *
-     * @method testBrowserSupportCSS
      * @private
      *
-     * @param browser {String}              The browser name (firefox, ...)
+     * @param {String} browser              The browser name (firefox, ...)
      * @return                              True it does support, false it
      *                                      does not support...
     */
@@ -16448,10 +16430,8 @@ if(a.isString(a.url) && a.url.length > 0) {
                 browser === 'chrome');
     }
 
-    /**
-     * We can have only one element printing at a time.
-     * This variable is a kind of lock for this.
-    */
+    // We can have only one element printing at a time.
+    // This variable is a kind of lock for this.
     var concurrentConsoleAccess = false,
         browser = a.environment.get('browser'),
         cssSupport = testBrowserSupportCSS(browser),
@@ -16464,24 +16444,24 @@ if(a.isString(a.url) && a.url.length > 0) {
             win.console.groupCollapsed = function() {
                 win.console.log(arguments);
                 indent += 1;
-            }
+            };
         }
 
         if (!a.isFunction(win.console.group)) {
             win.console.group = function() {
                 win.console.log(arguments);
                 indent += 1;
-            }
+            };
         }
 
         if (!a.isFunction(win.console.groupEnd)) {
             win.console.groupEnd = function() {
                 indent -= 1;
-            }
+            };
         }
     }
 
-    /**
+    /*!
      * Regex used for markdown parsing.
      *
      * Strongly inspired by: https://github.com/adamschwartz/log
@@ -16526,7 +16506,10 @@ if(a.isString(a.url) && a.url.length > 0) {
      * Detect if there is some markdown to parse...
      * @see https://github.com/adamschwartz/log
      *
-     * @method hasMarkdownMatches
+     * @private
+     *
+     * @param {String} str                  The string to search markdown in
+     * @return {Boolean}                    True, markdown exist, false not.
     */
     function hasMarkdownMatches(str) {
         var has = false;
@@ -16538,16 +16521,15 @@ if(a.isString(a.url) && a.url.length > 0) {
         }
 
         return has;
-    };
+    }
 
     /**
      * Get ordered matches for every markdown existing.
      * @see https://github.com/adamschwartz/log
      *
-     * @method getOrderedMarkdownMatches
      * @private
      *
-     * @param str {String}                  The string to markdown
+     * @param {String} str                  The string to markdown
      * @return {Array}                      The matches found
     */
     function getOrderedMarkdownMatches(str) {
@@ -16576,10 +16558,9 @@ if(a.isString(a.url) && a.url.length > 0) {
     /**
      * Parse the value and replace it by correct CSS rules.
      *
-     * @method markdown
      * @private
      *
-     * @param str {String}                  The value to modify it's markdown
+     * @param {String} str                  The value to modify it's markdown
      * @return {Array}                      The value with CSS replaced as an
     */
     function markdown(str) {
@@ -16616,11 +16597,10 @@ if(a.isString(a.url) && a.url.length > 0) {
      * Like we can test the 'log' can be printed or not according
      * to current verbose parameter configured in a.environment.
      *
-     * @method testMinimumType
      * @private
      *
-     * @param currentType                   The level to test
-     * @return                              True the minimum level is OK for
+     * @param currentType {String}          The level to test
+     * @return {Boolean}                    True the minimum level is OK for
      *                                      current test, false the minimum
      *                                      level is too high for current test.
     */
@@ -16654,12 +16634,11 @@ if(a.isString(a.url) && a.url.length > 0) {
     /**
      * Test the minimum allowed verbose level.
      *
-     * @method testMinimumVerbose
      * @private
      *
-     * @param currentSource                 The source (may change the verbose)
-     * @param currentVerbose                The verbose level to test
-     * @return                              The verbose level is allowed for
+     * @param currentSource {String}        The source (may change the verbose)
+     * @param currentVerbose {Integer}      The verbose level to test
+     * @return {Boolean}                    The verbose level is allowed for
      *                                      the current configured verbose
     */
     function testMinimumVerbose(currentSource, currentVerbose) {
@@ -16683,10 +16662,9 @@ if(a.isString(a.url) && a.url.length > 0) {
     /**
      * Print a single log on console (if console is available).
      *
-     * @method output
      * @private
      *
-     * @param entry                         The log to print on console
+     * @param entry {Object}                The log to print on console
     */
     function output(entry) {
         // We can't print anything if the console does not exist...
@@ -16705,7 +16683,7 @@ if(a.isString(a.url) && a.url.length > 0) {
         // Rollback to log if user is accessing something not existing
         // like 'table' may be in this category on some browser...
         if (a.isNone(cs)) {
-            cs = win.console['log'];
+            cs = win.console.log;
         }
 
         // Test if the log is allowed to be printed or not
@@ -16728,10 +16706,12 @@ if(a.isString(a.url) && a.url.length > 0) {
     /**
      * Generate from the type, source and value the related storm printing.
      *
-     * @param type {String}                 The type (log, warn, error,...)
-     * @param source {String}               The source (the function/object
+     * @private
+     *
+     * @param {String} type                 The type (log, warn, error,...)
+     * @param {String} source               The source (the function/object
      *                                      name)
-     * @param value {String}                The usual log.
+     * @param {String} value                The usual log.
      * @return {String}                     The markdown version for all
      *                                      AppStorm.JS messages
     */
@@ -16775,12 +16755,11 @@ if(a.isString(a.url) && a.url.length > 0) {
 
     /**
      * Register a new log.
-     *
-     * @method register
+     *=
      * @private
      *
-     * @param type                      The log type (log, warn, info...)
-     * @param args                      The log data
+     * @param type {String}                 The log type (log, warn, info...)
+     * @param args {Object}                 The log data
     */
     function register(type, args) {
         // If nothing is set, the verbose level is consider as
@@ -16789,7 +16768,7 @@ if(a.isString(a.url) && a.url.length > 0) {
             source = '';
 
         if (args.length > 0 && a.isTrueObject(args[0]) &&
-                args[0]['storm'] === true) {
+                args[0].storm === true) {
             verbose = parseInt(args[0].verbose, 10);
             source = args[0].source;
 
@@ -16825,9 +16804,13 @@ if(a.isString(a.url) && a.url.length > 0) {
      * Debugger is a wrapper around window.console to provide a more
      * structured way to access and use group system provided by console.
      *
-     * @class debugger
-     * @static
-     * @namespace a
+     * @constructor
+     *
+     * @param {String} name                 The debugger name
+     * @param {Boolean} collapsed           The collapsed state, only useful
+     *                                      if isDirect is set to false
+     * @param {Object | Null} parent        The parent of this debugger, can be
+     *                                      null
     */
     a.debugger = function (name, collapsed, parent) {
         this.name = name;
@@ -16839,12 +16822,10 @@ if(a.isString(a.url) && a.url.length > 0) {
 
     a.debugger.prototype = {
         /**
-         * Create a group inside this debugger
+         * Create a group inside this debugger.
          *
-         * @method group
-         *
-         * @param name {String}                 The new sub group name
-         * @param collapsed {Boolean | null}    If we should collapse or not when
+         * @param {String} name                 The new sub group name
+         * @param {Boolean | Null} collapsed    If we should collapse or not when
          *                                      printing to console
          * @return {a.debugger}                 The debugger associated or null
          *                                      value if group is not allowed
@@ -16863,9 +16844,7 @@ if(a.isString(a.url) && a.url.length > 0) {
         },
 
         /**
-         * Render the group and all sub groups into console
-         *
-         * @method print
+         * Render the group and all sub groups into console.
         */
         print: function () {
             // In direct mode there is no print support
@@ -16906,17 +16885,15 @@ if(a.isString(a.url) && a.url.length > 0) {
             // Ending group
             cs.groupEnd();
 
-            if (this.parent == null) {
+            if (this.parent === null) {
                 concurrentConsoleAccess = false;
             }
         },
 
         /**
-         * Print into console as a table
+         * Print into console as a table.
          *
-         * @method table
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         table: function() {
             register.call(this, 'table',
@@ -16924,44 +16901,36 @@ if(a.isString(a.url) && a.url.length > 0) {
         },
 
         /**
-         * Log something into console
+         * Log something into console.
          *
-         * @method log
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         log: function() {
             register.call(this, 'log', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into console
+         * Log something into console.
          *
-         * @method warn
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         warn: function() {
             register.call(this, 'warn', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into info
+         * Log something into info.
          *
-         * @method info
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         info: function() {
             register.call(this, 'info', Array.prototype.slice.call(arguments));
         },
 
         /**
-         * Log something into error
+         * Log something into error.
          *
-         * @method error
-         *
-         * @param any {Object}              Anything to send to console
+         * @param {Object} any              Anything to send to console
         */
         error: function() {
             register.call(this, 'error',
@@ -16972,11 +16941,11 @@ if(a.isString(a.url) && a.url.length > 0) {
          * Specific AppStorm.JS debug element, allowing to print
          * nice message on the console.
          *
-         * @param level {String}            The level like log, info, error...
-         * @param source {String}           The object source raising this
+         * @param {String} level            The level like log, info, error...
+         * @param {String} source           The object source raising this
          *                                  log
-         * @param log {String}              The log message
-         * @param verbose {Integer}         The verbose (1, 2, 3)
+         * @param {String} log              The log message
+         * @param {Integer} verbose         The verbose (1, 2, 3)
         */
         storm: function(level, source, log, verbose) {
             register.call(this, level, [{
@@ -16988,11 +16957,9 @@ if(a.isString(a.url) && a.url.length > 0) {
         },
 
         /**
-         * Get the current trace stored into debugger
+         * Get the current trace stored into debugger.
          *
-         * @method trace
-         *
-         * @param type {String | null}      The type like log, info... If null,
+         * @param {String | Null} type      The type like log, info... If null,
          *                                  We get all trace...
          * @return {Array}                  The tracelog currently stored
         */
@@ -17006,15 +16973,13 @@ if(a.isString(a.url) && a.url.length > 0) {
         },
 
         /**
-         * Clear the debugger
-         *
-         * @method clear
+         * Clear the debugger.
         */
         clear: function() {
             this.logs = [];
         }
     };
-})(window, window.appstorm);;/* ************************************************************************
+})(window, window.appstorm);;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -17031,14 +16996,14 @@ if(a.isString(a.url) && a.url.length > 0) {
  * Also, it does provide a trace utility in case of bug/check to recover all
  * passed log to it.
  *
- * @class console
- * @static
- * @namespace a
+ * @constructor
+ *
+ * @see core/debugger
 */
 (function(win, a) {
     a.console = new a.debugger('console', true, null);
     a.console.isDirect = true;
-})(window, window.appstorm);;/* ************************************************************************
+})(window, window.appstorm);;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -17053,11 +17018,12 @@ if(a.isString(a.url) && a.url.length > 0) {
 
 /**
  * Simple message/event system allowing to exchange data across elements threw
- * events.
+ * events. **a.message is an instance of a.eventEmitter**.
  *
- * @class eventEmitter
  * @constructor
- * @namespace a
+ *
+ * @param {String} base                     The event system name. Like for
+ *                                          a.message it's 'a.message'
 */
 a.eventEmitter = function(base) {
     this.eventList = {};
@@ -17067,9 +17033,8 @@ a.eventEmitter = function(base) {
 
 a.eventEmitter.prototype = {
     /**
-     * Clear the event listeners which don't have any function added
+     * Clear the event listeners which don't have any function added.
      *
-     * @method clearEventType
      * @private
     */
     clearEventType: function() {
@@ -17084,31 +17049,29 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Bind a function to an event type
+     * Bind a function to an event type.
      *
-     * @method bind
-     *
-     * @param type {String}                 The event type
-     * @param fn {Function}                 The function to bind to event
-     * @param scope {Object | null}         The scope to bind to function
-     * @param once {Boolean | null}         If we should start it only once or
+     * @param {String} type                 The event type
+     * @param {Function} fn                 The function to bind to event
+     * @param {Object | Null} scope         The scope to bind to function
+     * @param {Boolean | Null} once         If we should start it only once or
      *                                      not
-     * @param clear {Boolean | null}        If the current bind can be clear or
+     * @param {Boolean | Null} clear        If the current bind can be clear or
      *                                      not (you still can use unbind)
     */
     bind: function(type, fn, scope, once, clear) {
         // The type is invalid (empty string or not a string)
         if(!type || !a.isString(type)) {
-            var msg = 'The type ```' + type + '``` cannot be bind';
-            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
+            var pbBind = 'The type ```' + type + '``` cannot be bind';
+            a.console.storm('warn', this.eventBaseName + '.bind', pbBind, 1);
             return;
         }
 
         // The function is invalid (not a function)
         if(!a.isFunction(fn)) {
-            var msg = 'unable to bind function, ```' + fn +
+            var notFunc = 'unable to bind function, ```' + fn +
                     '``` is not a function';
-            a.console.storm('warn', this.eventBaseName + '.bind', msg, 1);
+            a.console.storm('warn', this.eventBaseName + '.bind', notFunc, 1);
             return;
         }
 
@@ -17139,14 +17102,12 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Adding a listener only once
+     * Adding a listener only once.
      *
-     * @method bindOnce
-     *
-     * @param type {String}                 The event type
-     * @param fn {Function}                 The function to bind to event
-     * @param scope {Object | null}         The scope to bind to function
-     * @param clear {Boolean | null}        If the current bind can be clear or
+     * @param {String} type                 The event type
+     * @param {Function} fn                 The function to bind to event
+     * @param {Object | Null} scope         The scope to bind to function
+     * @param {Boolean | Null} clear        If the current bind can be clear or
      *                                      not (you still can use unbind)
     */
     bindOnce: function(type, fn, scope, clear) {
@@ -17154,12 +17115,10 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Removing a listener to a specific message type
+     * Removing a listener to a specific message type.
      *
-     * @method unbind
-     *
-     * @param type {String} The event name
-     * @param fn {Function} The function to detach
+     * @param {String} type                 The event name
+     * @param {Function} fn                 The function to detach
     */
     unbind: function(type, fn) {
         // The type is invalid (empty string or not a string)
@@ -17197,11 +17156,9 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Remove all listeners for a given type
+     * Remove all listeners for a given type.
      *
-     * @method unbindAll
-     *
-     * @param type {String} The event type to remove
+     * @param {String} type                 The event type to remove
     */
     unbindAll: function(type) {
         if(!a.isNone(this.eventList[type])) {
@@ -17220,9 +17177,7 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Clear all listeners from all event type
-     *
-     * @method clear
+     * Clear all listeners from all event type.
     */
     clear: function() {
         var c = this.eventBaseName + '.clear';
@@ -17238,12 +17193,11 @@ a.eventEmitter.prototype = {
     },
 
     /**
-     * Call an event, according to it's type
+     * Call an event, according to it's type.
      *
-     * @method dispatch
-     *
-     * @param type {String} The event name to dispatch
-     * @param data {Object} Anything you want to pass threw this event
+     * @param {String} type                 The event name to dispatch
+     * @param {Object} data                 Anything you want to pass threw
+     *                                      this event
     */
     dispatch: function(type, data) {
         var dispatcher = this.eventList[type];
@@ -17262,23 +17216,20 @@ a.eventEmitter.prototype = {
 };
 
 
+/*
+------------------------------
+  MESSAGE
+------------------------------
+*/
 /**
- * The bus system to exchange message globally between all application object
- *
- * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:message">here</a>
- *
- * @class message
- * @static
- * @requires eventEmitter
- * @uses eventEmitter
- * @namespace a
+ * The bus system to exchange message globally between all application object.
 */
 a.message = new a.eventEmitter('a.message');
 
 
 /*
 ------------------------------
-  SPECIFIC READY
+  GLOBAL
 ------------------------------
 */
 (function() {
@@ -17286,13 +17237,12 @@ a.message = new a.eventEmitter('a.message');
         tmp = [];
 
     /**
-     * Internal function to call function regarding it's scope
+     * Internal function to call function regarding it's scope.
      *
-     * @method internalCall
      * @private
      *
-     * @param func {Function}               The function to call
-     * @param scope {Object | null}         The potential scope (optional)
+     * @param {Function} func               The function to call
+     * @param {Object | Null} scope         The potential scope (optional)
     */
     function internalCall(func, scope) {
         setTimeout(function() {
@@ -17302,7 +17252,7 @@ a.message = new a.eventEmitter('a.message');
                 func();
             }
         }, 0);
-    };
+    }
 
     a.message.bind('ready', function() {
         ready = true;
@@ -17316,13 +17266,11 @@ a.message = new a.eventEmitter('a.message');
     });
 
     /**
-     * Alias mostly used for appstorm ready event
+     * Alias mostly used for appstorm ready event.
      *
-     * @method on
-     *
-     * @param name {String}                     The event name
-     * @param func {Function}                   The function to start
-     * @param scope {Object | null}             The scope to apply (optional)
+     * @param {String} name                     The event name
+     * @param {Function} func                   The function to start
+     * @param {Object | Null} scope             The scope to apply (optional)
     */
     a.on = function(name, func, scope) {
         var evt = name.toLowerCase();
@@ -17341,7 +17289,7 @@ a.message = new a.eventEmitter('a.message');
             a.message.bind(name, func, scope);
         }
     };
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -17350,66 +17298,25 @@ a.message = new a.eventEmitter('a.message');
 
 ************************************************************************ */
 
-
-/*
- * USE OF JSON3:
- *    JSON v3.2.4
- *    http://bestiejs.github.com/json3
- *    Copyright 2012, Kit Cambridge
- *    http://kit.mit-license.org
+/**
+ * Provide parsing/stringify functionnality for JSON and XML format.
  *
- * It seems JSON3 fully bind at all times, so we change... 
+ * @constructor
 */
-
-// BEGIN JSON3 - only if json is not supported
-if(a.isNone(JSON) && (a.isNone(JSON.parser) || a.isNone(JSON.stringify)) ) {
-
-;(function(){var e=void 0,i=!0,k=null,l={}.toString,m,n,p="function"===typeof define&&define.c,q=!p&&"object"==typeof exports&&exports;q||p?"object"==typeof JSON&&JSON?p?q=JSON:(q.stringify=JSON.stringify,q.parse=JSON.parse):p&&(q=this.JSON={}):q=this.JSON||(this.JSON={});var r,t,u,x,z,B,C,D,E,F,G,H,I,J=new Date(-3509827334573292),K,O,P;try{J=-109252==J.getUTCFullYear()&&0===J.getUTCMonth()&&1==J.getUTCDate()&&10==J.getUTCHours()&&37==J.getUTCMinutes()&&6==J.getUTCSeconds()&&708==J.getUTCMilliseconds()}catch(Q){}
-function R(b){var c,a,d,j=b=="json";if(j||b=="json-stringify"||b=="json-parse"){if(b=="json-stringify"||j){if(c=typeof q.stringify=="function"&&J){(d=function(){return 1}).toJSON=d;try{c=q.stringify(0)==="0"&&q.stringify(new Number)==="0"&&q.stringify(new String)=='""'&&q.stringify(l)===e&&q.stringify(e)===e&&q.stringify()===e&&q.stringify(d)==="1"&&q.stringify([d])=="[1]"&&q.stringify([e])=="[null]"&&q.stringify(k)=="null"&&q.stringify([e,l,k])=="[null,null,null]"&&q.stringify({A:[d,i,false,k,"\x00\u0008\n\u000c\r\t"]})==
-'{"A":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'&&q.stringify(k,d)==="1"&&q.stringify([1,2],k,1)=="[\n 1,\n 2\n]"&&q.stringify(new Date(-864E13))=='"-271821-04-20T00:00:00.000Z"'&&q.stringify(new Date(864E13))=='"+275760-09-13T00:00:00.000Z"'&&q.stringify(new Date(-621987552E5))=='"-000001-01-01T00:00:00.000Z"'&&q.stringify(new Date(-1))=='"1969-12-31T23:59:59.999Z"'}catch(f){c=false}}if(!j)return c}if(b=="json-parse"||j){if(typeof q.parse=="function")try{if(q.parse("0")===0&&!q.parse(false)){d=
-q.parse('{"A":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}');if(a=d.a.length==5&&d.a[0]==1){try{a=!q.parse('"\t"')}catch(o){}if(a)try{a=q.parse("01")!=1}catch(g){}}}}catch(h){a=false}if(!j)return a}return c&&a}}
-if(!R("json")){J||(K=Math.floor,O=[0,31,59,90,120,151,181,212,243,273,304,334],P=function(b,c){return O[c]+365*(b-1970)+K((b-1969+(c=+(c>1)))/4)-K((b-1901+c)/100)+K((b-1601+c)/400)});if(!(m={}.hasOwnProperty))m=function(b){var c={},a;if((c.__proto__=k,c.__proto__={toString:1},c).toString!=l)m=function(a){var b=this.__proto__,a=a in(this.__proto__=k,this);this.__proto__=b;return a};else{a=c.constructor;m=function(b){var c=(this.constructor||a).prototype;return b in this&&!(b in c&&this[b]===c[b])}}c=
-k;return m.call(this,b)};n=function(b,c){var a=0,d,j,f;(d=function(){this.valueOf=0}).prototype.valueOf=0;j=new d;for(f in j)m.call(j,f)&&a++;d=j=k;if(a)a=a==2?function(a,b){var c={},d=l.call(a)=="[object Function]",f;for(f in a)!(d&&f=="prototype")&&!m.call(c,f)&&(c[f]=1)&&m.call(a,f)&&b(f)}:function(a,b){var c=l.call(a)=="[object Function]",d,f;for(d in a)!(c&&d=="prototype")&&m.call(a,d)&&!(f=d==="constructor")&&b(d);(f||m.call(a,d="constructor"))&&b(d)};else{j=["valueOf","toString","toLocaleString",
-"propertyIsEnumerable","isPrototypeOf","hasOwnProperty","constructor"];a=function(a,b){var c=l.call(a)=="[object Function]",d;for(d in a)!(c&&d=="prototype")&&m.call(a,d)&&b(d);for(c=j.length;d=j[--c];m.call(a,d)&&b(d));}}a(b,c)};R("json-stringify")||(r={"\\":"\\\\",'"':'\\"',"\u0008":"\\b","\u000c":"\\f","\n":"\\n","\r":"\\r","\t":"\\t"},t=function(b,c){return("000000"+(c||0)).slice(-b)},u=function(b){for(var c='"',a=0,d;d=b.charAt(a);a++)c=c+('\\"\u0008\u000c\n\r\t'.indexOf(d)>-1?r[d]:r[d]=d<" "?
-"\\u00"+t(2,d.charCodeAt(0).toString(16)):d);return c+'"'},x=function(b,c,a,d,j,f,o){var g=c[b],h,s,v,w,L,M,N,y,A;if(typeof g=="object"&&g){h=l.call(g);if(h=="[object Date]"&&!m.call(g,"toJSON"))if(g>-1/0&&g<1/0){if(P){v=K(g/864E5);for(h=K(v/365.2425)+1970-1;P(h+1,0)<=v;h++);for(s=K((v-P(h,0))/30.42);P(h,s+1)<=v;s++);v=1+v-P(h,s);w=(g%864E5+864E5)%864E5;L=K(w/36E5)%24;M=K(w/6E4)%60;N=K(w/1E3)%60;w=w%1E3}else{h=g.getUTCFullYear();s=g.getUTCMonth();v=g.getUTCDate();L=g.getUTCHours();M=g.getUTCMinutes();
-N=g.getUTCSeconds();w=g.getUTCMilliseconds()}g=(h<=0||h>=1E4?(h<0?"-":"+")+t(6,h<0?-h:h):t(4,h))+"-"+t(2,s+1)+"-"+t(2,v)+"T"+t(2,L)+":"+t(2,M)+":"+t(2,N)+"."+t(3,w)+"Z"}else g=k;else if(typeof g.toJSON=="function"&&(h!="[object Number]"&&h!="[object String]"&&h!="[object Array]"||m.call(g,"toJSON")))g=g.toJSON(b)}a&&(g=a.call(c,b,g));if(g===k)return"null";h=l.call(g);if(h=="[object Boolean]")return""+g;if(h=="[object Number]")return g>-1/0&&g<1/0?""+g:"null";if(h=="[object String]")return u(g);if(typeof g==
-"object"){for(b=o.length;b--;)if(o[b]===g)throw TypeError();o.push(g);y=[];c=f;f=f+j;if(h=="[object Array]"){s=0;for(b=g.length;s<b;A||(A=i),s++){h=x(s,g,a,d,j,f,o);y.push(h===e?"null":h)}b=A?j?"[\n"+f+y.join(",\n"+f)+"\n"+c+"]":"["+y.join(",")+"]":"[]"}else{n(d||g,function(b){var c=x(b,g,a,d,j,f,o);c!==e&&y.push(u(b)+":"+(j?" ":"")+c);A||(A=i)});b=A?j?"{\n"+f+y.join(",\n"+f)+"\n"+c+"}":"{"+y.join(",")+"}":"{}"}o.pop();return b}},q.stringify=function(b,c,a){var d,j,f,o,g,h;if(typeof c=="function"||
-typeof c=="object"&&c)if(l.call(c)=="[object Function]")j=c;else if(l.call(c)=="[object Array]"){f={};o=0;for(g=c.length;o<g;h=c[o++],(l.call(h)=="[object String]"||l.call(h)=="[object Number]")&&(f[h]=1));}if(a)if(l.call(a)=="[object Number]"){if((a=a-a%1)>0){d="";for(a>10&&(a=10);d.length<a;d=d+" ");}}else l.call(a)=="[object String]"&&(d=a.length<=10?a:a.slice(0,10));return x("",(h={},h[""]=b,h),j,f,d,"",[])});R("json-parse")||(z=String.fromCharCode,B={"\\":"\\",'"':'"',"/":"/",b:"\u0008",t:"\t",
-n:"\n",f:"\u000c",r:"\r"},C=function(){H=I=k;throw SyntaxError();},D=function(){for(var b=I,c=b.length,a,d,j,f,o;H<c;){a=b.charAt(H);if("\t\r\n ".indexOf(a)>-1)H++;else{if("{}[]:,".indexOf(a)>-1){H++;return a}if(a=='"'){d="@";for(H++;H<c;){a=b.charAt(H);if(a<" ")C();else if(a=="\\"){a=b.charAt(++H);if('\\"/btnfr'.indexOf(a)>-1){d=d+B[a];H++}else if(a=="u"){j=++H;for(f=H+4;H<f;H++){a=b.charAt(H);a>="0"&&a<="9"||a>="a"&&a<="f"||a>="A"&&a<="F"||C()}d=d+z("0x"+b.slice(j,H))}else C()}else{if(a=='"')break;
-d=d+a;H++}}if(b.charAt(H)=='"'){H++;return d}}else{j=H;if(a=="-"){o=i;a=b.charAt(++H)}if(a>="0"&&a<="9"){for(a=="0"&&(a=b.charAt(H+1),a>="0"&&a<="9")&&C();H<c&&(a=b.charAt(H),a>="0"&&a<="9");H++);if(b.charAt(H)=="."){for(f=++H;f<c&&(a=b.charAt(f),a>="0"&&a<="9");f++);f==H&&C();H=f}a=b.charAt(H);if(a=="e"||a=="E"){a=b.charAt(++H);(a=="+"||a=="-")&&H++;for(f=H;f<c&&(a=b.charAt(f),a>="0"&&a<="9");f++);f==H&&C();H=f}return+b.slice(j,H)}o&&C();if(b.slice(H,H+4)=="true"){H=H+4;return i}if(b.slice(H,H+5)==
-"false"){H=H+5;return false}if(b.slice(H,H+4)=="null"){H=H+4;return k}}C()}}return"$"},E=function(b){var c,a;b=="$"&&C();if(typeof b=="string"){if(b.charAt(0)=="@")return b.slice(1);if(b=="["){for(c=[];;a||(a=i)){b=D();if(b=="]")break;if(a)if(b==","){b=D();b=="]"&&C()}else C();b==","&&C();c.push(E(b))}return c}if(b=="{"){for(c={};;a||(a=i)){b=D();if(b=="}")break;if(a)if(b==","){b=D();b=="}"&&C()}else C();(b==","||typeof b!="string"||b.charAt(0)!="@"||D()!=":")&&C();c[b.slice(1)]=E(D())}return c}C()}return b},
-G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b[c],j;if(typeof d=="object"&&d)if(l.call(d)=="[object Array]")for(j=d.length;j--;)G(d,j,a);else n(d,function(b){G(d,b,a)});return a.call(b,c,d)},q.parse=function(b,c){var a,d;H=0;I=b;a=E(D());D()!="$"&&C();H=I=k;return c&&l.call(c)=="[object Function]"?F((d={},d[""]=a,d),"",c):a})}p&&define(function(){return q});
-}());
-
-
-// END JSON3
-}
-
-
-
-
-
-
-
-// Provide parsing/stringify functionnality for JSON and XML format
 a.parser = {
     /**
      * Basic JSON handler wich prevent from 'no data' or 'wrong data' input,
      * with a log message to check.
      *
-     * @class json
-     * @static
-     * @namespace a.parser
+     * @constructor
     */
     json: {
         /**
-         * Serialize a JSON into a string
+         * Serialize a JSON into a string.
          *
-         * @method stringify
-         *
-         * @param value {Object}         Any data to be converted into String
-         * @return {String}              A JSON parsed string, or an empty
-         *                               string if the parsing fails
+         * @param {Object} value            Any data to be converted
+         * @return {String}                 A JSON parsed string, or an empty
+         *                                  string if the parsing fails
         */
         stringify: function() {
             try {
@@ -17427,12 +17334,10 @@ a.parser = {
         },
 
         /**
-         * Deserialize a string into JSON
+         * Deserialize a string into JSON.
          *
-         * @method parse
-         *
-         * @param value {String}            The value un-stringify
-         * @return {Mixed | null}           The converted value
+         * @param {String} value            The value un-stringify
+         * @return {Mixed | Null}           The converted value
         */
         parse: function(value) {
             try {
@@ -17454,19 +17359,15 @@ a.parser = {
      * Basic XML handler wich prevent from 'no data' or 'wrong data' input,
      * with a log message to check.
      *
-     * @class xml
-     * @static
-     * @namespace a.parser
+     * @constructor
     */
     xml: {
         /**
-         * Serialize a XML into a string
+         * Serialize a XML into a string.
          *
-         * @method stringify
-         *
-         * @param value {Object}      Any data to be converted into String
-         * @return {String}           A parsed string, or an empty
-         *                            string if the parsing fails
+         * @param {Object} value            Any data to be converted
+         * @return {String}                 A parsed string, or an empty
+         *                                  string if the parsing fails
         */
         stringify: function(value) {
             if(!a.isNone(value) && !a.isNone(value.xml)) {
@@ -17493,13 +17394,11 @@ a.parser = {
         },
 
         /**
-         * Deserialize a string into XML
+         * Deserialize a string into XML.
          *
-         * @method parse
-         *
-         * @param value {String}          The value un-stringify
-         * @return {DOMElement | null}    The resulting doc element, or null
-         *                                in case of problem
+         * @param {String} value            The value un-stringify
+         * @return {DOMElement | Null}      The resulting doc element, or null
+         *                                  in case of problem
         */
         parse: function(value) {
             if(!a.isNone(window.ActiveXObject)) {
@@ -17514,7 +17413,7 @@ a.parser = {
                 }
                 doc.async = false;
                 doc.loadXML(value);
-                if (doc.parseError.errorCode != 0) {
+                if (doc.parseError.errorCode !== 0) {
                     var error = 'Unable to parse the value ```' + value +
                             '```, reason ```' + doc.parseError.reason + '```' +
                             '. Below the stack trace.';
@@ -17537,7 +17436,48 @@ a.parser = {
         }
     }
 };
-;/* ************************************************************************
+
+
+
+
+
+
+/*!
+ * USE OF JSON3:
+ *    JSON v3.2.4
+ *    http://bestiejs.github.com/json3
+ *    Copyright 2012, Kit Cambridge
+ *    http://kit.mit-license.org
+ *
+ * It seems JSON3 fully bind at all times, so we change... 
+*/
+/* jshint ignore:start */
+
+// BEGIN JSON3 - only if json is not supported
+if(a.isNone(JSON) && (a.isNone(JSON.parser) || a.isNone(JSON.stringify)) ) {
+
+;(function(){var e=void 0,i=!0,k=null,l={}.toString,m,n,p="function"===typeof define&&define.c,q=!p&&"object"==typeof exports&&exports;q||p?"object"==typeof JSON&&JSON?p?q=JSON:(q.stringify=JSON.stringify,q.parse=JSON.parse):p&&(q=this.JSON={}):q=this.JSON||(this.JSON={});var r,t,u,x,z,B,C,D,E,F,G,H,I,J=new Date(-3509827334573292),K,O,P;try{J=-109252==J.getUTCFullYear()&&0===J.getUTCMonth()&&1==J.getUTCDate()&&10==J.getUTCHours()&&37==J.getUTCMinutes()&&6==J.getUTCSeconds()&&708==J.getUTCMilliseconds()}catch(Q){}
+function R(b){var c,a,d,j=b=="json";if(j||b=="json-stringify"||b=="json-parse"){if(b=="json-stringify"||j){if(c=typeof q.stringify=="function"&&J){(d=function(){return 1}).toJSON=d;try{c=q.stringify(0)==="0"&&q.stringify(new Number)==="0"&&q.stringify(new String)=='""'&&q.stringify(l)===e&&q.stringify(e)===e&&q.stringify()===e&&q.stringify(d)==="1"&&q.stringify([d])=="[1]"&&q.stringify([e])=="[null]"&&q.stringify(k)=="null"&&q.stringify([e,l,k])=="[null,null,null]"&&q.stringify({A:[d,i,false,k,"\x00\u0008\n\u000c\r\t"]})==
+'{"A":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'&&q.stringify(k,d)==="1"&&q.stringify([1,2],k,1)=="[\n 1,\n 2\n]"&&q.stringify(new Date(-864E13))=='"-271821-04-20T00:00:00.000Z"'&&q.stringify(new Date(864E13))=='"+275760-09-13T00:00:00.000Z"'&&q.stringify(new Date(-621987552E5))=='"-000001-01-01T00:00:00.000Z"'&&q.stringify(new Date(-1))=='"1969-12-31T23:59:59.999Z"'}catch(f){c=false}}if(!j)return c}if(b=="json-parse"||j){if(typeof q.parse=="function")try{if(q.parse("0")===0&&!q.parse(false)){d=
+q.parse('{"A":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}');if(a=d.a.length==5&&d.a[0]==1){try{a=!q.parse('"\t"')}catch(o){}if(a)try{a=q.parse("01")!=1}catch(g){}}}}catch(h){a=false}if(!j)return a}return c&&a}}
+if(!R("json")){J||(K=Math.floor,O=[0,31,59,90,120,151,181,212,243,273,304,334],P=function(b,c){return O[c]+365*(b-1970)+K((b-1969+(c=+(c>1)))/4)-K((b-1901+c)/100)+K((b-1601+c)/400)});if(!(m={}.hasOwnProperty))m=function(b){var c={},a;if((c.__proto__=k,c.__proto__={toString:1},c).toString!=l)m=function(a){var b=this.__proto__,a=a in(this.__proto__=k,this);this.__proto__=b;return a};else{a=c.constructor;m=function(b){var c=(this.constructor||a).prototype;return b in this&&!(b in c&&this[b]===c[b])}}c=
+k;return m.call(this,b)};n=function(b,c){var a=0,d,j,f;(d=function(){this.valueOf=0}).prototype.valueOf=0;j=new d;for(f in j)m.call(j,f)&&a++;d=j=k;if(a)a=a==2?function(a,b){var c={},d=l.call(a)=="[object Function]",f;for(f in a)!(d&&f=="prototype")&&!m.call(c,f)&&(c[f]=1)&&m.call(a,f)&&b(f)}:function(a,b){var c=l.call(a)=="[object Function]",d,f;for(d in a)!(c&&d=="prototype")&&m.call(a,d)&&!(f=d==="constructor")&&b(d);(f||m.call(a,d="constructor"))&&b(d)};else{j=["valueOf","toString","toLocaleString",
+"propertyIsEnumerable","isPrototypeOf","hasOwnProperty","constructor"];a=function(a,b){var c=l.call(a)=="[object Function]",d;for(d in a)!(c&&d=="prototype")&&m.call(a,d)&&b(d);for(c=j.length;d=j[--c];m.call(a,d)&&b(d));}}a(b,c)};R("json-stringify")||(r={"\\":"\\\\",'"':'\\"',"\u0008":"\\b","\u000c":"\\f","\n":"\\n","\r":"\\r","\t":"\\t"},t=function(b,c){return("000000"+(c||0)).slice(-b)},u=function(b){for(var c='"',a=0,d;d=b.charAt(a);a++)c=c+('\\"\u0008\u000c\n\r\t'.indexOf(d)>-1?r[d]:r[d]=d<" "?
+"\\u00"+t(2,d.charCodeAt(0).toString(16)):d);return c+'"'},x=function(b,c,a,d,j,f,o){var g=c[b],h,s,v,w,L,M,N,y,A;if(typeof g=="object"&&g){h=l.call(g);if(h=="[object Date]"&&!m.call(g,"toJSON"))if(g>-1/0&&g<1/0){if(P){v=K(g/864E5);for(h=K(v/365.2425)+1970-1;P(h+1,0)<=v;h++);for(s=K((v-P(h,0))/30.42);P(h,s+1)<=v;s++);v=1+v-P(h,s);w=(g%864E5+864E5)%864E5;L=K(w/36E5)%24;M=K(w/6E4)%60;N=K(w/1E3)%60;w=w%1E3}else{h=g.getUTCFullYear();s=g.getUTCMonth();v=g.getUTCDate();L=g.getUTCHours();M=g.getUTCMinutes();
+N=g.getUTCSeconds();w=g.getUTCMilliseconds()}g=(h<=0||h>=1E4?(h<0?"-":"+")+t(6,h<0?-h:h):t(4,h))+"-"+t(2,s+1)+"-"+t(2,v)+"T"+t(2,L)+":"+t(2,M)+":"+t(2,N)+"."+t(3,w)+"Z"}else g=k;else if(typeof g.toJSON=="function"&&(h!="[object Number]"&&h!="[object String]"&&h!="[object Array]"||m.call(g,"toJSON")))g=g.toJSON(b)}a&&(g=a.call(c,b,g));if(g===k)return"null";h=l.call(g);if(h=="[object Boolean]")return""+g;if(h=="[object Number]")return g>-1/0&&g<1/0?""+g:"null";if(h=="[object String]")return u(g);if(typeof g==
+"object"){for(b=o.length;b--;)if(o[b]===g)throw TypeError();o.push(g);y=[];c=f;f=f+j;if(h=="[object Array]"){s=0;for(b=g.length;s<b;A||(A=i),s++){h=x(s,g,a,d,j,f,o);y.push(h===e?"null":h)}b=A?j?"[\n"+f+y.join(",\n"+f)+"\n"+c+"]":"["+y.join(",")+"]":"[]"}else{n(d||g,function(b){var c=x(b,g,a,d,j,f,o);c!==e&&y.push(u(b)+":"+(j?" ":"")+c);A||(A=i)});b=A?j?"{\n"+f+y.join(",\n"+f)+"\n"+c+"}":"{"+y.join(",")+"}":"{}"}o.pop();return b}},q.stringify=function(b,c,a){var d,j,f,o,g,h;if(typeof c=="function"||
+typeof c=="object"&&c)if(l.call(c)=="[object Function]")j=c;else if(l.call(c)=="[object Array]"){f={};o=0;for(g=c.length;o<g;h=c[o++],(l.call(h)=="[object String]"||l.call(h)=="[object Number]")&&(f[h]=1));}if(a)if(l.call(a)=="[object Number]"){if((a=a-a%1)>0){d="";for(a>10&&(a=10);d.length<a;d=d+" ");}}else l.call(a)=="[object String]"&&(d=a.length<=10?a:a.slice(0,10));return x("",(h={},h[""]=b,h),j,f,d,"",[])});R("json-parse")||(z=String.fromCharCode,B={"\\":"\\",'"':'"',"/":"/",b:"\u0008",t:"\t",
+n:"\n",f:"\u000c",r:"\r"},C=function(){H=I=k;throw SyntaxError();},D=function(){for(var b=I,c=b.length,a,d,j,f,o;H<c;){a=b.charAt(H);if("\t\r\n ".indexOf(a)>-1)H++;else{if("{}[]:,".indexOf(a)>-1){H++;return a}if(a=='"'){d="@";for(H++;H<c;){a=b.charAt(H);if(a<" ")C();else if(a=="\\"){a=b.charAt(++H);if('\\"/btnfr'.indexOf(a)>-1){d=d+B[a];H++}else if(a=="u"){j=++H;for(f=H+4;H<f;H++){a=b.charAt(H);a>="0"&&a<="9"||a>="a"&&a<="f"||a>="A"&&a<="F"||C()}d=d+z("0x"+b.slice(j,H))}else C()}else{if(a=='"')break;
+d=d+a;H++}}if(b.charAt(H)=='"'){H++;return d}}else{j=H;if(a=="-"){o=i;a=b.charAt(++H)}if(a>="0"&&a<="9"){for(a=="0"&&(a=b.charAt(H+1),a>="0"&&a<="9")&&C();H<c&&(a=b.charAt(H),a>="0"&&a<="9");H++);if(b.charAt(H)=="."){for(f=++H;f<c&&(a=b.charAt(f),a>="0"&&a<="9");f++);f==H&&C();H=f}a=b.charAt(H);if(a=="e"||a=="E"){a=b.charAt(++H);(a=="+"||a=="-")&&H++;for(f=H;f<c&&(a=b.charAt(f),a>="0"&&a<="9");f++);f==H&&C();H=f}return+b.slice(j,H)}o&&C();if(b.slice(H,H+4)=="true"){H=H+4;return i}if(b.slice(H,H+5)==
+"false"){H=H+5;return false}if(b.slice(H,H+4)=="null"){H=H+4;return k}}C()}}return"$"},E=function(b){var c,a;b=="$"&&C();if(typeof b=="string"){if(b.charAt(0)=="@")return b.slice(1);if(b=="["){for(c=[];;a||(a=i)){b=D();if(b=="]")break;if(a)if(b==","){b=D();b=="]"&&C()}else C();b==","&&C();c.push(E(b))}return c}if(b=="{"){for(c={};;a||(a=i)){b=D();if(b=="}")break;if(a)if(b==","){b=D();b=="}"&&C()}else C();(b==","||typeof b!="string"||b.charAt(0)!="@"||D()!=":")&&C();c[b.slice(1)]=E(D())}return c}C()}return b},
+G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b[c],j;if(typeof d=="object"&&d)if(l.call(d)=="[object Array]")for(j=d.length;j--;)G(d,j,a);else n(d,function(b){G(d,b,a)});return a.call(b,c,d)},q.parse=function(b,c){var a,d;H=0;I=b;a=E(D());D()!="$"&&C();H=I=k;return c&&l.call(c)=="[object Function]"?F((d={},d[""]=a,d),"",c):a})}p&&define(function(){return q});
+}());
+
+
+// END JSON3
+}
+
+/* jshint ignore:end */;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -17547,11 +17487,9 @@ a.parser = {
 ************************************************************************ */
 
 /**
- * Simple timer system, provide a single timer for many bindings
+ * Simple timer system, provide a single timer for many bindings.
  *
- * @class timer
- * @static
- * @namespace a
+ * @constructor
 */
 a.timer = (function() {
     'use strict';
@@ -17584,23 +17522,23 @@ a.timer = (function() {
                 }
             }
         }
-    };
+    }
 
     // Auto-start timer
     setInterval(tick, delay);
 
     return {
         /**
-         * Register a function for regular timer tick
+         * Register a function for regular timer tick.
          *
-         * @method add
          * @async
          *
-         * @param fct {Function}        The function to bind
-         * @param scope {Object | null} The scope to use when calling function
-         * @param timeout {Integer}     The timeout between two call
-         * @return {Integer}            A generated id used to access
-         *                              this entry
+         * @param {Function} fct            The function to bind
+         * @param {Object | Null} scope     The scope to use when calling
+         *                                  function
+         * @param {Integer} timeout         The timeout between two call
+         * @return {Integer}                A generated id used to access
+         *                                  this entry
         */
         add: function(fct, scope, timeout) {
             var id = a.uniqueId();
@@ -17626,16 +17564,16 @@ a.timer = (function() {
         },
 
         /**
-         * Register a function for a single timer tick
+         * Register a function for a single timer tick.
          *
-         * @method once
          * @async
          *
-         * @param fct {Function}        The function to bind
-         * @param scope {Object | null} The scope to use when calling function
-         * @param timeout {Integer}     The timeout when calling function
-         * @return {Integer}            A generated id used to
-         *                              manipulate ticker access
+         * @param {Function} fct            The function to bind
+         * @param {Object | Null} scope     The scope to use when calling
+         *                                  function
+         * @param {Integer} timeout         The timeout when calling function
+         * @return {Integer}                A generated id used to
+         *                                  manipulate ticker access
         */
         once: function(fct, scope, timeout) {
             var id = this.add(
@@ -17650,12 +17588,10 @@ a.timer = (function() {
         },
 
         /**
-         * Get a function registred into the timer
+         * Get a function registred into the timer.
          *
-         * @method get
-         *
-         * @return {Object | null}      The object linked to id,
-         *                              or null if nothing is related to id
+         * @return {Object | Null}          The object linked to id, or null
+         *                                  if nothing is related to id
         */
         get: function(id) {
             var item = store[id];
@@ -17663,27 +17599,23 @@ a.timer = (function() {
         },
 
         /**
-         * Remove a function currently stored into the timer
+         * Remove a function currently stored into the timer.
          *
-         * @method remove
-         *
-         * @param id {Integer}         The id to delete
-         * @return {Boolean}           The item has been delete or not
+         * @param id {Integer}              The id to delete
+         * @return {Boolean}                The item has been delete or not
         */
         remove: function(id) {
             return delete store[id];
         },
 
         /**
-         * Clear the current timer
-         *
-         * @method clear
+         * Clear the current all timers.
         */
         clear: function() {
             store = {};
         }
     };
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -17696,13 +17628,17 @@ a.timer = (function() {
 ************************************************************************ */
 
 
-// From: http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
-// Adding 'uber basic' support of querySelectorAll for IE browsers
-// Only if user does not make usage of any library like jQuery
+/*!
+ * From: http://www.codecouch.com/2012/05/adding-document-queryselectorall-support-to-ie-7/
+ * Adding 'uber basic' support of querySelectorAll for IE browsers
+ * Only if user does not make usage of any library like jQuery
+*/
+/* jshint ignore:start */
 if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
     // IE7 support for querySelectorAll in 274 bytes. Supports multiple / grouped selectors and the attribute selector with a "for" attribute. http://www.codecouch.com/
     (function(d,s){d=document,s=d.createStyleSheet();d.querySelectorAll=function(r,c,i,j,a){a=d.all,c=[],r=r.replace(/\[for\b/gi,'[htmlFor').split(',');for(i=r.length;i--;){s.addRule(r[i],'k:v');for(j=a.length;j--;)a[j].currentStyle.k&&c.push(a[j]);s.removeRule(0)}return c}})()
 }
+/* jshint ignore:end */
 
 
 /**
@@ -17711,19 +17647,15 @@ if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
  * It really not the best, but it does work well, and already pretty 
  * usefull!
  *
- * @class dom
- * @static
- * @namespace a
+ * @constructor
 */
 a.dom = {
     /**
-     * USE ONLY IF YOU HAVE JQUERY, OR DONT CARE OLD BROWSER (IE 8 and +)
-     * Use direct jquery or querySelectorAll to select items
+     * USE ONLY IF YOU HAVE JQUERY, OR DON'T CARE OLD BROWSER (IE 8 and +)
+     * Use direct jquery or querySelectorAll to select items.
      *
-     * @method query
-     *
-     * @param check {String}                The string to search for
-     * @param dom {DOMElement}              The dom to search inside
+     * @param {String} check                The string to search for
+     * @param {DOMElement} dom              The dom to search inside
      * @return {a.dom.children}             A chainable object
     */
     query: function(check, dom) {
@@ -17737,11 +17669,9 @@ a.dom = {
     },
 
     /**
-     * Embed a dom element into a.dom system
+     * Embed a dom element into a.dom system.
      *
-     * @method el
-     *
-     * @param element {DOMElement}          A dom element to work with
+     * @param {DOMElement} element          A dom element to work with
      * @return {a.dom.children}             A chainable object
     */
     el: function(element) {
@@ -17789,11 +17719,9 @@ a.dom = {
     },
 
     /**
-     * Find element by id, or a list of ids (separator: ',', or an array)
+     * Find element by id, or a list of ids (separator: ',', or an array).
      *
-     * @method id
-     *
-     * @param id {String | Array}           The id(s) to search
+     * @param {String | Array} id           The id(s) to search
      * @return {a.dom.children}             A chainable object
     */
     id: function(id) {
@@ -17802,13 +17730,11 @@ a.dom = {
 
     /**
      * Find elements by classname, or a list of classname
-     * (separator: ',', or an array)
+     * (separator: ',', or an array).
      *
-     * @method cls
-     *
-     * @param clsname {String | Array}      The classname(s) to search
+     * @param {String | Array} clsname      The classname(s) to search
      *                                      (like 'active', 'container', ...)
-     * @param dom {DOMElement | null}       The init dom to start searching
+     * @param {DOMElement | null} dom       The init dom to start searching
      *                                      from or null to use document
      * @return {a.dom.children}             A chainable object
     */
@@ -17818,12 +17744,10 @@ a.dom = {
 
     /**
      * Find elemnts by their tagname, or a list of tagname
-     * (separator: ',', or an array)
+     * (separator: ',', or an array).
      *
-     * @method tag
-     *
-     * @param name {String | Array}         The tag(s) to search (input, a,...)
-     * @param dom {DOMElement | null}       The init dom to start searching
+     * @param {String | Array} name         The tag(s) to search (input, a,...)
+     * @param {DOMElement | Null} dom       The init dom to start searching
      *                                      from, or null to use document
      * @return {a.dom.children}             A chainable object
     */
@@ -17831,9 +17755,8 @@ a.dom = {
         // Remove string from name
         dom = (a.isTrueObject(dom)) ? dom : document;
 
-        var tagList = a.isString(name)
-                        ? name.replace(/ /g,'').split(',')
-                        : name,
+        var tagList = a.isString(name) ? name.replace(/ /g,'').split(',') :
+                name,
             domList = [],
             i       = tagList.length;
 
@@ -17842,8 +17765,8 @@ a.dom = {
                 var chainElement = this.tag(tagList[i], dom),
                     elements  = chainElement.getElements();
 
-                a.each(elements, function(element) {
-                    if(!a.contains(domList, element)) {
+                a.each(elements, function (element) {
+                    if (!a.contains(domList, element)) {
                         domList.push(element);
                     }
                 });
@@ -17862,17 +17785,15 @@ a.dom = {
     },
 
     /**
-     * Find elements by attribute name
+     * Find elements by attribute name.
      *
-     * @method attr
-     *
-     * @param name {String | Array}         The attribute name to search
-     * @param value {String | null}         The attribute value (can be empty)
-     * @param dom {DOMElement}              The dom to start search from
+     * @param {String | Array} name         The attribute name to search
+     * @param {String | Null} value         The attribute value (can be empty)
+     * @param {DOMElement} dom              The dom to start search from
      * @return {a.dom.children}             A chainable object
     */
     attr: function(name, value, dom) {
-        /*
+        /*!
          * -----------------------------------
          *   Detect parameter chain
          * -----------------------------------
@@ -17895,21 +17816,25 @@ a.dom = {
         }
 
         /**
-         * From a string or an array, get a string version
+         * From a string or an array, get a string version.
          *
-         * @param str {String | Array}      Separate elements
+         * @private
+         *
+         * @param {String | Array} str      Separate elements
          * @return {Array}                  The split version
         */
         function stringToArray(str) {
             return a.isString(str) ? str.replace(/ /g,'').split(',') : str;
-        };
+        }
 
         /**
          * Append elements to parentList only if there are not already
          * inside collection.
          *
-         * @param parentList {Array}        The arrays to append elements to
-         * @param children {Array}          The list of elements to append
+         * @private
+         *
+         * @param {Array} parentList        The arrays to append elements to
+         * @param {Array} children          The list of elements to append
         */
         function appendList(parentList, children) {
             a.each(children, function(child) {
@@ -17917,9 +17842,9 @@ a.dom = {
                     parentList.push(child);
                 }
             });
-        };
+        }
 
-        /*
+        /*!
          * -----------------------------------
          *   Recursive attribute search
          * -----------------------------------
@@ -17932,20 +17857,20 @@ a.dom = {
 
             // In case of multi attribute, we apply recursive search
             if(i > 1) {
-                var domList   = [];
+                var doms = [];
 
                 while(i--) {
-                    var chainList   = this.attr(attributeList[i], value, dom),
-                        elementList = chainList.getElements();
-                    appendList(domList, elementList);
+                    var chains      = this.attr(attributeList[i], value, dom),
+                        elements    = chains.getElements();
+                    appendList(doms, elements);
                 }
 
                 // Returning element parsed
-                return new a.dom.children(domList);
+                return new a.dom.children(doms);
             }
         }
 
-        /*
+        /*!
          * -----------------------------------
          *   Recursive value search
          * -----------------------------------
@@ -17954,24 +17879,24 @@ a.dom = {
         // If value = array, or a string with ',', we do recursive search
         if(value && (a.isArray(value) || value.indexOf(',') > 0)) {
             var valueList = stringToArray(value),
-                i         = valueList.length;
+                j         = valueList.length;
 
             // In case of multi value, we apply recursive search
-            if(i > 1) {
-                var domList   = [];
+            if(j > 1) {
+                var oDom = [];
 
-                while(i--) {
-                    var chainList   = this.attr(name, valueList[i], dom),
-                        elementList = chainList.getElements();
-                    appendList(domList, elementList);
+                while(j--) {
+                    var oChains   = this.attr(name, valueList[j], dom),
+                        oElements = oChains.getElements();
+                    appendList(oDom, oElements);
                 }
 
                 // Returning element parsed
-                return new a.dom.children(domList);
+                return new a.dom.children(oDom);
             }
         }
 
-        /*
+        /*!
          * -----------------------------------
          *   Select elements regarding search
          * -----------------------------------
@@ -18000,20 +17925,19 @@ a.dom = {
         } else if(dom.querySelectorAll) {
             // We get [class="ok"] or [class] depending on value setted or not
 
-            var search = isStringValue
-                            ? '[' + name + '="' + value + '"]'
-                            : '[' + name + ']';
+            var search = isStringValue ? '[' + name + '="' + value + '"]' :
+                '[' + name + ']';
 
             domList = dom.querySelectorAll(search);
 
         // Complex version, for older browser
         } else {
             var allList = dom.getElementsByTagName('*'),
-                i       = allList.length;
+                k       = allList.length;
 
-            while(i--) {
+            while(k--) {
                 // Select element (faster)
-                var el    = allList[i],
+                var el    = allList[k],
                     // Check the attribute exist or not
                     found = el.getAttribute(name);
 
@@ -18060,7 +17984,7 @@ a.dom = {
 
 /**
  * Unified event system for DOM element (to have always the same behavior
- * between all browser)
+ * between all browser).
 */
 a.dom.event = function(e) {
     e = e || window.event;
@@ -18074,12 +17998,12 @@ a.dom.event = function(e) {
     this.originalEvent = e;
 };
 
-/**
+/*!
  * Event prototype
 */
 a.dom.event.prototype = {
     /**
-     * Stop event propagation
+     * Stop event propagation.
     */
     stopPropagation: function() {
         var e = this.originalEvent;
@@ -18091,7 +18015,7 @@ a.dom.event.prototype = {
     },
 
     /**
-     * Prevent default behavior
+     * Prevent default behavior.
     */
     preventDefault: function() {
         var e = this.originalEvent;
@@ -18100,16 +18024,14 @@ a.dom.event.prototype = {
         }
         e.returnValue = false;
     }
-}
+};
 
 
 /**
- * Generic function to use for converting event to appstorm event type
+ * Generic function to use for converting event to appstorm event type.
  *
- * @method eventBinder
- *
- * @param fn {Function}                     The function to encaps
- * @param scope {Object | null}             The scope to apply if possible
+ * @param {Function} fn                     The function to encaps
+ * @param {Object | Null} scope             The scope to apply if possible
  * @return {Function}                       The binded function
 */
 a.dom.eventBinder = function(fn, scope) {
@@ -18126,12 +18048,17 @@ a.dom.eventBinder = function(fn, scope) {
 
 
 /**
- * Abstract layer for binding event with DOM
+ * Abstract layer for binding event with DOM.
 */
-a.dom.eventListener = new function() {
-    var store = [];
+a.dom.eventListener = (function() {
+    var store = [],
+        bind = null,
+        unbind = null;
 
-    // Add binder between true event and function catch
+    /**
+     * Add binder between true event and function catch
+     * @private
+    */
     function addListener(el, type, fn, scope) {
         var binder = new a.dom.eventBinder(fn, scope || null);
         store.push({
@@ -18141,9 +18068,12 @@ a.dom.eventListener = new function() {
             bn:   binder
         });
         return binder;
-    };
+    }
 
-    // Destroy stored binder reference
+    /**
+     * Destroy stored binder reference
+     * @private
+    */
     function removeListener(el, type, fn) {
         var s = store,
             i = s.length,
@@ -18157,46 +18087,67 @@ a.dom.eventListener = new function() {
             }
         }
         return binder;
-    };
+    }
 
     // New browser
+    /**
+     * @private
+    */
     function addEventListener(el, type, fn, scope) {
         el.addEventListener(type,    addListener(el, type, fn, scope), false);
-    };
+    }
+    /**
+     * @private
+    */
     function removeEventListener(el, type, fn) {
         el.removeEventListener(type, removeListener(el, type, fn), false);
-    };
+    }
 
     // IE
+    /**
+     * @private
+    */
     function attachEvent(el, type, fn, scope) {
         el.attachEvent('on' + type, addListener(el, type, fn, scope));
-    };
+    }
+    /**
+     * @private
+    */
     function detachEvent(el, type, fn) {
         el.detachEvent('on' + type, removeListener(el, type, fn));
-    };
+    }
 
     // Old Browsers
+    /**
+     * @private
+    */
     function rawBindEvent(el, type, fn, scope) {
         el['on' + type] = addListener(el, type, fn, scope);
-    };
+    }
+    /**
+     * @private
+    */
     function rawUnbindEvent(el, type, fn) {
         removeListener(el, type, fn);
         el['on' + type] = null;
-    };
-
-
+    }
 
     if(a.isFunction(window.addEventListener)) {
-        this.bind   = addEventListener;
-        this.unbind = removeEventListener;
+        bind   = addEventListener;
+        unbind = removeEventListener;
     } else if(a.isFunction(document.attachEvent)) {
-        this.bind   = attachEvent;
-        this.unbind = detachEvent;
+        bind   = attachEvent;
+        unbind = detachEvent;
     } else {
-        this.bind   = rawBindEvent;
-        this.unbind = rawUnbindEvent;
+        bind   = rawBindEvent;
+        unbind = rawUnbindEvent;
     }
-};
+
+    return {
+        bind: bind,
+        unbind: unbind
+    };
+})();
 
 
 
@@ -18229,9 +18180,9 @@ a.dom.eventListener = new function() {
 
 
 /**
- * Handle recursive sub-search
+ * Handle recursive sub-search.
  *
- * @param elementList {Array}               The list of elements to use
+ * @param {Array} elementList               The list of elements to use
 */
 a.dom.children = function(elementList) {
     elementList = a.isUndefined(elementList.length) ?
@@ -18245,14 +18196,12 @@ a.dom.children = function(elementList) {
 
 a.dom.children.prototype = {
     /**
-     * Perform a recursive task to select sub children using a.dom
+     * Perform a recursive task to select sub children using a.dom.
      *
      * The first parameter must be the a.dom to use
      * Other parameters are parameter to pass to this function
-     * The last parameter should be the dom to use for search
+     * The last parameter should be the dom to use for search.
      *
-     * @method _perform
-     * @chainable
      * @private
     */
     _perform: function() {
@@ -18295,12 +18244,10 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Get a single DOM element
+     * Get a single DOM element.
      *
-     * @method get
-     *
-     * @param index {Integer}               The index to retrieve
-     * @return {DOMElement | null}          The dom element linked or null
+     * @param {Integer} index               The index to retrieve
+     * @return {DOMElement | Null}          The dom element linked or null
      *                                      if not found
     */
     get: function(index) {
@@ -18308,9 +18255,7 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Get the DOM elements stored
-     *
-     * @method getElements
+     * Get the DOM elements stored.
      *
      * @return {Array}                      The element list stored
     */
@@ -18319,24 +18264,22 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select sub-id elements
+     * Select sub-id elements.
      *
-     * @method id
      * @chainable
      *
-     * @param id {String}                   The id or list of ids to search
+     * @param {String} id                   The id or list of ids to search
     */
     id: function(id) {
         return this._perform(a.dom.id, id);
     },
 
     /**
-     * Select sub-class elements
+     * Select sub-class elements.
      *
-     * @method cls
      * @chainable
      *
-     * @param clsname {String}              The class or list of classes to
+     * @param {String} clsname              The class or list of classes to
      *                                      search
     */
     cls: function(clsname) {
@@ -18346,12 +18289,10 @@ a.dom.children.prototype = {
     /**
      * Get or set style for given elements
      *
-     * @method css
-     *
-     * @param rule {String}                 The CSS rule we are working with
-     * @param value {String}                The value to set (can be empty for
+     * @param {String} rule                 The CSS rule we are working with
+     * @param {String} value                The value to set (can be empty for
      *                                      get)
-     * @return {String | null}              The CSS value found in case of get
+     * @return {String | Null}              The CSS value found in case of get
     */
     css: function(rule, value) {
         rule = rule || '';
@@ -18372,10 +18313,10 @@ a.dom.children.prototype = {
         if(a.isUndefined(value)) {
             var cssList     = [],
                 elementList = this.elementList,
-                i           = elementList.length;
+                j           = elementList.length;
 
-            while(i--) {
-                var data = elementList[i].style[rule];
+            while(j--) {
+                var data = elementList[j].style[rule];
                 if(!a.isNone(data)) {
                     cssList.push(data);
                 }
@@ -18395,12 +18336,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Add a class to elements
+     * Add a class to elements.
      *
-     * @method addClass
      * @chainable
      *
-     * @param classname {String}            The classname to append to every
+     * @param {String} classname            The classname to append to every
      *                                      elements
     */
     addClass: function(classname) {
@@ -18417,12 +18357,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Test if all elements got classname or not
+     * Test if all elements got classname or not.
      *
-     * @method hasClass
      * @chainable
      *
-     * @param classname {String}            The classname to test on every
+     * @param {String} classname            The classname to test on every
      *                                      elements
     */
     hasClass: function(classname) {
@@ -18440,12 +18379,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Remove a class element
+     * Remove a class element.
      *
-     * @method removeClass
      * @chainable
      *
-     * @param classname {String}            The classname to remove on every
+     * @param {String} classname            The classname to remove on every
      *                                      elements
     */
     removeClass: function(classname) {
@@ -18464,12 +18402,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * toggle a class element
+     * toggle a class element.
      *
-     * @method toggleClass
      * @chainable
      *
-     * @param classname {String}            The classname to toggle on every
+     * @param {String} classname            The classname to toggle on every
      *                                      elements
     */
     toggleClass: function(classname) {
@@ -18492,19 +18429,18 @@ a.dom.children.prototype = {
     /**
      * Bind element event to given function (like click, submit...).
      *
-     * @method bind
      * @chainable
      *
-     * @param binding {String | Array}      The event/list to apply to
-     * @param fct {Function}                The handler to receive event
-     * @param scope {Object | null}         The scope to apply
+     * @param {String | Array} binding      The event/list to apply to
+     * @param {Function} fct                The handler to receive event
+     * @param {Object | Null} scope         The scope to apply
     */
     bind: function(binding, fct, scope) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
             i        = bindList.length;
 
         while(i--) {
-            if(!bindList[i] || bindList[i] == '') {
+            if(!bindList[i] || bindList[i] === '') {
                 continue;
             }
             this.each(function(evt) {
@@ -18516,20 +18452,19 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Unbind element event to given function (like click, submit...)
+     * Unbind element event to given function (like click, submit...).
      *
-     * @method unbind
      * @chainable
      *
-     * @param binding {String | Array}      The event/list to remove
-     * @param fct {Function}                The handler of event
+     * @param {String | Array} binding      The event/list to remove
+     * @param {Function} fct                The handler of event
     */
     unbind: function(binding, fct) {
         var bindList = a.isString(binding) ? binding.split(' ') : binding;
             i        = bindList.length;
 
         while(i--) {
-            if(!bindList[i] || bindList[i] == '') {
+            if(!bindList[i] || bindList[i] === '') {
                 continue;
             }
 
@@ -18542,39 +18477,36 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select sub-tag elements
+     * Select sub-tag elements.
      *
-     * @method tag
      * @chainable
      *
-     * @param name {String}                 The tag or list of tags to search
+     * @param {String} name                 The tag or list of tags to search
     */
     tag: function(name) {
         return this._perform(a.dom.tag, name);
     },
 
     /**
-     * Select sub-attributes elements
+     * Select sub-attributes elements.
      *
-     * @method attr
      * @chainable
      *
-     * @param attribute {String}            The attribute or list of
+     * @param {String} attribute            The attribute or list of
      *                                      attributes to search
-     * @param value {String | null}         The value to use, can be empty
+     * @param {String | Null} value         The value to use, can be empty
     */
     attr: function(attribute, value) {
         return this._perform(a.dom.attr, attribute, value);
     },
 
     /**
-     * Append or get attribute
+     * Append or get attribute.
      *
-     * @method attribute
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     attribute: function(attribute, value) {
         var attributes = 
@@ -18619,39 +18551,34 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Same as attribute, but for data- HTML5 tag
+     * Same as attribute, but for data- HTML5 tag.
      *
-     * @method data
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     data: function(attribute, value) {
         return this.attribute('data-' + attribute, value);
     },
 
     /**
-     * Same as data or attribute, but multi tag check
+     * Same as data or attribute, but multi tag check.
      *
-     * @method appstorm
      * @chainable
      *
-     * @param attribute {String}            The attribute to set
-     * @param value {String}                The value to get
+     * @param {String} attribute            The attribute to set
+     * @param {String} value                The value to get
     */
     appstorm: function(attribute, value) {
         // TODO: attribute does not handle ',' and array delimiter
-        return this.attribute(
-              'data-' + attribute
-            + ',a-'   + attribute
-            + ','     + attribute, value);
+        return this.attribute('data-' + attribute + ',a-'   + attribute +
+                ',' + attribute, value);
     },
 
     /**
-     * Move to the parent element for every element stored
+     * Move to the parent element for every element stored.
      *
-     * @method parent
      * @chainable
     */
     parent: function() {
@@ -18672,12 +18599,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select direct children of all stored elements
+     * Select direct children of all stored elements.
      *
-     * @method children
      * @chainable
      *
-     * @param types {Array | null}          The nodeTypes to keep (default: 3)
+     * @param {Array | Null} types          The nodeTypes to keep (default: 3)
     */
     children: function(types) {
         var elementList = this.elementList,
@@ -18708,9 +18634,8 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Select all sub elements
-     *
-     * @method all
+     * Select all sub elements.
+     *=
      * @chainable
     */
     all: function() {
@@ -18742,12 +18667,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Insert before selected element
+     * Insert before selected element.
      *
-     * @method insertBefore
      * @chainable
      *
-     * @param element {DOMElement}          The element to insert
+     * @param {DOMElement} element          The element to insert
     */
     insertBefore: function(element) {
         var dom = a.dom.el(element),
@@ -18762,12 +18686,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Insert after selected element
+     * Insert after selected element.
      *
-     * @method insertAfter
      * @chainable
      *
-     * @param element {DOMElement}          The element to insert
+     * @param {DOMElement} element          The element to insert
     */
     insertAfter: function(element) {
         var dom = a.dom.el(element),
@@ -18782,9 +18705,8 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Empty all elements stored
+     * Empty all elements stored.
      *
-     * @method empty
      * @chainable
     */
     empty: function() {
@@ -18797,12 +18719,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Remove element from content
+     * Remove element from content.
      *
-     * @method remove
      * @chainable
      *
-     * @param element {DOMElement}          The element to remove
+     * @param {DOMElement} element          The element to remove
     */
     remove: function(element) {
         var dom = a.dom.el(element),
@@ -18819,12 +18740,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Append element to the existing content
+     * Append element to the existing content.
      *
-     * @method append
      * @chainable
      *
-     * @param element {DOMElement}          The element to append
+     * @param {DOMElement} element          The element to append
     */
     append: function(element) {
         var dom = a.dom.el(element),
@@ -18839,12 +18759,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Replace the existing content with given element
+     * Replace the existing content with given element.
      *
-     * @method replace
      * @chainable
      *
-     * @param element {DOMElement}          The element to append
+     * @param {DOMElement} element          The element to append
     */
     replace: function(element) {
         this.empty();
@@ -18852,13 +18771,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Set inside the current elements the content, or get the current html
+     * Set inside the current elements the content, or get the current html.
      *
-     * @method html
-     *
-     * @param content {String | null}       The content to set, or nothing to
+     * @param {String | Null} content       The content to set, or nothing to
      *                                      get
-     * @return {String | null}              The current content, or null
+     * @return {String | Null}              The current content, or null
     */
     html: function(content) {
         if(!a.isUndefined(content)) {
@@ -18881,12 +18798,11 @@ a.dom.children.prototype = {
     },
 
     /**
-     * Apply on each elements the given function
+     * Apply on each elements the given function.
      *
-     * @method each
      * @chainable
      *
-     * @param fct {Function}                The function to apply to elements
+     * @param {Function} fct                The function to apply to elements
      * Other parameters are passed to every function call as arguments
     */
     each: function() {
@@ -18902,7 +18818,7 @@ a.dom.children.prototype = {
         });
         return this;
     }
-};;/* ************************************************************************
+};;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -18917,9 +18833,7 @@ a.dom.children.prototype = {
  * Manipulate page hash, be able to retrieve also the list of hash previously
  * used.
  *
- * @class hash
- * @static
- * @namespace a
+ * @constructor
 */
 a.hash = new function() {
     var previousHash  = null,
@@ -18931,26 +18845,24 @@ a.hash = new function() {
     store.set('history', traceHashList);
 
     /**
-     * Retrieve the current system hash
+     * Retrieve the current system hash.
      *
-     * @method getCurrentPageHash
      * @private
      *
-     * @return {String | null}              The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
      */
     function getCurrentPageHash() {
         var h = window.location.hash;
         return h ? h.substring(1) : null;
-    };
+    }
 
 
     /**
-     * Store the latest event appearing into a store
+     * Store the latest event appearing into a store.
      *
-     * @method registerNewHash
      * @private
      *
-      @param hash {String}                  The new hash incoming
+      @param {String} hash                  The new hash incoming
     */
     function registerNewHash(hash) {
         store.set('current', hash);
@@ -18965,12 +18877,11 @@ a.hash = new function() {
         while(traceHashList.length > 500) {
             traceHashList.shift();
         }
-    };
+    }
 
     /**
-     * Check for existing hash, call the callback if there is any change
+     * Check for existing hash, call the callback if there is any change.
      *
-     * @method checkAndComputeHashChange
      * @private
      */
     function checkAndComputeHashChange(evt) {
@@ -18997,7 +18908,7 @@ a.hash = new function() {
             previousHash = currentHash;
             store.set('previous', previousHash);
         }
-    };
+    }
 
     // Initiate the system (when appstorm is ready !)
     a.on('ready', function() {
@@ -19021,9 +18932,7 @@ a.hash = new function() {
      * Fake the hashtag change (can be usefull sometimes), it really apply
      * hash change, but does not change the browser hashtag.
      *
-     * @method fake
-     *
-     * @param currentHash {String}          The hash to fake
+     * @param {String} currentHash          The hash to fake
     */
     this.fake = function(currentHash) {
         if(previousHash != currentHash) {
@@ -19041,44 +18950,36 @@ a.hash = new function() {
     };
 
     /**
-     * Retrieve the current system hash
+     * Retrieve the current system hash.
      *
-     * @method getHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
      */
     this.getHash = function() {
         return getCurrentPageHash();
     };
 
     /**
-     * Retrieve the current system hash (getHash alias)
+     * Retrieve the current system hash (getHash alias).
      *
-     * @method get
-     *
-     * @return {String | null}         The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
     */
     this.get = function() {
         return getCurrentPageHash();
     };
 
     /**
-     * Get the previous page hash (can be null)
+     * Get the previous page hash (can be null).
      *
-     * @method getPreviousHash
-     *
-     * @return {String | null}          The hash, or null if nothing is set
+     * @return {String | Null}              The hash, or null if nothing is set
     */
     this.getPreviousHash = function() {
         return previousHash;
     };
 
     /**
-     * Force the system to set a specific hash
+     * Force the system to set a specific hash.
      *
-     * @method setPreviousHash
-     *
-     * @param value {String}            The hash to set
+     * @param {String} value                The hash to set
      */
     this.setPreviousHash = function(value) {
         previousHash = value;
@@ -19086,12 +18987,10 @@ a.hash = new function() {
     };
 
     /**
-     * Get list of existing previous hash used into system
+     * Get list of existing previous hash used into system.
      *
-     * @method trace
-     *
-     * @return {Array}                  An array with all hash
-     *                                  done since beginning
+     * @return {Array}                      An array with all hash
+     *                                      done since beginning
     */
     this.trace = function() {
         return traceHashList;
@@ -19099,7 +18998,7 @@ a.hash = new function() {
 };
 
 // Erasing previous a.hash and add event system to it
-a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ************************************************************************
+a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -19112,22 +19011,20 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
 (function(a) {
     /**
-     * Ajax cache object, used to store cached request and retrieve it if possible
+     * Ajax cache object, used to store cached request and retrieve it if possible.
      *
-     * @class ajaxCache
-     * @namespace a
      * @private
     */
     var ajaxCache = {
         /**
-         * Add a new cached ajax elemen
+         * Add a new cached ajax element.
          *
-         * @method add
+         * @private
          *
-         * @param method {String}               GET/POST/PUT/DELETE/...
-         * @param url {String}                  The url to catch
-         * @param results {Object}              The related result
-         * @param timeout {Integer}             The timeout (in ms)
+         * @param {String} method               GET/POST/PUT/DELETE/...
+         * @param {String} url                  The url to catch
+         * @param {Object} results              The related result
+         * @param {Integer} timeout             The timeout (in ms)
         */
         add: function(method, url, results, timeout) {
             if(timeout <= 0) {
@@ -19151,13 +19048,13 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         },
 
         /**
-         * Get a previously cached element
+         * Get a previously cached element.
          *
-         * @method get
+         * @private
          *
-         * @param method {String}               GET/POST/PUT/DELETE/...
-         * @param url {String}                  The url to catch
-         * @return {Object | null}              Return the previously stored
+         * @param {String} method               GET/POST/PUT/DELETE/...
+         * @param {String} url                  The url to catch
+         * @return {Object | Null}              Return the previously stored
          *                                      element or null if nothing is
          *                                      found
         */
@@ -19185,13 +19082,12 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
      * Help to get a new model, or update an existing one, regarding
      * primary keys inside a model.
      *
-     * @method getOrCreateModel
      * @private
      *
-     * @param name {String}                 The model name to search instance
-     * @param primaries {Array}             List of primary key inside the
+     * @param {String} name                 The model name to search instance
+     * @param {Array} primaries             List of primary key inside the
      *                                      model
-     * @param content {Object}              The content of current model
+     * @param {Object} content              The content of current model
      *                                      data (containing the primary
      *                                      key's data to match)
      * @return {a.modelInstance}            The new model created
@@ -19211,7 +19107,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
             }
 
             // Adding last model search
-            search['modelName'] = name;
+            search.modelName = name;
 
             var found = a.model.pooler.searchInstance(search);
 
@@ -19221,23 +19117,18 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                 return a.model.pooler.createInstance(name);
             }
         }
-    };
+    }
 
     /**
-     * Ajax object to call server
+     * Ajax object to call server.
      *
-     * Examples: <a href="http://appstormjs.com/wiki/doku.php?id=appstorm.js_v0.1:core:ajax">here</a>
-     *
-     * @class ajax
-     * @namespace a
      * @constructor
-     * @async
      *
-     * @param options {Object}                  An option map to change
+     * @param {Object} options                  An option map to change
      *                                          the behaviour of component
-     * @param success {Function}                The success function called
+     * @param {Function} success                The success function called
      *                                          in case of async
-     * @param error {Function}                  The error function called in
+     * @param {Function} error                  The error function called in
      *                                          case of async
     */
     a.ajax = function(options, success, error) {
@@ -19252,10 +19143,10 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
         // Parsing array of templates
         if(a.isArray(options.template)) {
-            for(var i=0, l=options.template.length; i<l; ++i) {
-                var tmpl = a.getTemplateAjaxOptions(options.template[i]);
-                if(a.isTrueObject(tmpl)) {
-                    templates.push(tmpl);
+            for(var t=0, n=options.template.length; t<n; ++t) {
+                var tmpAjaxOpt = a.getTemplateAjaxOptions(options.template[t]);
+                if(a.isTrueObject(tmpAjaxOpt)) {
+                    templates.push(tmpAjaxOpt);
                 }
             }
         }
@@ -19287,8 +19178,8 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
             }
 
             // We check given options are same type (from specific request)
-            for(var i=0, l=templates.length; i<l; ++i) {
-                var tmpl = templates[i];
+            for(var o=0, l=templates.length; o<l; ++o) {
+                var tmpl = templates[o];
                 if(p in tmpl && typeof(tmpl[p]) === typeof(this.params[p])) {
                     // Special case for array
                     if(a.isArray(tmpl[p])) {
@@ -19306,18 +19197,18 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         }
 
         // Now we take care of special case of data and header
-        for(var i=0, l=templates.length; i<l; ++i) {
-            var tmpl = templates[i];
+        for(var i=0, y=templates.length; i<y; ++i) {
+            var tmpla = templates[i];
 
-            if(a.isTrueObject(tmpl.data)) {
-                for(var d in tmpl.data) {
-                    this.params.data[d] = tmpl.data[d];
+            if(a.isTrueObject(tmpla.data)) {
+                for(var d in tmpla.data) {
+                    this.params.data[d] = tmpla.data[d];
                 }
             }
 
-            if(a.isTrueObject(tmpl.header)) {
-                for(var h in tmpl.header) {
-                    this.params.header[h] = tmpl.header[h];
+            if(a.isTrueObject(tmpla.header)) {
+                for(var h in tmpla.header) {
+                    this.params.header[h] = tmpla.header[h];
                 }
             }
         }
@@ -19352,22 +19243,22 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                 'Msxml2.XMLHTTP',
                 'Microsoft.XMLHTTP'
             ];
-            for(var i=0, l=msxml.length; i<l; ++i) {
+            for(var w=0, q=msxml.length; w<q; ++w) {
                 try {
-                    this.request = new ActiveXObject(msxml[i]);
+                    this.request = new ActiveXObject(msxml[w]);
                 } catch(e) {}
             }
         }
     };
 
     /**
-     * Parse the data to return the formated object (if needed)
+     * Parse the data to return the formated object (if needed).
      *
-     * @method parseResult
+     * @private
      *
-     * @param params {Object}                   The parameter list from
+     * @param {Object} params                   The parameter list from
      *                                          configuration ajax
-     * @param http {Object}                     The xmlHttpRequest started
+     * @param {Object} http                     The xmlHttpRequest started
      * @return {Object | String}                The parsed results
     */
     a.ajax.prototype.parseResult = function(params, http) {
@@ -19383,8 +19274,8 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                     http.responseText;
 
         // User is asking for a model convertion
-        if(params['model']) {
-            var modelName = params['model'],
+        if(params.model) {
+            var modelName = params.model,
                 errorStr = 'Model ' + modelName +
                             ' not found, empty object recieve Model Pooler';
 
@@ -19396,7 +19287,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                 a.console.storm('error', 'a.ajax', errorStr, 1);
 
             // No primaries into the model, we create new model
-            } else if(params['many'] === true && a.isArray(result)) {
+            } else if(params.many === true && a.isArray(result)) {
                 var content = [];
                 for(var i=0, l=result.length; i<l; ++i) {
                     var data = result[i],
@@ -19412,14 +19303,14 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
                 // We replace
                 result = content;
             } else {
-                var model = getOrCreateModel(modelName, primaries, result);
+                var fmdl = getOrCreateModel(modelName, primaries, result);
 
                 // This test is probably not neeeded, but, who knows,
                 // maybe one day it will raise to power and conquer
                 // the world.
-                if(model) {
-                    model.fromObject(result);
-                    result = model;
+                if(fmdl) {
+                    fmdl.fromObject(result);
+                    result = fmdl;
                 } else {
                     a.console.storm('error', 'a.ajax', errorStr, 1);
                 }
@@ -19427,9 +19318,9 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         }
 
         // After to use/parse on object
-        if('after' in params) {
-            for(var i=0, l=params.after.length; i<l; ++i) {
-                var fct = a.getAjaxAfter(params.after[i]);
+        if(params.hasOwnProperty('after')) {
+            for(var t=0, k=params.after.length; t<k; ++t) {
+                var fct = a.getAjaxAfter(params.after[t]);
                 if(a.isFunction(fct)) {
                     result = fct.call(this, params, result);
                 }
@@ -19437,8 +19328,8 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         }
 
         // We cache if needed
-        if('store' in params && params['store']) {
-            var store = params['store'],
+        if(params.hasOwnProperty('store') && params.store) {
+            var store = params.store,
                 multiplier = 1;
 
             if(store.indexOf('min') > 0) {
@@ -19451,16 +19342,14 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 
             // Adding element to store
             ajaxCache.add(params.method, params.url, result, 
-                multiplier * parseInt(params['store'], 10));
+                multiplier * parseInt(params.store, 10));
         }
 
         return result;
     };
 
     /**
-     * Manually abort the request
-     *
-     * @method abort
+     * Manually abort the request.
     */
     a.ajax.prototype.abort = function() {
         try {
@@ -19469,9 +19358,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
     };
 
     /**
-     * Send the ajax request
-     *
-     * @method send
+     * Send the ajax request.
     */
     a.ajax.prototype.send = function() {
         var method = this.params.method.toUpperCase();
@@ -19498,8 +19385,8 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         }
 
         // We search for cached element
-        if(a.isArray(this.params['before'])) {
-            var befores = this.params['before'];
+        if(a.isArray(this.params.before)) {
+            var befores = this.params.before;
             for(var i=0, l=befores.length; i<l; ++i) {
                 var before = a.getAjaxBefore(befores[i]);
                 if(a.isFunction(before)) {
@@ -19523,7 +19410,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
             var rnd = a.uniqueId('rnd_');
             // Safari does not like this...
             try {
-                this.params.data['cachedisable'] = rnd;
+                this.params.data.cachedisable = rnd;
             } catch(e) {}
         }
 
@@ -19627,15 +19514,13 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         // Skip request in some case, due to mock object (second test)
         mockResult = a.mock.get(method, this.params.url);
         if(mockResult !== null) {
-            var params = this.params;
-
             // We send a result
             a.message.dispatch('a.ajax', {
                 success : true,
                 status  : 200,
-                url     : params.url,
+                url     : this.params.url,
                 method  : method,
-                params  : params
+                params  : this.params
             });
 
             // Directly call success function
@@ -19700,7 +19585,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
         })(verbs[z]);
     }
 
-})(window.appstorm);;/* ************************************************************************
+})(window.appstorm);;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -19713,9 +19598,7 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/* ********************
 /**
  * Dynamic loader for many files type.
  *
- * @class loader
- * @static
- * @namespace a
+ * @constructor
 */
 a.loader = (function() {
     'use strict';
@@ -19728,14 +19611,13 @@ a.loader = (function() {
         htmlMethods   = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
 
     /**
-     * Check the cache, and launch callback if uri is already listed in cache
+     * Check the cache, and launch callback if uri is already listed in cache.
      *
-     * @method checkInternalCache
      * @private
      * @async
      *
-     * @param uri {String}                  The path to access data
-     * @param callback {Function | null}    The callback to apply after loader
+     * @param {String} uri                  The path to access data
+     * @param {Function | Null} callback    The callback to apply after loader
      * @return {Boolean}                    True if it's already inside cache,
      *                                      and false in other case
     */
@@ -19756,16 +19638,15 @@ a.loader = (function() {
         }
 
         return false;
-    };
+    }
 
     /**
-     * Insert into cache if needed the uri
+     * Insert into cache if needed the uri.
      *
-     * @method populateInternalCache
      * @private
      *
-     * @param uri {String}                  The path to access data
-     * @param args {Object}                 The arguments to check if cache
+     * @param {String} uri                  The path to access data
+     * @param {Object} args                 The arguments to check if cache
      *                                      is specified and policy to use
     */
     function populateInternalCache(uri, args) {
@@ -19774,23 +19655,22 @@ a.loader = (function() {
             return;
         }
         internalCache.push(uri);
-    };
+    }
 
     /**
-     * Append to header the given tag, used by JS and CSS loader especially
+     * Append to header the given tag, used by JS and CSS loader especially.
      *
-     * @method appendElementToHeader
      * @private
      * @async
      *
-     * @param el {DOM}                      A createElement type result
-     * @param options {Object}              HTML Options to add to link
+     * @param {DOMElement} el               A createElement type result
+     * @param {Object} options              HTML Options to add to link
      *                                      appended
-     * @param callback {Function | null}    The callback to apply after loader
-     * @param uri {String}                  The path to access data
-     * @param args {Object | null}          The arguments to check if cache
+     * @param {Function | Null} callback    The callback to apply after loader
+     * @param {String} uri                  The path to access data
+     * @param {Object | Null} args          The arguments to check if cache
      *                                      is specified and policy to use
-     * @param error {Function | null}       The callback to raise in case
+     * @param {Function | Null} error       The callback to raise in case
      *                                      of problem (never used)
     */
     function appendElementToHeader(el, options, callback, uri, args, error) {
@@ -19822,8 +19702,8 @@ a.loader = (function() {
             el.addEventListener('load', cb, false);
         } else if(el.readyState) {
             el.onreadystatechange = function() {
-                if (this.readyState == 'complete'
-                        || this.readyState == 'loaded') {
+                if (this.readyState == 'complete' ||
+                        this.readyState == 'loaded') {
                     cb();
                 }
             };
@@ -19831,48 +19711,43 @@ a.loader = (function() {
             el.onload = cb;
         }
 
-        /*
-         * Hack for old Firefox/webkit browsers
-         * (who does not have onload on link elements)
-         *
-         * Note : using 'onload' in document.createElement('link')
-         * is not always enough
-         *
-         * By default, too many browser got this bug, so we always activate it
-        */
+        // Hack for old Firefox/webkit browsers
+        // (who does not have onload on link elements)
+        //
+        // Note : using 'onload' in document.createElement('link')
+        // is not always enough
+        //
+        // By default, too many browser got this bug, so we always activate it
         if(options.type === 'text/css') {
             var currentCSS = document.styleSheets.length;
             nCSS++;
-            var cssLoad = a.timer.add(
-                function() {
-                    if (document.styleSheets.length > (currentCSS + nCSS-1)) {
-                        nCSS--;
-                        a.timer.remove(cssLoad);
-                        cb();
-                    }   
-                }
-            , null, 50);
+            var cssLoad = a.timer.add(function() {
+                if (document.styleSheets.length > (currentCSS + nCSS-1)) {
+                    nCSS--;
+                    a.timer.remove(cssLoad);
+                    cb();
+                }   
+            }, null, 50);
         }
 
         // Inserting document into header
         document.getElementsByTagName('head')[0].appendChild(el);
-    };
+    }
 
     /**
-     * load some data threw AJAX
+     * load some data threw AJAX.
      *
-     * @method performAjaxLoading
      * @private
      * @async
      *
-     * @param uri {String}                  The data path
-     * @param callback {Function | null}    The callback to apply in
+     * @param {String} uri                  The data path
+     * @param {Function | Null} callback    The callback to apply in
      *                                      case of success
-     * @param args {Object | null}          An ajax argument object,
+     * @param {Object | Null} args          An ajax argument object,
      *                                      not all of them are used
      *                                      (some are automatically generated
      *                                      and cannot be changed)
-     * @param error {Function | null}       The callback to apply
+     * @param {Function | Null} error       The callback to apply
      *                                      in case of error
     */
     function performAjaxLoading(uri, callback, args, error) {
@@ -19893,8 +19768,8 @@ a.loader = (function() {
             if(a.contains(htmlMethods, args.method) ) {
                 options.method = args.method;
             }
-            if(!a.isNone(args.type)
-                && (args.type == 'json' || args.type == 'xml') ) {
+            if(!a.isNone(args.type) &&
+                    (args.type == 'json' || args.type == 'xml') ) {
                 options.type = args.type;
             }
             if(a.isTrueObject(args.data)) {
@@ -19919,19 +19794,18 @@ a.loader = (function() {
         // Loading data
         var er = (a.isFunction(error)) ? error : function(){};
         (new a.ajax(options, handlerCallback, er)).send();
-    };
+    }
 
     return {
         /**
-         * Javascript loader
+         * Javascript loader.
          *
-         * @method js
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -19945,15 +19819,14 @@ a.loader = (function() {
         },
 
         /**
-         * JSONP loader
+         * JSONP loader.
          *
-         * @method jsonp
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -19973,15 +19846,14 @@ a.loader = (function() {
         },
 
         /**
-         * JSON loader
+         * JSON loader.
          *
-         * @method json
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -19997,21 +19869,20 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'application/json, text/javascript';
+            args.header.accept = 'application/json, text/javascript';
 
             performAjaxLoading(uri, callback, args, error);
         },
 
         /**
-         * XML loader
+         * XML loader.
          *
-         * @method xml
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -20027,21 +19898,20 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'application/xml, text/xml';
+            args.header.accept = 'application/xml, text/xml';
 
             performAjaxLoading(uri, callback, args, error);
         },
 
         /**
-         * CSS loader
+         * CSS loader.
          *
-         * @method css
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -20063,16 +19933,15 @@ a.loader = (function() {
         },
 
         /**
-         * HTML loader
+         * HTML loader.
          * NOTE : only valid XHTML is accepted !
          *
-         * @method html
          * @async
          *
-         * @param uri {String}               The path to access content
-         * @param callback {Function | null} The callback to call after
+         * @param {String} uri               The path to access content
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An ajax argument object,
+         * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
@@ -20097,35 +19966,34 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
-            args.header['accept'] = 'text/html';
+            args.header.accept = 'text/html';
             performAjaxLoading(uri, callback, args, error);
         },
 
         /**
-         * JavaFX loader
+         * JavaFX loader.
          *
-         * @method javafx
          * @async
          *
-         * @param uri {String}               The path for given jar files to
+         * @param {String} uri               The path for given jar files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   javaFX (like javascript name...),
          *                                   we need : args.code (the main to
          *                                   start), args.id (the id of
          *                                   project). args.width and height
          *                                   are optional
         */
-        javafx: function(uri, callback, args, error) {
+        javafx: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
-                var error =  'The system need args.code ';
-                    error += 'and args.name setted to be able to load any ';
-                    error += 'javafx resource... This uri will not be ';
-                    error += 'loaded ```' + uri + '```';
+                var errorStr =  'The system need args.code ';
+                    errorStr += 'and args.name setted to be able to load any ';
+                    errorStr += 'javafx resource... This uri will not be ';
+                    errorStr += 'loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.javafx', error, 2);
+                a.console.storm('warn', 'a.loader.javafx', errorStr, 2);
                 return;
             }
 
@@ -20164,26 +20032,25 @@ a.loader = (function() {
         },
 
         /**
-         * Flash loader
+         * Flash loader.
          *
-         * @method flash
          * @async
          *
-         * @param uri {String}               The path for given swf files to
+         * @param {String} uri               The path for given swf files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   Flash
         */
-        flash: function(uri, callback, args, error) {
+        flash: function (uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'The system need args ';
-                    error += 'parameters: rootId and id, setted to be able ';
-                    error += 'to load any flash resource... This uri ';
-                    error += 'will not be loaded ```' + uri + '```';
+                var errorStr =  'The system need args ';
+                    errorStr +='parameters: rootId and id, setted to be able ';
+                    errorStr += 'to load any flash resource... This uri ';
+                    errorStr += 'will not be loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.flash', error, 2);
+                a.console.storm('warn', 'a.loader.flash', errorStr, 2);
                 return;
             }
 
@@ -20216,28 +20083,27 @@ a.loader = (function() {
         },
 
         /**
-         * Silverlight loader
+         * Silverlight loader.
          *
-         * @method silverlight
          * @async
          *
-         * @param uri {String}               The path for given xap files to
+         * @param {String} uri               The path for given xap files to
          *                                   load
-         * @param callback {Function | null} The callback to call after
+         * @param {Function | Null} callback The callback to call after
          *                                   loading success (NOTE: silverlight
          *                                   is not able to fire load event,
          *                                   so it's not true here...)
-         * @param args {Object}              An object to set property for
+         * @param {Object} args              An object to set property for
          *                                   Silverlight
         */
         silverlight: function(uri, callback, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
-                var error =  'The system need args ';
-                    error += 'parameters: rootId, id, setted to be able ';
-                    error += 'to load any silverlight resource... This uri ';
-                    error += 'will not be loaded ```' + uri + '```';
+                var errorStr =  'The system need args ';
+                    errorStr += 'parameters: rootId, id, setted to be able ';
+                    errorStr +='to load any silverlight resource... This uri ';
+                    errorStr += 'will not be loaded ```' + uri + '```';
 
-                a.console.storm('warn', 'a.loader.silverlight', error, 2);
+                a.console.storm('warn', 'a.loader.silverlight', errorStr, 2);
                 return;
             }
 
@@ -20250,7 +20116,7 @@ a.loader = (function() {
 
             var obj  = document.createElement('object');
             obj.id   = args.id;
-            obj.data = 'data:application/x-silverlight-2,'
+            obj.data = 'data:application/x-silverlight-2,';
             obj.type = 'application/x-silverlight-2';
 
             if(!a.isArray(args.params)) {args.params = [];}
@@ -20273,8 +20139,8 @@ a.loader = (function() {
 
             timer = a.timer.add(function() {
                 // Valid when max <ait occurs or system is loaded
-                if(max-- > 0
-                    && !a.isNone(document.getElementById(args.id).Content)) {
+                if(max-- > 0 &&
+                        !a.isNone(document.getElementById(args.id).Content)) {
 
                     a.timer.remove(timer);
                     callback();
@@ -20285,17 +20151,15 @@ a.loader = (function() {
         },
 
         /**
-         * Get the cache trace loaded
+         * Get the cache trace loaded.
          *
-         * @method trace
-         *
-         * @return {Array} The cache trace
+         * @return {Array}                  The cache trace
         */
         trace: function() {
             return internalCache;
         }
     };
-}());;/* ************************************************************************
+}());;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -20308,9 +20172,7 @@ a.loader = (function() {
 /**
  * Manage action related to hash change.
  *
- * @class route
- * @static
- * @namespace a
+ * @constructor
 */
 a.route = new function() {
     var mem = a.mem.getInstance('app.route');
@@ -20318,26 +20180,24 @@ a.route = new function() {
     /**
      * Parse the action parameter.
      *
-     * @method getAction
      * @private
      *
-     * @param action {String}               The action to filter
+     * @param {String} action               The action to filter
      * @return {String}                     'leave' or 'enter' depending on
      *                                      what is found in action parameter
     */
     function getAction(action) {
         return (action == 'leave' || action == 'leaving') ? 'leave' : 'enter';
-    };
+    }
 
     /**
      * bind a function to a hash.
      *
-     * @method bind
      * @chainable
      *
-     * @param hash {String}                 The hash to register
-     * @param fct {Function}                The function to bind
-     * @param action {String | null}        The action element, if we use this
+     * @param {String} hash                 The hash to register
+     * @param {Function} fct                The function to bind
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -20358,12 +20218,11 @@ a.route = new function() {
     /**
      * Remove a binding with a previous hash associated.
      *
-     * @param unbind
      * @chainable
      *
-     * @param hash {String}                 The hash to remove function from
-     * @param fct {Function}                The function to unbind
-     * @param action {String | null}        The action element, if we use this
+     * @param {String} hash                 The hash to remove function from
+     * @param {Function} fct                The function to unbind
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -20385,12 +20244,11 @@ a.route = new function() {
      * The otherwise function is used when no function are linked to a given
      * hash.
      *
-     * @method otherwise
      * @chainable
      *
-     * @param fct {Function}                The function to use when otherwise
+     * @param {Function} fct                The function to use when otherwise
      *                                      is meet
-     * @param action {String | null}        The action element, if we use this
+     * @param {String | Null} action        The action element, if we use this
      *                                      for entering hash, or leaving hash
      *                                      (default: entering), possible val:
      *                                      'leave' or 'enter'
@@ -20408,10 +20266,8 @@ a.route = new function() {
     /**
      * Navigate to a given hashtag.
      *
-     * @method go
-     *
-     * @param hash {String}                 The hashtag to navigate to
-     * @param parameters {Object}           Any parameters to give to state
+     * @param {String} hash                 The hashtag to navigate to
+     * @param {Object} parameters           Any parameters to give to state
      *                                      system as temp data. This is an
      *                                      equivalent to a.state.inject func.
     */
@@ -20420,9 +20276,9 @@ a.route = new function() {
             a.state.inject(parameters);
         }
         if(hash) {
-            /*if( ('history' in window) && history.pushState ) {
-                window.history.pushState(parameters || {}, null, '#' + hash);
-            } else {*/
+            //if( ('history' in window) && history.pushState ) {
+            //    window.history.pushState(parameters || {}, null, '#' + hash);
+            //} else {
                 window.location.href = '#' + hash;
             //}
         }
@@ -20441,8 +20297,8 @@ a.route = new function() {
      *
      * @method fake
      *
-     * @param hash {String}                 The hashtag to navigate to
-     * @param parameters {Object}           Any parameters to give to state
+     * @param {String} hash                 The hashtag to navigate to
+     * @param {Object} parameters           Any parameters to give to state
      *                                      system as temp data. This is an
      *                                      equivalent to a.state.inject func.
     */
@@ -20456,7 +20312,7 @@ a.route = new function() {
     };
 
     /**
-     * Allow to go back one time into history 
+     * Go back one time into history.
     */
     this.back = function() {
         window.history.back();
@@ -20465,11 +20321,10 @@ a.route = new function() {
     /**
      * Apply change to hash on enter or leave position.
      *
-     * @method callApplyHashChange
      * @private
      *
-     * @param hash {String}                 The hash to load/unload
-     * @param leaveOrEnterString {String}   The enter/leave state
+     * @param {String} hash                 The hash to load/unload
+     * @param {String} leaveOrEnterString   The enter/leave state
     */
     function callApplyHashChange(hash, leaveOrEnterString) {
         var action  = mem.get(leaveOrEnterString + '.hash') || {},
@@ -20495,7 +20350,7 @@ a.route = new function() {
                 otherwise.call(null, hash);
             }
         }
-    };
+    }
 
     // We bind the hash event system
     a.hash.bind('change', function(data) {
@@ -20503,7 +20358,7 @@ a.route = new function() {
         callApplyHashChange(data.old,   'leave');
     }, null, false, false);
 };
-;/* ************************************************************************
+;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -20519,13 +20374,13 @@ a.route = new function() {
  * {{id: [a-fA-F0-9]+}} as regular expression. This is intensly used
  * by appstorm to check and manipulate parameters inside state plugin.
  *
- * @class parameter
- * @static
- * @namespace a
+ * @contructor
 */
 a.parameter = {
     /**
      * Store cached function to use as replacement method.
+     *
+     * @private
      * @property _fct
      * @type Object
      * @default {}
@@ -20535,10 +20390,8 @@ a.parameter = {
     /**
      * From a given string, we extract parameter inside.
      *
-     * @method extract
-     *
-     * @param input {String}                The string to extract param from
-     * @param customRegex {RegExp | null}   A new regex to replace current one
+     * @param {String} input                The string to extract param from
+     * @param {RegExp | Null} customRegex   A new regex to replace current one
      * @return {Array}                      An array with every element as
      *                                      object key: name (the key name),
      *                                      regex (the linked regex),
@@ -20578,7 +20431,7 @@ a.parameter = {
                 original:  a.trim(match[0]),
                 name:  a.trim(separated[0]),
                 regex: a.trim(separated[1]),
-                start: match['index']
+                start: match.index
             });
         }
 
@@ -20589,12 +20442,10 @@ a.parameter = {
     /**
      * Replace a parameter at a specific position.
      *
-     * @method replace
-     *
-     * @param input {String}                The string to use as replacement
-     * @param param {Object}                An extracted parameter from
+     * @param {String} input                The string to use as replacement
+     * @param {Object} param                An extracted parameter from
      *                                      extract function
-     * @param custom {String | null}        A custom string to add to system
+     * @param {String | Null} custom        A custom string to add to system
      * @return {String}                     The string replaced with new
      *                                      content
     */
@@ -20609,10 +20460,8 @@ a.parameter = {
     /**
      * Convert a parameter string into a regex string.
      *
-     * @method convert
-     *
-     * @param input {String}                The string to convert
-     * @param customRegex {RegExp | null}   A custom regex if needed
+     * @param {String} input                The string to convert
+     * @param {RegExp | Null} customRegex   A custom regex if needed
      * @return {String}                     The converted string ready to be
      *                                      used as regex tester.
     */
@@ -20634,12 +20483,10 @@ a.parameter = {
      * values and bring the new object with, for every regex, the corresponding
      * values.
      *
-     * @method getValues
-     *
-     * @param input {String}                The input value to extract data
+     * @param {String} input                The input value to extract data
      *                                      from
-     * @param internal {String}             The original string regex
-     * @param extract {Object}              The extracted object
+     * @param {String} internal             The original string regex
+     * @param {Object} extract              The extracted object
      * @return {Object}                     The extracted object with values
      *                                      found
     */
@@ -20678,15 +20525,13 @@ a.parameter = {
      *   It also can manage different function loader threw addParameterType,
      *   so it can takes variable content not only from page hash...
      *
-     * @method extrapolate
-     *
-     * @param input {String}                The string to replace parameters
+     * @param {String} input                The string to replace parameters
      *                                      inside
-     * @param hash {String}                 The current string, to extract
+     * @param {String} hash                 The current string, to extract
      *                                      parameters from.
-     * @param internal {String}             The hashtag stored internally
+     * @param {String} internal             The hashtag stored internally
      *                                      (with parameters)
-     * @param escape {Boolean | null}       Indicate if system should escape
+     * @param {Boolean | Null} escape       Indicate if system should escape
      *                                      content to string before sending
      *                                      back, it means if yes, the system
      *                                      will send back '[object object]'
@@ -20698,8 +20543,8 @@ a.parameter = {
         }
 
         // Only if there is some parameters in input
-        if (a.isString(input) && input
-                && input.indexOf('{{') >= 0 && input.indexOf('}}') >= 0) {
+        if (a.isString(input) && input && input.indexOf('{{') >= 0 &&
+                input.indexOf('}}') >= 0) {
 
             var emptyNameRegex = /\{\{(\s*\w+\s*)\}\}/gmi;
             // Param in input should be like this {{hash:name}} or
@@ -20731,7 +20576,7 @@ a.parameter = {
                     l=paramInternal.length;
                 for(; i<l; ++i) {
                     // match : the first item is direct string (not parsed)
-                    paramInternal[i]['value'] = match[i+1];
+                    paramInternal[i].value = match[i+1];
                 }
 
                 // We copy value from paramInternal to paramStr
@@ -20740,9 +20585,9 @@ a.parameter = {
                     for(i=0; i<l; ++i) {
                         // The paramStr is wrongly separate into
                         // hash: name (so regex is param name, and name type)
-                        if(paramInternal[i].name === paramStr[j].regex
-                                && paramStr[j].name === 'hash') {
-                            paramStr[j]['value'] = paramInternal[i]['value'];
+                        if(paramInternal[i].name === paramStr[j].regex &&
+                                paramStr[j].name === 'hash') {
+                            paramStr[j].value = paramInternal[i].value;
                         }
                     }
                 }
@@ -20758,11 +20603,11 @@ a.parameter = {
                     found = false;
 
                 // Replacing hashtag
-                if( (param.name === 'hash' || param.name === 'hashtag')
-                    && !a.isNone(param.value)) {
+                if( (param.name === 'hash' || param.name === 'hashtag') &&
+                        !a.isNone(param.value)) {
 
                     found = true;
-                    input = this.replace(input, param, param['value']);
+                    input = this.replace(input, param, param.value);
                 }
 
                 if(!found) {
@@ -20785,10 +20630,8 @@ a.parameter = {
      * Here the name will be memory, and the function: the function which will
      * be used to find corresponding name data.
      *
-     * @method addParameterType
-     *
-     * @param name {String}                 The parameter type (like 'memory')
-     * @param fct {Function}                The function to apply when this
+     * @param {String} name                 The parameter type (like 'memory')
+     * @param {Function} fct                The function to apply when this
      *                                      parameter type is found
     */
     addParameterType: function(name, fct) {
@@ -20800,9 +20643,7 @@ a.parameter = {
     /**
      * Unregister a function parameter (should almost never been in fact...).
      *
-     * @method removeParameterType
-     *
-     * @param name {String}                 The function name to remove
+     * @param {String} name                 The function name to remove
     */
     removeParameterType: function(name) {
         delete this._fct[name];
@@ -20822,7 +20663,7 @@ a.parameter = {
 (function() {
     a.parameter.addParameterType('mem',  a.mem.get);
     a.parameter.addParameterType('environment', a.environment.get);
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -20835,37 +20676,31 @@ a.parameter = {
 
 /**
  * Provide a simple ACL rules checker to create different application
- * behavior regarding user role
+ * behavior regarding user role.
  *
- * @class acl
- * @static
- * @namespace a
+ * @constructor
 */
-a.acl = a.extend(new function() {
+a.acl = a.extend(new function () {
     var mem = a.mem.getInstance('app.acl');
 
     /**
-     * Set the current user role
+     * Set the current user role.
      *
-     * @method setCurrentRole
-     *
-     * @param role {String}                 The role to set as 'current' one
+     * @param {String} role                 The role to set as 'current' one
     */
-    this.setCurrentRole = function(role) {
+    this.setCurrentRole = function (role) {
         mem.set('current', role);
         this.dispatch('change', role);
         a.message.dispatch('a.acl.change', role);
     };
 
     /**
-     * Get the current user role stored
-     *
-     * @method getCurrentRole
+     * Get the current user role stored.
      *
      * @return {String}                     The role found, or an empty
      *                                      string if nothing has been found
     */
-    this.getCurrentRole = function() {
+    this.getCurrentRole = function () {
         return mem.get('current') || '';
     };
 
@@ -20888,22 +20723,20 @@ a.acl = a.extend(new function() {
      * Note also you can't pass an object: {{isSuperAdmin user}} will not work
      * if user is not the role in string you want to check...
      *
-     * @method setRoleList
-     *
-     * @param roleList {Array}              The role list to store
+     * @param {Array} roleList              The role list to store
     */
-    this.setRoleList = function(roleList) {
-        if(a.isArray(roleList)) {
+    this.setRoleList = function (roleList) {
+        if (a.isArray(roleList)) {
             mem.set('list', roleList);
 
             // We create related Handlebars helpers for every role
             // Like you get a role 'adMin', it will create 'isAdMin' helper
-            a.each(roleList, function(role) {
+            a.each(roleList, function (role) {
                 var helper = a.firstLetterUppercase(role, 'is'),
                     lower  = role.toLowerCase();
 
-                Handlebars.registerHelper(helper, function(value, options) {
-                    if(a.trim(value.toLowerCase()) === a.trim(lower)) {
+                Handlebars.registerHelper(helper, function (value, options) {
+                    if (a.trim(value.toLowerCase()) === a.trim(lower)) {
                         return options.fn(this);
                     }
                     return options.inverse(this);
@@ -20913,29 +20746,25 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Get the current role list
+     * Get the current role list.
      *
-     * @method getRoleList
-     *
-     * @return {Array | null}               The current role list stored, or
+     * @return {Array | Null}               The current role list stored, or
      *                                      null if nothing is found
     */
-    this.getRoleList = function() {
+    this.getRoleList = function () {
         return mem.get('list');
     };
 
     /**
-     * Check if current role is allowed compare to given minimum role
+     * Check if current role is allowed compare to given minimum role.
      *
-     * @method isAllowed
-     *
-     * @param minimumRole {String}          The minimum role to check
-     * @param currentRole {String | null}   The current role, if undefined, it
+     * @param {String} minimumRole          The minimum role to check
+     * @param {String | Null} currentRole   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
     */
-    this.isAllowed = function(minimumRole, currentRole) {
+    this.isAllowed = function (minimumRole, currentRole) {
         currentRole = currentRole || this.getCurrentRole();
 
         var positionCurrentRole = -1,
@@ -20944,17 +20773,17 @@ a.acl = a.extend(new function() {
             position = roleList.length;
 
         // Search position in current role list
-        while(position--) {
-            if(roleList[position]  == minimumRole) {
+        while (position--) {
+            if (roleList[position]  == minimumRole) {
                 positionMinimumRole = position;
             }
 
-            if(roleList[position]  == currentRole) {
+            if (roleList[position]  == currentRole) {
                 positionCurrentRole = position;
             }
 
             // Stop before if possible
-            if(positionMinimumRole != -1 && positionCurrentRole != -1) {
+            if (positionMinimumRole != -1 && positionCurrentRole != -1) {
                 break;
             }
         }
@@ -20963,26 +20792,22 @@ a.acl = a.extend(new function() {
     };
 
     /**
-     * Check if current role is refused compare to given minimum role
+     * Check if current role is refused compare to given minimum role.
      *
-     * @method isRefused
-     *
-     * @param minimumRole {String}          The minimum role to check
-     * @param currentRole {String | null}   The current role, if undefined, it
+     * @param {String} minimumRole          The minimum role to check
+     * @param {String | null} currentRole   The current role, if undefined, it
      *                                      will use getCurrentRole instead
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
     */
-    this.isRefused = function(minimumRole, currentRole) {
+    this.isRefused = function (minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
     };
 
     /**
      * Clear the full ACL rules
-     *
-     * @method clear
     */
-    this.clear = function() {
+    this.clear = function () {
         mem.clear();
     };
 
@@ -20995,41 +20820,39 @@ a.acl = a.extend(new function() {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    Handlebars.registerHelper('AclRole', function(options) {
-        return new Handlebars.SafeString(a.acl.getCurrentRole());
-    });
+Handlebars.registerHelper('AclRole', function () {
+    return new Handlebars.SafeString(a.acl.getCurrentRole());
+});
 
-    // Allow to check role is allowed or not
-    Handlebars.registerHelper('AclIsAllowed', function(minimumRole, currentRole,
-                                                                    options) {
-        // We allow 2 or 3 parameters mode !
-        options = a.isString(currentRole) ? options : currentRole;
-        currentRole = a.isString(currentRole) ? currentRole :
-                                                    a.acl.getCurrentRole();
+// Allow to check role is allowed or not
+Handlebars.registerHelper('AclIsAllowed', function (minimumRole, currentRole,
+                                                                options) {
+    // We allow 2 or 3 parameters mode !
+    options = a.isString(currentRole) ? options : currentRole;
+    currentRole = a.isString(currentRole) ? currentRole :
+                                                a.acl.getCurrentRole();
 
-        // We check role is allowed or not
-        if(a.acl.isAllowed(minimumRole, currentRole)) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    });
-
-    // Allow to check role is refused or not
-    Handlebars.registerHelper('AclIsRefused', function(minimumRole, currentRole,
-                                                                    options) {
-        // We allow 2 or 3 parameters mode !
-        options = a.isString(currentRole) ? options : currentRole;
-        currentRole = a.isString(currentRole) ? currentRole :
-                                                    a.acl.getCurrentRole();
-
-        // We check role is allowed or not
-        if(a.acl.isAllowed(minimumRole, currentRole)) {
-            return options.inverse(this);
-        }
+    // We check role is allowed or not
+    if (a.acl.isAllowed(minimumRole, currentRole)) {
         return options.fn(this);
-    });
-})();;/* ************************************************************************
+    }
+    return options.inverse(this);
+});
+
+// Allow to check role is refused or not
+Handlebars.registerHelper('AclIsRefused', function (minimumRole, currentRole,
+                                                                options) {
+    // We allow 2 or 3 parameters mode !
+    options = a.isString(currentRole) ? options : currentRole;
+    currentRole = a.isString(currentRole) ? currentRole :
+                                                a.acl.getCurrentRole();
+
+    // We check role is allowed or not
+    if (a.acl.isAllowed(minimumRole, currentRole)) {
+        return options.inverse(this);
+    }
+    return options.fn(this);
+});;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -21043,14 +20866,13 @@ a.acl = a.extend(new function() {
  * The object is faking a server behavior to skip server creation during
  * client creation. It provide a simple emulation of server side.
  *
- * @class mock
- * @static
- * @namespace a
+ * @constructor
 */
 a.mock = {
     /**
      * Store the existing mock to use with application
      *
+     * @private
      * @property _mock
      * @type Array
      * @default []
@@ -21058,7 +20880,7 @@ a.mock = {
     _mock: [],
 
     /**
-     * Rollback to default content (nothing)
+     * Rollback to default content (nothing).
      *
      * @method clear
     */
@@ -21069,12 +20891,10 @@ a.mock = {
     /**
      * Add a new mock to system
      *
-     * @method add
-     *
-     * @param method {String}               The HTTP method (GET/POST/PUT/...)
-     * @param url {String}                  The url to catch
-     * @param result {Object | Function}    The attempted result
-     * @param model {String | null}         The model linked to the answer. Use
+     * @param {String} method               The HTTP method (GET/POST/PUT/...)
+     * @param {String} url                  The url to catch
+     * @param {Object | Function} result    The attempted result
+     * @param {String | null} model         The model linked to the answer. Use
      *                                      's' at the end if it's a list of...
     */
     add: function(method, url, result, model) {
@@ -21095,11 +20915,9 @@ a.mock = {
     /**
      * Get an existing result from model
      *
-     * @method get
-     *
-     * @param method {String}               The HTTP method (GET/POST/PUT/...)
-     * @param url {String}                  The url to catch
-     * @return {Object | null}              The result associated to mock
+     * @param {String} method               The HTTP method (GET/POST/PUT/...)
+     * @param {String} url                  The url to catch
+     * @return {Object | Null}              The result associated to mock
     */
     get: function(method, url) {
         var mocks = a.mock._mock,
@@ -21119,11 +20937,9 @@ a.mock = {
 
     /**
      * Get all mock related to model, and merge their content (= get a unique
-     * object containing ALL properties found)
+     * object containing ALL properties found).
      *
-     * @method merge
-     *
-     * @param model {String}                The model name to search
+     * @param {String} model                The model name to search
      * @return {Object}                     The merge realise, or an empty
      *                                      object if trouble
     */
@@ -21138,18 +20954,19 @@ a.mock = {
 
         // Creating a final object containings all properties found
         while(i--) {
-            var mock = mocks[i];
+            var mock = mocks[i],
+                part = null;
 
             if(mock.model) {
                 // Single model
                 if(mock.model === model) {
-                    var part = a.isFunction(mock.result) ? mock.result() :
+                    part = a.isFunction(mock.result) ? mock.result() :
                                                                 mock.result;
                     result = a.assign(result, part);
 
                 // Multiple model
                 } else if(mock.model === model + 's') {
-                    var part = a.isFunction(mock.result) ? mock.result() :
+                    part = a.isFunction(mock.result) ? mock.result() :
                                                                 mock.result,
                         j = part.length;
                     while(j--) {
@@ -21188,8 +21005,6 @@ a.mock = {
      * It is sorted by model type... If the model type is using a 's', for
      * now it still linked like this, as it was with a 's', we keep that for
      * saying 'those url returns array'.
-     *
-     * @method map
      *
      * @return {Object}                     A related object
     */
@@ -21232,7 +21047,7 @@ a.mock = {
 
         return result;
     }
-};;/* ************************************************************************
+};;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -21247,9 +21062,7 @@ a.mock = {
  * Simple wrapper for Mousetrap to have unified interface with other part
  * of AppStorm.JS.
  *
- * @class keyboard
- * @static
- * @namespace a
+ * @constructor
 */
 a.keyboard = (function(mt) {
     'use strict';
@@ -21257,9 +21070,8 @@ a.keyboard = (function(mt) {
     var mem = a.mem.getInstance('app.accelerator');
 
     /**
-     * Remove all existing event binded to keyboard
+     * Remove all existing event binded to keyboard.
      *
-     * @method clearAllKeyboardEvents
      * @private
     */
     function clearAllKeyboardEvents() {
@@ -21268,12 +21080,11 @@ a.keyboard = (function(mt) {
     };
 
     /**
-     * Start to watch a key
+     * Start to watch a key.
      *
-     * @method generateKeyBinding
      * @private
      *
-     * @param key {String}              The key to bind (with type)
+     * @param {String} key              The key to bind (with type)
      * @return {Function}               A function to catch key event and
      *                                  dispatch
     */
@@ -21333,14 +21144,12 @@ a.keyboard = (function(mt) {
     } else {
         return {
             /**
-             * Register a function for a given keypress command
+             * Register a function for a given keypress command.
              *
-             * @method bind
-             *
-             * @param key {String}           The key/keylist to bind
-             * @param fn {Function}          The function to bind
-             * @param scope {Object | null}  The scope to apply when binding
-             * @param type {String | null}   The type like 'keydown', 'keyup'..
+             * @param {String} key           The key/keylist to bind
+             * @param {Function} fn          The function to bind
+             * @param {Object | Null} scope  The scope to apply when binding
+             * @param {String | Null} type   The type like 'keydown', 'keyup'..
              *                               default: keypress
             */
             bind: function(key, fn, scope, type) {
@@ -21369,14 +21178,12 @@ a.keyboard = (function(mt) {
             },
 
             /**
-             * Remove a binding for a given key
+             * Remove a binding for a given key.
              *
-             * @method unbind
-             *
-             * @param key {String}          The key/keylist to unbind
-             * @param fn {Function}         The function to unbind
-             * @param type {String | null}   The type like 'keydown', 'keyup'..
-             *                               default: keypress
+             * @param {String} key          The key/keylist to unbind
+             * @param {Function} fn         The function to unbind
+             * @param {String | Null} type  The type like 'keydown', 'keyup'..
+             *                              default: keypress
             */
             unbind: function(key, fn, type) {
                 if(!a.isFunction(fn)) {
@@ -21406,29 +21213,23 @@ a.keyboard = (function(mt) {
             },
 
             /**
-             * Fake a keyboard key press
+             * Fake a keyboard key press.
              *
-             * @method trigger
-             *
-             * @param keys {String | Array} The list of keys/single key to
+             * @param {String | Array} keys The list of keys/single key to
              *                              trigger
-             * @param action {String}       The action (like keypress, keyup)
+             * @param {String} action       The action (like keypress, keyup)
             */
             trigger: function(keys, action) {
-                mt.trigger(keys, action);
+                mt.trigger(keys, action || 'keypress');
             },
 
             /**
-             * Reset all bindings
-             *
-             * @method reset
+             * Reset all bindings.
             */
             reset: clearAllKeyboardEvents,
 
             /**
-             * Reset all bindings
-             *
-             * @method clear
+             * Reset all bindings.
             */
             clear: clearAllKeyboardEvents
         };
@@ -21939,7 +21740,7 @@ a.callback.chainerInstance.prototype.fail    =
         a.callback.chainerInstance.prototype.stop;
 a.callback.chainerInstance.prototype.error   =
         a.callback.chainerInstance.prototype.stop;
-;/* ************************************************************************
+;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -21955,23 +21756,20 @@ a.callback.chainerInstance.prototype.error   =
 ************************************************************************ */
 /**
  * Storage capacities, allow to manage many storage to get quick
- * access to everything
+ * access to everything.
  *
- * @class storage
- * @static
- * @namespace a
+ * @constructor
 */
 a.storage = {
     /**
-     * Debug on console the get item action
+     * Debug on console the get item action.
      *
-     * @method debugGet
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
-     * @param value {Mixed}                 The value to dump
+     * @param {String} key                  The key to debug
+     * @param {Mixed} value                 The value to dump
     */
     debugGet: function(element, key, value) {
         if(key !== '_support_t') {
@@ -21982,14 +21780,13 @@ a.storage = {
     },
 
     /**
-     * Debug on console the get item error action
+     * Debug on console the get item error action.
      *
-     * @method printError
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
+     * @param {String} key                  The key to debug
     */
     printError: function(element, key) {
         if(key !== '_support_t') {
@@ -21999,15 +21796,14 @@ a.storage = {
     },
 
     /**
-     * Debug on console the set item action
+     * Debug on console the set item action.
      *
-     * @method debugSet
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
-     * @param value {Mixed}                 The value to dump
+     * @param {String} key                  The key to debug
+     * @param {Mixed} value                 The value to dump
     */
     debugSet: function(element, key, value) {
         if(key !== '_support_t') {
@@ -22018,14 +21814,13 @@ a.storage = {
     },
 
     /**
-     * Debug on console the remove item action
+     * Debug on console the remove item action.
      *
-     * @method debugRemove
      * @private
      *
-     * @param element {String}              The element (like cookie,
+     * @param {String} element              The element (like cookie,
      *                                      localStorage, ...)
-     * @param key {String}                  The key to debug
+     * @param {String} key                  The key to debug
     */
     debugRemove: function(element, key) {
         if(key !== '_support_t') {
@@ -22039,13 +21834,15 @@ a.storage = {
 };
 
 
-
+/*
+------------------------------
+  COOKIE
+------------------------------
+*/
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface.
  *
- * @class cookie
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.cookie = new function() {
     // Temporary desactivate event while making test
@@ -22067,13 +21864,11 @@ a.storage.type.cookie = new function() {
     this.engine = 'cookie';
 
     /**
-     * Set a new cookie, or delete a cookie using a too old expires
+     * Set a new cookie, or delete a cookie using a too old expires.
      *
-     * @method set
-     *
-     * @param name {String}                 The key to use
-     * @param value {Mixed}                 The value to store
-     * @param days {Integer}                Number of days before expires
+     * @param {String} name                 The key to use
+     * @param {Mixed} value                 The value to store
+     * @param {Integer} days                Number of days before expires
     */
     this.set = function(name, value, days) {
         var expires = '';
@@ -22090,12 +21885,10 @@ a.storage.type.cookie = new function() {
     };
 
     /**
-     * Get the stored cookie, return null if something went wrong
+     * Get the stored cookie, return null if something went wrong.
      *
-     * @method get
-     *
-     * @param name {String}                 The cookie name stored
-     * @return {Mixed}                      Any data stored inside cookie
+     * @param {String} name                 The cookie name stored
+     * @return {Mixed | Null}               Any data stored inside cookie
     */
     this.get = function(name) {
         if (document.cookie.length > 0) {
@@ -22117,16 +21910,19 @@ a.storage.type.cookie = new function() {
     };
 
     /**
-     * Remove a previously stored cookie
+     * Remove a previously stored cookie.
      *
-     * @method remove
-     *
-     * @param name {String}                 The cookie name to delete
+     * @param {String} name                 The cookie name to delete
     */
     this.remove = function(name) {
         a.storage.debugRemove('cookie', name);
         this.set(name, '', -1);
     };
+
+
+    /*!
+     * @private
+    */
 
     // Cookie
     // Testing the current
@@ -22147,22 +21943,22 @@ a.storage.type.cookie = new function() {
 /**
  * Cookie functionnality, manipulate cookie with a simplified interface.
  *
- * @class cookie
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.cookie = a.storage.type.cookie;
 
 
 
 
-
+/*
+------------------------------
+  LOCAL STORAGE
+------------------------------
+*/
 /**
  * LocalStorage HTML5 support.
  *
- * @class localStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.localStorage = new function() {
     var support = false,
@@ -22203,12 +21999,10 @@ a.storage.type.localStorage = new function() {
     this.engine  = store;
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22226,12 +22020,10 @@ a.storage.type.localStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -22241,11 +22033,9 @@ a.storage.type.localStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -22257,12 +22047,15 @@ a.storage.type.localStorage = new function() {
 
 
 
+/*
+------------------------------
+  GLOBAL STORAGE
+------------------------------
+*/
 /**
  * globalStorage HTML5 support (old).
  *
- * @class globalStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.globalStorage = new function() {
     var support  = false,
@@ -22300,12 +22093,10 @@ a.storage.type.globalStorage = new function() {
     this.engine = 'globalStorage';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22330,12 +22121,10 @@ a.storage.type.globalStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -22346,11 +22135,9 @@ a.storage.type.globalStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -22361,13 +22148,15 @@ a.storage.type.globalStorage = new function() {
 };
 
 
-
+/*
+------------------------------
+  MEMORY STORE
+------------------------------
+*/
 /**
  * memory object (so if page close, everything is lost).
  *
- * @class memory
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.memory = new function() {
     var store = a.mem.getInstance('app.storage');
@@ -22388,32 +22177,26 @@ a.storage.type.memory = new function() {
     this.engine = 'memory';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = store.get;
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = store.set;
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = store.remove;
 };
@@ -22423,22 +22206,22 @@ a.storage.type.memory = new function() {
  * Memory store functionnality, manipulate memory storage class with a
  * simplified interface.
  *
- * @class memory
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.memory = a.storage.type.memory;
 
 
 
 
-
+/*
+------------------------------
+  SESSION STORAGE
+------------------------------
+*/
 /**
  * sessionStorage HTML5 support.
  *
- * @class sessionStorage
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.sessionStorage = new function() {
     var support = false,
@@ -22478,12 +22261,10 @@ a.storage.type.sessionStorage = new function() {
     this.engine = ss;
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22501,12 +22282,10 @@ a.storage.type.sessionStorage = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -22516,11 +22295,9 @@ a.storage.type.sessionStorage = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -22532,13 +22309,15 @@ a.storage.type.sessionStorage = new function() {
 
 
 
-
+/*
+------------------------------
+  USER DATA (Internet Explorer)
+------------------------------
+*/
 /**
  * userData IE support (old).
  *
- * @class userData
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.userData = new function() {
     var support = false,
@@ -22595,12 +22374,10 @@ a.storage.type.userData = new function() {
     this.engine = 'userData';
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22617,12 +22394,10 @@ a.storage.type.userData = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         if(support) {
@@ -22633,11 +22408,9 @@ a.storage.type.userData = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String} The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         if(support) {
@@ -22649,13 +22422,15 @@ a.storage.type.userData = new function() {
 };
 
 
-
+/*
+------------------------------
+  FLASH
+------------------------------
+*/
 /**
  * flash external storage.
  *
- * @class flash
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.flash = new function() {
     var support = false,
@@ -22663,13 +22438,12 @@ a.storage.type.flash = new function() {
         id      = 'flashstorage';
 
     /**
-     * Start flash and check availability
+     * Start flash and check availability.
      *
-     * @method includeFlash
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to call
+     * @param {Function | Null} callback    The callback function to call
      *                                      after loading
     */
     function includeFlash(callback) {
@@ -22717,17 +22491,13 @@ a.storage.type.flash = new function() {
      * Get the support state of flash.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
     this.support = function() {return support;};
 
     /**
-     * Get the ready state of flash object
-     *
-     * @method ready
+     * Get the ready state of flash object.
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -22746,10 +22516,9 @@ a.storage.type.flash = new function() {
      * Start (include and prepare) flash object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -22757,12 +22526,10 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22780,12 +22547,10 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -22796,11 +22561,9 @@ a.storage.type.flash = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -22812,13 +22575,15 @@ a.storage.type.flash = new function() {
 };
 
 
-
+/*
+------------------------------
+  SILVERLIGHT
+------------------------------
+*/
 /**
  * silverlight external storage.
  *
- * @class silverlight
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.silverlight = new function() {
     var support = false,
@@ -22826,13 +22591,12 @@ a.storage.type.silverlight = new function() {
         id      = 'silverlightstorage';
 
     /**
-     * Start silverlight and check availability
+     * Start silverlight and check availability.
      *
-     * @method includeSilverlight
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to
+     * @param {Function | Null} callback    The callback function to
      *                                      call after loading
     */
     function includeSilverlight(callback) {
@@ -22879,8 +22643,6 @@ a.storage.type.silverlight = new function() {
      * Get the support state of silverlight.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
@@ -22888,8 +22650,6 @@ a.storage.type.silverlight = new function() {
 
     /**
      * Get the ready state of silverlight object
-     *
-     * @method ready
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -22908,10 +22668,9 @@ a.storage.type.silverlight = new function() {
      * Start (include and prepare) silverlight object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -22919,12 +22678,10 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -22943,12 +22700,10 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -22960,11 +22715,9 @@ a.storage.type.silverlight = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String}                  The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -22976,13 +22729,15 @@ a.storage.type.silverlight = new function() {
 };
 
 
-
+/*
+------------------------------
+  JAVAFX
+------------------------------
+*/
 /**
  * javafx external storage.
  *
- * @class javafx
- * @static
- * @namespace a.storage.type
+ * @constructor
 */
 a.storage.type.javafx = new function() {
     var support = false,
@@ -22992,11 +22747,10 @@ a.storage.type.javafx = new function() {
     /**
      * Start javaFX and check availability
      *
-     * @method includeJavaFX
      * @private
      * @async
      *
-     * @param callback {Function | null}    The callback function to
+     * @param {Function | Null} callback    The callback function to
      *                                      call after loading
     */
     function includeJavaFX(callback) {
@@ -23031,16 +22785,12 @@ a.storage.type.javafx = new function() {
      * Get the support state of javafx.
      * Note: it may arrive little bit after using start function...
      *
-     * @method support
-     *
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
     this.support = function() {return support;},
     /**
-     * Get the ready state of javafx object
-     *
-     * @method ready
+     * Get the ready state of javafx object.
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
@@ -23058,10 +22808,9 @@ a.storage.type.javafx = new function() {
      * Start (include and prepare) javafx object
      * Note: automatically done by system you don't need to...
      *
-     * @method start
      * @async
      *
-     * @param callback {Function}           The function to call
+     * @param {Function} callback           The function to call
      *                                      in case of success
     */
     this.start = function(callback) {
@@ -23069,12 +22818,10 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Get the stored key
+     * Get the stored key.
      *
-     * @method get
-     *
-     * @param key {String}                  The key to retrieve
-     * @return {Mixed | null}               The value in case of success,
+     * @param {String} key                  The key to retrieve
+     * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
     this.get = function(key) {
@@ -23094,12 +22841,10 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Store a new key/value pair
+     * Store a new key/value pair.
      *
-     * @method set
-     *
-     * @param key {String}                  The key to set
-     * @param value {Mixed}                 The data to add
+     * @param {String} key                  The key to set
+     * @param {Mixed} value                 The data to add
     */
     this.set = function(key, value) {
         this.start();
@@ -23111,11 +22856,9 @@ a.storage.type.javafx = new function() {
     };
 
     /**
-     * Remove a given key from store
+     * Remove a given key from store.
      *
-     * @method remove
-     *
-     * @param key {String} The key to remove
+     * @param {String} key                  The key to remove
     */
     this.remove = function(key) {
         this.start();
@@ -23132,16 +22875,18 @@ a.storage.type.javafx = new function() {
 
 
 
-/* *************************
+/*! ************************
   POPULATING DATA FOR TEMPORARY AND PERSIST
 ************************* */
-// TEMPORARY STORE SEARCH
+/*
+------------------------------
+  TEMPORARY ALIAS
+------------------------------
+*/
 /**
  * Select the best temp storage available.
  *
- * @class temporary
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.temporary = (function() {
     'use strict';
@@ -23163,13 +22908,15 @@ a.storage.temporary = (function() {
 })();
 
 
-// EXTERNAL STORE SEARCH
+/*
+------------------------------
+  EXTERNAL ALIAS
+------------------------------
+*/
 /**
  * Select the best external storage available.
  *
- * @class external
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.external = (function() {
     'use strict';
@@ -23177,14 +22924,13 @@ a.storage.external = (function() {
     var started = false;
 
     /**
-     * Start the callback function if possible
+     * Start the callback function if possible.
      *
-     * @method startCallback
      * @private
      * @async
      *
-     * @param type {Object}                 The object to use for external
-     * @param callback {Function | null}    The function to launch if a
+     * @param {Object} type                 The object to use for external
+     * @param {Function | Null} callback    The function to launch if a
      *                                      store has been found
     */
     function startCallback(type, callback) {
@@ -23202,12 +22948,11 @@ a.storage.external = (function() {
 
     return {
         /**
-         * Start the external tool, try to find an available store
+         * Start the external tool, try to find an available store.
          *
-         * @method start
          * @async
          *
-         * @param callback {Function | null}    The function to launch if
+         * @param {Function | Null} callback    The function to launch if
          *                                      a store has been found
         */
         start : function(callback) {
@@ -23248,13 +22993,15 @@ a.storage.external = (function() {
 }());
 
 
-// PERSISTENT STORE SEARCH
+/*
+------------------------------
+  PERSISTENT ALIAS
+------------------------------
+*/
 /**
  * Select the best long term storage available.
  *
- * @class persistent
- * @static
- * @namespace a.storage
+ * @constructor
 */
 a.storage.persistent = (function() {
     'use strict';
@@ -23306,21 +23053,10 @@ a.storage.remove  = a.storage.persistent.remove;
 
 /*
 ------------------------------
-  PARAMETERS TYPE ASSOCIATED
-------------------------------
-*/
-/*
-------------------------------
-  HANDLEBARS HELPERS
+  PARAMETERS HELPERS
 ------------------------------
 */
 (function() {
-    // Parameters type
-    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
-    a.parameter.addParameterType('memory',     a.storage.memory.get);
-    a.parameter.addParameterType('persistent', a.storage.persistent.get);
-    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
-
     // Default 'store' behavior
     function getGlobalStore(name) {
         var temp = a.storage.temporary.get(name);
@@ -23333,7 +23069,19 @@ a.storage.remove  = a.storage.persistent.remove;
     a.parameter.addParameterType('storage', getGlobalStore);
     a.parameter.addParameterType('store', getGlobalStore);
 
+    // Parameters type
+    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
+    a.parameter.addParameterType('memory',     a.storage.memory.get);
+    a.parameter.addParameterType('persistent', a.storage.persistent.get);
+    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
+})();
 
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
     // Handlebars type
     Handlebars.registerHelper('temporary', function(value) {
         return new Handlebars.SafeString(a.storage.temporary.get(value));
@@ -23350,12 +23098,16 @@ a.storage.remove  = a.storage.persistent.remove;
 
     // Default 'store' behavior, encaps into Handlebars SafeString
     function getHandlebarsStore(name) {
-        return new Handlebars.SafeString(getGlobalStore(name));
+        var temp = a.storage.temporary.get(name);
+        if(a.isNone(temp)) {
+            temp = a.storage.persistent.get(name);
+        }
+        return new Handlebars.SafeString(temp);
     };
 
     Handlebars.registerHelper('storage', getHandlebarsStore);
     Handlebars.registerHelper('store', getHandlebarsStore);
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -23364,6 +23116,11 @@ a.storage.remove  = a.storage.persistent.remove;
 
 ************************************************************************ */
 
+/**
+ * A translation system, used to get multi languages support to your app.
+ *
+ * @constructor
+*/
 a.translate = a.i18n = (function() {
     'use strict';
 
@@ -23379,14 +23136,13 @@ a.translate = a.i18n = (function() {
     var storageSupported = (a.storage && a.storage.persistent.support);
 
     /**
-     * Get attribute stored into given element
+     * Get attribute stored into given element.
      *
-     * @method getAttr
      * @private
      *
-     * @param element {DOMElement}          The dom object to get
+     * @param {DOMElement} element          The dom object to get
     *                                       attribute from
-     * @param search {String}               The attribute name searched
+     * @param {String} search               The attribute name searched
      * @return {String}                     The founded attribute
      *                                      content or empty string
     */
@@ -23398,13 +23154,12 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Apply to a given element the given translation
+     * Apply to a given element the given translation.
      *
-     * @method applyTranslationToElement
      * @private
      *
-     * @param node {DOMElement}             The element to apply
-     * @param translation {String}          The translation to apply
+     * @param {DOMElement} node             The element to apply
+     * @param {String} translation          The translation to apply
     */
     function applyTranslationToElement(node, translation) {
         var customTagAttribute = getAttr(node, customAttribute);
@@ -23479,11 +23234,9 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Apply translation to a given document/sub-document
+     * Apply translation to a given document/sub-document.
      *
-     * @method i18n
-     *
-     * @param root {DOMElement | null}      The root element to 
+     * @param {DOMElement | Null} root      The root element to 
      *                                      start translate from
     */
     function i18n(root) {
@@ -23551,9 +23304,7 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get the current used language
-     *
-     * @method getLanguage
+     * Get the current used language.
      *
      * @return {String}                     The language setted by
      *                                      user/system (default is 'en-US')
@@ -23566,10 +23317,8 @@ a.translate = a.i18n = (function() {
      * Set the current used language.
      * Auto-translate current document except if update is set to false.
      *
-     * @method setLanguage
-     *
-     * @param lang {String}                 The new language to apply
-     * @param update {Boolean | null}       If we should translate
+     * @param {String} lang                 The new language to apply
+     * @param {Boolean | Null} update       If we should translate
      *                                      current (default: yes)
     */
     function setLanguage(lang, update) {
@@ -23592,11 +23341,9 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get any global variable setted
+     * Get any global variable setted.
      *
-     * @method getGlobalVariable
-     *
-     * @param key {String}                  The variable key to search
+     * @param {String} key                  The variable key to search
      * @return {String}                     The variable value or
      *                                      an empty string if not found
     */
@@ -23605,12 +23352,10 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Set a global variable to be used if possible when translating
+     * Set a global variable to be used if possible when translating.
      *
-     * @method setGlobalVariable
-     *
-     * @param key {String}                  The variable key to register
-     * @param value {String}                The linked value
+     * @param {String} key                  The variable key to register
+     * @param {String} value                The linked value
     */
     function setGlobalVariable(key, value) {
         globalVariable[key] = value;
@@ -23621,17 +23366,17 @@ a.translate = a.i18n = (function() {
      * After register is done, you can now use data-tr='{{hash}}' inside
      * HTML page to have corresponding translation.
      * Note: you can use a quicker version add(lang, object, update)
-     * Where the object will be a key/value translate list for lang
+     * Where the object will be a key/value translate list for lang.
      *
-     * @method add
+     * @private
      *
-     * @param lang {String}                 The language to
+     * @param {String} lang                 The language to
      *                                      register hash/value pair
-     * @param hash {String}                 The refered hash to
+     * @param {String} hash                 The refered hash to
      *                                      use for translation
-     * @param value {String}                The linked translation
+     * @param {String} value                The linked translation
      *                                      for given language
-     * @param update {Boolean | null}       If we should fully
+     * @param {Boolean | Null} update       If we should fully
      *                                      update or not document
     */
     function add(lang, hash, value, update) {
@@ -23656,13 +23401,11 @@ a.translate = a.i18n = (function() {
      * Set a new translation set for a given language.
      * If dict is set to null, it will erase language.
      *
-     * @method set
-     *
-     * @param lang {String}                 The language to register dict
-     * @param dict {Object}                 A key/value pair object for
+     * @param {String} lang                 The language to register dict
+     * @param {Object} dict                 A key/value pair object for
      *                                      registrating many translation
      *                                      at once
-     * @param update {Boolean | null}       If we should fully
+     * @param {Boolean | Null} update       If we should fully
      *                                      update or not document
     */
     function set(lang, dict, update) {
@@ -23680,13 +23423,11 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get an existing translation stored
+     * Get an existing translation stored.
      *
-     * @method get
-     *
-     * @param key {String | null}           The searched translation key
-     * @param variables {Object | null}     Any key/value pair variable to pass
-     * @param translate {Boolean | null}    If we should or not translate
+     * @param {String | Null} key           The searched translation key
+     * @param {Object | Null} variables     Any key/value pair variable to pass
+     * @param {Boolean | Null} translate    If we should or not translate
      *                                      (including variable) or simply
      *                                      send back entry (default: true)
      *
@@ -23708,9 +23449,11 @@ a.translate = a.i18n = (function() {
         }
 
         /**
-         * From a hash, try to find the good variable content
+         * From a hash, try to find the good variable content.
          *
-         * @param hash {String}             The hash to find in variable list
+         * @private
+         *
+         * @param {String} hash             The hash to find in variable list
          * @return {String}                 The variable content or empty
          *                                  string in case of not found
         */
@@ -23746,7 +23489,7 @@ a.translate = a.i18n = (function() {
     /**
      * Get the full stored dictionnary.
      *
-     * @param lang {String | null}          If lang is setted, retrieve only
+     * @param {String | Null} lang          If lang is setted, retrieve only
      *                                      the given language. In other cases
      *                                      retrieve all dictionnaries.
     */
@@ -23759,9 +23502,9 @@ a.translate = a.i18n = (function() {
 
 
     /**
-     * Erase dictionnary
+     * Erase dictionnary.
      *
-     * @method clearDictionnary
+     * @private
     */
     function clearDictionnary() {
         dictionnary = {};
@@ -23785,33 +23528,94 @@ a.translate = a.i18n = (function() {
     // Final object
     return {
         getLanguage: getLanguage,
+
+        /**
+         * Alias getLanguage.
+         *
+         * @see getLanguage
+        */
         getCurrent:  getLanguage,
 
         setLanguage: setLanguage,
+
+        /**
+         * Alias setLanguage.
+         *
+         * @see setLanguage
+        */
         setCurrent:  setLanguage,
 
+        /**
+         * Alias i18n.
+         *
+         * @see i18n
+        */
         translate:   i18n,
         i18n:        i18n,
 
         getDictionnary:    getDictionnary,
 
         getGlobalVariable: getGlobalVariable,
-        addGlobalVariable: setGlobalVariable,
         setGlobalVariable: setGlobalVariable,
 
+        /**
+         * Alias setGlobalVariable.
+         *
+         * @see setGlobalVariable
+        */
+        addGlobalVariable: setGlobalVariable,
+
         add:            add,
+
+        /**
+         * Alias add.
+         *
+         * @see add
+        */
         addTranslation: add,
 
         get:            get,
+
+        /**
+         * Alias get.
+         *
+         * @see get
+        */
         getTranslation: get,
 
         set:            set,
+
+        /**
+         * Alias set.
+         *
+         * @see set
+        */
         setTranslation: set,
 
+        /**
+         * Erase dictionnary.
+        */
         clear: clearDictionnary
     };
 })();
-;/* ************************************************************************
+
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    Handlebars.registerHelper('tr', function() {
+        return new Handlebars.SafeString(
+                a.translate.get.apply(null, arguments));
+    });
+    Handlebars.registerHelper('translate', function(value) {
+        return new Handlebars.SafeString(
+                a.translate.get.apply(null, arguments));
+    });
+})();;/* ************************************************************************
 
     License: MIT Licence
 

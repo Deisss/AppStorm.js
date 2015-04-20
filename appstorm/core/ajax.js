@@ -107,7 +107,7 @@
             }
 
             // Adding last model search
-            search['modelName'] = name;
+            search.modelName = name;
 
             var found = a.model.pooler.searchInstance(search);
 
@@ -117,7 +117,7 @@
                 return a.model.pooler.createInstance(name);
             }
         }
-    };
+    }
 
     /**
      * Ajax object to call server.
@@ -143,10 +143,10 @@
 
         // Parsing array of templates
         if(a.isArray(options.template)) {
-            for(var i=0, l=options.template.length; i<l; ++i) {
-                var tmpl = a.getTemplateAjaxOptions(options.template[i]);
-                if(a.isTrueObject(tmpl)) {
-                    templates.push(tmpl);
+            for(var t=0, n=options.template.length; t<n; ++t) {
+                var tmpAjaxOpt = a.getTemplateAjaxOptions(options.template[t]);
+                if(a.isTrueObject(tmpAjaxOpt)) {
+                    templates.push(tmpAjaxOpt);
                 }
             }
         }
@@ -178,8 +178,8 @@
             }
 
             // We check given options are same type (from specific request)
-            for(var i=0, l=templates.length; i<l; ++i) {
-                var tmpl = templates[i];
+            for(var o=0, l=templates.length; o<l; ++o) {
+                var tmpl = templates[o];
                 if(p in tmpl && typeof(tmpl[p]) === typeof(this.params[p])) {
                     // Special case for array
                     if(a.isArray(tmpl[p])) {
@@ -197,18 +197,18 @@
         }
 
         // Now we take care of special case of data and header
-        for(var i=0, l=templates.length; i<l; ++i) {
-            var tmpl = templates[i];
+        for(var i=0, y=templates.length; i<y; ++i) {
+            var tmpla = templates[i];
 
-            if(a.isTrueObject(tmpl.data)) {
-                for(var d in tmpl.data) {
-                    this.params.data[d] = tmpl.data[d];
+            if(a.isTrueObject(tmpla.data)) {
+                for(var d in tmpla.data) {
+                    this.params.data[d] = tmpla.data[d];
                 }
             }
 
-            if(a.isTrueObject(tmpl.header)) {
-                for(var h in tmpl.header) {
-                    this.params.header[h] = tmpl.header[h];
+            if(a.isTrueObject(tmpla.header)) {
+                for(var h in tmpla.header) {
+                    this.params.header[h] = tmpla.header[h];
                 }
             }
         }
@@ -243,9 +243,9 @@
                 'Msxml2.XMLHTTP',
                 'Microsoft.XMLHTTP'
             ];
-            for(var i=0, l=msxml.length; i<l; ++i) {
+            for(var w=0, q=msxml.length; w<q; ++w) {
                 try {
-                    this.request = new ActiveXObject(msxml[i]);
+                    this.request = new ActiveXObject(msxml[w]);
                 } catch(e) {}
             }
         }
@@ -274,8 +274,8 @@
                     http.responseText;
 
         // User is asking for a model convertion
-        if(params['model']) {
-            var modelName = params['model'],
+        if(params.model) {
+            var modelName = params.model,
                 errorStr = 'Model ' + modelName +
                             ' not found, empty object recieve Model Pooler';
 
@@ -287,7 +287,7 @@
                 a.console.storm('error', 'a.ajax', errorStr, 1);
 
             // No primaries into the model, we create new model
-            } else if(params['many'] === true && a.isArray(result)) {
+            } else if(params.many === true && a.isArray(result)) {
                 var content = [];
                 for(var i=0, l=result.length; i<l; ++i) {
                     var data = result[i],
@@ -303,14 +303,14 @@
                 // We replace
                 result = content;
             } else {
-                var model = getOrCreateModel(modelName, primaries, result);
+                var fmdl = getOrCreateModel(modelName, primaries, result);
 
                 // This test is probably not neeeded, but, who knows,
                 // maybe one day it will raise to power and conquer
                 // the world.
-                if(model) {
-                    model.fromObject(result);
-                    result = model;
+                if(fmdl) {
+                    fmdl.fromObject(result);
+                    result = fmdl;
                 } else {
                     a.console.storm('error', 'a.ajax', errorStr, 1);
                 }
@@ -318,9 +318,9 @@
         }
 
         // After to use/parse on object
-        if('after' in params) {
-            for(var i=0, l=params.after.length; i<l; ++i) {
-                var fct = a.getAjaxAfter(params.after[i]);
+        if(params.hasOwnProperty('after')) {
+            for(var t=0, k=params.after.length; t<k; ++t) {
+                var fct = a.getAjaxAfter(params.after[t]);
                 if(a.isFunction(fct)) {
                     result = fct.call(this, params, result);
                 }
@@ -328,8 +328,8 @@
         }
 
         // We cache if needed
-        if('store' in params && params['store']) {
-            var store = params['store'],
+        if(params.hasOwnProperty('store') && params.store) {
+            var store = params.store,
                 multiplier = 1;
 
             if(store.indexOf('min') > 0) {
@@ -342,7 +342,7 @@
 
             // Adding element to store
             ajaxCache.add(params.method, params.url, result, 
-                multiplier * parseInt(params['store'], 10));
+                multiplier * parseInt(params.store, 10));
         }
 
         return result;
@@ -385,8 +385,8 @@
         }
 
         // We search for cached element
-        if(a.isArray(this.params['before'])) {
-            var befores = this.params['before'];
+        if(a.isArray(this.params.before)) {
+            var befores = this.params.before;
             for(var i=0, l=befores.length; i<l; ++i) {
                 var before = a.getAjaxBefore(befores[i]);
                 if(a.isFunction(before)) {
@@ -410,7 +410,7 @@
             var rnd = a.uniqueId('rnd_');
             // Safari does not like this...
             try {
-                this.params.data['cachedisable'] = rnd;
+                this.params.data.cachedisable = rnd;
             } catch(e) {}
         }
 
@@ -514,15 +514,13 @@
         // Skip request in some case, due to mock object (second test)
         mockResult = a.mock.get(method, this.params.url);
         if(mockResult !== null) {
-            var params = this.params;
-
             // We send a result
             a.message.dispatch('a.ajax', {
                 success : true,
                 status  : 200,
-                url     : params.url,
+                url     : this.params.url,
                 method  : method,
-                params  : params
+                params  : this.params
             });
 
             // Directly call success function
