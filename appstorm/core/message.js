@@ -13,7 +13,12 @@
 
 /**
  * Simple message/event system allowing to exchange data across elements threw
- * events.
+ * events. **a.message is an instance of a.eventEmitter**.
+ *
+ * @constructor
+ *
+ * @param {String} base                     The event system name. Like for
+ *                                          a.message it's 'a.message'
 */
 a.eventEmitter = function(base) {
     this.eventList = {};
@@ -206,15 +211,20 @@ a.eventEmitter.prototype = {
 };
 
 
+/*
+------------------------------
+  MESSAGE
+------------------------------
+*/
 /**
  * The bus system to exchange message globally between all application object.
 */
 a.message = new a.eventEmitter('a.message');
 
 
-/*!
+/*
 ------------------------------
-  SPECIFIC READY
+  GLOBAL
 ------------------------------
 */
 (function() {
@@ -223,6 +233,7 @@ a.message = new a.eventEmitter('a.message');
 
     /**
      * Internal function to call function regarding it's scope.
+     *
      * @private
      *
      * @param {Function} func               The function to call

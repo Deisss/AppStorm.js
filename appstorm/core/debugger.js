@@ -400,6 +400,14 @@
     /*
      * Debugger is a wrapper around window.console to provide a more
      * structured way to access and use group system provided by console.
+     *
+     * @constructor
+     *
+     * @param {String} name                 The debugger name
+     * @param {Boolean} collapsed           The collapsed state, only useful
+     *                                      if isDirect is set to false
+     * @param {Object | Null} parent        The parent of this debugger, can be
+     *                                      null
     */
     a.debugger = function (name, collapsed, parent) {
         this.name = name;

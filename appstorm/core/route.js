@@ -10,6 +10,8 @@
 
 /**
  * Manage action related to hash change.
+ *
+ * @constructor
 */
 a.route = new function() {
     var mem = a.mem.getInstance('app.route');

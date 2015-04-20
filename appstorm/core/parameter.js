@@ -13,6 +13,8 @@
  * Provide a way to manipulate, extract and replace parameters like
  * {{id: [a-fA-F0-9]+}} as regular expression. This is intensly used
  * by appstorm to check and manipulate parameters inside state plugin.
+ *
+ * @contructor
 */
 a.parameter = {
     /**

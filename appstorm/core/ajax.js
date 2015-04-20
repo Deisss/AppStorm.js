@@ -122,6 +122,8 @@
     /**
      * Ajax object to call server.
      *
+     * @constructor
+     *
      * @param {Object} options                  An option map to change
      *                                          the behaviour of component
      * @param {Function} success                The success function called

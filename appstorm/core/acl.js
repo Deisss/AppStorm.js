@@ -12,6 +12,8 @@
 /**
  * Provide a simple ACL rules checker to create different application
  * behavior regarding user role.
+ *
+ * @constructor
 */
 a.acl = a.extend(new function() {
     var mem = a.mem.getInstance('app.acl');

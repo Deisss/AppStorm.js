@@ -27,6 +27,8 @@ if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
  * This helps to use appstorm by itself without any jQuery or others.
  * It really not the best, but it does work well, and already pretty 
  * usefull!
+ *
+ * @constructor
 */
 a.dom = {
     /**

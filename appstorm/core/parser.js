@@ -9,11 +9,15 @@
 
 /**
  * Provide parsing/stringify functionnality for JSON and XML format.
+ *
+ * @constructor
 */
 a.parser = {
     /**
      * Basic JSON handler wich prevent from 'no data' or 'wrong data' input,
      * with a log message to check.
+     *
+     * @constructor
     */
     json: {
         /**
@@ -63,6 +67,8 @@ a.parser = {
     /**
      * Basic XML handler wich prevent from 'no data' or 'wrong data' input,
      * with a log message to check.
+     *
+     * @constructor
     */
     xml: {
         /**

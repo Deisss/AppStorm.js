@@ -12,6 +12,8 @@
 /**
  * Manipulate page hash, be able to retrieve also the list of hash previously
  * used.
+ *
+ * @constructor
 */
 a.hash = new function() {
     var previousHash  = null,

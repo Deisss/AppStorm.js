@@ -10,6 +10,8 @@
 
 /**
  * Dynamic loader for many files type.
+ *
+ * @constructor
 */
 a.loader = (function() {
     'use strict';

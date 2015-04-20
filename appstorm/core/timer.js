@@ -9,6 +9,8 @@
 
 /**
  * Simple timer system, provide a single timer for many bindings.
+ *
+ * @constructor
 */
 a.timer = (function() {
     'use strict';

@@ -10,6 +10,8 @@
 
 /**
  * Provide easy store object, with global prefix value system on top of it.
+ *
+ * @constructor
 */
 a.mem = (function() {
     var store = {};

@@ -14,6 +14,10 @@
  * console support on given browser.
  * Also, it does provide a trace utility in case of bug/check to recover all
  * passed log to it.
+ *
+ * @constructor
+ *
+ * @see core/debugger
 */
 (function(win, a) {
     a.console = new a.debugger('console', true, null);
