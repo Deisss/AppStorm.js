@@ -201,6 +201,9 @@ a.mem = (function() {
                 clearStore(this.prefix);
             }
         }
+        /*!
+         * @private
+        */
     };
 
     var defaultInstance = new genericObject('');
@@ -214,6 +217,9 @@ a.mem = (function() {
     defaultInstance.getInstance = function(prefix) {
         return new genericObject(prefix);
     };
+    /*!
+     * @private
+    */
 
     // return the custom object
     return defaultInstance;
