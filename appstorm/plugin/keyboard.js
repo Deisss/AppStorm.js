@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -13,9 +13,7 @@
  * Simple wrapper for Mousetrap to have unified interface with other part
  * of AppStorm.JS.
  *
- * @class keyboard
- * @static
- * @namespace a
+ * @constructor
 */
 a.keyboard = (function(mt) {
     'use strict';
@@ -23,9 +21,8 @@ a.keyboard = (function(mt) {
     var mem = a.mem.getInstance('app.accelerator');
 
     /**
-     * Remove all existing event binded to keyboard
+     * Remove all existing event binded to keyboard.
      *
-     * @method clearAllKeyboardEvents
      * @private
     */
     function clearAllKeyboardEvents() {
@@ -34,12 +31,11 @@ a.keyboard = (function(mt) {
     };
 
     /**
-     * Start to watch a key
+     * Start to watch a key.
      *
-     * @method generateKeyBinding
      * @private
      *
-     * @param key {String}              The key to bind (with type)
+     * @param {String} key              The key to bind (with type)
      * @return {Function}               A function to catch key event and
      *                                  dispatch
     */
@@ -99,14 +95,12 @@ a.keyboard = (function(mt) {
     } else {
         return {
             /**
-             * Register a function for a given keypress command
+             * Register a function for a given keypress command.
              *
-             * @method bind
-             *
-             * @param key {String}           The key/keylist to bind
-             * @param fn {Function}          The function to bind
-             * @param scope {Object | null}  The scope to apply when binding
-             * @param type {String | null}   The type like 'keydown', 'keyup'..
+             * @param {String} key           The key/keylist to bind
+             * @param {Function} fn          The function to bind
+             * @param {Object | Null} scope  The scope to apply when binding
+             * @param {String | Null} type   The type like 'keydown', 'keyup'..
              *                               default: keypress
             */
             bind: function(key, fn, scope, type) {
@@ -135,14 +129,12 @@ a.keyboard = (function(mt) {
             },
 
             /**
-             * Remove a binding for a given key
+             * Remove a binding for a given key.
              *
-             * @method unbind
-             *
-             * @param key {String}          The key/keylist to unbind
-             * @param fn {Function}         The function to unbind
-             * @param type {String | null}   The type like 'keydown', 'keyup'..
-             *                               default: keypress
+             * @param {String} key          The key/keylist to unbind
+             * @param {Function} fn         The function to unbind
+             * @param {String | Null} type  The type like 'keydown', 'keyup'..
+             *                              default: keypress
             */
             unbind: function(key, fn, type) {
                 if(!a.isFunction(fn)) {
@@ -172,29 +164,23 @@ a.keyboard = (function(mt) {
             },
 
             /**
-             * Fake a keyboard key press
+             * Fake a keyboard key press.
              *
-             * @method trigger
-             *
-             * @param keys {String | Array} The list of keys/single key to
+             * @param {String | Array} keys The list of keys/single key to
              *                              trigger
-             * @param action {String}       The action (like keypress, keyup)
+             * @param {String} action       The action (like keypress, keyup)
             */
             trigger: function(keys, action) {
-                mt.trigger(keys, action);
+                mt.trigger(keys, action || 'keypress');
             },
 
             /**
-             * Reset all bindings
-             *
-             * @method reset
+             * Reset all bindings.
             */
             reset: clearAllKeyboardEvents,
 
             /**
-             * Reset all bindings
-             *
-             * @method clear
+             * Reset all bindings.
             */
             clear: clearAllKeyboardEvents
         };

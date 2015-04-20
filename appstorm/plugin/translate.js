@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -7,6 +7,11 @@
 
 ************************************************************************ */
 
+/**
+ * A translation system, used to get multi languages support to your app.
+ *
+ * @constructor
+*/
 a.translate = a.i18n = (function() {
     'use strict';
 
@@ -22,14 +27,13 @@ a.translate = a.i18n = (function() {
     var storageSupported = (a.storage && a.storage.persistent.support);
 
     /**
-     * Get attribute stored into given element
+     * Get attribute stored into given element.
      *
-     * @method getAttr
      * @private
      *
-     * @param element {DOMElement}          The dom object to get
+     * @param {DOMElement} element          The dom object to get
     *                                       attribute from
-     * @param search {String}               The attribute name searched
+     * @param {String} search               The attribute name searched
      * @return {String}                     The founded attribute
      *                                      content or empty string
     */
@@ -41,13 +45,12 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Apply to a given element the given translation
+     * Apply to a given element the given translation.
      *
-     * @method applyTranslationToElement
      * @private
      *
-     * @param node {DOMElement}             The element to apply
-     * @param translation {String}          The translation to apply
+     * @param {DOMElement} node             The element to apply
+     * @param {String} translation          The translation to apply
     */
     function applyTranslationToElement(node, translation) {
         var customTagAttribute = getAttr(node, customAttribute);
@@ -122,11 +125,9 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Apply translation to a given document/sub-document
+     * Apply translation to a given document/sub-document.
      *
-     * @method i18n
-     *
-     * @param root {DOMElement | null}      The root element to 
+     * @param {DOMElement | Null} root      The root element to 
      *                                      start translate from
     */
     function i18n(root) {
@@ -194,9 +195,7 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get the current used language
-     *
-     * @method getLanguage
+     * Get the current used language.
      *
      * @return {String}                     The language setted by
      *                                      user/system (default is 'en-US')
@@ -209,10 +208,8 @@ a.translate = a.i18n = (function() {
      * Set the current used language.
      * Auto-translate current document except if update is set to false.
      *
-     * @method setLanguage
-     *
-     * @param lang {String}                 The new language to apply
-     * @param update {Boolean | null}       If we should translate
+     * @param {String} lang                 The new language to apply
+     * @param {Boolean | Null} update       If we should translate
      *                                      current (default: yes)
     */
     function setLanguage(lang, update) {
@@ -235,11 +232,9 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get any global variable setted
+     * Get any global variable setted.
      *
-     * @method getGlobalVariable
-     *
-     * @param key {String}                  The variable key to search
+     * @param {String} key                  The variable key to search
      * @return {String}                     The variable value or
      *                                      an empty string if not found
     */
@@ -248,12 +243,10 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Set a global variable to be used if possible when translating
+     * Set a global variable to be used if possible when translating.
      *
-     * @method setGlobalVariable
-     *
-     * @param key {String}                  The variable key to register
-     * @param value {String}                The linked value
+     * @param {String} key                  The variable key to register
+     * @param {String} value                The linked value
     */
     function setGlobalVariable(key, value) {
         globalVariable[key] = value;
@@ -264,17 +257,17 @@ a.translate = a.i18n = (function() {
      * After register is done, you can now use data-tr='{{hash}}' inside
      * HTML page to have corresponding translation.
      * Note: you can use a quicker version add(lang, object, update)
-     * Where the object will be a key/value translate list for lang
+     * Where the object will be a key/value translate list for lang.
      *
-     * @method add
+     * @private
      *
-     * @param lang {String}                 The language to
+     * @param {String} lang                 The language to
      *                                      register hash/value pair
-     * @param hash {String}                 The refered hash to
+     * @param {String} hash                 The refered hash to
      *                                      use for translation
-     * @param value {String}                The linked translation
+     * @param {String} value                The linked translation
      *                                      for given language
-     * @param update {Boolean | null}       If we should fully
+     * @param {Boolean | Null} update       If we should fully
      *                                      update or not document
     */
     function add(lang, hash, value, update) {
@@ -299,13 +292,11 @@ a.translate = a.i18n = (function() {
      * Set a new translation set for a given language.
      * If dict is set to null, it will erase language.
      *
-     * @method set
-     *
-     * @param lang {String}                 The language to register dict
-     * @param dict {Object}                 A key/value pair object for
+     * @param {String} lang                 The language to register dict
+     * @param {Object} dict                 A key/value pair object for
      *                                      registrating many translation
      *                                      at once
-     * @param update {Boolean | null}       If we should fully
+     * @param {Boolean | Null} update       If we should fully
      *                                      update or not document
     */
     function set(lang, dict, update) {
@@ -323,13 +314,11 @@ a.translate = a.i18n = (function() {
     };
 
     /**
-     * Get an existing translation stored
+     * Get an existing translation stored.
      *
-     * @method get
-     *
-     * @param key {String | null}           The searched translation key
-     * @param variables {Object | null}     Any key/value pair variable to pass
-     * @param translate {Boolean | null}    If we should or not translate
+     * @param {String | Null} key           The searched translation key
+     * @param {Object | Null} variables     Any key/value pair variable to pass
+     * @param {Boolean | Null} translate    If we should or not translate
      *                                      (including variable) or simply
      *                                      send back entry (default: true)
      *
@@ -351,9 +340,11 @@ a.translate = a.i18n = (function() {
         }
 
         /**
-         * From a hash, try to find the good variable content
+         * From a hash, try to find the good variable content.
          *
-         * @param hash {String}             The hash to find in variable list
+         * @private
+         *
+         * @param {String} hash             The hash to find in variable list
          * @return {String}                 The variable content or empty
          *                                  string in case of not found
         */
@@ -389,7 +380,7 @@ a.translate = a.i18n = (function() {
     /**
      * Get the full stored dictionnary.
      *
-     * @param lang {String | null}          If lang is setted, retrieve only
+     * @param {String | Null} lang          If lang is setted, retrieve only
      *                                      the given language. In other cases
      *                                      retrieve all dictionnaries.
     */
@@ -402,9 +393,9 @@ a.translate = a.i18n = (function() {
 
 
     /**
-     * Erase dictionnary
+     * Erase dictionnary.
      *
-     * @method clearDictionnary
+     * @private
     */
     function clearDictionnary() {
         dictionnary = {};
@@ -428,29 +419,91 @@ a.translate = a.i18n = (function() {
     // Final object
     return {
         getLanguage: getLanguage,
+
+        /**
+         * Alias getLanguage.
+         *
+         * @see getLanguage
+        */
         getCurrent:  getLanguage,
 
         setLanguage: setLanguage,
+
+        /**
+         * Alias setLanguage.
+         *
+         * @see setLanguage
+        */
         setCurrent:  setLanguage,
 
+        /**
+         * Alias i18n.
+         *
+         * @see i18n
+        */
         translate:   i18n,
         i18n:        i18n,
 
         getDictionnary:    getDictionnary,
 
         getGlobalVariable: getGlobalVariable,
-        addGlobalVariable: setGlobalVariable,
         setGlobalVariable: setGlobalVariable,
 
+        /**
+         * Alias setGlobalVariable.
+         *
+         * @see setGlobalVariable
+        */
+        addGlobalVariable: setGlobalVariable,
+
         add:            add,
+
+        /**
+         * Alias add.
+         *
+         * @see add
+        */
         addTranslation: add,
 
         get:            get,
+
+        /**
+         * Alias get.
+         *
+         * @see get
+        */
         getTranslation: get,
 
         set:            set,
+
+        /**
+         * Alias set.
+         *
+         * @see set
+        */
         setTranslation: set,
 
+        /**
+         * Erase dictionnary.
+        */
         clear: clearDictionnary
     };
+})();
+
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+(function() {
+    Handlebars.registerHelper('tr', function() {
+        return new Handlebars.SafeString(
+                a.translate.get.apply(null, arguments));
+    });
+    Handlebars.registerHelper('translate', function(value) {
+        return new Handlebars.SafeString(
+                a.translate.get.apply(null, arguments));
+    });
 })();
