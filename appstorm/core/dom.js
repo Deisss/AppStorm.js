@@ -364,7 +364,11 @@ a.dom = {
 
 
 
-
+/*
+------------------------------
+  EVENT
+------------------------------
+*/
 /**
  * Unified event system for DOM element (to have always the same behavior
  * between all browser).
@@ -561,9 +565,15 @@ a.dom.eventListener = (function() {
 
 
 
-
+/*
+------------------------------
+  CHILDREN
+------------------------------
+*/
 /**
  * Handle recursive sub-search.
+ *
+ * @constructor
  *
  * @param {Array} elementList               The list of elements to use
 */
@@ -601,11 +611,9 @@ a.dom.children.prototype = {
 
         // We search on every currently stored elements, children
         while(i--) {
-            /*
-             * We add a null value at the end,
-             * so argsLength is already length - 1
-             * as we don't update it when pushing to args
-            */
+            // We add a null value at the end,
+            // so argsLength is already length - 1
+            // as we don't update it when pushing to args
             args[argsLength] = elementList[i];
             // We call the apply function with this as 'a.dom'
             var chainList = fct.apply(a.dom, args),
@@ -1201,4 +1209,7 @@ a.dom.children.prototype = {
         });
         return this;
     }
+    /*!
+     * @private
+    */
 };

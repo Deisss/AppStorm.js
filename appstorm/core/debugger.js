@@ -575,5 +575,8 @@
         clear: function() {
             this.logs = [];
         }
+        /*!
+         * @private
+        */
     };
 })(window, window.appstorm);
