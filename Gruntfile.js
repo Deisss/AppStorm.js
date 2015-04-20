@@ -174,7 +174,7 @@ module.exports = function(grunt) {
         cmd: 'rm -rf ./docs'
       },
       install_doxx_html: {
-        cmd: 'doxx --source appstorm --target docs --ignore vendor --target_extension html --template ./doxx/html.jade'
+        cmd: 'doxx --source appstorm --target docs --ignore vendor --target_extension html --template ./utils/doxx/html.jade'
       },
       rename_doxx_html: {
         cmd: function() {
@@ -199,7 +199,7 @@ module.exports = function(grunt) {
         cmd: 'rm -rf ./mds'
       },
       install_doxx_md: {
-        cmd: 'doxx --source appstorm --target mds --ignore vendor --target_extension md --template ./doxx/md.jade'
+        cmd: 'doxx --source appstorm --target mds --ignore vendor --target_extension md --template ./utils/doxx/md.jade'
       },
       rename_doxx_md: {
         cmd: function() {
