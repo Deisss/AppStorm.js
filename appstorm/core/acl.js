@@ -15,7 +15,7 @@
  *
  * @constructor
 */
-a.acl = a.extend(new function() {
+a.acl = a.extend(new function () {
     var mem = a.mem.getInstance('app.acl');
 
     /**
@@ -23,7 +23,7 @@ a.acl = a.extend(new function() {
      *
      * @param {String} role                 The role to set as 'current' one
     */
-    this.setCurrentRole = function(role) {
+    this.setCurrentRole = function (role) {
         mem.set('current', role);
         this.dispatch('change', role);
         a.message.dispatch('a.acl.change', role);
@@ -35,7 +35,7 @@ a.acl = a.extend(new function() {
      * @return {String}                     The role found, or an empty
      *                                      string if nothing has been found
     */
-    this.getCurrentRole = function() {
+    this.getCurrentRole = function () {
         return mem.get('current') || '';
     };
 
@@ -60,18 +60,18 @@ a.acl = a.extend(new function() {
      *
      * @param {Array} roleList              The role list to store
     */
-    this.setRoleList = function(roleList) {
-        if(a.isArray(roleList)) {
+    this.setRoleList = function (roleList) {
+        if (a.isArray(roleList)) {
             mem.set('list', roleList);
 
             // We create related Handlebars helpers for every role
             // Like you get a role 'adMin', it will create 'isAdMin' helper
-            a.each(roleList, function(role) {
+            a.each(roleList, function (role) {
                 var helper = a.firstLetterUppercase(role, 'is'),
                     lower  = role.toLowerCase();
 
-                Handlebars.registerHelper(helper, function(value, options) {
-                    if(a.trim(value.toLowerCase()) === a.trim(lower)) {
+                Handlebars.registerHelper(helper, function (value, options) {
+                    if (a.trim(value.toLowerCase()) === a.trim(lower)) {
                         return options.fn(this);
                     }
                     return options.inverse(this);
@@ -86,7 +86,7 @@ a.acl = a.extend(new function() {
      * @return {Array | Null}               The current role list stored, or
      *                                      null if nothing is found
     */
-    this.getRoleList = function() {
+    this.getRoleList = function () {
         return mem.get('list');
     };
 
@@ -99,7 +99,7 @@ a.acl = a.extend(new function() {
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
     */
-    this.isAllowed = function(minimumRole, currentRole) {
+    this.isAllowed = function (minimumRole, currentRole) {
         currentRole = currentRole || this.getCurrentRole();
 
         var positionCurrentRole = -1,
@@ -108,17 +108,17 @@ a.acl = a.extend(new function() {
             position = roleList.length;
 
         // Search position in current role list
-        while(position--) {
-            if(roleList[position]  == minimumRole) {
+        while (position--) {
+            if (roleList[position]  == minimumRole) {
                 positionMinimumRole = position;
             }
 
-            if(roleList[position]  == currentRole) {
+            if (roleList[position]  == currentRole) {
                 positionCurrentRole = position;
             }
 
             // Stop before if possible
-            if(positionMinimumRole != -1 && positionCurrentRole != -1) {
+            if (positionMinimumRole != -1 && positionCurrentRole != -1) {
                 break;
             }
         }
@@ -135,14 +135,14 @@ a.acl = a.extend(new function() {
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
     */
-    this.isRefused = function(minimumRole, currentRole) {
+    this.isRefused = function (minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
     };
 
     /**
      * Clear the full ACL rules
     */
-    this.clear = function() {
+    this.clear = function () {
         mem.clear();
     };
 
@@ -155,38 +155,36 @@ a.acl = a.extend(new function() {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    Handlebars.registerHelper('AclRole', function(options) {
-        return new Handlebars.SafeString(a.acl.getCurrentRole());
-    });
+Handlebars.registerHelper('AclRole', function () {
+    return new Handlebars.SafeString(a.acl.getCurrentRole());
+});
 
-    // Allow to check role is allowed or not
-    Handlebars.registerHelper('AclIsAllowed', function(minimumRole, currentRole,
-                                                                    options) {
-        // We allow 2 or 3 parameters mode !
-        options = a.isString(currentRole) ? options : currentRole;
-        currentRole = a.isString(currentRole) ? currentRole :
-                                                    a.acl.getCurrentRole();
+// Allow to check role is allowed or not
+Handlebars.registerHelper('AclIsAllowed', function (minimumRole, currentRole,
+                                                                options) {
+    // We allow 2 or 3 parameters mode !
+    options = a.isString(currentRole) ? options : currentRole;
+    currentRole = a.isString(currentRole) ? currentRole :
+                                                a.acl.getCurrentRole();
 
-        // We check role is allowed or not
-        if(a.acl.isAllowed(minimumRole, currentRole)) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    });
-
-    // Allow to check role is refused or not
-    Handlebars.registerHelper('AclIsRefused', function(minimumRole, currentRole,
-                                                                    options) {
-        // We allow 2 or 3 parameters mode !
-        options = a.isString(currentRole) ? options : currentRole;
-        currentRole = a.isString(currentRole) ? currentRole :
-                                                    a.acl.getCurrentRole();
-
-        // We check role is allowed or not
-        if(a.acl.isAllowed(minimumRole, currentRole)) {
-            return options.inverse(this);
-        }
+    // We check role is allowed or not
+    if (a.acl.isAllowed(minimumRole, currentRole)) {
         return options.fn(this);
-    });
-})();
+    }
+    return options.inverse(this);
+});
+
+// Allow to check role is refused or not
+Handlebars.registerHelper('AclIsRefused', function (minimumRole, currentRole,
+                                                                options) {
+    // We allow 2 or 3 parameters mode !
+    options = a.isString(currentRole) ? options : currentRole;
+    currentRole = a.isString(currentRole) ? currentRole :
+                                                a.acl.getCurrentRole();
+
+    // We check role is allowed or not
+    if (a.acl.isAllowed(minimumRole, currentRole)) {
+        return options.inverse(this);
+    }
+    return options.fn(this);
+});
