@@ -45,7 +45,7 @@ each symbol in dox
               td!= tag.description
 
   .description !{symbol.description.full} !{symbol.description.extra}
-  if symbol.code
+  if symbol.code && symbol.ctx.type !== "constructor"
     pre
       code.language-javascript
         = symbol.code
