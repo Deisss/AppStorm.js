@@ -28,7 +28,7 @@ a.keyboard = (function(mt) {
     function clearAllKeyboardEvents() {
         mem.clear();
         mt.reset();
-    };
+    }
 
     /**
      * Start to watch a key.
@@ -77,7 +77,7 @@ a.keyboard = (function(mt) {
 
             return result;
         };
-    };
+    }
 
     // No mousetrap support, create dummy empty object
     if(a.isNone(mt)) {
@@ -122,7 +122,7 @@ a.keyboard = (function(mt) {
                 mem.set(finalKey, bindArray);
 
                 // This is the first entry, start to watch the key binding
-                if(bindArray.length == 1) {
+                if(bindArray.length === 1) {
                     var globalCatcher = generateKeyBinding(finalKey);
                     mt.bind(key, globalCatcher, type);
                 }
@@ -156,7 +156,7 @@ a.keyboard = (function(mt) {
                     }
 
                     // There is no binding anymore, we stop binding
-                    if(bindArray.length == 0) {
+                    if(bindArray.length === 0) {
                         mem.remove(finalKey);
                         mt.unbind(key, type);
                     }
