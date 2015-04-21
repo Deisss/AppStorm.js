@@ -102,16 +102,13 @@ a.storage = {
  *
  * @constructor
 */
-a.storage.type.cookie = new function() {
-    // Temporary desactivate event while making test
-    var active = false;
-
+a.storage.type.cookie = {
     /**
      * @property support
      * @type Boolean
      * @default false
     */
-    this.support = false;
+    support: false,
 
     /**
      * @property engine
@@ -119,7 +116,26 @@ a.storage.type.cookie = new function() {
      * @default cookie
      * @final
     */
-    this.engine = 'cookie';
+    engine: 'cookie',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        // Cookie
+        // Testing the current
+        var test = '_support_t';
+        this.set(test, 'o');
+
+        // Test system is working
+        if(this.get(test) == 'o') {
+            this.remove(test);
+            this.support = true;
+        }
+    },
 
     /**
      * Set a new cookie, or delete a cookie using a too old expires.
@@ -128,7 +144,7 @@ a.storage.type.cookie = new function() {
      * @param {Mixed} value                 The value to store
      * @param {Integer} days                Number of days before expires
     */
-    this.set = function(name, value, days) {
+    set: function(name, value, days) {
         var expires = '';
         a.storage.debugSet('cookie', name, value);
         if(days) {
@@ -140,7 +156,7 @@ a.storage.type.cookie = new function() {
         var cookieSet =  name + '=' + escape(a.parser.json.stringify(value));
             cookieSet += expires + '; path=/';
         document.cookie = cookieSet;
-    };
+    },
 
     /**
      * Get the stored cookie, return null if something went wrong.
@@ -148,7 +164,7 @@ a.storage.type.cookie = new function() {
      * @param {String} name                 The cookie name stored
      * @return {Mixed | Null}               Any data stored inside cookie
     */
-    this.get = function(name) {
+    get: function(name) {
         if (document.cookie.length > 0) {
             var start = document.cookie.indexOf(name + '=');
             if (start != -1) {
@@ -165,36 +181,17 @@ a.storage.type.cookie = new function() {
         }
         a.storage.printError('cookie', name);
         return null;
-    };
+    },
 
     /**
      * Remove a previously stored cookie.
      *
      * @param {String} name                 The cookie name to delete
     */
-    this.remove = function(name) {
+    remove: function(name) {
         a.storage.debugRemove('cookie', name);
         this.set(name, '', -1);
-    };
-
-
-    /*!
-     * @private
-    */
-
-    // Cookie
-    // Testing the current
-    var test = '_support_t';
-    this.set(test, 'o');
-
-    // Test system is working
-    if(this.get(test) == 'o') {
-        this.remove(test);
-        this.support = true;
     }
-
-    // Activate event
-    active = true;
 };
 
 
@@ -218,35 +215,13 @@ a.storage.cookie = a.storage.type.cookie;
  *
  * @constructor
 */
-a.storage.type.localStorage = new function() {
-    var support = false,
-        idTest  = '_support_t',
-        store   = 'localStorage';
-
-    // Test support (if you use localStorageShim
-    // this should work for most of browsers (including old IE) !)
-    if(store in window && window[store] != null) {
-        // localStorage may have no space left, making everything crash
-        try {
-            // Testing database work or not
-            window.localStorage.setItem(idTest, 'o');
-
-            // Test system is working
-            if(window.localStorage.getItem(idTest) == 'o') {
-                window.localStorage.removeItem(idTest);
-                support = true;
-            }
-        } catch(e) {
-            support = false;
-        }
-    }
-
+a.storage.type.localStorage = {
     /**
      * @property support
      * @type Boolean
      * @default false
     */
-    this.support = support;
+    support: false,
 
     /**
      * @property engine
@@ -254,7 +229,37 @@ a.storage.type.localStorage = new function() {
      * @default localStorage
      * @final
     */
-    this.engine  = store;
+    engine: 'localStorage',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        var obj     = a.storage.type.localStorage,
+            idTest  = '_support_t';
+
+        // Test support (if you use localStorageShim
+        // this should work for most of browsers (including old IE) !)
+        if('localStorage' in window && window.localStorage !== null) {
+            // localStorage may have no space left, making everything crash
+            try {
+                // Testing database work or not
+                window.localStorage.setItem(idTest, 'o');
+
+                // Test system is working
+                if(window.localStorage.getItem(idTest) === 'o') {
+                    window.localStorage.removeItem(idTest);
+                    return true;
+                }
+            } catch(e) {
+                return false;
+            }
+        }
+        return false;
+    },
 
     /**
      * Get the stored key.
@@ -263,7 +268,7 @@ a.storage.type.localStorage = new function() {
      * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
-    this.get = function(key) {
+    get: function(key) {
         if(support) {
             var item = window.localStorage.getItem(key);
             if(a.isNone(item)) {
@@ -275,7 +280,7 @@ a.storage.type.localStorage = new function() {
             return value;
         }
         return null;
-    };
+    },
 
     /**
      * Store a new key/value pair.
@@ -283,24 +288,24 @@ a.storage.type.localStorage = new function() {
      * @param {String} key                  The key to set
      * @param {Mixed} value                 The data to add
     */
-    this.set = function(key, value) {
-        if(support) {
+    set: function(key, value) {
+        if(this.support) {
             a.storage.debugSet(this.engine, key, value);
             window.localStorage.setItem(key, a.parser.json.stringify(value));
         }
-    };
+    },
 
     /**
      * Remove a given key from store.
      *
      * @param {String} key                  The key to remove
     */
-    this.remove = function(key) {
-        if(support) {
+    remove: function(key) {
+        if(this.support) {
             a.storage.debugRemove(this.engine, key);
             window.localStorage.removeItem(key);
         }
-    };
+    }
 };
 
 
@@ -315,32 +320,13 @@ a.storage.type.localStorage = new function() {
  *
  * @constructor
 */
-a.storage.type.globalStorage = new function() {
-    var support  = false,
-        idTest   = '_support_t',
-        hostname = window.location.hostname;
-
-    if(!a.isNone(window.globalStorage)) {
-        // In case of space not left, we can have crash
-        try {
-            window.globalStorage[hostname].setItem(idTest, 'o');
-
-            // Test system is working
-            if(window.globalStorage[hostname].getItem(idTest) == 'o') {
-                window.globalStorage[hostname].removeItem(idTest);
-                support = true;
-            }
-        } catch(e) {
-            support = false;
-        }
-    }
-
+a.storage.type.globalStorage = {
     /**
      * @property support
      * @type Boolean
      * @default false
     */
-    this.support = support;
+    support: false,
 
     /**
      * @property engine
@@ -348,7 +334,34 @@ a.storage.type.globalStorage = new function() {
      * @default globalStorage
      * @final
     */
-    this.engine = 'globalStorage';
+    engine: 'globalStorage',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        var idTest   = '_support_t',
+            hostname = window.location.hostname;
+
+        if(!a.isNone(window.globalStorage)) {
+            // In case of space not left, we can have crash
+            try {
+                window.globalStorage[hostname].setItem(idTest, 'o');
+
+                // Test system is working
+                if(window.globalStorage[hostname].getItem(idTest) == 'o') {
+                    window.globalStorage[hostname].removeItem(idTest);
+                    return true;
+                }
+            } catch(e) {
+                return false;
+            }
+        }
+        return false;
+    },
 
     /**
      * Get the stored key.
@@ -357,17 +370,18 @@ a.storage.type.globalStorage = new function() {
      * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
-    this.get = function(key) {
+    get: function(key) {
         if(support) {
-            var item = window.globalStorage[hostname].getItem(key);
+            var item = window.globalStorage[hostname].getItem(key),
+                value = null;
             // On some system, item will be an object with
             // "value" and "secure" property
             if(a.isTrueObject(item) && !a.isNone(item.value)) {
-                var value = a.parser.json.parse(item.value);
+                value = a.parser.json.parse(item.value);
                 a.storage.debugGet(this.engine, key, value);
                 return value;
             } else if(!a.isNone(item)) {
-                var value = a.parser.json.parse(item);
+                value = a.parser.json.parse(item);
                 a.storage.debugGet(this.engine, key, value);
                 return value;
             } else {
@@ -376,7 +390,7 @@ a.storage.type.globalStorage = new function() {
             }
         }
         return null;
-    };
+    },
 
     /**
      * Store a new key/value pair.
@@ -384,25 +398,25 @@ a.storage.type.globalStorage = new function() {
      * @param {String} key                  The key to set
      * @param {Mixed} value                 The data to add
     */
-    this.set = function(key, value) {
-        if(support) {
+    set: function(key, value) {
+        if(this.support) {
             a.storage.debugSet(this.engine, key, value);
             window.globalStorage[hostname].setItem(key,
                                         a.parser.json.stringify(value));
         }
-    };
+    },
 
     /**
      * Remove a given key from store.
      *
      * @param {String} key                  The key to remove
     */
-    this.remove = function(key) {
-        if(support) {
+    remove: function(key) {
+        if(this.support) {
             a.storage.debugRemove(this.engine, key);
             window.globalStorage[hostname].removeItem(key);
         }
-    };
+    }
 };
 
 
@@ -416,15 +430,20 @@ a.storage.type.globalStorage = new function() {
  *
  * @constructor
 */
-a.storage.type.memory = new function() {
-    var store = a.mem.getInstance('app.storage');
+a.storage.type.memory = {
+    /**
+     * @property _store
+     * @private
+     * @type a.mem
+    */
+    _store: a.mem.getInstance('app.storage'),
 
     /**
      * @property support
      * @type Boolean
      * @default true
     */
-    this.support = true;
+    support: true,
 
     /**
      * @property engine
@@ -432,7 +451,17 @@ a.storage.type.memory = new function() {
      * @default memory
      * @final
     */
-    this.engine = 'memory';
+    engine: 'memory',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        return true;
+    },
 
     /**
      * Get the stored key.
@@ -441,7 +470,9 @@ a.storage.type.memory = new function() {
      * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
-    this.get = store.get;
+    get: function() {
+        return this._store.get.apply(this._store, arguments);
+    },
 
     /**
      * Store a new key/value pair.
@@ -449,14 +480,18 @@ a.storage.type.memory = new function() {
      * @param {String} key                  The key to set
      * @param {Mixed} value                 The data to add
     */
-    this.set = store.set;
+    set: function() {
+        return this._store.set.apply(this._store, arguments);
+    },
 
     /**
      * Remove a given key from store.
      *
      * @param {String} key                  The key to remove
     */
-    this.remove = store.remove;
+    remove: function() {
+        return this._store.remove(this._store, arguments);
+    }
 };
 
 
@@ -481,34 +516,13 @@ a.storage.memory = a.storage.type.memory;
  *
  * @constructor
 */
-a.storage.type.sessionStorage = new function() {
-    var support = false,
-        idTest  = '_support_t',
-        ss      = 'sessionStorage';
-
-
-    // Test support
-    if(ss in window && !a.isNone(window[ss])) {
-        try {
-            // Testing database work or not
-            window.sessionStorage.setItem(idTest, 'o');
-
-            // Test system is working
-            if(window.sessionStorage.getItem(idTest) == 'o') {
-                window.sessionStorage.removeItem(idTest);
-                support = true;
-            }
-        } catch(e) {
-            support = false;
-        }
-    }
-
+a.storage.type.sessionStorage = {
     /**
      * @property support
      * @type Boolean
      * @default false
     */
-    this.support = support;
+    support: false,
 
     /**
      * @property engine
@@ -516,7 +530,36 @@ a.storage.type.sessionStorage = new function() {
      * @default sessionStorage
      * @final
     */
-    this.engine = ss;
+    engine: 'sessionStorage',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        var idTest  = '_support_t',
+            ss      = 'sessionStorage';
+
+
+        // Test support
+        if(ss in window && !a.isNone(window[ss])) {
+            try {
+                // Testing database work or not
+                window.sessionStorage.setItem(idTest, 'o');
+
+                // Test system is working
+                if(window.sessionStorage.getItem(idTest) == 'o') {
+                    window.sessionStorage.removeItem(idTest);
+                    return true;
+                }
+            } catch(e) {
+                return false;
+            }
+        }
+        return false;
+    },
 
     /**
      * Get the stored key.
@@ -525,8 +568,8 @@ a.storage.type.sessionStorage = new function() {
      * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
-    this.get = function(key) {
-        if(support) {
+    get: function(key) {
+        if(this.support) {
             var item = window.sessionStorage.getItem(key);
             if(a.isNone(item)) {
                 a.storage.printError(this.engine, key);
@@ -537,7 +580,7 @@ a.storage.type.sessionStorage = new function() {
             return value;
         }
         return null;
-    };
+    },
 
     /**
      * Store a new key/value pair.
@@ -545,24 +588,24 @@ a.storage.type.sessionStorage = new function() {
      * @param {String} key                  The key to set
      * @param {Mixed} value                 The data to add
     */
-    this.set = function(key, value) {
-        if(support) {
+    set: function(key, value) {
+        if(this.support) {
             a.storage.debugSet(this.engine, key, value);
             window.sessionStorage.setItem(key, a.parser.json.stringify(value));
         }
-    };
+    },
 
     /**
      * Remove a given key from store.
      *
      * @param {String} key                  The key to remove
     */
-    this.remove = function(key) {
+    remove: function(key) {
         if(support) {
             a.storage.debugRemove(this.engine, key);
             window.sessionStorage.removeItem(key);
         }
-    };
+    }
 };
 
 
@@ -577,51 +620,13 @@ a.storage.type.sessionStorage = new function() {
  *
  * @constructor
 */
-a.storage.type.userData = new function() {
-    var support = false,
-        idTest  = '_support_t',
-        uid     = 'a_storage',
-        dbName  = 'aUserDataStorage';
-
-    // Store for internet explorer
-
-    // Test support
-    if(document.all) {
-        // On some IE, db.load and db.save may be disabled
-        // (binary behavior disable)...
-        try {
-            // Creating userData storage
-            document.write(
-                '<input type="hidden" id="' + uid +
-                '" style="display:none;behavior:url(\'#default#userData\')" />'
-            );
-
-            var db = document.getElementById(uid);
-            db.load(dbName);
-
-            // Testing work before setting as default
-            db.setAttribute(idTest, 'o');
-            db.save(dbName);
-
-            // Test system is working
-            if(db.getAttribute(idTest) == 'o') {
-                // Deleting test
-                db.removeAttribute(idTest);
-                db.save(dbName);
-
-                support = true;
-            }
-        } catch(e) {
-            support = false;
-        }
-    }
-
+a.storage.type.userData = {
     /**
      * @property support
      * @type Boolean
      * @default false
     */
-    this.support = support;
+    support: false,
 
     /**
      * @property engine
@@ -629,7 +634,53 @@ a.storage.type.userData = new function() {
      * @default userData
      * @final
     */
-    this.engine = 'userData';
+    engine: 'userData',
+
+    /**
+     * Test the engine support.
+     *
+     * @return {Boolean}                    True, the engine pass the test,
+     *                                      false, something went wrong
+    */
+    test: function() {
+        var idTest  = '_support_t',
+            uid     = 'a_storage',
+            dbName  = 'aUserDataStorage';
+
+        // Store for internet explorer
+
+        // Test support
+        if(document.all) {
+            // On some IE, db.load and db.save may be disabled
+            // (binary behavior disable)...
+            try {
+                // Creating userData storage
+                document.write(
+                    '<input type="hidden" id="' + uid +
+                    '" style="display:none;behavior:url(\'#default#userData\')" />'
+                );
+
+                var db = document.getElementById(uid);
+                db.load(dbName);
+
+                // Testing work before setting as default
+                db.setAttribute(idTest, 'o');
+                db.save(dbName);
+
+                // Test system is working
+                if(db.getAttribute(idTest) == 'o') {
+                    // Deleting test
+                    db.removeAttribute(idTest);
+                    db.save(dbName);
+
+                    return true;
+                }
+            } catch(e) {
+                return false;
+            }
+        }
+        return false;
+    },
 
     /**
      * Get the stored key.
@@ -638,7 +689,7 @@ a.storage.type.userData = new function() {
      * @return {Mixed | Null}               The value in case of success,
      *                                      null if not found
     */
-    this.get = function(key) {
+    get: function(key) {
         if(support) {
             var value = a.parser.json.parse(db.getAttribute(key));
             if(a.isNone(value)) {
@@ -649,7 +700,7 @@ a.storage.type.userData = new function() {
             return value;
         }
         return null;
-    };
+    },
 
     /**
      * Store a new key/value pair.
@@ -657,26 +708,26 @@ a.storage.type.userData = new function() {
      * @param {String} key                  The key to set
      * @param {Mixed} value                 The data to add
     */
-    this.set = function(key, value) {
+    set: function(key, value) {
         if(support) {
             a.storage.debugSet(this.engine, key, value);
             db.setAttribute(key, a.parser.json.stringify(value));
             db.save(dbName);
         }
-    };
+    },
 
     /**
      * Remove a given key from store.
      *
      * @param {String} key                  The key to remove
     */
-    this.remove = function(key) {
+    remove: function(key) {
         if(support) {
             a.storage.debugRemove(this.engine, key);
             db.removeAttribute(key);
             db.save(dbName);
         }
-    };
+    }
 };
 
 
@@ -705,7 +756,7 @@ a.storage.type.flash = new function() {
      *                                      after loading
     */
     function includeFlash(callback) {
-        if(support == false && ready == false) {
+        if(support === false && ready === false) {
             // Append to root an object for recieving flash
             var root = document.createElement('div');
             root.id = 'flashstoragecontent';
@@ -732,18 +783,18 @@ a.storage.type.flash = new function() {
 
                 var el = document.getElementById(data.id);
 
-                if(el.testData() == true) {
+                if(el.testData() === true) {
                     support = true;
                     el.setDatabase('a_flashStorage');
                 }
-                if(support == true && a.isFunction(callback)) {
+                if(support === true && a.isFunction(callback)) {
                     callback(support);
                 }
             }, data);
-        } else if(support == true && a.isFunction(callback)) {
+        } else if(support === true && a.isFunction(callback)) {
             callback(support);
         }
-    };
+    }
 
     /**
      * Get the support state of flash.
@@ -792,7 +843,7 @@ a.storage.type.flash = new function() {
     */
     this.get = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             var item = document.getElementById(id).getData(key);
             if(a.isNone(item)) {
                 a.storage.printError(this.engine, key);
@@ -812,7 +863,7 @@ a.storage.type.flash = new function() {
     */
     this.set = function(key, value) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugSet(this.engine, key, value);
             document.getElementById(id).setData(key, value);
         }
@@ -825,7 +876,7 @@ a.storage.type.flash = new function() {
     */
     this.remove = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugRemove(this.engine, key);
             return document.getElementById(id).removeData(key);
         }
@@ -858,7 +909,7 @@ a.storage.type.silverlight = new function() {
      *                                      call after loading
     */
     function includeSilverlight(callback) {
-        if(support == false && ready == false) {
+        if(support === false && ready === false) {
             // Append to root an object for recieving flash
             var root = document.createElement('div');
             root.id = '_silverlightstorage';
@@ -884,17 +935,17 @@ a.storage.type.silverlight = new function() {
                 ready = true;
 
                 var el = document.getElementById(data.id);
-                if(el.Content.store.testData() == true) {
+                if(el.Content.store.testData() === true) {
                     support = true;
                 }
-                if(support == true && a.isFunction(callback)) {
+                if(support === true && a.isFunction(callback)) {
                     callback(support);
                 }
             }, data);
-        } else if(support == true && a.isFunction(callback)) {
+        } else if(support === true && a.isFunction(callback)) {
             callback(support);
         }
-    };
+    }
 
 
     /**
@@ -944,7 +995,7 @@ a.storage.type.silverlight = new function() {
     */
     this.get = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             var item = document.getElementById(id).Content.store.loadData(key);
             if(a.isNone(item) || item === 'false') {
                 a.storage.printError(this.engine, key);
@@ -965,7 +1016,7 @@ a.storage.type.silverlight = new function() {
     */
     this.set = function(key, value) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugSet(this.engine, key, value);
             document.getElementById(id).Content.store.saveData(
                                 key, a.parser.json.stringify(value));
@@ -979,7 +1030,7 @@ a.storage.type.silverlight = new function() {
     */
     this.remove = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugRemove(this.engine, key);
             document.getElementById(id).Content.store.removeData(key);
         }
@@ -1012,7 +1063,7 @@ a.storage.type.javafx = new function() {
      *                                      call after loading
     */
     function includeJavaFX(callback) {
-        if(support == false && ready == false) {
+        if(support === false && ready === false) {
             var data = {
                 code : 'javafxstorage.Main',
                 id : id
@@ -1025,19 +1076,19 @@ a.storage.type.javafx = new function() {
                 ready = true;
                 var t = document.getElementById(id);
 
-                if(t.Packages.javafxstorage.localStorage.testData() == true) {
+                if(t.Packages.javafxstorage.localStorage.testData() === true) {
                     support = true;
                     el.setDatabase('a_javafxStorage');
                 }
                 
-                if(support == true && a.isFunction(callback)) {
+                if(support === true && a.isFunction(callback)) {
                     callback(support);
                 }
             }, data);
-        } else if(support == true && a.isFunction(callback)) {
+        } else if(support === true && a.isFunction(callback)) {
             callback(support);
         }
-    };
+    }
 
     /**
      * Get the support state of javafx.
@@ -1046,21 +1097,21 @@ a.storage.type.javafx = new function() {
      * @return {Boolean}                    True if support is active,
      *                                      false in other cases
     */
-    this.support = function() {return support;},
+    this.support = function() {return support;};
     /**
      * Get the ready state of javafx object.
      *
      * @return {Boolean}                    True if it's ready,
      *                                      false in other cases
     */
-    this.ready = function() {return ready;},
+    this.ready = function() {return ready;};
     /**
      * @property engine
      * @type String
      * @default javafx
      * @final
     */
-    this.engine = 'javafx',
+    this.engine = 'javafx';
 
     /**
      * Start (include and prepare) javafx object
@@ -1084,7 +1135,7 @@ a.storage.type.javafx = new function() {
     */
     this.get = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             var item = document.getElementById(id).Packages.
                                 javafxstorage.localStorage.loadData(key);
             if(a.isNone(item) || item === 'false') {
@@ -1106,7 +1157,7 @@ a.storage.type.javafx = new function() {
     */
     this.set = function(key, value) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugSet(this.engine, key, value);
             document.getElementById(id).Packages.javafxstorage.
                     localStorage.saveData(key, a.parser.json.stringify(value));
@@ -1120,7 +1171,7 @@ a.storage.type.javafx = new function() {
     */
     this.remove = function(key) {
         this.start();
-        if(support == true) {
+        if(support === true) {
             a.storage.debugRemove(this.engine, key);
             document.getElementById(id).Packages.
                         javafxstorage.localStorage.removeData(key);
@@ -1130,7 +1181,18 @@ a.storage.type.javafx = new function() {
 
 
 
+/*! ************************
+  POPULATING SUPPORT
+************************* */
+(function() {
+    var engines = [a.storage.type.cookie, a.storage.type.localStorage,
+        a.storage.type.globalStorage, a.storage.type.sessionStorage,
+        a.storage.type.userData];
 
+    for (var i = 0, l = engines.length; i < l; ++i) {
+        engines[i].support = engines[i].test();
+    }
+})();
 
 
 /*! ************************
@@ -1202,7 +1264,7 @@ a.storage.external = (function() {
         if(a.isFunction(callback)) {
             callback();
         }
-    };
+    }
 
     return {
         /**
@@ -1280,7 +1342,7 @@ a.storage.persistent = (function() {
     return null;
 })();
 
-if(a.storage.persistent == null) {
+if(a.storage.persistent === null) {
     a.storage.persistent = {};
     a.storage.persistent.support = false;
     a.storage.persistent.engine  = function(){return 'none';};
@@ -1322,7 +1384,7 @@ a.storage.remove  = a.storage.persistent.remove;
             temp = a.storage.persistent.get(name);
         }
         return temp;
-    };
+    }
 
     a.parameter.addParameterType('storage', getGlobalStore);
     a.parameter.addParameterType('store', getGlobalStore);
@@ -1361,7 +1423,7 @@ a.storage.remove  = a.storage.persistent.remove;
             temp = a.storage.persistent.get(name);
         }
         return new Handlebars.SafeString(temp);
-    };
+    }
 
     Handlebars.registerHelper('storage', getHandlebarsStore);
     Handlebars.registerHelper('store', getHandlebarsStore);
