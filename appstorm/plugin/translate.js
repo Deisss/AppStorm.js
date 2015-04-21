@@ -38,11 +38,10 @@ a.translate = a.i18n = (function() {
      *                                      content or empty string
     */
     function getAttr(element, search) {
-        return  element.getAttribute(search)
-            ||  element.getAttribute('a-' + search)
-            ||  element.getAttribute('data-' + search)
-            ||  '';
-    };
+        return  element.getAttribute(search) || 
+                element.getAttribute('a-' + search) ||
+                element.getAttribute('data-' + search) ||  '';
+    }
 
     /**
      * Apply to a given element the given translation.
@@ -55,7 +54,7 @@ a.translate = a.i18n = (function() {
     function applyTranslationToElement(node, translation) {
         var customTagAttribute = getAttr(node, customAttribute);
 
-        if(customTagAttribute && customTagAttribute != '') {
+        if(customTagAttribute && customTagAttribute !== '') {
             try {
                 node[customTagAttribute] = translation;
             } catch(e) {}
@@ -65,7 +64,7 @@ a.translate = a.i18n = (function() {
         // We are on a submit/reset button
         if(node.nodeName == 'INPUT') {
             var type = node.type;
-            if(type == 'submit' || type == 'reset' || type == 'button') {
+            if(type === 'submit' || type === 'reset' || type === 'button') {
                 node.value = translation;
             } else {
                 try {
@@ -114,7 +113,6 @@ a.translate = a.i18n = (function() {
 
             // We add latests elements to end
             if(m > i) {
-                var j = m - i;
                 for(var j=0, k=(m-i); j<k; ++j) {
                     node.appendChild(
                         document.createTextNode(splittedTranslation[i + j])
@@ -122,7 +120,7 @@ a.translate = a.i18n = (function() {
                 }
             }
         }
-    };
+    }
 
     /**
      * Apply translation to a given document/sub-document.
@@ -136,9 +134,8 @@ a.translate = a.i18n = (function() {
         // Selecting elements
         var el   = a.dom.el(root),
             // We search 'tr' and 'data-tr' tag on elements
-            srch = defaultAttribute
-                + ',a-' + defaultAttribute
-                + ',data-' + defaultAttribute;
+            srch = defaultAttribute + ',a-' + defaultAttribute + ',data-' +
+                    defaultAttribute;
 
         var currentDictionnary = dictionnary[language] || {};
 
@@ -192,7 +189,7 @@ a.translate = a.i18n = (function() {
             // Finally we can apply translation
             applyTranslationToElement(this, translate);
         });
-    };
+    }
 
     /**
      * Get the current used language.
@@ -202,7 +199,7 @@ a.translate = a.i18n = (function() {
     */
     function getLanguage() {
         return language;
-    };
+    }
 
     /**
      * Set the current used language.
@@ -229,7 +226,7 @@ a.translate = a.i18n = (function() {
                 i18n();
             }
         }
-    };
+    }
 
     /**
      * Get any global variable setted.
@@ -240,7 +237,7 @@ a.translate = a.i18n = (function() {
     */
     function getGlobalVariable(key) {
         return globalVariable[key] || '';
-    };
+    }
 
     /**
      * Set a global variable to be used if possible when translating.
@@ -250,7 +247,7 @@ a.translate = a.i18n = (function() {
     */
     function setGlobalVariable(key, value) {
         globalVariable[key] = value;
-    };
+    }
 
     /**
      * Register a new translation for given language.
@@ -286,7 +283,7 @@ a.translate = a.i18n = (function() {
         if(update !== false) {
             i18n();
         }
-    };
+    }
 
     /**
      * Set a new translation set for a given language.
@@ -311,7 +308,7 @@ a.translate = a.i18n = (function() {
         if(update !== false) {
             i18n();
         }
-    };
+    }
 
     /**
      * Get an existing translation stored.
@@ -364,7 +361,7 @@ a.translate = a.i18n = (function() {
 
             // Nothing found
             return '';
-        };
+        }
 
         var trVariables = tr.match(regexVariable) || [];
 
@@ -375,7 +372,7 @@ a.translate = a.i18n = (function() {
 
         // If it has still some unknow variable, we remove them...
         return tr.replace(regexVariable, '');
-    };
+    }
 
     /**
      * Get the full stored dictionnary.
@@ -389,7 +386,7 @@ a.translate = a.i18n = (function() {
             return dictionnary[lang] || {};
         }
         return dictionnary;
-    };
+    }
 
 
     /**
@@ -399,7 +396,7 @@ a.translate = a.i18n = (function() {
     */
     function clearDictionnary() {
         dictionnary = {};
-    };
+    }
 
 
 
