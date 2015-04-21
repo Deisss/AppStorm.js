@@ -133,8 +133,9 @@ a.storage.type.cookie = {
         // Test system is working
         if(this.get(test) == 'o') {
             this.remove(test);
-            this.support = true;
+            return true;
         }
+        return false;
     },
 
     /**
@@ -269,7 +270,7 @@ a.storage.type.localStorage = {
      *                                      null if not found
     */
     get: function(key) {
-        if(support) {
+        if(this.support) {
             var item = window.localStorage.getItem(key);
             if(a.isNone(item)) {
                 a.storage.printError(this.engine, key);
@@ -371,7 +372,7 @@ a.storage.type.globalStorage = {
      *                                      null if not found
     */
     get: function(key) {
-        if(support) {
+        if(this.support) {
             var item = window.globalStorage[hostname].getItem(key),
                 value = null;
             // On some system, item will be an object with
@@ -490,7 +491,7 @@ a.storage.type.memory = {
      * @param {String} key                  The key to remove
     */
     remove: function() {
-        return this._store.remove(this._store, arguments);
+        return this._store.remove.apply(this._store, arguments);
     }
 };
 
@@ -601,7 +602,7 @@ a.storage.type.sessionStorage = {
      * @param {String} key                  The key to remove
     */
     remove: function(key) {
-        if(support) {
+        if(this.support) {
             a.storage.debugRemove(this.engine, key);
             window.sessionStorage.removeItem(key);
         }
