@@ -79,7 +79,7 @@ a.template = {
             if(a.isFunction(callback)) {
                 callback(name, partialsStore[name]);
             }
-        } else if(options && options.noloading == true) {
+        } else if(options && options.noloading === true) {
             a.console.storm('log', fctName, 'Loading ```' + name + '``` from '+
                     'parameter', 3);
             partialsStore[name] = uri;
