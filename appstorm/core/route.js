@@ -7,13 +7,7 @@
 
 ************************************************************************ */
 
-
-/**
- * Manage action related to hash change.
- *
- * @constructor
-*/
-a.route = new function() {
+(function(a) {
     var mem = a.mem.getInstance('app.route');
 
     /**
@@ -28,134 +22,6 @@ a.route = new function() {
     function getAction(action) {
         return (action == 'leave' || action == 'leaving') ? 'leave' : 'enter';
     }
-
-    /**
-     * bind a function to a hash.
-     *
-     * @chainable
-     *
-     * @param {String} hash                 The hash to register
-     * @param {Function} fct                The function to bind
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.bind = function(hash, fct, action) {
-        action = getAction(action) + '.hash';
-        var storage = mem.get(action) || {};
-
-        if(!storage[hash]) {
-            storage[hash] = [];
-        }
-
-        storage[hash].push(fct);
-        mem.set(action, storage);
-        return this;
-    };
-
-    /**
-     * Remove a binding with a previous hash associated.
-     *
-     * @chainable
-     *
-     * @param {String} hash                 The hash to remove function from
-     * @param {Function} fct                The function to unbind
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.unbind = function(hash, fct, action) {
-        action = getAction(action) + '.hash';
-        var storage = mem.get(action) || {};
-        if(storage[hash]) {
-            storage[hash] = a.without(storage[hash], fct);
-            if(storage[hash].length < 1) {
-                delete storage[hash];
-            }
-            mem.set(action, storage);
-        }
-        return this;
-    };
-
-    /**
-     * The otherwise function is used when no function are linked to a given
-     * hash.
-     *
-     * @chainable
-     *
-     * @param {Function} fct                The function to use when otherwise
-     *                                      is meet
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.otherwise = function(fct, action) {
-        action = getAction(action) + '.otherwise';
-        if(a.isNone(fct)) {
-            mem.remove(action);
-        } else {
-            mem.set(action, fct);
-        }
-        return this;
-    };
-
-    /**
-     * Navigate to a given hashtag.
-     *
-     * @param {String} hash                 The hashtag to navigate to
-     * @param {Object} parameters           Any parameters to give to state
-     *                                      system as temp data. This is an
-     *                                      equivalent to a.state.inject func.
-    */
-    this.go = function(hash, parameters) {
-        if(parameters) {
-            a.state.inject(parameters);
-        }
-        if(hash) {
-            //if( ('history' in window) && history.pushState ) {
-            //    window.history.pushState(parameters || {}, null, '#' + hash);
-            //} else {
-                window.location.href = '#' + hash;
-            //}
-        }
-    };
-
-    // Aliases
-    this.href     = this.go;
-    this.ref      = this.go;
-    this.hash     = this.go;
-    this.hashtag  = this.go;
-    this.navigate = this.go;
-
-    /**
-     * This function act like the go/href/ref/hash/hashtag/navigate function,
-     * but fake it (hash in browser does not really change).
-     *
-     * @method fake
-     *
-     * @param {String} hash                 The hashtag to navigate to
-     * @param {Object} parameters           Any parameters to give to state
-     *                                      system as temp data. This is an
-     *                                      equivalent to a.state.inject func.
-    */
-    this.fake = function(hash, parameters) {
-        if(parameters) {
-            a.state.inject(parameters);
-        }
-        if(hash) {
-            a.hash.fake(hash);
-        }
-    };
-
-    /**
-     * Go back one time into history.
-    */
-    this.back = function() {
-        window.history.back();
-    };
 
     /**
      * Apply change to hash on enter or leave position.
@@ -196,4 +62,142 @@ a.route = new function() {
         callApplyHashChange(data.value, 'enter');
         callApplyHashChange(data.old,   'leave');
     }, null, false, false);
-};
+
+    /**
+     * Manage action related to hash change.
+     *
+     * @constructor
+    */
+    a.route = {
+
+        /**
+         * bind a function to a hash.
+         *
+         * @chainable
+         *
+         * @param {String} hash                 The hash to register
+         * @param {Function} fct                The function to bind
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        bind: function(hash, fct, action) {
+            action = getAction(action) + '.hash';
+            var storage = mem.get(action) || {};
+
+            if(!storage[hash]) {
+                storage[hash] = [];
+            }
+
+            storage[hash].push(fct);
+            mem.set(action, storage);
+            return this;
+        },
+
+        /**
+         * Remove a binding with a previous hash associated.
+         *
+         * @chainable
+         *
+         * @param {String} hash                 The hash to remove function from
+         * @param {Function} fct                The function to unbind
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        unbind: function(hash, fct, action) {
+            action = getAction(action) + '.hash';
+            var storage = mem.get(action) || {};
+            if(storage[hash]) {
+                storage[hash] = a.without(storage[hash], fct);
+                if(storage[hash].length < 1) {
+                    delete storage[hash];
+                }
+                mem.set(action, storage);
+            }
+            return this;
+        },
+
+        /**
+         * The otherwise function is used when no function are linked to a given
+         * hash.
+         *
+         * @chainable
+         *
+         * @param {Function} fct                The function to use when otherwise
+         *                                      is meet
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        otherwise: function(fct, action) {
+            action = getAction(action) + '.otherwise';
+            if(a.isNone(fct)) {
+                mem.remove(action);
+            } else {
+                mem.set(action, fct);
+            }
+            return this;
+        },
+
+        /**
+         * Navigate to a given hashtag.
+         *
+         * @param {String} hash                 The hashtag to navigate to
+         * @param {Object} parameters           Any parameters to give to state
+         *                                      system as temp data. This is an
+         *                                      equivalent to a.state.inject func.
+        */
+        go: function(hash, parameters) {
+            if(parameters) {
+                a.state.inject(parameters);
+            }
+            if(hash) {
+                //if( ('history' in window) && history.pushState ) {
+                //    window.history.pushState(parameters || {}, null, '#' + hash);
+                //} else {
+                    window.location.href = '#' + hash;
+                //}
+            }
+        },
+
+        /**
+         * This function act like the go/href/ref/hash/hashtag/navigate function,
+         * but fake it (hash in browser does not really change).
+         *
+         * @method fake
+         *
+         * @param {String} hash                 The hashtag to navigate to
+         * @param {Object} parameters           Any parameters to give to state
+         *                                      system as temp data. This is an
+         *                                      equivalent to a.state.inject func.
+        */
+        fake: function(hash, parameters) {
+            if(parameters) {
+                a.state.inject(parameters);
+            }
+            if(hash) {
+                a.hash.fake(hash);
+            }
+        },
+
+        /**
+         * Go back one time into history.
+        */
+        back: function() {
+            window.history.back();
+        },
+    };
+
+
+
+    // Aliases
+    a.route.href     = a.route.go;
+    a.route.ref      = a.route.go;
+    a.route.hash     = a.route.go;
+    a.route.hashtag  = a.route.go;
+    a.route.navigate = a.route.go;
+})(window.appstorm);
