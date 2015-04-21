@@ -47,23 +47,19 @@ QUnit.module('plugin/translate.js', {
         // Setting an array as default translate raise an error
         a.translate.setLanguage([], false);
 
-        var trace = a.console.trace();
-        var error = trace['error'].pop();
+        var trace = a.console.trace('error');
+        var error = trace[0];
 
-        assert.strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
-                            'lang, or empty string, as default translate: ',
-                            'Test non-string value is refused');
+        assert.strictEqual(error.source, 'a.translate.setLanguage');
 
         a.console.clear();
 
         a.translate.setLanguage('', false);
 
-        trace = a.console.trace();
-        error = trace['error'].pop();
+        trace = a.console.trace('error');
+        error = trace[0];
 
-        assert.strictEqual(error, 'a.translate.setLanguage: setting a non-string ' +
-                            'lang, or empty string, as default translate: ',
-                            'Test non-string value is refused');
+        assert.strictEqual(error.source, 'a.translate.setLanguage');
     });
 
     // Test sending a valid, but not existing translate
@@ -72,9 +68,6 @@ QUnit.module('plugin/translate.js', {
         assert.expect(2);
 
         a.translate.setLanguage('some-undefined', false);
-
-        var trace = a.console.trace();
-        var warn = trace['warn'].pop();
 
         assert.strictEqual(a.translate.getLanguage(), 'some-undefined',
                                                 'Test translate set');
@@ -128,10 +121,6 @@ QUnit.test('a.translate.single-working', function(assert) {
                                             'The wrong translate', false);
     a.translate.add('unittest-lang1', 'hash1',
                                             'The first translate', false);
-
-    // We check console to check translate is not defined
-    var cs = a.console.trace();
-    var warn = cs['warn'].pop();
 
     a.translate.add('unittest-lang2', 'hash1',
                                             'The second translate', false);
