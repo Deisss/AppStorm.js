@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -11,18 +11,19 @@
 
 ************************************************************************ */
 
-//Simple synchronizer/chainer for Array of functions
+/**
+ * Simple synchronizer/chainer for Array of functions
+ *
+ * @constructor
+*/
 a.callback = {};
 
 
 /**
  * Load many functions at same time,
- * when they all finish raise the final callback
+ * when they all finish raise the final callback.
  *
- * @class synchronizer
- * @namespace a.callback
  * @constructor
- * @async
 */
 a.callback.synchronizer = function(callbacks, success, error) {
     return a.extend(
@@ -40,10 +41,7 @@ a.callback.synchronizer = function(callbacks, success, error) {
  * synchronizerInstance, NEVER use like this,
  * use a.callback.synchronizer instead.
  *
- * @class synchronizerInstance
- * @namespace a.callback
- * @constructor
- * @async
+ * @private
 */
 a.callback.synchronizerInstance = function(callbacks, success, error) {
     this.callbacks       = callbacks || [];
@@ -60,8 +58,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Add callback to existing callback list.
      * If the system is started, also append this callback to waiting queue.
-     *
-     * @method addCallback
      *
      * @param {Array}                       Any number of functions to chain
      *                                      The first function will be executed
@@ -86,20 +82,16 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Remove callback from existing callback list.
      *
-     * @method removeCallback
-     *
-     * @param fct {Function}                The function to remove from list
+     * @param {Function} fct                The function to remove from list
     */
     removeCallback: function(fct) {
         this.callbacks = a.without(this.callbacks, fct);
     },
 
     /**
-     * Apply this scope to all callback function
+     * Apply this scope to all callback function.
      *
-     * @method setScope
-     *
-     * @param scope {Object}                The scope to apply to callbacks
+     * @param {Object} scope                The scope to apply to callbacks
     */
     setScope: function(scope) {
         if(a.isTrueObject(scope)) {
@@ -110,10 +102,8 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Get a currently stored data.
      *
-     * @method getData
-     *
-     * @param key {String}                  The key linked to value to get data
-     * @return {Object | null}              The value previously stored and
+     * @param {String} key                  The key linked to value to get data
+     * @return {Object | Null}              The value previously stored and
      *                                      content
     */
     getData: function(key) {
@@ -121,12 +111,10 @@ a.callback.synchronizerInstance.prototype = {
     },
 
     /**
-     * Set a new data stored into container
+     * Set a new data stored into container.
      *
-     * @method setData
-     *
-     * @param key {String}                  The key to retrieve value later
-     * @param value {Object}                Any value to store, a null or
+     * @param {String} key                  The key to retrieve value later
+     * @param {Object} value                Any value to store, a null or
      *                                      undefined element will erase key
      *                                      from store
     */
@@ -140,8 +128,6 @@ a.callback.synchronizerInstance.prototype = {
 
     /**
      * Get the main callback object to manipulate chain from it.
-     *
-     * @method getResultObject
      *
      * @return {Object}                     An object ready to use for
      *                                      controlling chain process
@@ -160,8 +146,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * This function keeps chain to release success/error function when all
      * functions will finish their job.
-     *
-     * @method next
      *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to next callback
@@ -187,8 +171,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Stop the callback chain.
      *
-     * @method stop
-     *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to error callback
      *                                      as parameters
@@ -210,10 +192,6 @@ a.callback.synchronizerInstance.prototype = {
 
     /**
      * Start chainer queue.
-     *
-     * @method start
-     *
-     * @method 
     */
     start: function() {
         this.parrallelCount = this.callbacks.length;
@@ -243,9 +221,7 @@ a.callback.synchronizerInstance.prototype = {
     },
 
     /**
-     * Get if the chain system is currently running or not
-     *
-     * @method isRunning
+     * Get if the chain system is currently running or not.
      *
      * @return {Boolean}                    True: currently running
      *                                      False: currently stopped
@@ -253,6 +229,10 @@ a.callback.synchronizerInstance.prototype = {
     isRunning: function() {
         return this.running;
     }
+
+    /*!
+     * @private
+    */
 };
 
 // Alias
@@ -268,12 +248,9 @@ a.callback.synchronizerInstance.prototype.error   =
 
 /**
  * Load many functions one by one, when last one finish raise the final
- * callback
+ * callback.
  *
- * @class chainer
- * @namespace a.callback
  * @constructor
- * @async
 */
 a.callback.chainer = function(callbacks, success, error) {
     return a.extend(
@@ -290,10 +267,8 @@ a.callback.chainer = function(callbacks, success, error) {
 /**
  * chainerInstance, NEVER use like this, use a.callback.chainer instead.
  *
- * @class chainerInstance
- * @namespace a.callback
  * @constructor
- * @async
+ * @private
 */
 a.callback.chainerInstance = function(callbacks, success, error) {
     this.callbacks       = callbacks || [];
@@ -310,8 +285,6 @@ a.callback.chainerInstance.prototype = {
     /**
      * Add callback to existing callback list.
      * If the system is started, also append this callback to waiting queue.
-     *
-     * @method addCallback
      *
      * @param {Array}                       Any number of functions to chain
      *                                      The first function will be executed
@@ -331,9 +304,7 @@ a.callback.chainerInstance.prototype = {
     /**
      * Remove callback from existing callback list.
      *
-     * @method removeCallback
-     *
-     * @param fct {Function}                The function to remove from list
+     * @param {Function} fct                The function to remove from list
     */
     removeCallback: function(fct) {
         this.callbacks = a.without(this.callbacks, fct);
@@ -341,11 +312,9 @@ a.callback.chainerInstance.prototype = {
     },
 
     /**
-     * Apply this scope to all callback function
+     * Apply this scope to all callback function.
      *
-     * @method setScope
-     *
-     * @param scope {Object}                The scope to apply to callbacks
+     * @param {Object} scope                The scope to apply to callbacks
     */
     setScope: function(scope) {
         if(a.isTrueObject(scope)) {
@@ -356,10 +325,8 @@ a.callback.chainerInstance.prototype = {
     /**
      * Get a currently stored data.
      *
-     * @method getData
-     *
-     * @param key {String}                  The key linked to value to get data
-     * @return {Object | null}              The value previously stored and
+     * @param {String} key                  The key linked to value to get data
+     * @return {Object | Null}              The value previously stored and
      *                                      content
     */
     getData: function(key) {
@@ -367,12 +334,10 @@ a.callback.chainerInstance.prototype = {
     },
 
     /**
-     * Set a new data stored into container
+     * Set a new data stored into container.
      *
-     * @method setData
-     *
-     * @param key {String}                  The key to retrieve value later
-     * @param value {Object}                Any value to store, a null or
+     * @param {String} key                  The key to retrieve value later
+     * @param {Object} value                Any value to store, a null or
      *                                      undefined element will erase key
      *                                      from store
     */
@@ -386,8 +351,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Get the main callback object to manipulate chain from it.
-     *
-     * @method getResultObject
      *
      * @return {Object}                     An object ready to use for
      *                                      controlling chain process
@@ -407,8 +370,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Go to the next function in callback chain.
-     *
-     * @method next
      *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to next callback
@@ -446,8 +407,6 @@ a.callback.chainerInstance.prototype = {
     /**
      * Stop the callback chain.
      *
-     * @method stop
-     *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to error callback
      *                                      as parameters
@@ -466,8 +425,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Start chainer queue.
-     *
-     * @method start
     */
     start: function() {
         if(this.queue.length) {
@@ -485,14 +442,16 @@ a.callback.chainerInstance.prototype = {
     /**
      * Get if the chain system is currently running or not
      *
-     * @method isRunning
-     *
      * @return {Boolean}                    True: currently running
      *                                      False: currently stopped
     */
     isRunning: function() {
         return this.queue.length ? true : false;
     }
+
+    /*!
+     * @private
+    */
 };
 
 // Alias

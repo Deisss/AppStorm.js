@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -13,14 +13,14 @@
  * A model manager helps to keep a trace of every model currently used by the
  * application.
  *
- * @class manager
- * @namespace a.model
  * @constructor
 */
 a.model.manager = {
     /**
      * Store a pointer to every instance of every model created.
+     *
      * @property _store
+     * @private
      * @type Object
      * @default {}
     */
@@ -29,9 +29,7 @@ a.model.manager = {
     /**
      * Store a new model into the manager.
      *
-     * @method set
-     *
-     * @param model {Object}                The new model to store
+     * @param {Object} model                The new model to store
     */
     set: function(model) {
         this._store.set(model.uid, model);
@@ -39,13 +37,11 @@ a.model.manager = {
 
     /**
      * Get a model from it's uid (the unique id is automatically generated
-     * for every model, it's available threw myModelInstance.uid)
+     * for every model, it's available threw myModelInstance.uid).
      *
-     * @method get
-     *
-     * @param uid {Integer}                 The unique id to search related
+     * @param {Integer} uid                 The unique id to search related
      *                                      model from
-     * @return {Object | null}              The related model found, or null if
+     * @return {Object | Null}              The related model found, or null if
      *                                      nothing is found
     */
     get: function(uid) {
@@ -55,18 +51,14 @@ a.model.manager = {
     /**
      * Remove a model from store.
      *
-     * @method remove
-     *
-     * @param uid {Integer}                 The uid to remove
+     * @param {Integer} uid                 The uid to remove
     */
     remove: function(uid) {
         this._store.remove(uid);
     },
 
     /**
-     * Get the full model list
-     *
-     * @method list
+     * Get the full model list.
      *
      * @return {Array}                      The list of stored models
     */
@@ -75,9 +67,7 @@ a.model.manager = {
     },
 
     /**
-     * Remove all existing model from store
-     *
-     * @method clear
+     * Remove all existing model from store.
     */
     clear: function() {
         this._store.clear();
@@ -87,9 +77,7 @@ a.model.manager = {
      * Get all models related to a given namespace. For example, if you create
      * a.model('user'), this function helps to find all *user* model created.
      *
-     * @method getByName
-     *
-     * @param name {String}                 The model name to find
+     * @param {String} name                 The model name to find
      * @return {Array}                      The array with all model instance
      *                                      related to this name
     */
@@ -108,4 +96,8 @@ a.model.manager = {
 
         return result;
     }
+
+    /*!
+     * @private
+    */
 };

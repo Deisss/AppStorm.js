@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -12,19 +12,15 @@
  * A model pooler aims to create a storage space to keep every model type
  * existing.
  *
- * @class pooler
- * @namespace a.model
  * @constructor
 */
 a.model.pooler = a.mem.getInstance('app.model.type');
 
 /**
- * Simple function to generate new instance from a base
+ * Simple function to generate new instance from a base.
  *
- * @method createInstance
- *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
+ * @param {String} name                     The model type we want to create
+ * @return {Object | Null}                  The model instance created, or null
  *                                          if model name is not defined
 */
 a.model.pooler.createInstance = function(name) {
@@ -42,12 +38,12 @@ a.model.pooler.createInstance = function(name) {
 /**
  * Simple function to generate new instance from a base. This instance is not
  * stored into a.model.manager.
- * NOTE: this function should not be used, please use createInstance instead.
+ * **NOTE: do not use, please use createInstance instead.**
  *
- * @method createInstance
+ * @private
  *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
+ * @param {String} name                     The model type we want to create
+ * @return {Object | Null}                  The model instance created, or null
  *                                          if model name is not defined
 */
 a.model.pooler.createTemporaryInstance = function(name) {
@@ -73,12 +69,10 @@ a.model.pooler.createTemporaryInstance = function(name) {
 };
 
 /**
- * From a given query, get back the existing stored model
+ * From a given query, get back the existing stored model.
  *
- * @method searchInstance
- *
- * @param query {Object}                    The query to search inside
- * @return {a.modelInstance | null}         The single instance found,
+ * @param {Object} query                    The query to search inside
+ * @return {a.modelInstance | Null}         The single instance found,
  *                                          or a list of instances, or null
 */
 a.model.pooler.searchInstance = function(query) {
@@ -126,14 +120,11 @@ a.model.pooler.searchInstance = function(query) {
 
 
 /**
- * Search primary keys inside a model, to be able to perform a search
- * after.
+ * Search primary keys inside a model, to be able to perform a search after.
  *
- * @method getPrimary
- *
- * @param name {String}                     The model name to get related
+ * @param {String} name                     The model name to get related
  *                                          primary
- * @return {Array | null}                   Array if it has been found, null
+ * @return {Array | Null}                   Array if it has been found, null
  *                                          if there is any problem
 */
 a.model.pooler.getPrimary = function(name) {
@@ -160,9 +151,7 @@ a.model.pooler.getPrimary = function(name) {
 /**
  * Delete an existing instance.
  *
- * @method deleteInstance
- *
- * @param instance {Object}                 The instance to delete
+ * @param {Object} instance                 The instance to delete
 */
 a.model.pooler.deleteInstance = function(instance) {
     if(a.isTrueObject(instance) && instance.uid) {
