@@ -15,19 +15,25 @@
  *
  * @constructor
 */
-a.acl = a.extend(new function () {
-    var mem = a.mem.getInstance('app.acl');
+a.acl = a.extend({
+    /**
+     * The store.
+     *
+     * @property _store
+     * @private
+    */
+    _store: a.mem.getInstance('app.acl'),
 
     /**
      * Set the current user role.
      *
      * @param {String} role                 The role to set as 'current' one
     */
-    this.setCurrentRole = function (role) {
-        mem.set('current', role);
+    setCurrentRole: function (role) {
+        this._store.set('current', role);
         this.dispatch('change', role);
         a.message.dispatch('a.acl.change', role);
-    };
+    },
 
     /**
      * Get the current user role stored.
@@ -35,9 +41,9 @@ a.acl = a.extend(new function () {
      * @return {String}                     The role found, or an empty
      *                                      string if nothing has been found
     */
-    this.getCurrentRole = function () {
-        return mem.get('current') || '';
-    };
+    getCurrentRole: function () {
+        return this._store.get('current') || '';
+    },
 
     /**
      * Set the current role list. This is used to compare the role to a list.
@@ -60,9 +66,9 @@ a.acl = a.extend(new function () {
      *
      * @param {Array} roleList              The role list to store
     */
-    this.setRoleList = function (roleList) {
+    setRoleList: function (roleList) {
         if (a.isArray(roleList)) {
-            mem.set('list', roleList);
+            this._store.set('list', roleList);
 
             // We create related Handlebars helpers for every role
             // Like you get a role 'adMin', it will create 'isAdMin' helper
@@ -78,7 +84,7 @@ a.acl = a.extend(new function () {
                 });
             });
         }
-    };
+    },
 
     /**
      * Get the current role list.
@@ -86,9 +92,9 @@ a.acl = a.extend(new function () {
      * @return {Array | Null}               The current role list stored, or
      *                                      null if nothing is found
     */
-    this.getRoleList = function () {
-        return mem.get('list');
-    };
+    getRoleList: function () {
+        return this._store.get('list');
+    },
 
     /**
      * Check if current role is allowed compare to given minimum role.
@@ -99,7 +105,7 @@ a.acl = a.extend(new function () {
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
     */
-    this.isAllowed = function (minimumRole, currentRole) {
+    isAllowed: function (minimumRole, currentRole) {
         currentRole = currentRole || this.getCurrentRole();
 
         var positionCurrentRole = -1,
@@ -124,7 +130,7 @@ a.acl = a.extend(new function () {
         }
 
         return (positionCurrentRole >= positionMinimumRole);
-    };
+    },
 
     /**
      * Check if current role is refused compare to given minimum role.
@@ -135,16 +141,20 @@ a.acl = a.extend(new function () {
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
     */
-    this.isRefused = function (minimumRole, currentRole) {
+    isRefused: function (minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
-    };
+    },
 
     /**
      * Clear the full ACL rules
     */
-    this.clear = function () {
-        mem.clear();
-    };
+    clear: function () {
+        this._store.clear();
+    }
+
+    /*!
+     * @private
+    */
 
 }, new a.eventEmitter('a.acl'));
 
