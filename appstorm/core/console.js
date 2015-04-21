@@ -19,7 +19,7 @@
  *
  * @see core/debugger
 */
-(function(win, a) {
+(function(a) {
     a.console = new a.debugger('console', true, null);
     a.console.isDirect = true;
-})(window, window.appstorm);
+})(window.appstorm);
