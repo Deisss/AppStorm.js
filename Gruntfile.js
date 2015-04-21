@@ -118,7 +118,7 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      files: ['appstorm/core/ajax.js'],
+      files: ['appstorm/plugin/callback.js'],
       options: {
         // options here to override JSHint defaults
         globals: {
