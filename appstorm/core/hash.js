@@ -15,7 +15,7 @@
  *
  * @constructor
 */
-a.hash = new function() {
+a.hash = function() {
     var previousHash  = null,
         traceHashList = [],
         that          = this,
@@ -175,7 +175,11 @@ a.hash = new function() {
     this.trace = function() {
         return traceHashList;
     };
+
+    /*!
+     * @private
+    */
 };
 
 // Erasing previous a.hash and add event system to it
-a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));
+a.hash = a.extend(new a.hash(), new a.eventEmitter('a.hash'));
