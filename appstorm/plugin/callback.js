@@ -172,7 +172,7 @@ a.callback.synchronizerInstance.prototype = {
 
         // We have to raise final callback (success or error)
         // The error function is managed by stop function
-        if(this.parrallelCount == 0 && this.running) {
+        if(this.parrallelCount === 0 && this.running) {
             this.running = false;
             this.dispatch('success');
 
