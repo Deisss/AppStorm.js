@@ -43,7 +43,7 @@ a.form = (function() {
         var el   = a.dom.el(e),
             name = el.data('name');
 
-        if(a.isNone(name) || name == '') {
+        if(a.isNone(name) || name === '') {
             name = el.attribute('name');
 
             // Search the good attribute in case of problem
@@ -58,7 +58,7 @@ a.form = (function() {
         }
 
         return name;
-    };
+    }
 
     /**
      * Get the field value for given input.
@@ -77,11 +77,11 @@ a.form = (function() {
             return (type === 'checkbox') ? e.checked : e.value;
         } else if(tagName === 'select') {
             if(e.options[e.selectedIndex]) {
-                return e.options[e.selectedIndex].value 
+                return e.options[e.selectedIndex].value;
             }
             return null;
         }
-    };
+    }
 
     /**
      * From a given dom, get the list of revelant elements inside.
@@ -102,10 +102,10 @@ a.form = (function() {
         while(i--) {
             var el = elements[i];
             if(el.type &&
-                    (  el.type == 'submit'
-                    || el.type == 'button'
-                    || el.type == 'reset'
-                    || el.type == 'image'
+                    (   el.type == 'submit' ||
+                        el.type == 'button' ||
+                        el.type == 'reset' ||
+                        el.type == 'image'
                     ) ) {
                 elements.splice(i, 1);
             }
@@ -113,7 +113,7 @@ a.form = (function() {
 
         // Now filtering is done, we can send back all elements
         return elements;
-    };
+    }
 
     /**
      * Raise an error on input.
@@ -161,7 +161,7 @@ a.form = (function() {
             id:    id,
             error: error
         };
-    };
+    }
 
 
     /**
@@ -182,7 +182,7 @@ a.form = (function() {
         } else {
             return a.model.pooler.createTemporaryInstance(idOrModelName);
         }
-    };
+    }
 
     /**
      * Apply model content to form, automatically
@@ -229,8 +229,8 @@ a.form = (function() {
             while(i--) {
                 if(isArrayRefused && a.contains(refused, propertiesName[i])) {
                     propertiesName.splice(i, 1);
-                } else if(isArrayAllowed
-                        && !a.contains(allowed, propertiesName[i])) {
+                } else if(isArrayAllowed &&
+                        !a.contains(allowed, propertiesName[i])) {
                     propertiesName.splice(i, 1);
                 }
             }
@@ -275,25 +275,28 @@ a.form = (function() {
 
             // Applying customize constraint
             if(custom) {
+                var fct = null,
+                    result = null;
+
                 if(custom[property]) {
-                    var fct = custom['property'],
-                        result = fct.call(null, el, property);
+                    fct = custom.property;
+                    result = fct.call(null, el, property);
 
                     if(a.isTrueObject(result)) {
                         el = result;
                     }
                 }
                 if(custom[tag]) {
-                    var fct = custom[tag],
-                        result = fct.call(null, el, property);
+                    fct = custom[tag];
+                    result = fct.call(null, el, property);
 
                     if(a.isTrueObject(result)) {
                         el = result;
                     }
                 }
                 if(custom[type]) {
-                    var fct = custom[type],
-                        result = fct.call(null, el, property);
+                    fct = custom[type];
+                    result = fct.call(null, el, property);
 
                     if(a.isTrueObject(result)) {
                         el = result;
@@ -327,7 +330,7 @@ a.form = (function() {
                 form.append(element);
             });
         }
-    };
+    }
 
     return {
         /**
@@ -393,7 +396,7 @@ a.form = (function() {
                        outputList[name] = (value) ? value: null;
                    }
                 }
-            };
+            }
 
             return outputList;
         },
@@ -436,22 +439,20 @@ a.form = (function() {
                 emailTester  = new RegExp('^.{2,}@.*\\.[a-z0-9]{2,}$', 'gi'),
                 colorTester  = new RegExp('^#([a-f]{3}|[a-f]{6})$', 'gi');
 
-            /*
-             * required : at least one char
-                (text, search, url, tel, email, password, date, datetime,
-                datetime-local, month, time, week, number, checkbox,
-                radio, file)
-             * pattern : a regex to test (Use title like a helper),
-                (text, search, url, tel, email, password)
-             * multiple : the user is allowed to enter more than one element
-                (only for email, file)
-             * min/max : min/max value
-                (number, range, date, datetime, datetime-local,
-                month, time, week)
-             * step : multiplier
-                (number, range, date, datetime, datetime-local,
-                month, time, week)
-            */
+            // required : at least one char
+            //    (text, search, url, tel, email, password, date, datetime,
+            //    datetime-local, month, time, week, number, checkbox,
+            //    radio, file)
+            // pattern : a regex to test (Use title like a helper),
+            //    (text, search, url, tel, email, password)
+            //    multiple : the user is allowed to enter more than one element
+            //    (only for email, file)
+            // min/max : min/max value
+            //    (number, range, date, datetime, datetime-local,
+            //    month, time, week)
+            // step : multiplier
+            //    (number, range, date, datetime, datetime-local,
+            //    month, time, week)
             var i = inputList.length;
             while(i--) {
                 // Does only work for input tags
@@ -460,8 +461,7 @@ a.form = (function() {
 
                 // form novalidate : we must not validate
                 // this element (including all select)
-                if(tagName == 'select'
-                    || !a.isNone(el.novalidate)) {
+                if(tagName == 'select' || !a.isNone(el.novalidate)) {
                     continue;
                 }
 
@@ -477,17 +477,16 @@ a.form = (function() {
                     step     = el.step;
 
                 // Double check float data
-                min  = (a.isNone(min) || min == '')   ? null :
-                                                            parseFloat(min);
-                max  = (a.isNone(max) || max == '')   ? null :
-                                                            parseFloat(max);
-                step = (a.isNone(step) || step == '') ? null :
-                                                            parseFloat(step);
+                min  = (a.isNone(min) || min === '')   ? null :
+                        parseFloat(min);
+                max  = (a.isNone(max) || max === '')   ? null :
+                        parseFloat(max);
+                step = (a.isNone(step) || step === '') ? null :
+                        parseFloat(step);
 
                 // Check input type does existing in allowed type list
-                if(tagName == 'input'
-                        && !a.contains(allowedTypes, type)
-                        && !a.isNone(type)) {
+                if(tagName == 'input' && !a.contains(allowedTypes, type) &&
+                        !a.isNone(type)) {
                     var errorSupport =  'Type ```' + type;
                         errorSupport += '``` for input ```' + name + '```';
                         errorSupport += 'is not recognized and/or supported';
@@ -496,8 +495,8 @@ a.form = (function() {
                 }
 
                 // Now checking type
-                if( (type == 'number' || type == 'range')
-                        && !a.isNumber(value) ) {
+                if( (type == 'number' || type == 'range') &&
+                        !a.isNumber(value) ) {
                     errorList.push(validateError(el, name, null, value));
                     continue;
                 }
@@ -515,19 +514,15 @@ a.form = (function() {
                 }
 
                 // Required test
-                if( required !== null
-                    && a.contains(typeRequiredList, type)
-                    && (value === '' || a.isNone(value)) ) {
+                if( required !== null && a.contains(typeRequiredList, type) &&
+                        (value === '' || a.isNone(value)) ) {
                     errorList.push(validateError(el, name, 'required', value));
                     continue;
                 }
 
                 // Pattern test
-                if( pattern !== null
-                     && (tagName === "textarea"
-                        ||(a.contains(typePatternList, type))
-                        || a.isNone(type)
-                        )
+                if( pattern !== null && (tagName === "textarea" || 
+                        (a.contains(typePatternList, type)) || a.isNone(type))
                 ) {
                     var reg = new RegExp(pattern);
                     if(!reg.test(value)) {
@@ -538,8 +533,8 @@ a.form = (function() {
                 }
 
                 // Min/max/step test
-                if( (min !== null || max != null || step != null)
-                    && a.contains(minMaxStepList, type) ) {
+                if( (min !== null || max !== null || step !== null) &&
+                        a.contains(minMaxStepList, type) ) {
 
                     var pval = parseFloat(value);
                     if( min !== null && pval < min ) {
