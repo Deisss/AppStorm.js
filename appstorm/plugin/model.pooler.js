@@ -58,7 +58,7 @@ a.model.pooler.createTemporaryInstance = function(name) {
                 name,
                 a.clone(instanceType.properties)
             ),
-            new a.eventEmitter('a.model')
+            a.eventEmitter('a.model')
         );
 
     // Resetting model

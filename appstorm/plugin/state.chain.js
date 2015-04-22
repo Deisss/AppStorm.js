@@ -390,7 +390,7 @@ a.state.chain = new function() {
             } else if(parsedUrl !== null) {
                 options.url = parsedUrl;
 
-                var request = new a.ajax(options,
+                var request = a.ajax(options,
                 // Success
                 function(content) {
                     if(a.isNone(name)) {
