@@ -237,7 +237,7 @@ QUnit.asyncTest('a.state.error-hash3', function(assert) {
 
 // Test an error with empty error content to catch it
 QUnit.asyncTest('a.state.error-empty', function(assert) {
-    assert.expect(1);
+    assert.expect(2);
 
     a.console.clear();
 
@@ -259,17 +259,9 @@ QUnit.asyncTest('a.state.error-empty', function(assert) {
                 // handled'
                 var trace = a.console.trace('error'),
                     error = trace[0];
-                console.log(trace);
 
-                // We remove the last part of url to get it more easy to test
-                error = error.replace(/\?cachedisable\=rnd\_\d+/g, '');
-
-                assert.strictEqual(error, 'a.state.raiseError: an error occurs, but no ' +
-                                        'error function/hash inside the state ' +
-                                        'where existing to handle it. ' +
-                                        'Please check your error handler (state-id: ' +
-                                        'error-empty-hash, status: 404, ' +
-                                        'resource: someunknowurl4)');
+                assert.strictEqual(error.source, 'a.state');
+                assert.ok(error.args[0].indexOf('no error function') > 0);
                 chain.next();
             }, 1000);
         }
