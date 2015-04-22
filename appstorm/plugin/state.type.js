@@ -9,6 +9,8 @@
 
 /**
  * State type to manage custom system type.
+ * A type can be for example 'replace', 'append', it's used between transition
+ * during html loading or unloading of a given state.
  *
  * @constructor
 */
