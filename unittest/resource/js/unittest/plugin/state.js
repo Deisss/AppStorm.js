@@ -1682,7 +1682,7 @@ QUnit.asyncTest('a.state.data-function2', function(assert) {
         id: 'a.state.data-function2',
         hash: 'a.state.data-function2',
         data: function(chain) {
-            var request = new a.ajax({
+            var request = a.ajax({
                 url: 'resource/data/state/data-parameter-ok.json',
                 type: 'json'
             }, function(result) {
@@ -1719,7 +1719,7 @@ QUnit.asyncTest('a.state.data-function3', function(assert) {
         data: {
             id: '{{memory: something}}',
             content: function(chain) {
-                var request = new a.ajax({
+                var request = a.ajax({
                     url: 'resource/data/state/data-parameter-ok.json',
                     type: 'json'
                 }, function(result) {
