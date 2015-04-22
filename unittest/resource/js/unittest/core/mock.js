@@ -120,7 +120,7 @@ QUnit.asyncTest('a.mock.ajax', function(assert) {
         login: 'hello'
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
         method: 'GET',
         url: 'user',
         type: 'json'

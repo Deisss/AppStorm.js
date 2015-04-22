@@ -130,7 +130,7 @@ QUnit.asyncTest('a.message.multiple-instance', function(assert) {
     var obj1 = function() {
         // Starting an object
         var obj = function(){};
-        obj.prototype = new a.eventEmitter('obj1');
+        obj.prototype = a.eventEmitter('obj1');
         obj.prototype.constructor = this;
 
         obj.prototype.ok = function() {
@@ -144,7 +144,7 @@ QUnit.asyncTest('a.message.multiple-instance', function(assert) {
     var obj2 = function() {
         // Starting an object
         var obj = function(){};
-        obj.prototype = new a.eventEmitter('obj2');
+        obj.prototype = a.eventEmitter('obj2');
         obj.prototype.constructor = this;
 
         obj.prototype.ok = function() {
