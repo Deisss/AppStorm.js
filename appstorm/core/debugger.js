@@ -410,6 +410,11 @@
      *                                      null
     */
     a.debugger = function (name, collapsed, parent) {
+        // New problem
+        if (!(this instanceof a.debugger)) {
+            return new a.debugger(name, collapsed, parent);
+        }
+
         this.name = name;
         this.collapsed = collapsed || false;
         this.parent = parent || null;

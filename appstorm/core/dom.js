@@ -94,11 +94,11 @@ a.dom = {
 
         // Detect array elements
         if(a.isArray(element)) {
-            return new this.children(element);
+            return this.children(element);
         }
 
         // Detect single DOM element
-        return new this.children([element]);
+        return this.children([element]);
     },
 
     /**
@@ -155,7 +155,7 @@ a.dom = {
                 });
             }
 
-            return new a.dom.children(domList);
+            return a.dom.children(domList);
         }
 
         if(dom.querySelectorAll) {
@@ -164,7 +164,7 @@ a.dom = {
             domList = dom.getElementsByTagName(name);
         }
 
-        return new a.dom.children(domList);
+        return a.dom.children(domList);
     },
 
     /**
@@ -578,6 +578,10 @@ a.dom.eventListener = (function() {
  * @param {Array} elementList               The list of elements to use
 */
 a.dom.children = function(elementList) {
+    if (!(this instanceof a.dom.children)) {
+        return new a.dom.children(elementList);
+    }
+
     elementList = a.isUndefined(elementList.length) ?
                         [elementList] : elementList;
 

@@ -21,6 +21,10 @@
  *                                          a.message it's 'a.message'
 */
 a.eventEmitter = function(base) {
+    if (!(this instanceof a.eventEmitter)) {
+      return new a.eventEmitter(base);
+    }
+
     this.eventList = {};
     this.eventBaseName = base;
 };
@@ -219,7 +223,7 @@ a.eventEmitter.prototype = {
 /**
  * The bus system to exchange message globally between all application object.
 */
-a.message = new a.eventEmitter('a.message');
+a.message = a.eventEmitter('a.message');
 
 
 /*

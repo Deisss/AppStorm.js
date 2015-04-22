@@ -27,12 +27,12 @@ a.callback = {};
 */
 a.callback.synchronizer = function(callbacks, success, error) {
     return a.extend(
-            new a.callback.synchronizerInstance(
+            a.callback.synchronizerInstance(
                 callbacks,
                 success,
                 error
             ),
-            new a.eventEmitter('a.callback.synchronizer')
+            a.eventEmitter('a.callback.synchronizer')
         );
 };
 
@@ -44,6 +44,10 @@ a.callback.synchronizer = function(callbacks, success, error) {
  * @private
 */
 a.callback.synchronizerInstance = function(callbacks, success, error) {
+    if (!(this instanceof a.callback.synchronizerInstance)) {
+        return new a.callback.synchronizerInstance(callbacks, success, error);
+    }
+
     this.callbacks       = callbacks || [];
     this.successFunction = success;
     this.errorFunction   = error;
@@ -254,12 +258,12 @@ a.callback.synchronizerInstance.prototype.error   =
 */
 a.callback.chainer = function(callbacks, success, error) {
     return a.extend(
-        new a.callback.chainerInstance(
+        a.callback.chainerInstance(
             callbacks,
             success,
             error
         ),
-        new a.eventEmitter('a.callback.chainer')
+        a.eventEmitter('a.callback.chainer')
     );
 };
 
@@ -271,6 +275,10 @@ a.callback.chainer = function(callbacks, success, error) {
  * @private
 */
 a.callback.chainerInstance = function(callbacks, success, error) {
+    if (!(this instanceof a.callback.chainerInstance)) {
+        return new a.callback.chainerInstance(callbacks, success, error);
+    }
+
     this.callbacks       = callbacks || [];
     this.queue           = [];
     this.successFunction = success;

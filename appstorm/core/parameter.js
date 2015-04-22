@@ -301,6 +301,10 @@ a.parameter = {
 ------------------------------
 */
 (function() {
-    a.parameter.addParameterType('mem',  a.mem.get);
-    a.parameter.addParameterType('environment', a.environment.get);
+    a.parameter.addParameterType('mem',  function() {
+        return a.mem.get.apply(a.mem, arguments);
+    });
+    a.parameter.addParameterType('environment', function() {
+        return a.environment.get.apply(a.environment, arguments);
+    });
 })();

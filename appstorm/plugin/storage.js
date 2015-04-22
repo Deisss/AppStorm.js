@@ -1391,10 +1391,18 @@ a.storage.remove  = a.storage.persistent.remove;
     a.parameter.addParameterType('store', getGlobalStore);
 
     // Parameters type
-    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
-    a.parameter.addParameterType('memory',     a.storage.memory.get);
-    a.parameter.addParameterType('persistent', a.storage.persistent.get);
-    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
+    a.parameter.addParameterType('temporary', function() {
+        return a.storage.temporary.get.apply(a.storage.temporary, arguments);
+    });
+    a.parameter.addParameterType('memory', function() {
+        return a.storage.memory.get.apply(a.storage.memory, arguments);
+    });
+    a.parameter.addParameterType('persistent', function() {
+        return a.storage.persistent.get.apply(a.storage.persistent, arguments);
+    });
+    a.parameter.addParameterType('cookie', function() {
+        return a.storage.cookie.get.apply(a.storage.cookie, arguments);
+    });
 })();
 
 /*

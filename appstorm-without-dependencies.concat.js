@@ -1114,6 +1114,11 @@ Handlebars.registerHelper('environment', function(value) {
      *                                      null
     */
     a.debugger = function (name, collapsed, parent) {
+        // New problem
+        if (!(this instanceof a.debugger)) {
+            return new a.debugger(name, collapsed, parent);
+        }
+
         this.name = name;
         this.collapsed = collapsed || false;
         this.parent = parent || null;
@@ -1304,10 +1309,10 @@ Handlebars.registerHelper('environment', function(value) {
  *
  * @see core/debugger
 */
-(function(win, a) {
+(function(a) {
     a.console = new a.debugger('console', true, null);
     a.console.isDirect = true;
-})(window, window.appstorm);;/*! ***********************************************************************
+})(window.appstorm);;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -1330,6 +1335,10 @@ Handlebars.registerHelper('environment', function(value) {
  *                                          a.message it's 'a.message'
 */
 a.eventEmitter = function(base) {
+    if (!(this instanceof a.eventEmitter)) {
+      return new a.eventEmitter(base);
+    }
+
     this.eventList = {};
     this.eventBaseName = base;
 };
@@ -1528,7 +1537,7 @@ a.eventEmitter.prototype = {
 /**
  * The bus system to exchange message globally between all application object.
 */
-a.message = new a.eventEmitter('a.message');
+a.message = a.eventEmitter('a.message');
 
 
 /*
@@ -1918,6 +1927,10 @@ a.timer = (function() {
         clear: function() {
             store = {};
         }
+
+        /*!
+         * @private
+        */
     };
 })();;/*! ***********************************************************************
 
@@ -2015,11 +2028,11 @@ a.dom = {
 
         // Detect array elements
         if(a.isArray(element)) {
-            return new this.children(element);
+            return this.children(element);
         }
 
         // Detect single DOM element
-        return new this.children([element]);
+        return this.children([element]);
     },
 
     /**
@@ -2076,7 +2089,7 @@ a.dom = {
                 });
             }
 
-            return new a.dom.children(domList);
+            return a.dom.children(domList);
         }
 
         if(dom.querySelectorAll) {
@@ -2085,7 +2098,7 @@ a.dom = {
             domList = dom.getElementsByTagName(name);
         }
 
-        return new a.dom.children(domList);
+        return a.dom.children(domList);
     },
 
     /**
@@ -2499,6 +2512,10 @@ a.dom.eventListener = (function() {
  * @param {Array} elementList               The list of elements to use
 */
 a.dom.children = function(elementList) {
+    if (!(this instanceof a.dom.children)) {
+        return new a.dom.children(elementList);
+    }
+
     elementList = a.isUndefined(elementList.length) ?
                         [elementList] : elementList;
 
@@ -3150,7 +3167,7 @@ a.dom.children.prototype = {
  *
  * @constructor
 */
-a.hash = new function() {
+a.hash = function() {
     var previousHash  = null,
         traceHashList = [],
         that          = this,
@@ -3310,10 +3327,14 @@ a.hash = new function() {
     this.trace = function() {
         return traceHashList;
     };
+
+    /*!
+     * @private
+    */
 };
 
 // Erasing previous a.hash and add event system to it
-a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/*! ***********************************************************************
+a.hash = a.extend(new a.hash(), new a.eventEmitter('a.hash'));;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -3448,6 +3469,11 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/*! *******************
     */
     a.ajax = function(options, success, error) {
         'use strict';
+
+        // New problem corrected
+        if (!(this instanceof a.ajax)) {
+            return new a.ajax(options, success, error);
+        }
 
         var templates = [a.getDefaultAjaxOptions()];
 
@@ -3770,14 +3796,16 @@ a.hash = a.extend(a.hash, new a.eventEmitter('a.hash'));;/*! *******************
                 } catch(e) {
                     return;
                 }
+
+                // IE9 Bug as reported in jQuery.
+                if (status === 1223) {
+                    status = 204;
+                }
+
                 // Any 200 status will be validated
                 if(requestScope.request.readyState === 4) {
-                    // 0: on local filesystem, a HTTP 200 is given as 0
-                    var great = (status >= 200 && status < 400) || status === 0 || status === 1223;
-                    // IE9 Bug as reported in jQuery.
-                    if (status === 1223) {
-                        status = 204;
-                    }
+                    var great = (status >= 200 && status < 400);
+
                     if(great) {
                         // Everything went fine
                         requestScope.success(
@@ -4483,13 +4511,7 @@ a.loader = (function() {
 
 ************************************************************************ */
 
-
-/**
- * Manage action related to hash change.
- *
- * @constructor
-*/
-a.route = new function() {
+(function(a) {
     var mem = a.mem.getInstance('app.route');
 
     /**
@@ -4504,134 +4526,6 @@ a.route = new function() {
     function getAction(action) {
         return (action == 'leave' || action == 'leaving') ? 'leave' : 'enter';
     }
-
-    /**
-     * bind a function to a hash.
-     *
-     * @chainable
-     *
-     * @param {String} hash                 The hash to register
-     * @param {Function} fct                The function to bind
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.bind = function(hash, fct, action) {
-        action = getAction(action) + '.hash';
-        var storage = mem.get(action) || {};
-
-        if(!storage[hash]) {
-            storage[hash] = [];
-        }
-
-        storage[hash].push(fct);
-        mem.set(action, storage);
-        return this;
-    };
-
-    /**
-     * Remove a binding with a previous hash associated.
-     *
-     * @chainable
-     *
-     * @param {String} hash                 The hash to remove function from
-     * @param {Function} fct                The function to unbind
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.unbind = function(hash, fct, action) {
-        action = getAction(action) + '.hash';
-        var storage = mem.get(action) || {};
-        if(storage[hash]) {
-            storage[hash] = a.without(storage[hash], fct);
-            if(storage[hash].length < 1) {
-                delete storage[hash];
-            }
-            mem.set(action, storage);
-        }
-        return this;
-    };
-
-    /**
-     * The otherwise function is used when no function are linked to a given
-     * hash.
-     *
-     * @chainable
-     *
-     * @param {Function} fct                The function to use when otherwise
-     *                                      is meet
-     * @param {String | Null} action        The action element, if we use this
-     *                                      for entering hash, or leaving hash
-     *                                      (default: entering), possible val:
-     *                                      'leave' or 'enter'
-    */
-    this.otherwise = function(fct, action) {
-        action = getAction(action) + '.otherwise';
-        if(a.isNone(fct)) {
-            mem.remove(action);
-        } else {
-            mem.set(action, fct);
-        }
-        return this;
-    };
-
-    /**
-     * Navigate to a given hashtag.
-     *
-     * @param {String} hash                 The hashtag to navigate to
-     * @param {Object} parameters           Any parameters to give to state
-     *                                      system as temp data. This is an
-     *                                      equivalent to a.state.inject func.
-    */
-    this.go = function(hash, parameters) {
-        if(parameters) {
-            a.state.inject(parameters);
-        }
-        if(hash) {
-            //if( ('history' in window) && history.pushState ) {
-            //    window.history.pushState(parameters || {}, null, '#' + hash);
-            //} else {
-                window.location.href = '#' + hash;
-            //}
-        }
-    };
-
-    // Aliases
-    this.href     = this.go;
-    this.ref      = this.go;
-    this.hash     = this.go;
-    this.hashtag  = this.go;
-    this.navigate = this.go;
-
-    /**
-     * This function act like the go/href/ref/hash/hashtag/navigate function,
-     * but fake it (hash in browser does not really change).
-     *
-     * @method fake
-     *
-     * @param {String} hash                 The hashtag to navigate to
-     * @param {Object} parameters           Any parameters to give to state
-     *                                      system as temp data. This is an
-     *                                      equivalent to a.state.inject func.
-    */
-    this.fake = function(hash, parameters) {
-        if(parameters) {
-            a.state.inject(parameters);
-        }
-        if(hash) {
-            a.hash.fake(hash);
-        }
-    };
-
-    /**
-     * Go back one time into history.
-    */
-    this.back = function() {
-        window.history.back();
-    };
 
     /**
      * Apply change to hash on enter or leave position.
@@ -4672,8 +4566,145 @@ a.route = new function() {
         callApplyHashChange(data.value, 'enter');
         callApplyHashChange(data.old,   'leave');
     }, null, false, false);
-};
-;/*! ***********************************************************************
+
+    /**
+     * Manage action related to hash change.
+     *
+     * @constructor
+    */
+    a.route = {
+
+        /**
+         * bind a function to a hash.
+         *
+         * @chainable
+         *
+         * @param {String} hash                 The hash to register
+         * @param {Function} fct                The function to bind
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        bind: function(hash, fct, action) {
+            action = getAction(action) + '.hash';
+            var storage = mem.get(action) || {};
+
+            if(!storage[hash]) {
+                storage[hash] = [];
+            }
+
+            storage[hash].push(fct);
+            mem.set(action, storage);
+            return this;
+        },
+
+        /**
+         * Remove a binding with a previous hash associated.
+         *
+         * @chainable
+         *
+         * @param {String} hash                 The hash to remove function from
+         * @param {Function} fct                The function to unbind
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        unbind: function(hash, fct, action) {
+            action = getAction(action) + '.hash';
+            var storage = mem.get(action) || {};
+            if(storage[hash]) {
+                storage[hash] = a.without(storage[hash], fct);
+                if(storage[hash].length < 1) {
+                    delete storage[hash];
+                }
+                mem.set(action, storage);
+            }
+            return this;
+        },
+
+        /**
+         * The otherwise function is used when no function are linked to a given
+         * hash.
+         *
+         * @chainable
+         *
+         * @param {Function} fct                The function to use when otherwise
+         *                                      is meet
+         * @param {String | Null} action        The action element, if we use this
+         *                                      for entering hash, or leaving hash
+         *                                      (default: entering), possible val:
+         *                                      'leave' or 'enter'
+        */
+        otherwise: function(fct, action) {
+            action = getAction(action) + '.otherwise';
+            if(a.isNone(fct)) {
+                mem.remove(action);
+            } else {
+                mem.set(action, fct);
+            }
+            return this;
+        },
+
+        /**
+         * Navigate to a given hashtag.
+         *
+         * @param {String} hash                 The hashtag to navigate to
+         * @param {Object} parameters           Any parameters to give to state
+         *                                      system as temp data. This is an
+         *                                      equivalent to a.state.inject func.
+        */
+        go: function(hash, parameters) {
+            if(parameters) {
+                a.state.inject(parameters);
+            }
+            if(hash) {
+                //if( ('history' in window) && history.pushState ) {
+                //    window.history.pushState(parameters || {}, null, '#' + hash);
+                //} else {
+                    window.location.href = '#' + hash;
+                //}
+            }
+        },
+
+        /**
+         * This function act like the go/href/ref/hash/hashtag/navigate function,
+         * but fake it (hash in browser does not really change).
+         *
+         * @method fake
+         *
+         * @param {String} hash                 The hashtag to navigate to
+         * @param {Object} parameters           Any parameters to give to state
+         *                                      system as temp data. This is an
+         *                                      equivalent to a.state.inject func.
+        */
+        fake: function(hash, parameters) {
+            if(parameters) {
+                a.state.inject(parameters);
+            }
+            if(hash) {
+                a.hash.fake(hash);
+            }
+        },
+
+        /**
+         * Go back one time into history.
+        */
+        back: function() {
+            window.history.back();
+        },
+    };
+
+
+
+    // Aliases
+    a.route.href     = a.route.go;
+    a.route.ref      = a.route.go;
+    a.route.hash     = a.route.go;
+    a.route.hashtag  = a.route.go;
+    a.route.navigate = a.route.go;
+})(window.appstorm);;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -4976,8 +5007,12 @@ a.parameter = {
 ------------------------------
 */
 (function() {
-    a.parameter.addParameterType('mem',  a.mem.get);
-    a.parameter.addParameterType('environment', a.environment.get);
+    a.parameter.addParameterType('mem',  function() {
+        return a.mem.get.apply(a.mem, arguments);
+    });
+    a.parameter.addParameterType('environment', function() {
+        return a.environment.get.apply(a.environment, arguments);
+    });
 })();;/*! ***********************************************************************
 
     License: MIT Licence
@@ -4995,19 +5030,25 @@ a.parameter = {
  *
  * @constructor
 */
-a.acl = a.extend(new function () {
-    var mem = a.mem.getInstance('app.acl');
+a.acl = a.extend({
+    /**
+     * The store.
+     *
+     * @property _store
+     * @private
+    */
+    _store: a.mem.getInstance('app.acl'),
 
     /**
      * Set the current user role.
      *
      * @param {String} role                 The role to set as 'current' one
     */
-    this.setCurrentRole = function (role) {
-        mem.set('current', role);
+    setCurrentRole: function (role) {
+        this._store.set('current', role);
         this.dispatch('change', role);
         a.message.dispatch('a.acl.change', role);
-    };
+    },
 
     /**
      * Get the current user role stored.
@@ -5015,9 +5056,9 @@ a.acl = a.extend(new function () {
      * @return {String}                     The role found, or an empty
      *                                      string if nothing has been found
     */
-    this.getCurrentRole = function () {
-        return mem.get('current') || '';
-    };
+    getCurrentRole: function () {
+        return this._store.get('current') || '';
+    },
 
     /**
      * Set the current role list. This is used to compare the role to a list.
@@ -5040,9 +5081,9 @@ a.acl = a.extend(new function () {
      *
      * @param {Array} roleList              The role list to store
     */
-    this.setRoleList = function (roleList) {
+    setRoleList: function (roleList) {
         if (a.isArray(roleList)) {
-            mem.set('list', roleList);
+            this._store.set('list', roleList);
 
             // We create related Handlebars helpers for every role
             // Like you get a role 'adMin', it will create 'isAdMin' helper
@@ -5058,7 +5099,7 @@ a.acl = a.extend(new function () {
                 });
             });
         }
-    };
+    },
 
     /**
      * Get the current role list.
@@ -5066,9 +5107,9 @@ a.acl = a.extend(new function () {
      * @return {Array | Null}               The current role list stored, or
      *                                      null if nothing is found
     */
-    this.getRoleList = function () {
-        return mem.get('list');
-    };
+    getRoleList: function () {
+        return this._store.get('list');
+    },
 
     /**
      * Check if current role is allowed compare to given minimum role.
@@ -5079,7 +5120,7 @@ a.acl = a.extend(new function () {
      * @return {Boolean}                    The allowed (true) or refused
      *                                      (false) state
     */
-    this.isAllowed = function (minimumRole, currentRole) {
+    isAllowed: function (minimumRole, currentRole) {
         currentRole = currentRole || this.getCurrentRole();
 
         var positionCurrentRole = -1,
@@ -5104,7 +5145,7 @@ a.acl = a.extend(new function () {
         }
 
         return (positionCurrentRole >= positionMinimumRole);
-    };
+    },
 
     /**
      * Check if current role is refused compare to given minimum role.
@@ -5115,16 +5156,20 @@ a.acl = a.extend(new function () {
      * @return {Boolean}                    The refused (true) or allowed
      *                                      (false) state
     */
-    this.isRefused = function (minimumRole, currentRole) {
+    isRefused: function (minimumRole, currentRole) {
         return !this.isAllowed(minimumRole, currentRole);
-    };
+    },
 
     /**
      * Clear the full ACL rules
     */
-    this.clear = function () {
-        mem.clear();
-    };
+    clear: function () {
+        this._store.clear();
+    }
+
+    /*!
+     * @private
+    */
 
 }, new a.eventEmitter('a.acl'));
 
@@ -5549,7 +5594,7 @@ a.keyboard = (function(mt) {
             clear: clearAllKeyboardEvents
         };
     }
-}(window.Mousetrap));;/* ************************************************************************
+}(window.Mousetrap));;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -5562,27 +5607,28 @@ a.keyboard = (function(mt) {
 
 ************************************************************************ */
 
-//Simple synchronizer/chainer for Array of functions
+/**
+ * Simple synchronizer/chainer for Array of functions
+ *
+ * @constructor
+*/
 a.callback = {};
 
 
 /**
  * Load many functions at same time,
- * when they all finish raise the final callback
+ * when they all finish raise the final callback.
  *
- * @class synchronizer
- * @namespace a.callback
  * @constructor
- * @async
 */
 a.callback.synchronizer = function(callbacks, success, error) {
     return a.extend(
-            new a.callback.synchronizerInstance(
+            a.callback.synchronizerInstance(
                 callbacks,
                 success,
                 error
             ),
-            new a.eventEmitter('a.callback.synchronizer')
+            a.eventEmitter('a.callback.synchronizer')
         );
 };
 
@@ -5591,12 +5637,13 @@ a.callback.synchronizer = function(callbacks, success, error) {
  * synchronizerInstance, NEVER use like this,
  * use a.callback.synchronizer instead.
  *
- * @class synchronizerInstance
- * @namespace a.callback
- * @constructor
- * @async
+ * @private
 */
 a.callback.synchronizerInstance = function(callbacks, success, error) {
+    if (!(this instanceof a.callback.synchronizerInstance)) {
+        return new a.callback.synchronizerInstance(callbacks, success, error);
+    }
+
     this.callbacks       = callbacks || [];
     this.successFunction = success;
     this.errorFunction   = error;
@@ -5611,8 +5658,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Add callback to existing callback list.
      * If the system is started, also append this callback to waiting queue.
-     *
-     * @method addCallback
      *
      * @param {Array}                       Any number of functions to chain
      *                                      The first function will be executed
@@ -5637,20 +5682,16 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Remove callback from existing callback list.
      *
-     * @method removeCallback
-     *
-     * @param fct {Function}                The function to remove from list
+     * @param {Function} fct                The function to remove from list
     */
     removeCallback: function(fct) {
         this.callbacks = a.without(this.callbacks, fct);
     },
 
     /**
-     * Apply this scope to all callback function
+     * Apply this scope to all callback function.
      *
-     * @method setScope
-     *
-     * @param scope {Object}                The scope to apply to callbacks
+     * @param {Object} scope                The scope to apply to callbacks
     */
     setScope: function(scope) {
         if(a.isTrueObject(scope)) {
@@ -5661,10 +5702,8 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Get a currently stored data.
      *
-     * @method getData
-     *
-     * @param key {String}                  The key linked to value to get data
-     * @return {Object | null}              The value previously stored and
+     * @param {String} key                  The key linked to value to get data
+     * @return {Object | Null}              The value previously stored and
      *                                      content
     */
     getData: function(key) {
@@ -5672,12 +5711,10 @@ a.callback.synchronizerInstance.prototype = {
     },
 
     /**
-     * Set a new data stored into container
+     * Set a new data stored into container.
      *
-     * @method setData
-     *
-     * @param key {String}                  The key to retrieve value later
-     * @param value {Object}                Any value to store, a null or
+     * @param {String} key                  The key to retrieve value later
+     * @param {Object} value                Any value to store, a null or
      *                                      undefined element will erase key
      *                                      from store
     */
@@ -5691,8 +5728,6 @@ a.callback.synchronizerInstance.prototype = {
 
     /**
      * Get the main callback object to manipulate chain from it.
-     *
-     * @method getResultObject
      *
      * @return {Object}                     An object ready to use for
      *                                      controlling chain process
@@ -5711,8 +5746,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * This function keeps chain to release success/error function when all
      * functions will finish their job.
-     *
-     * @method next
      *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to next callback
@@ -5738,8 +5771,6 @@ a.callback.synchronizerInstance.prototype = {
     /**
      * Stop the callback chain.
      *
-     * @method stop
-     *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to error callback
      *                                      as parameters
@@ -5761,10 +5792,6 @@ a.callback.synchronizerInstance.prototype = {
 
     /**
      * Start chainer queue.
-     *
-     * @method start
-     *
-     * @method 
     */
     start: function() {
         this.parrallelCount = this.callbacks.length;
@@ -5794,9 +5821,7 @@ a.callback.synchronizerInstance.prototype = {
     },
 
     /**
-     * Get if the chain system is currently running or not
-     *
-     * @method isRunning
+     * Get if the chain system is currently running or not.
      *
      * @return {Boolean}                    True: currently running
      *                                      False: currently stopped
@@ -5804,6 +5829,10 @@ a.callback.synchronizerInstance.prototype = {
     isRunning: function() {
         return this.running;
     }
+
+    /*!
+     * @private
+    */
 };
 
 // Alias
@@ -5819,21 +5848,18 @@ a.callback.synchronizerInstance.prototype.error   =
 
 /**
  * Load many functions one by one, when last one finish raise the final
- * callback
+ * callback.
  *
- * @class chainer
- * @namespace a.callback
  * @constructor
- * @async
 */
 a.callback.chainer = function(callbacks, success, error) {
     return a.extend(
-        new a.callback.chainerInstance(
+        a.callback.chainerInstance(
             callbacks,
             success,
             error
         ),
-        new a.eventEmitter('a.callback.chainer')
+        a.eventEmitter('a.callback.chainer')
     );
 };
 
@@ -5841,12 +5867,14 @@ a.callback.chainer = function(callbacks, success, error) {
 /**
  * chainerInstance, NEVER use like this, use a.callback.chainer instead.
  *
- * @class chainerInstance
- * @namespace a.callback
  * @constructor
- * @async
+ * @private
 */
 a.callback.chainerInstance = function(callbacks, success, error) {
+    if (!(this instanceof a.callback.chainerInstance)) {
+        return new a.callback.chainerInstance(callbacks, success, error);
+    }
+
     this.callbacks       = callbacks || [];
     this.queue           = [];
     this.successFunction = success;
@@ -5861,8 +5889,6 @@ a.callback.chainerInstance.prototype = {
     /**
      * Add callback to existing callback list.
      * If the system is started, also append this callback to waiting queue.
-     *
-     * @method addCallback
      *
      * @param {Array}                       Any number of functions to chain
      *                                      The first function will be executed
@@ -5882,9 +5908,7 @@ a.callback.chainerInstance.prototype = {
     /**
      * Remove callback from existing callback list.
      *
-     * @method removeCallback
-     *
-     * @param fct {Function}                The function to remove from list
+     * @param {Function} fct                The function to remove from list
     */
     removeCallback: function(fct) {
         this.callbacks = a.without(this.callbacks, fct);
@@ -5892,11 +5916,9 @@ a.callback.chainerInstance.prototype = {
     },
 
     /**
-     * Apply this scope to all callback function
+     * Apply this scope to all callback function.
      *
-     * @method setScope
-     *
-     * @param scope {Object}                The scope to apply to callbacks
+     * @param {Object} scope                The scope to apply to callbacks
     */
     setScope: function(scope) {
         if(a.isTrueObject(scope)) {
@@ -5907,10 +5929,8 @@ a.callback.chainerInstance.prototype = {
     /**
      * Get a currently stored data.
      *
-     * @method getData
-     *
-     * @param key {String}                  The key linked to value to get data
-     * @return {Object | null}              The value previously stored and
+     * @param {String} key                  The key linked to value to get data
+     * @return {Object | Null}              The value previously stored and
      *                                      content
     */
     getData: function(key) {
@@ -5918,12 +5938,10 @@ a.callback.chainerInstance.prototype = {
     },
 
     /**
-     * Set a new data stored into container
+     * Set a new data stored into container.
      *
-     * @method setData
-     *
-     * @param key {String}                  The key to retrieve value later
-     * @param value {Object}                Any value to store, a null or
+     * @param {String} key                  The key to retrieve value later
+     * @param {Object} value                Any value to store, a null or
      *                                      undefined element will erase key
      *                                      from store
     */
@@ -5937,8 +5955,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Get the main callback object to manipulate chain from it.
-     *
-     * @method getResultObject
      *
      * @return {Object}                     An object ready to use for
      *                                      controlling chain process
@@ -5958,8 +5974,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Go to the next function in callback chain.
-     *
-     * @method next
      *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to next callback
@@ -5997,8 +6011,6 @@ a.callback.chainerInstance.prototype = {
     /**
      * Stop the callback chain.
      *
-     * @method stop
-     *
      * @param {Array}                       Any arguments given to that one
      *                                      will be transfert to error callback
      *                                      as parameters
@@ -6017,8 +6029,6 @@ a.callback.chainerInstance.prototype = {
 
     /**
      * Start chainer queue.
-     *
-     * @method start
     */
     start: function() {
         if(this.queue.length) {
@@ -6036,14 +6046,16 @@ a.callback.chainerInstance.prototype = {
     /**
      * Get if the chain system is currently running or not
      *
-     * @method isRunning
-     *
      * @return {Boolean}                    True: currently running
      *                                      False: currently stopped
     */
     isRunning: function() {
         return this.queue.length ? true : false;
     }
+
+    /*!
+     * @private
+    */
 };
 
 // Alias
@@ -7448,10 +7460,18 @@ a.storage.remove  = a.storage.persistent.remove;
     a.parameter.addParameterType('store', getGlobalStore);
 
     // Parameters type
-    a.parameter.addParameterType('temporary',  a.storage.temporary.get);
-    a.parameter.addParameterType('memory',     a.storage.memory.get);
-    a.parameter.addParameterType('persistent', a.storage.persistent.get);
-    a.parameter.addParameterType('cookie',     a.storage.cookie.get);
+    a.parameter.addParameterType('temporary', function() {
+        return a.storage.temporary.get.apply(a.storage.temporary, arguments);
+    });
+    a.parameter.addParameterType('memory', function() {
+        return a.storage.memory.get.apply(a.storage.memory, arguments);
+    });
+    a.parameter.addParameterType('persistent', function() {
+        return a.storage.persistent.get.apply(a.storage.persistent, arguments);
+    });
+    a.parameter.addParameterType('cookie', function() {
+        return a.storage.cookie.get.apply(a.storage.cookie, arguments);
+    });
 })();
 
 /*
@@ -10744,7 +10764,7 @@ a.state.chain = new function() {
         goToNextStep.apply(this, arguments);
     });
 })();
-;/* ************************************************************************
+;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -10755,22 +10775,26 @@ a.state.chain = new function() {
 
 /**
  * State type to manage custom system type.
+ * A type can be for example 'replace', 'append', it's used between transition
+ * during html loading or unloading of a given state.
  *
- * @class type
- * @static
- * @namespace a.state
+ * @constructor
 */
-a.state.type = new function() {
-    var mem = a.mem.getInstance('app.state.type');
+a.state.type = {
+    /**
+     * The store.
+     *
+     * @property _store
+     * @private
+    */
+    _store: a.mem.getInstance('app.state.type'),
 
     /**
      * Add a new type to state system.
      * Type allow you to control how the html will be loaded to system.
      *
-     * @method add
-     *
-     * @param name {String}                 The name to use inside state
-     * @param input {Function}              The function to call when name is
+     * @param {String} name                 The name to use inside state
+     * @param {Function} input              The function to call when name is
      *                                      found on a loading state.
      *                                      The first param given to this
      *                                      function will be entry point
@@ -10778,54 +10802,52 @@ a.state.type = new function() {
      *                                      if async the chain object.
      *                                      This is the function to call on
      *                                      input
-     * @param output {Function}             The function to call on output
-     * @param async {Boolean}               Indicate if the type should be run
+     * @param {Function} output             The function to call on output
+     * @param {Boolean} async               Indicate if the type should be run
      *                                      as an async or not. If the async
      *                                      is set to true, the last parameter
      *                                      will be the chain objet to continue
      *                                      like in default state.
     */
-    this.add = function(name, input, output, async) {
-        mem.set(name, {
+    add: function(name, input, output, async) {
+        this._store.set(name, {
             input:  input,
             output: output,
             async:  async
         });
-    };
+    },
 
     /**
      * Remove a type from existing type elements.
      *
-     * @method remove
-     *
-     * @param name {String}                 The type name to remove
+     * @param {String} name                 The type name to remove
     */
-    this.remove = function(name) {
-        mem.remove(name);
-    };
+    remove: function(name) {
+        this._store.remove(name);
+    },
 
     /**
-     * Get a type from existing type list
+     * Get a type from existing type list.
      *
-     * @method get
-     *
-     * @param name {String}                 The name to get
-     * @return {Object | Function | null}   The founded elements
+     * @param {String} name                 The name to get
+     * @return {Object | Function | Null}   The founded elements
     */
-    this.get = function(name) {
-        return mem.get(name);
-    };
+    get: function(name) {
+        return this._store.get(name);
+    },
 
     /**
      * Print the full list of type currently available.
      *
-     * @method list
-     *
      * @return {Object}                     The list of types found
     */
-    this.list = function() {
-        return mem.list();
-    };
+    list: function() {
+        return this._store.list();
+    }
+
+    /*!
+     * @private
+    */
 };
 ;/* ************************************************************************
 
@@ -11992,7 +12014,7 @@ a.modelInstance.prototype = {
         }
         return null;
     });
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -12007,14 +12029,14 @@ a.modelInstance.prototype = {
  * A model manager helps to keep a trace of every model currently used by the
  * application.
  *
- * @class manager
- * @namespace a.model
  * @constructor
 */
 a.model.manager = {
     /**
      * Store a pointer to every instance of every model created.
+     *
      * @property _store
+     * @private
      * @type Object
      * @default {}
     */
@@ -12023,9 +12045,7 @@ a.model.manager = {
     /**
      * Store a new model into the manager.
      *
-     * @method set
-     *
-     * @param model {Object}                The new model to store
+     * @param {Object} model                The new model to store
     */
     set: function(model) {
         this._store.set(model.uid, model);
@@ -12033,13 +12053,11 @@ a.model.manager = {
 
     /**
      * Get a model from it's uid (the unique id is automatically generated
-     * for every model, it's available threw myModelInstance.uid)
+     * for every model, it's available threw myModelInstance.uid).
      *
-     * @method get
-     *
-     * @param uid {Integer}                 The unique id to search related
+     * @param {Integer} uid                 The unique id to search related
      *                                      model from
-     * @return {Object | null}              The related model found, or null if
+     * @return {Object | Null}              The related model found, or null if
      *                                      nothing is found
     */
     get: function(uid) {
@@ -12049,18 +12067,14 @@ a.model.manager = {
     /**
      * Remove a model from store.
      *
-     * @method remove
-     *
-     * @param uid {Integer}                 The uid to remove
+     * @param {Integer} uid                 The uid to remove
     */
     remove: function(uid) {
         this._store.remove(uid);
     },
 
     /**
-     * Get the full model list
-     *
-     * @method list
+     * Get the full model list.
      *
      * @return {Array}                      The list of stored models
     */
@@ -12069,9 +12083,7 @@ a.model.manager = {
     },
 
     /**
-     * Remove all existing model from store
-     *
-     * @method clear
+     * Remove all existing model from store.
     */
     clear: function() {
         this._store.clear();
@@ -12081,9 +12093,7 @@ a.model.manager = {
      * Get all models related to a given namespace. For example, if you create
      * a.model('user'), this function helps to find all *user* model created.
      *
-     * @method getByName
-     *
-     * @param name {String}                 The model name to find
+     * @param {String} name                 The model name to find
      * @return {Array}                      The array with all model instance
      *                                      related to this name
     */
@@ -12102,7 +12112,11 @@ a.model.manager = {
 
         return result;
     }
-};;/* ************************************************************************
+
+    /*!
+     * @private
+    */
+};;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -12116,19 +12130,15 @@ a.model.manager = {
  * A model pooler aims to create a storage space to keep every model type
  * existing.
  *
- * @class pooler
- * @namespace a.model
  * @constructor
 */
 a.model.pooler = a.mem.getInstance('app.model.type');
 
 /**
- * Simple function to generate new instance from a base
+ * Simple function to generate new instance from a base.
  *
- * @method createInstance
- *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
+ * @param {String} name                     The model type we want to create
+ * @return {Object | Null}                  The model instance created, or null
  *                                          if model name is not defined
 */
 a.model.pooler.createInstance = function(name) {
@@ -12146,12 +12156,12 @@ a.model.pooler.createInstance = function(name) {
 /**
  * Simple function to generate new instance from a base. This instance is not
  * stored into a.model.manager.
- * NOTE: this function should not be used, please use createInstance instead.
+ * **NOTE: do not use, please use createInstance instead.**
  *
- * @method createInstance
+ * @private
  *
- * @param name {String}                     The model type we want to create
- * @return {Object | null}                  The model instance created, or null
+ * @param {String} name                     The model type we want to create
+ * @return {Object | Null}                  The model instance created, or null
  *                                          if model name is not defined
 */
 a.model.pooler.createTemporaryInstance = function(name) {
@@ -12177,12 +12187,10 @@ a.model.pooler.createTemporaryInstance = function(name) {
 };
 
 /**
- * From a given query, get back the existing stored model
+ * From a given query, get back the existing stored model.
  *
- * @method searchInstance
- *
- * @param query {Object}                    The query to search inside
- * @return {a.modelInstance | null}         The single instance found,
+ * @param {Object} query                    The query to search inside
+ * @return {a.modelInstance | Null}         The single instance found,
  *                                          or a list of instances, or null
 */
 a.model.pooler.searchInstance = function(query) {
@@ -12230,14 +12238,11 @@ a.model.pooler.searchInstance = function(query) {
 
 
 /**
- * Search primary keys inside a model, to be able to perform a search
- * after.
+ * Search primary keys inside a model, to be able to perform a search after.
  *
- * @method getPrimary
- *
- * @param name {String}                     The model name to get related
+ * @param {String} name                     The model name to get related
  *                                          primary
- * @return {Array | null}                   Array if it has been found, null
+ * @return {Array | Null}                   Array if it has been found, null
  *                                          if there is any problem
 */
 a.model.pooler.getPrimary = function(name) {
@@ -12264,9 +12269,7 @@ a.model.pooler.getPrimary = function(name) {
 /**
  * Delete an existing instance.
  *
- * @method deleteInstance
- *
- * @param instance {Object}                 The instance to delete
+ * @param {Object} instance                 The instance to delete
 */
 a.model.pooler.deleteInstance = function(instance) {
     if(a.isTrueObject(instance) && instance.uid) {

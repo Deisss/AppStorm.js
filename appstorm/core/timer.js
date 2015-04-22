@@ -135,5 +135,9 @@ a.timer = (function() {
         clear: function() {
             store = {};
         }
+
+        /*!
+         * @private
+        */
     };
 })();

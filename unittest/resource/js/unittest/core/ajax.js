@@ -39,7 +39,7 @@ QUnit.asyncTest('a.ajax.abort', function(assert) {
         url : './resource/data/ajax/abort.php',
         type : 'raw',
         cache : true
-    }, function(){
+    }, function() {
         assert.strictEqual(false, true, 'The abort has not been used');
         start();
     }, function() {

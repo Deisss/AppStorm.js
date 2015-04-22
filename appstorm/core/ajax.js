@@ -134,6 +134,11 @@
     a.ajax = function(options, success, error) {
         'use strict';
 
+        // New problem corrected
+        if (!(this instanceof a.ajax)) {
+            return new a.ajax(options, success, error);
+        }
+
         var templates = [a.getDefaultAjaxOptions()];
 
         // Transforming single element into array
@@ -455,14 +460,16 @@
                 } catch(e) {
                     return;
                 }
+
+                // IE9 Bug as reported in jQuery.
+                if (status === 1223) {
+                    status = 204;
+                }
+
                 // Any 200 status will be validated
                 if(requestScope.request.readyState === 4) {
-                    // 0: on local filesystem, a HTTP 200 is given as 0
-                    var great = (status >= 200 && status < 400) || status === 0 || status === 1223;
-                    // IE9 Bug as reported in jQuery.
-                    if (status === 1223) {
-                        status = 204;
-                    }
+                    var great = (status >= 200 && status < 400);
+
                     if(great) {
                         // Everything went fine
                         requestScope.success(
