@@ -1,4 +1,4 @@
-/* ************************************************************************
+/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -10,9 +10,7 @@
 /**
  * Manipulate HTML form by with a simple system.
  *
- * @class form
- * @static
- * @namespace a
+ * @constructor
 */
 a.form = (function() {
     'use strict';
@@ -33,10 +31,9 @@ a.form = (function() {
     /**
      * Get the field key from given input.
      *
-     * @method getFieldKey
      * @private
      *
-     * @param e {DOMElement}                The element o search value inside
+     * @param {DOMElement} e                The element o search value inside
      * @return {String}                     The value found
     */
     function getFieldKey(e) {
@@ -63,10 +60,9 @@ a.form = (function() {
     /**
      * Get the field value for given input.
      *
-     * @method getFieldValue
      * @private
      *
-     * @param e {DOMElement}                The element to search value inside
+     * @param {DOMElement} e                The element to search value inside
      * @return {String}                     The value found
     */
     function getFieldValue(e) {
@@ -86,10 +82,9 @@ a.form = (function() {
     /**
      * From a given dom, get the list of revelant elements inside.
      *
-     * @method getFieldList
      * @private
      *
-     * @param dom {a.dom}                   The dom element to search inside
+     * @param {a.dom} dom                   The dom element to search inside
      * @return {Array}                      The element list inside DOM
     */
     function getFieldList(dom) {
@@ -118,14 +113,13 @@ a.form = (function() {
     /**
      * Raise an error on input.
      *
-     * @method validateError
      * @private
      *
-     * @param el {DOMElement}               The element where comes from error
-     * @param id {String}                   The element id/name/class
-     * @param name {String | null}          The name (like min, pattern, ...)
+     * @param {DOMElement} el               The element where comes from error
+     * @param {String} id                   The element id/name/class
+     * @param {String | Null} name          The name (like min, pattern, ...)
      *                                      which is not valid, can be null
-     * @param value {String | null}         The current input value
+     * @param {String | Null} value         The current input value
      *                                      (can be used as parameter)
      * @return {Object}                     A validate object with everything
      *                                      inside if possible
@@ -168,11 +162,10 @@ a.form = (function() {
      * We try to grab the model instance, or a new model instance if it's not
      * an existing model instance.
      *
-     * @method getModel
      * @private
      *
-     * @param idOrModelName {String}            From HTML side, the id or the model
-     *                                          name to use for this form.
+     * @param {String} idOrModelName            From HTML side, the id or the
+     *                                          model name to use for this form
      * @return {a.modelInstance}                A new or existing instance
     */
     function getModel(idOrModelName) {
@@ -185,14 +178,13 @@ a.form = (function() {
     }
 
     /**
-     * Apply model content to form, automatically
+     * Apply model content to form, automatically.
      *
-     * @method applymodelToForm
      * @private
      *
-     * @param form {DOMElement}             The form to apply model into
-     * @param model {a.modelInstance}       The instance to take elements from
-     * @param constraints {Object}          List of constraint to use for
+     * @param {DOMElement} form             The form to apply model into
+     * @param {a.modelInstance} model       The instance to take elements from
+     * @param {Object} constraints          List of constraint to use for
      *                                      rendering the form. 
     */
     function applyModelToForm(form, model, constraints) {
@@ -202,7 +194,7 @@ a.form = (function() {
             propertiesRendering = {};
         form = a.dom.el(form);
 
-        /*
+        /*!
         ------------------------------------
           CHECK ALLOWED & REFUSED CONSTRAINT
         ------------------------------------
@@ -237,7 +229,7 @@ a.form = (function() {
         }
 
 
-        /*
+        /*!
         ------------------------------------
           GENERATING PROPERTIES
         ------------------------------------
@@ -314,7 +306,7 @@ a.form = (function() {
         }
 
 
-        /*
+        /*!
         ------------------------------------
           RENDERING
         ------------------------------------
@@ -334,7 +326,9 @@ a.form = (function() {
 
     return {
         /**
-         * Allow to skip HTML5 form-novalidate tag or not (boolean)
+         * Allow to skip HTML5 form-novalidate tag or not (boolean).
+         * This help to avoid browser HTML5 validation to keep only AppStorm
+         * one.
          *
          * @property skipNoValidate
          * @type Boolean
@@ -345,9 +339,7 @@ a.form = (function() {
         /**
          * Get the list of element stored into given form.
          *
-         * @method get
-         *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Object}                 The list of input tags existing
@@ -402,7 +394,7 @@ a.form = (function() {
         },
 
         /**
-         * Validate a form
+         * Validate a form.
          * Note : multiple tester (email, file) is not supported
          * Note : date field (date, datetime, datetime-local,
          * month, time, week) are not supported
@@ -410,7 +402,7 @@ a.form = (function() {
          *
          * @method validate
          *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Array}                  An array with all errors listed
@@ -558,9 +550,7 @@ a.form = (function() {
         /**
          * Validate and get the form content.
          *
-         * @method validateAndGet
-         *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Object}                 An object with error (boolean),
@@ -585,9 +575,7 @@ a.form = (function() {
          * Note: you should avoid as much as possible to use this function
          * and let appstorm do it for you threw state...
          *
-         * @method model
-         *
-         * @param dom {Object}              The dom element to search inside.
+         * @param {Object} dom              The dom element to search inside.
          *                                  You should submit a list of 'form'
          *                                  elements which may have data-model
          *                                  tag.
@@ -616,6 +604,9 @@ a.form = (function() {
                 }
             });
         }
-    };
 
+        /*!
+         * @private
+        */
+    };
 })();
