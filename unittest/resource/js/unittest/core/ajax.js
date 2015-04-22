@@ -11,7 +11,7 @@ QUnit.module('core/ajax.js');
 QUnit.asyncTest('a.ajax.header', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/header.php',
         type : 'raw',
         cache : true,
@@ -35,7 +35,7 @@ QUnit.asyncTest('a.ajax.header', function(assert) {
 QUnit.asyncTest('a.ajax.abort', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/abort.php',
         type : 'raw',
         cache : true
@@ -76,7 +76,7 @@ QUnit.asyncTest('a.ajax.defaultOptions', function(assert) {
     assert.strictEqual(a.getDefaultAjaxOptions().url,
             './resource/data/ajax/header.php', 'Test default options stored');
 
-    var ajx = new a.ajax({}, function(res){
+    var ajx = a.ajax({}, function(res){
         assert.strictEqual(res, 'youpi', 'Testing header passed threw request');
         // Now test is done => clear
         a.setDefaultAjaxOptions({});
@@ -104,7 +104,7 @@ QUnit.asyncTest('a.ajax.defaultOptions-mixed', function(assert) {
     assert.strictEqual(a.getDefaultAjaxOptions().url,
             './resource/data/ajax/data.php', 'Test default options stored');
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         data : {
             second : 'great'
         }
@@ -142,7 +142,7 @@ QUnit.asyncTest('a.ajax.template', function(assert) {
     assert.strictEqual(a.getTemplateAjaxOptions('easy').url,
             './resource/data/ajax/data.php', 'Test default options stored');
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         template: 'easy',
         data : {
             second : 'great'
@@ -185,7 +185,7 @@ QUnit.asyncTest('a.ajax.template-mixed', function(assert) {
     assert.strictEqual(a.getTemplateAjaxOptions('easy3').data.second,
             'awesome', 'Test easy3 data stored');
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         template: ['easy2', 'easy3'],
         data : {
             second : 'great'
@@ -213,7 +213,7 @@ QUnit.asyncTest('a.ajax.template-mixed', function(assert) {
 QUnit.asyncTest('a.ajax.json', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/test.json',
         type : 'json',
         cache : true
@@ -230,7 +230,7 @@ QUnit.asyncTest('a.ajax.json', function(assert) {
 QUnit.asyncTest('a.ajax.xml', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/test.xml',
         type : 'xml',
         cache : true
@@ -247,7 +247,7 @@ QUnit.asyncTest('a.ajax.xml', function(assert) {
 QUnit.asyncTest('a.ajax.raw', function(assert) {
     assert.expect(2);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/test.raw',
         cache : true
     }, function(res){
@@ -270,7 +270,7 @@ QUnit.asyncTest('a.ajax.raw', function(assert) {
 QUnit.test('a.ajax.synchronous', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/index.php',
         method : 'POST',
         async : false,
@@ -286,7 +286,7 @@ QUnit.test('a.ajax.synchronous', function(assert) {
 QUnit.asyncTest('a.ajax.asynchronous', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/index.php',
         method : 'POST',
         data : {
@@ -304,7 +304,7 @@ QUnit.asyncTest('a.ajax.asynchronous', function(assert) {
 QUnit.test('a.ajax.asynchronous-problem', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/index.php',
         method : 'POST',
         data : {
@@ -328,7 +328,7 @@ QUnit.test('a.ajax.asynchronous-problem', function(assert) {
 QUnit.asyncTest('a.ajax.get-cache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php'
     }, function(res){
         // All parameters are printed to output,
@@ -344,7 +344,7 @@ QUnit.asyncTest('a.ajax.get-cache', function(assert) {
 QUnit.asyncTest('a.ajax.get-nocache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true
     }, function(res){
@@ -360,7 +360,7 @@ QUnit.asyncTest('a.ajax.get-nocache', function(assert) {
 QUnit.asyncTest('a.ajax.post-cache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'POST'
     }, function(res){
@@ -376,7 +376,7 @@ QUnit.asyncTest('a.ajax.post-cache', function(assert) {
 QUnit.asyncTest('a.ajax.post-nocache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'POST',
@@ -398,7 +398,7 @@ QUnit.asyncTest('a.ajax.post-nocache', function(assert) {
 QUnit.asyncTest('a.ajax.put-cache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'PUT'
     }, function(res){
@@ -414,7 +414,7 @@ QUnit.asyncTest('a.ajax.put-cache', function(assert) {
 QUnit.asyncTest('a.ajax.put-nocache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'PUT'
@@ -432,7 +432,7 @@ QUnit.asyncTest('a.ajax.put-nocache', function(assert) {
 QUnit.asyncTest('a.ajax.delete-cache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'DELETE'
     }, function(res){
@@ -449,7 +449,7 @@ QUnit.asyncTest('a.ajax.delete-cache', function(assert) {
 QUnit.asyncTest('a.ajax.delete-nocache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'DELETE'
@@ -466,7 +466,7 @@ QUnit.asyncTest('a.ajax.delete-nocache', function(assert) {
 QUnit.asyncTest('a.ajax.options-cache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         method : 'OPTIONS'
     }, function(res){
@@ -482,7 +482,7 @@ QUnit.asyncTest('a.ajax.options-cache', function(assert) {
 QUnit.asyncTest('a.ajax.options-nocache', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/input.php',
         cache : true,
         method : 'OPTIONS'
@@ -506,7 +506,7 @@ QUnit.asyncTest('a.ajax.options-nocache', function(assert) {
 QUnit.asyncTest('a.ajax.get-single', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         cache : true,
         data : {
@@ -524,7 +524,7 @@ QUnit.asyncTest('a.ajax.get-single', function(assert) {
 QUnit.asyncTest('a.ajax.get-multiple', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         cache : true,
         data : {
@@ -543,7 +543,7 @@ QUnit.asyncTest('a.ajax.get-multiple', function(assert) {
 QUnit.asyncTest('a.ajax.post-single', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'POST',
         cache : true,
@@ -562,7 +562,7 @@ QUnit.asyncTest('a.ajax.post-single', function(assert) {
 QUnit.asyncTest('a.ajax.post-multiple', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'POST',
         cache : true,
@@ -583,7 +583,7 @@ QUnit.asyncTest('a.ajax.post-multiple', function(assert) {
 QUnit.asyncTest('a.ajax.put-single', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'PUT',
         cache : true,
@@ -602,7 +602,7 @@ QUnit.asyncTest('a.ajax.put-single', function(assert) {
 QUnit.asyncTest('a.ajax.put-multiple', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'PUT',
         cache : true,
@@ -623,7 +623,7 @@ QUnit.asyncTest('a.ajax.put-multiple', function(assert) {
 QUnit.asyncTest('a.ajax.delete-single', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'DELETE',
         cache : true,
@@ -631,7 +631,8 @@ QUnit.asyncTest('a.ajax.delete-single', function(assert) {
             'gettest' : 'ok'
         }
     }, function(res){
-        assert.strictEqual(res, 'delete=gettest|ok', 'Testing delete parameter');
+        assert.strictEqual(res, 'delete=gettest|ok',
+                'Testing delete parameter');
         start();
     });
 
@@ -642,7 +643,7 @@ QUnit.asyncTest('a.ajax.delete-single', function(assert) {
 QUnit.asyncTest('a.ajax.delete-multiple', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'DELETE',
         cache : true,
@@ -663,7 +664,7 @@ QUnit.asyncTest('a.ajax.delete-multiple', function(assert) {
 QUnit.asyncTest('a.ajax.options-single', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'OPTIONS',
         cache : true,
@@ -671,7 +672,8 @@ QUnit.asyncTest('a.ajax.options-single', function(assert) {
             'gettest' : 'ok'
         }
     }, function(res){
-        assert.strictEqual(res, 'options=gettest|ok', 'Testing options parameter');
+        assert.strictEqual(res, 'options=gettest|ok',
+                'Testing options parameter');
         start();
     });
 
@@ -682,7 +684,7 @@ QUnit.asyncTest('a.ajax.options-single', function(assert) {
 QUnit.asyncTest('a.ajax.options-multiple', function(assert) {
     assert.expect(1);
 
-    var ajx = new a.ajax({
+    var ajx = a.ajax({
         url : './resource/data/ajax/data.php',
         method : 'OPTIONS',
         cache : true,
@@ -713,7 +715,7 @@ QUnit.asyncTest('a.ajaxCache', function(assert) {
     var s1 = null,
         s2 = null;
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/cache.php',
             method: 'GET',
             store: '3s',
@@ -728,7 +730,7 @@ QUnit.asyncTest('a.ajaxCache', function(assert) {
 
     // Second request which should skip ajax
     setTimeout(function() {
-        var request2 = new a.ajax({
+        var request2 = a.ajax({
                 url: './resource/data/ajax/cache.php',
                 method: 'GET',
                 template: ['json']
@@ -772,7 +774,7 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
         }
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             template: ['GET', 'json', 'model:unittest-ajax-blog']
     }, function(data, status) {
@@ -800,7 +802,7 @@ QUnit.asyncTest('a.ajax.model-single', function(assert) {
 QUnit.asyncTest('a.ajax.model-undefined', function(assert) {
     assert.expect(2);
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             template: ['GET', 'json', 'model:undefined-model']
     }, function(data, status) {
@@ -833,7 +835,7 @@ QUnit.asyncTest('a.ajax.model-wrong', function(assert) {
         }
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/empty.json',
             template: ['GET', 'json', 'model:unittest-ajax-wrong']
     }, function(data, status) {
@@ -877,7 +879,7 @@ QUnit.asyncTest('a.ajax.model-shared', function(assert) {
     var first = new unitModel();
     first.set('id', 20);
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             template: ['GET', 'json', 'model:unittest-ajax-shared']
     }, function(data, status) {
@@ -925,7 +927,7 @@ QUnit.asyncTest('a.ajax.model-list-shared', function(assert) {
     first.set('id', 20);
     first.set('name', 'hello');
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/models.json',
             template: ['json', 'many', 'model:unittest-ajax-list-shared']
     }, function(data, status) {
@@ -983,7 +985,7 @@ QUnit.asyncTest('a.ajax.model-list', function(assert) {
         }
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/models.json',
             template: ['GET', 'json', 'many', 'model:unittest-ajax-blogs']
     }, function(data, status) {
@@ -1036,7 +1038,7 @@ QUnit.asyncTest('a.ajax.model-list-undefined', function(assert) {
         }
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/models-not-valid.json',
             template: ['GET', 'json', 'many', 'model:unittest-ajax-invalid']
     }, function(data, status) {
@@ -1086,7 +1088,7 @@ QUnit.asyncTest('a.ajax.before', function(assert) {
         return params;
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             before: ['unittest-before-1'],
             template: ['GET', 'json']
@@ -1126,7 +1128,7 @@ QUnit.asyncTest('a.ajax.before-multiple', function(assert) {
         before: ['unittest-before-3']
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             template: ['GET', 'json', 'unittest-bef2', 'unittest-bef3']
     }, function(data, status) {
@@ -1151,7 +1153,7 @@ QUnit.asyncTest('a.ajax.after', function(assert) {
         return {"ok": "ok"};
     });
 
-    var request = new a.ajax({
+    var request = a.ajax({
             url: './resource/data/ajax/model.json',
             after: ['unittest-after-1'],
             template: ['GET', 'json']
