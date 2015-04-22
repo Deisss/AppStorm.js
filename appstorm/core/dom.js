@@ -249,7 +249,7 @@ a.dom = {
                 }
 
                 // Returning element parsed
-                return new a.dom.children(doms);
+                return a.dom.children(doms);
             }
         }
 
@@ -275,7 +275,7 @@ a.dom = {
                 }
 
                 // Returning element parsed
-                return new a.dom.children(oDom);
+                return a.dom.children(oDom);
             }
         }
 
@@ -341,7 +341,7 @@ a.dom = {
             }
         }
 
-        return new a.dom.children(domList);
+        return a.dom.children(domList);
     }
 };
 
@@ -374,6 +374,10 @@ a.dom = {
  * between all browser).
 */
 a.dom.event = function(e) {
+    if(!(this instanceof a.dom.event)) {
+        return new a.dom.event(e);
+    }
+
     e = e || window.event;
     this.target        = e.target || e.srcElement;
     this.currentTarget = e.currentTarget || null;
@@ -422,12 +426,16 @@ a.dom.event.prototype = {
  * @return {Function}                       The binded function
 */
 a.dom.eventBinder = function(fn, scope) {
+    if (!(this instanceof a.dom.eventBinder)) {
+        return new a.dom.eventBinder(fn, scope);
+    }
+
     return function(e) {
         if(a.isFunction(fn)) {
             if(a.isObject(scope)) {
-                fn.call(scope, new a.dom.event(e));
+                fn.call(scope, a.dom.event(e));
             } else {
-                fn.call(null, new a.dom.event(e));
+                fn.call(null, a.dom.event(e));
             }
         }
     };
@@ -447,7 +455,7 @@ a.dom.eventListener = (function() {
      * @private
     */
     function addListener(el, type, fn, scope) {
-        var binder = new a.dom.eventBinder(fn, scope || null);
+        var binder = a.dom.eventBinder(fn, scope || null);
         store.push({
             el:   el,
             type: type,

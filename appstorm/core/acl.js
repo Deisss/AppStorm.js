@@ -156,7 +156,7 @@ a.acl = a.extend({
      * @private
     */
 
-}, new a.eventEmitter('a.acl'));
+}, a.eventEmitter('a.acl'));
 
 
 

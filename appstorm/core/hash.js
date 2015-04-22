@@ -182,4 +182,4 @@ a.hash = function() {
 };
 
 // Erasing previous a.hash and add event system to it
-a.hash = a.extend(new a.hash(), new a.eventEmitter('a.hash'));
+a.hash = a.extend(new a.hash(), a.eventEmitter('a.hash'));

@@ -206,7 +206,7 @@ a.loader = (function() {
 
         // Loading data
         var er = (a.isFunction(error)) ? error : function(){};
-        (new a.ajax(options, handlerCallback, er)).send();
+        a.ajax(options, handlerCallback, er).send();
     }
 
     return {

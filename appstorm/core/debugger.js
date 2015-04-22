@@ -437,7 +437,7 @@
             if (this.isDirect) {
                 return null;
             }
-            var root = new a.debugger(name, collapsed, this);
+            var root = a.debugger(name, collapsed, this);
             this.logs.push({
                 type: 'group',
                 args: root
