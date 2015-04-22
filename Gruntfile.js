@@ -88,6 +88,7 @@ module.exports = function(grunt) {
           'appstorm/vendor/handlebars/handlebars.js',
           'appstorm/vendor/mousetrap/mousetrap.min.js',
           'appstorm/vendor/watch/watch.js',
+          'appstorm/vendor/jsep/build/jsep.js'
         ].concat(appstormFiles),
         dest: './appstorm.concat.js',
         nonull: true,
