@@ -235,8 +235,11 @@ a.jsep = {
              * @return The object propery values
             */
             identifierExpression: function (data, internal, scope) {
+                // No matter is the element is found in the scope or
+                // not, it's counted as inside the scope.
+                increaseInternal(internal, data.name);
+
                 if (scope.hasOwnProperty(data.name)) {
-                    increaseInternal(internal, data.name);
                     return scope[data.name];
                 }
 
