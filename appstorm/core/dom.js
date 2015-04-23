@@ -1038,7 +1038,7 @@ a.dom.children.prototype = {
 
     /**
      * Select all sub elements.
-     *=
+     *
      * @chainable
     */
     all: function() {
