@@ -210,6 +210,16 @@ a.jsep = {
                 var obj = this.parse(data.object, internal, scope),
                     property = this.parse(data.property, internal, scope);
 
+                if (typeof obj[property] === 'undefined') {
+                    // Specific case to handle
+                    if(data.object.type === 'ThisExpression') {
+                        return property;
+                    }
+                    a.console.storm('error', source, 'The property ```' +
+                        property + '``` could not be found', 1);
+                    return null;
+                }
+
                 // We are getting the property
                 return obj[property];
             },
@@ -274,6 +284,10 @@ a.jsep = {
                     }
 
                     return fct.apply(null, args);
+                } else {
+                    a.console.storm('error', source, 'The function ```' + 
+                            data.callee.name + '``` could not be resolved...',
+                            1);
                 }
                 return null;
             },
