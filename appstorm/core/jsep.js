@@ -83,7 +83,8 @@ a.jsep = {
         // Shorter
         var lo = this.logicalOperators,
             bo = this.binaryOperators,
-            uo = this.unaryOperators;
+            uo = this.unaryOperators,
+            source = 'a.jsep.interpreter.' + name;
 
         /*!
           ------------------------------
@@ -321,7 +322,7 @@ a.jsep = {
                     operator = uo.get(data.operator);
 
                 if (!a.isFunction(operator)) {
-                    a.console.storm('error', 'a.jsep.interpreter.' + name,
+                    a.console.storm('error', source,
                             'Unknow unary operator ```' + data.operator +
                             '```', 1);
                     return result;
@@ -345,7 +346,7 @@ a.jsep = {
                     operator = bo.get(data.operator);
 
                 if (!a.isFunction(operator)) {
-                    a.console.storm('error', 'a.jsep.interpreter.' + name,
+                    a.console.storm('error', source,
                         'Unknow binary operator ```' + data.operator +
                         '```', 1);
                     return left + right;
@@ -368,7 +369,7 @@ a.jsep = {
                     operaror = lo.get(data.operator);
 
                 if (!a.isFunction(operator)) {
-                    a.console.storm('error', 'a.jsep.interpreter.' + name,
+                    a.console.storm('error', source,
                         'Unknow logical operator ```' + data.operator +
                         '```', 1);
                 }
@@ -388,7 +389,6 @@ a.jsep = {
             */
             parse: function (data, internal, scope) {
                 if (data && data.type) {
-                    var fct = null;
                     switch (data.type) {
                         case 'BinaryExpression':
                             return this.binaryExpression(data, internal,
@@ -424,12 +424,13 @@ a.jsep = {
                             return this.conditionalExpression(data,
                                     internal, scope);
                         default:
-                            a.console.storm('error','a.jsep.interpreter.' +
-                                name, 'Unknow type, cannot parse ```' +
+                            a.console.storm('error', source,
+                                'Unknow type, cannot parse ```' +
                                 data.type + '```', 1);
                             return null;
                     }
                 }
+                return null;
             }
         };
     }
