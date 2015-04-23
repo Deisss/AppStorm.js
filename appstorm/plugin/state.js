@@ -962,13 +962,15 @@ a.state = new function() {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    // Get injected elements
-    Handlebars.registerHelper('inject', function(key) {
-        return new Handlebars.SafeString(a.state._inject[key] || null);
-    });
+Handlebars.registerHelper('inject', function(key) {
+    return new Handlebars.SafeString(a.state._inject[key] || null);
+});
 
-    a.parameter.addParameterType('inject',  function(key) {
-        return a.state._inject[key] || null;
-    });
-})();
+/*
+------------------------------
+  PARAMETERS HELPERS
+------------------------------
+*/
+a.parameter.addParameterType('inject',  function(key) {
+    return a.state._inject[key] || null;
+});
