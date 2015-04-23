@@ -20,6 +20,17 @@
 */
 window.appstorm = window.a = _.cloneDeep(_.noConflict());
 
+(function(a) {
+    /**
+     * Avoid namespace conflict.
+     *
+     * @return {AppStorm.JS}                The main a object from AppStorm.JS
+    */
+    a.noConflict = function() {
+        return this;
+    };
+})(window.appstorm);
+
 /**
  * The core url (for vendor loading)
  *
