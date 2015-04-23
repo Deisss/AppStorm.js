@@ -30,26 +30,26 @@ a.jsep = {
      * @param {String} name                 The interpreter name, must be
      *                                      unique or you may have conflict
      *                                      with other interpreter instance.
-     * @param {Boolean} useDefaultLogicalOperators If system should register
-     *                                      for you the default logical
-     *                                      operators (operators: ||, &&)
      * @param {Boolean} useDefaultBinaryOperators If system should register
      *                                      for you the default binary
      *                                      operators (+, -, *, /, %, ==, ...)
+     * @param {Boolean} useDefaultLogicalOperators If system should register
+     *                                      for you the default logical
+     *                                      operators (operators: ||, &&)
      * @param {Boolean} useDefaultUnaryOperators If system should register
      *                                      for you the default unary operators
      *                                      (-, +, !, ~).
      * @return {Object}                     A new instance of JSEP interpreter.
     */
-    interpreter: function (name, useDefaultLogicalOperators,
-            useDefaultBinaryOperators, useDefaultUnaryOperators) {
+    interpreter: function (name, useDefaultBinaryOperators,
+            useDefaultLogicalOperators, useDefaultUnaryOperators) {
         if(a.jsep.jsep === null) {
             return {};
         }
 
         if (!(this instanceof a.jsep.interpreter)) {
-            return new a.jsep.interpreter(name, useDefaultLogicalOperators,
-                    useDefaultBinaryOperators, useDefaultUnaryOperators);
+            return new a.jsep.interpreter(name, useDefaultBinaryOperators,
+                    useDefaultLogicalOperators, useDefaultUnaryOperators);
         }
 
         // Storage to use functions inside.
@@ -86,15 +86,6 @@ a.jsep = {
             uo = this.unaryOperators,
             source = 'a.jsep.interpreter.' + name;
 
-        /*!
-          ------------------------------
-            DEFAULT LOGICAL OPERATORS
-          ------------------------------
-        */
-        if (useDefaultLogicalOperators === true) {
-            lo.set('||', function (left, right) { return left || right; });
-            lo.set('&&', function (left, right) { return left && right; });
-        }
 
         /*!
           ------------------------------
@@ -123,6 +114,16 @@ a.jsep = {
             bo.set('<<',  function (left, right) {  return left << right;   });
             bo.set('>>',  function (left, right) {  return left >> right;   });
             bo.set('>>>', function (left, right) {  return left >>> right;  });
+        }
+
+        /*!
+          ------------------------------
+            DEFAULT LOGICAL OPERATORS
+          ------------------------------
+        */
+        if (useDefaultLogicalOperators === true) {
+            lo.set('||', function (left, right) { return left || right; });
+            lo.set('&&', function (left, right) { return left && right; });
         }
 
         /*!
@@ -366,12 +367,13 @@ a.jsep = {
             logicalExpression: function (data, internal, scope) {
                 var left = this.parse(data.left, internal, scope),
                     right = this.parse(data.right, internal, scope),
-                    operaror = lo.get(data.operator);
+                    operator = lo.get(data.operator);
 
-                if (!a.isFunction(operator)) {
+                if (a.isNone(operator) || !a.isFunction(operator)) {
                     a.console.storm('error', source,
                         'Unknow logical operator ```' + data.operator +
                         '```', 1);
+                    return left && right;
                 }
 
                 return operator.call(this, left, right, data, internal,
