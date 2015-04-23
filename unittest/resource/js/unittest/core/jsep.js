@@ -1,14 +1,5 @@
 // Unit test for a.jsep
 
-/*
-TODO:
-
-Test operator change does not affect other instance
-Test an HTML parser system, almost completely override
-Test every possibility to be sure all "expressions" works flawless...
-Update documentation for JSEP
-*/
-
 QUnit.module('core/jsep.js', {
     setup: function() {
         a.console.clear();
@@ -20,7 +11,7 @@ QUnit.module('core/jsep.js', {
 
 
 // Most basic addition
-QUnit.test('a.jsep.basic', function(assert) {
+QUnit.test('a.jsep.basic', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('1 + 1');
@@ -34,7 +25,7 @@ QUnit.test('a.jsep.basic', function(assert) {
 });
 
 // Using a scope variable
-QUnit.test('a.jsep.scope', function(assert) {
+QUnit.test('a.jsep.scope', function (assert) {
     assert.expect(3);
 
     var tree = a.jsep.parse('a + 1');
@@ -51,7 +42,7 @@ QUnit.test('a.jsep.scope', function(assert) {
 });
 
 // Custom operators
-QUnit.test('a.jsep.custom-operator', function(assert) {
+QUnit.test('a.jsep.custom-operator', function (assert) {
     assert.expect(6);
 
     var tree = a.jsep.parse('a + 1');
@@ -81,7 +72,7 @@ QUnit.test('a.jsep.custom-operator', function(assert) {
 
 
 // Custom operators do not affect others
-QUnit.test('a.jsep.custom-operator-parallel', function(assert) {
+QUnit.test('a.jsep.custom-operator-parallel', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('1 + 1');
@@ -103,7 +94,7 @@ QUnit.test('a.jsep.custom-operator-parallel', function(assert) {
 
 
 // Test nest functions call
-QUnit.test('a.jsep.function', function(assert) {
+QUnit.test('a.jsep.function', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('a(b(12))');
@@ -124,7 +115,7 @@ QUnit.test('a.jsep.function', function(assert) {
 
 
 // Using object
-QUnit.test('a.jsep.object', function(assert) {
+QUnit.test('a.jsep.object', function (assert) {
     assert.expect(4);
 
     var tree = a.jsep.parse('"ok " + a.b[c] + " " + 4 + ok + func(2, 3)');
@@ -149,8 +140,83 @@ QUnit.test('a.jsep.object', function(assert) {
 });
 
 
+// Test array support
+QUnit.test('a.jsep.array', function (assert) {
+    assert.expect(5);
+
+    var tree = a.jsep.parse('["a", "b"]');
+    var parser = a.jsep.interpreter('qunit.jsep.array', true, true, true);
+
+    var result = parser.evaluate(tree);
+
+    assert.strictEqual(a.isArray(result.result), true, 'Test array');
+    assert.strictEqual(result.result.length, 2, 'Test size');
+    assert.strictEqual(result.variables.length, 0, 'Test variables');
+    assert.strictEqual(result.result[0], 'a', 'Test first');
+    assert.strictEqual(result.result[1], 'b', 'Test first');
+});
+
+
+// Test this keyword
+QUnit.test('a.jsep.this', function (assert) {
+    assert.expect(1);
+
+    var tree = a.jsep.parse('this.b');
+    var parser = a.jsep.interpreter('qunit.jsep.this', true, true, true);
+
+    var result = parser.evaluate(tree, {
+        b: 'ok'
+    });
+
+    assert.strictEqual(result.result, 'ok', 'Test value');
+});
+
+
+// Test compound
+QUnit.test('a.jsep.compound', function (assert) {
+    assert.expect(7);
+
+    var tree = a.jsep.parse('a, b');
+    var parser = a.jsep.interpreter('qunit.jsep.compound', true, true, true);
+
+    var result = parser.evaluate(tree, {
+        a: 'first',
+        b: 'second'
+    });
+
+    assert.strictEqual(a.isArray(result.result), true, 'Test array');
+    assert.strictEqual(result.result.length, 2, 'Test size');
+    assert.strictEqual(result.result[0], 'first', 'Test first');
+    assert.strictEqual(result.result[1], 'second', 'Test second');
+
+    assert.strictEqual(result.variables.length, 2, 'Test variables length');
+    assert.strictEqual(result.variables[0], 'a', 'Test variable 1');
+    assert.strictEqual(result.variables[1], 'b', 'Test variable 2');
+});
+
+
+// Test if structure
+QUnit.test('a.jsep.ternary-operator', function (assert) {
+    assert.expect(2);
+
+    var tree = a.jsep.parse('4 == b ? 4: 5'),
+        parser = a.jsep.interpreter('qunit.jsep.ternary-operator', true, true,
+                true);
+
+    var result1 = parser.evaluate(tree, {
+        b: 4
+    });
+    var result2 = parser.evaluate(tree, {
+        b: 2
+    });
+
+    assert.strictEqual(result1.result, 4, 'Test 1');
+    assert.strictEqual(result2.result, 5, 'Test 1');
+});
+
+
 // Logical operator not defined raise error on console
-QUnit.test('a.jsep.not-defined-logical', function(assert) {
+QUnit.test('a.jsep.not-defined-logical', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('1 && 1');
@@ -167,7 +233,7 @@ QUnit.test('a.jsep.not-defined-logical', function(assert) {
 
 
 // Binary operator not defined raise error on console
-QUnit.test('a.jsep.not-defined-binary', function(assert) {
+QUnit.test('a.jsep.not-defined-binary', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('1 + 1');
@@ -184,7 +250,7 @@ QUnit.test('a.jsep.not-defined-binary', function(assert) {
 
 
 // Unary operator not defined raise error on console
-QUnit.test('a.jsep.not-defined-unary', function(assert) {
+QUnit.test('a.jsep.not-defined-unary', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('-a');
@@ -205,7 +271,7 @@ QUnit.test('a.jsep.not-defined-unary', function(assert) {
 // raise wrong error like this (for example with object members identifier
 // will be called...)
 // So we just check the system does not crash...
-QUnit.test('a.jsep.not-defined-identifier', function(assert) {
+QUnit.test('a.jsep.not-defined-identifier', function (assert) {
     assert.expect(2);
 
     var tree = a.jsep.parse('a');
@@ -216,4 +282,49 @@ QUnit.test('a.jsep.not-defined-identifier', function(assert) {
 
     assert.strictEqual(result.result, 'a', 'Test string return');
     assert.strictEqual(result.variables.length, 0);
+});
+
+
+// Not defined function call
+QUnit.test('a.jsep.not-defined-call', function (assert) {
+    assert.expect(5);
+
+    var tree = a.jsep.parse('func(12)');
+    var parser = a.jsep.interpreter('qunit.jsep.not-defined-call', true, true,
+            true);
+
+    var result = parser.evaluate(tree),
+        trace = a.console.trace('error');
+
+    assert.strictEqual(result.result, null, 'Test null value');
+    assert.strictEqual(result.variables.length, 0, 'Test no variable involve');
+    assert.strictEqual(trace[0].source,
+        'a.jsep.interpreter.qunit.jsep.not-defined-call', 'Test source');
+    assert.ok(trace[0].args[0].indexOf('The function')>0, 'Test log 1');
+    assert.ok(trace[0].args[0].indexOf('could not be resolved')>0, 'Test log');
+});
+
+
+// Not defined object member
+QUnit.test('a.jsep.not-defined-member', function (assert) {
+    assert.expect(4);
+
+    var tree = a.jsep.parse('a.b[c]');
+    var parser = a.jsep.interpreter('qunit.jsep.not-defined-member', true,true,
+            true);
+
+    var result = parser.evaluate(tree, {
+        a: {
+            b: {
+                z: 'ok'
+            }
+        }
+    });
+    var trace = a.console.trace('error');
+
+    assert.strictEqual(result.result, null, 'Test result');
+    assert.strictEqual(trace[0].source,
+        'a.jsep.interpreter.qunit.jsep.not-defined-member', 'Test source');
+    assert.ok(trace[0].args[0].indexOf('The property') > 0, 'Test log');
+    assert.ok(trace[0].args[0].indexOf('could not be found') > 0, 'Test log');
 });
