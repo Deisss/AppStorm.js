@@ -20,6 +20,17 @@
 */
 window.appstorm = window.a = _.cloneDeep(_.noConflict());
 
+(function(a) {
+    /**
+     * Avoid namespace conflict.
+     *
+     * @return {AppStorm.JS}                The main a object from AppStorm.JS
+    */
+    a.noConflict = function() {
+        return this;
+    };
+})(window.appstorm);
+
 /**
  * The core url (for vendor loading)
  *
@@ -2972,7 +2983,7 @@ a.dom.children.prototype = {
 
     /**
      * Select all sub elements.
-     *=
+     *
      * @chainable
     */
     all: function() {
@@ -3132,6 +3143,48 @@ a.dom.children.prototype = {
             }
             return results;
         }
+    },
+
+    /**
+     * Get the text content of every elements included. If the parameter is
+     * set to false, children are not included, if the parameter is set on
+     * true, children are included.
+     *
+     * @param {Boolean} includeChildren     True, the children are included
+     *                                      False, they are not
+     * @return {String  | Array}            If the array contains one element
+     *                                      the direct string is returned, in
+     *                                      other cases, the array is returned
+    */
+    text: function(includeChildren) {
+        // If not defined, we set on true by default
+        if (includeChildren !== false) {
+            includeChildren = true;
+        }
+
+        var results = [];
+
+        this.each(function() {
+            if (includeChildren) {
+                results.push(this.textContent);
+            } else {
+                var content = '';
+                for(var i = 0, l = this.childNodes.length; i < l; ++i) {
+                    var node = this.childNodes[i];
+                    if(node.nodeType === 3) {
+                        content += node.nodeValue;
+                    }
+                }
+                results.push(content);
+            }
+        });
+
+        if(results.length === 0) {
+            return '';
+        } else if(results.length === 1) {
+            return results[0];
+        }
+        return results;
     },
 
     /**
@@ -5414,6 +5467,525 @@ a.mock = {
         }
 
         return result;
+    }
+};;/**
+ * Helper to use JSEP inside AppStorm.JS.
+ *
+ * This system provide an interpreter for JSEP parser, allowing to compute
+ * a value from a JSEP parsing output.
+*/
+a.jsep = {
+    /**
+     * The original JSEP parser
+     *
+     * @property parser
+    */
+    jsep: jsep.noConflict() || null,
+
+    /**
+     * Evaluate a string as a JSEP instruction. Get back the JSEP tree map.
+     *
+     * @param {String} str                  The string to get JSEP map from.
+     * @return {Object}                     A JSEP tree map.
+    */
+    parse: function (str) {
+        if (a.jsep.jsep === null) {
+            return {};
+        }
+        return a.jsep.jsep(str);
+    },
+
+    /**
+     * Internal is an object used to count variables when dealing with
+     * interpreter. It's usefull to know what variables are used in a given
+     * sentence.
+     * Note: you probably don't need to deal with it...
+    */
+    internal: function () {
+        if (!(this instanceof a.jsep.internal)) {
+            return new a.jsep.internal();
+        }
+
+        var data = {};
+
+        /**
+         * Increase variable.
+         *
+         * @private
+         *
+         * @param {String} name             The variable name to count
+        */
+        this.increaseVar = function (name) {
+            if (data.hasOwnProperty(name)) {
+                data[name]++;
+            } else {
+                data[name] = 1;
+            }
+        };
+
+        /**
+         * Decrease variable.
+         *
+         * @private
+         *
+         * @param {String} name             The variable name to count
+        */
+        this.decreaseVar = function (name) {
+            if (data.hasOwnProperty(name)) {
+                data[name]--;
+                if (data[name] <= 0) {
+                    delete data[name];
+                }
+            }
+        };
+
+        /**
+         * Get the current variable list.
+         *
+         * @private
+         *
+         * @return {Object}                 List of variables in use
+        */
+        this.getListVar = function () {
+            return data;
+        };
+    },
+
+    /**
+     * Get an instance of the default JSEP interpreter.
+     * With it, you can convert JSEP tree to actual result. Depending on the
+     * configuration you choose.
+     *
+     * @param {String} name                 The interpreter name, must be
+     *                                      unique or you may have conflict
+     *                                      with other interpreter instance.
+     * @param {Boolean} useDefaultBinaryOperators If system should register
+     *                                      for you the default binary
+     *                                      operators (+, -, *, /, %, ==, ...)
+     * @param {Boolean} useDefaultLogicalOperators If system should register
+     *                                      for you the default logical
+     *                                      operators (operators: ||, &&)
+     * @param {Boolean} useDefaultUnaryOperators If system should register
+     *                                      for you the default unary operators
+     *                                      (-, +, !, ~).
+     * @return {Object}                     A new instance of JSEP interpreter.
+    */
+    interpreter: function (name, useDefaultBinaryOperators,
+            useDefaultLogicalOperators, useDefaultUnaryOperators) {
+        if (a.jsep.jsep === null) {
+            return {};
+        }
+
+        if (!(this instanceof a.jsep.interpreter)) {
+            return new a.jsep.interpreter(name, useDefaultBinaryOperators,
+                    useDefaultLogicalOperators, useDefaultUnaryOperators);
+        }
+
+        // Storage to use functions inside.
+        this.logicalOperators = a.mem.getInstance(name + '.operators.logical');
+        this.binaryOperators = a.mem.getInstance(name + '.operators.binary');
+        this.unaryOperators = a.mem.getInstance(name + '.operators.unary');
+
+        /**
+         * Evaluate a given JSEP result (see a.jsep.parse function), and
+         * output the value.
+         * Note that depending on how the interpreter is configured, the
+         * value outputted can be quite different from two interpreter...
+         *
+         * @param {Object} data         A JSEP parse results.
+         * @param {Object} scope        Any scope to use here...
+         * @return {Object}             An object composed of result, the
+         *                              computed result, and variables, a
+         *                              list of variables from scope used.
+        */
+        this.evaluate = function (data, scope) {
+            var internal = a.jsep.internal();
+            scope = scope || {};
+            var result = this.expressions.parse(data, internal, scope);
+
+            return {
+                variables: a.keys(internal.getListVar()),
+                result: result
+            };
+        };
+
+        // Shorter
+        var lo = this.logicalOperators,
+            bo = this.binaryOperators,
+            uo = this.unaryOperators,
+            source = 'a.jsep.interpreter.' + name;
+
+
+        /*!
+          ------------------------------
+            DEFAULT BINARY OPERATORS
+          ------------------------------
+        */
+        if (useDefaultBinaryOperators === true) {
+            bo.set('^', function (left, right) {
+                return Math.pow(left, right);
+            });
+            bo.set('+',   function (left, right) {  return left + right;    });
+            bo.set('-',   function (left, right) {  return left - right;    });
+            bo.set('*',   function (left, right) {  return left * right;    });
+            bo.set('/',   function (left, right) {  return left / right;    });
+            bo.set('%',   function (left, right) {  return left % right;    });
+            bo.set('|',   function (left, right) {  return left | right;    });
+            bo.set('&',   function (left, right) {  return left & right;    });
+            bo.set('==',  function (left, right) {  return left == right;   });
+            bo.set('===', function (left, right) {  return left === right;  });
+            bo.set('!=',  function (left, right) {  return left != right;   });
+            bo.set('!==', function (left, right) {  return left !== right;  });
+            bo.set('<',   function (left, right) {  return left < right;    });
+            bo.set('>',   function (left, right) {  return left > right;    });
+            bo.set('<=',  function (left, right) {  return left <= right;   });
+            bo.set('>=',  function (left, right) {  return left >= right;   });
+            bo.set('<<',  function (left, right) {  return left << right;   });
+            bo.set('>>',  function (left, right) {  return left >> right;   });
+            bo.set('>>>', function (left, right) {  return left >>> right;  });
+        }
+
+        /*!
+          ------------------------------
+            DEFAULT LOGICAL OPERATORS
+          ------------------------------
+        */
+        if (useDefaultLogicalOperators === true) {
+            lo.set('||', function (left, right) { return left || right; });
+            lo.set('&&', function (left, right) { return left && right; });
+        }
+
+        /*!
+          ------------------------------
+            DEFAULT UNARY OPERATORS
+          ------------------------------
+        */
+        if (useDefaultUnaryOperators === true) {
+            uo.set('-', function (left) {  return -left;  });
+            uo.set('!', function (left) {  return !left;  });
+            uo.set('~', function (left) {  return ~left;  });
+            uo.set('+', function (left) {  return +left;  });
+        }
+
+        /*!
+         * @private
+        */
+
+        /**
+         * List of functions actually doing parsing...
+         * You can modify those functions in case of specific parsing
+         * you may need.
+        */
+        this.expressions = {
+            /**
+             * Found literal (constant) value, like 1, or
+             * 'hello'. This function simply returns it's value.
+             *
+             * @param {Object} data         The literal object
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The javascript value of current
+             *                              literal expression
+            */
+            literalExpression: function (data, internal, scope) {
+                return data.value;
+            },
+
+            /**
+             * Found 'this' keyword. This function simply returns scope.
+             *
+             * @param {Object} data         The this object
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Object}             The scope
+            */
+            thisExpression: function (data, internal, scope) {
+                return scope;
+            },
+
+            /**
+             * Found member of a given object. A member is a property from
+             * an object, like a.b or a[b] in js.
+             *
+             * @param {Object} data         The data with member expression
+             *                              inside
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The scope associated
+             * @return {Object | Null}      The object propery values
+            */
+            memberExpression: function (data, internal, scope) {
+                var obj = this.parse(data.object, internal, scope),
+                    property = this.parse(data.property, internal, scope);
+
+                if (typeof obj[property] === 'undefined') {
+                    // Specific case to handle
+                    if(data.object.type === 'ThisExpression') {
+                        return property;
+                    }
+                    a.console.storm('error', source, 'The property ```' +
+                        property + '``` could not be found', 1);
+                    return null;
+                }
+
+                // We are getting the property
+                return obj[property];
+            },
+
+            /**
+             * Found an identifier. An identifier is basically a variable.
+             * Like a + b, a and b are identifiers taken from scope.
+             *
+             * @param {Object} data         The identifier expression inside
+             * @param {Object} internal     The object with variables currently
+             *                              in use
+             * @param {Object} scope        The scope in use
+             * @return {Object | String}    The object propery values, or the
+             *                              property string if not found.
+            */
+            identifierExpression: function (data, internal, scope) {
+                if (scope.hasOwnProperty(data.name)) {
+                    internal.increaseVar(data.name);
+                    return scope[data.name];
+                }
+
+                return data.name;
+            },
+
+            /**
+             * Found an array expression. This function will convert it
+             * to true JS array.
+             * Note: this function can have pretty bad side effect...
+             *
+             * @param {Object} data         The array structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Array}              A javascript version of array
+            */
+            arrayExpression: function (data, internal, scope) {
+                var arr = [];
+
+                for (var i in data.elements) {
+                    if (data.elements.hasOwnProperty(i)) {
+                        arr.push(this.parse(data.elements[i], internal,
+                                scope));
+                    }
+                }
+
+                return arr;
+            },
+
+            /**
+             * Found a function call. The function will be searched inside
+             * the scope.
+             *
+             * @param {Object} data         The function calling arguments
+             *                              and name
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed | Null}       The result of function call, or
+             *                              null if function is not found in
+             *                              scope
+            */
+            callExpression: function (data, internal, scope) {
+                var fct = this.parse(data.callee, internal, scope),
+                    args = [];
+
+                if (a.isFunction(fct)) {
+                    internal.decreaseVar(data.callee.name);
+
+                    for (var i in data.arguments) {
+                        if (data.arguments.hasOwnProperty(i)) {
+                            args.push(this.parse(data.arguments[i],
+                                    internal, scope));
+                        }
+                    }
+
+                    return fct.apply(null, args);
+                } else {
+                    a.console.storm('error', source, 'The function ```' + 
+                            data.callee.name + '``` could not be resolved...',
+                            1);
+                }
+                return null;
+            },
+
+            /**
+             * Found a conditional expression (a ? b : c). This is the
+             * only type of 'if' supported.
+             *
+             * @param {Object} data         The conditional structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The result of the if selector
+            */
+            conditionalExpression: function (data, internal, scope) {
+                var test = this.parse(data.test, internal, scope),
+                    consequent = this.parse(data.consequent, internal,
+                            scope),
+                    alternate = this.parse(data.alternate, internal,
+                            scope);
+
+                return (test === true) ? consequent: alternate;
+            },
+
+            /**
+             * Found more than one expression. This function will create
+             * an array with every result in every case.
+             *
+             * @param {Object} data         The compound structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Array}              An array of values
+            */
+            compoundExpression: function (data, internal, scope) {
+                var arr = [];
+
+                for (var i in data.body) {
+                    if (data.body.hasOwnProperty(i)) {
+                        arr.push(this.parse(data.body[i], internal,
+                                scope));
+                    }
+                }
+
+                return arr;
+            },
+
+            /**
+             * Found a unary operator, like -a (negate a), here the -
+             * is a unary operator, or the operator not (!) also...
+             * This function will rely on 'unaryOperators' store to find
+             * a related function to apply the operation.
+             *
+             * @param {Object} data         The unary structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The unary result
+            */
+            unaryExpression: function (data, internal, scope) {
+                var result = this.parse(data.argument, internal, scope),
+                    operator = uo.get(data.operator);
+
+                if (!a.isFunction(operator)) {
+                    a.console.storm('error', source,
+                            'Unknow unary operator ```' + data.operator +
+                            '```', 1);
+                    return result;
+                }
+
+                return operator.call(this, result, data, internal, scope);
+            },
+
+            /**
+             * The most common case, like "+" or "-" or "/" operators.
+             * Probably the most common, which are basic manipulations
+             * in both number and string areas.
+             *
+             * @param {Object} data         The binary structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The binary result
+            */
+            binaryExpression: function (data, internal, scope) {
+                var left = this.parse(data.left, internal, scope),
+                    right = this.parse(data.right, internal, scope),
+                    operator = bo.get(data.operator);
+
+                if (!a.isFunction(operator)) {
+                    a.console.storm('error', source,
+                        'Unknow binary operator ```' + data.operator +
+                        '```', 1);
+                    return left + right;
+                }
+
+                return operator.call(this, left, right, data, internal,
+                        scope);
+            },
+
+            /**
+             * Logical operators like "||" or "&&".
+             *
+             * @param {Object} data         The logical structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The logical result
+            */
+            logicalExpression: function (data, internal, scope) {
+                var left = this.parse(data.left, internal, scope),
+                    right = this.parse(data.right, internal, scope),
+                    operator = lo.get(data.operator);
+
+                if (a.isNone(operator) || !a.isFunction(operator)) {
+                    a.console.storm('error', source,
+                        'Unknow logical operator ```' + data.operator +
+                        '```', 1);
+                    return left && right;
+                }
+
+                return operator.call(this, left, right, data, internal,
+                        scope);
+            },
+
+            /**
+             * The main parser, will take anything from jsep and convert it
+             * to what we need. You probably don't need to touch at all
+             * this function.
+             *
+             * @param {Object} data         The data structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed | Null}       The parsed result, or null in case
+             *                              of problem
+            */
+            parse: function (data, internal, scope) {
+                if (data && data.type) {
+                    switch (data.type) {
+                        case 'BinaryExpression':
+                            return this.binaryExpression(data, internal,
+                                    scope);
+                        case 'UnaryExpression':
+                            return this.unaryExpression(data, internal,
+                                    scope);
+                        case 'LogicalExpression':
+                            return this.logicalExpression(data, internal,
+                                    scope);
+                        case 'CallExpression':
+                            return this.callExpression(data, internal,
+                                    scope);
+                        case 'MemberExpression':
+                            return this.memberExpression(data, internal,
+                                    scope);
+                        case 'Identifier':
+                            return this.identifierExpression(data,
+                                    internal, scope);
+                        case 'Literal':
+                            return this.literalExpression(data, internal,
+                                    scope);
+                        case 'ArrayExpression':
+                            return this.arrayExpression(data, internal,
+                                    scope);
+                        case 'Compound':
+                            return this.compoundExpression(data, internal,
+                                    scope);
+                        case 'ThisExpression':
+                            return this.thisExpression(data, internal,
+                                    scope);
+                        case 'ConditionalExpression':
+                            return this.conditionalExpression(data,
+                                    internal, scope);
+                        default:
+                            a.console.storm('error', source,
+                                'Unknow type, cannot parse ```' +
+                                data.type + '```', 1);
+                            return null;
+                    }
+                }
+                return null;
+            }
+
+            /*!
+             * @private
+            */
+        };
     }
 };;/*! ***********************************************************************
 
@@ -8018,7 +8590,7 @@ a.translate = a.i18n = (function() {
         return new Handlebars.SafeString(
                 a.translate.get.apply(null, arguments));
     });
-})();;/* ************************************************************************
+})();;/*! ***********************************************************************
 
     License: MIT Licence
 
@@ -8030,9 +8602,7 @@ a.translate = a.i18n = (function() {
 /**
  * Manipulate HTML form by with a simple system.
  *
- * @class form
- * @static
- * @namespace a
+ * @constructor
 */
 a.form = (function() {
     'use strict';
@@ -8053,10 +8623,9 @@ a.form = (function() {
     /**
      * Get the field key from given input.
      *
-     * @method getFieldKey
      * @private
      *
-     * @param e {DOMElement}                The element o search value inside
+     * @param {DOMElement} e                The element o search value inside
      * @return {String}                     The value found
     */
     function getFieldKey(e) {
@@ -8083,10 +8652,9 @@ a.form = (function() {
     /**
      * Get the field value for given input.
      *
-     * @method getFieldValue
      * @private
      *
-     * @param e {DOMElement}                The element to search value inside
+     * @param {DOMElement} e                The element to search value inside
      * @return {String}                     The value found
     */
     function getFieldValue(e) {
@@ -8106,10 +8674,9 @@ a.form = (function() {
     /**
      * From a given dom, get the list of revelant elements inside.
      *
-     * @method getFieldList
      * @private
      *
-     * @param dom {a.dom}                   The dom element to search inside
+     * @param {a.dom} dom                   The dom element to search inside
      * @return {Array}                      The element list inside DOM
     */
     function getFieldList(dom) {
@@ -8138,14 +8705,13 @@ a.form = (function() {
     /**
      * Raise an error on input.
      *
-     * @method validateError
      * @private
      *
-     * @param el {DOMElement}               The element where comes from error
-     * @param id {String}                   The element id/name/class
-     * @param name {String | null}          The name (like min, pattern, ...)
+     * @param {DOMElement} el               The element where comes from error
+     * @param {String} id                   The element id/name/class
+     * @param {String | Null} name          The name (like min, pattern, ...)
      *                                      which is not valid, can be null
-     * @param value {String | null}         The current input value
+     * @param {String | Null} value         The current input value
      *                                      (can be used as parameter)
      * @return {Object}                     A validate object with everything
      *                                      inside if possible
@@ -8188,11 +8754,10 @@ a.form = (function() {
      * We try to grab the model instance, or a new model instance if it's not
      * an existing model instance.
      *
-     * @method getModel
      * @private
      *
-     * @param idOrModelName {String}            From HTML side, the id or the model
-     *                                          name to use for this form.
+     * @param {String} idOrModelName            From HTML side, the id or the
+     *                                          model name to use for this form
      * @return {a.modelInstance}                A new or existing instance
     */
     function getModel(idOrModelName) {
@@ -8204,157 +8769,11 @@ a.form = (function() {
         }
     }
 
-    /**
-     * Apply model content to form, automatically
-     *
-     * @method applymodelToForm
-     * @private
-     *
-     * @param form {DOMElement}             The form to apply model into
-     * @param model {a.modelInstance}       The instance to take elements from
-     * @param constraints {Object}          List of constraint to use for
-     *                                      rendering the form. 
-    */
-    function applyModelToForm(form, model, constraints) {
-        // Get model properties
-        var propertiesName = model.list(),
-            // Rendered elements
-            propertiesRendering = {};
-        form = a.dom.el(form);
-
-        /*
-        ------------------------------------
-          CHECK ALLOWED & REFUSED CONSTRAINT
-        ------------------------------------
-        */
-        var allowed = constraints.allowed,
-            refused = constraints.refused;
-
-        // Uniform data before using
-        // TODO: this should be done when adding forms to model
-        // not here
-        if(a.isString(allowed) && allowed) {
-            allowed = [allowed];
-        }
-        if(a.isString(refused) && refused) {
-            refused = [refused];
-        }
-
-        // Remove properties which are not allowed or are refused to be here
-        var isArrayAllowed = a.isArray(allowed),
-            isArrayRefused = a.isArray(refused);
-
-        if(isArrayAllowed || isArrayRefused) {
-            var i = propertiesName.length;
-            while(i--) {
-                if(isArrayRefused && a.contains(refused, propertiesName[i])) {
-                    propertiesName.splice(i, 1);
-                } else if(isArrayAllowed &&
-                        !a.contains(allowed, propertiesName[i])) {
-                    propertiesName.splice(i, 1);
-                }
-            }
-        }
-
-
-        /*
-        ------------------------------------
-          GENERATING PROPERTIES
-        ------------------------------------
-        */
-        // For every property, we create corresponding element
-        var custom = constraints.customize || constraints.custom || null;
-        a.each(propertiesName, function(property) {
-            var type = model.type(property),
-                tag = null,
-                value = model.get(property),
-                el = null;
-
-            // TODO: déporter la création de l'élément pour plus de claretée
-            switch(type) {
-                case 'radio':
-                    // hardcoreeee
-                    break;
-                case 'checkbox':
-                    tag = 'input';
-                    el = document.createElement('input');
-                    el.type = 'checkbox';
-                    break;
-                default:
-                    tag = 'input';
-                    el = document.createElement('input');
-                    el.type = 'text';
-                    if(value !== null) {
-                        el.value = value;
-                    }
-                    break;
-            }
-
-            // TODO: do automatic translation using the model name and property name
-            // Like define Placeholder.ModelName.PropertyName
-
-            // Applying customize constraint
-            if(custom) {
-                var fct = null,
-                    result = null;
-
-                if(custom[property]) {
-                    fct = custom.property;
-                    result = fct.call(null, el, property);
-
-                    if(a.isTrueObject(result)) {
-                        el = result;
-                    }
-                }
-                if(custom[tag]) {
-                    fct = custom[tag];
-                    result = fct.call(null, el, property);
-
-                    if(a.isTrueObject(result)) {
-                        el = result;
-                    }
-                }
-                if(custom[type]) {
-                    fct = custom[type];
-                    result = fct.call(null, el, property);
-
-                    if(a.isTrueObject(result)) {
-                        el = result;
-                    }
-                }
-            }
-
-            // Store elements
-            propertiesRendering[property] = el;
-        });
-
-        // TODO: if label, create label related to every properties
-        if(constraints.label || constraints.showLabel) {
-
-        }
-
-
-        /*
-        ------------------------------------
-          RENDERING
-        ------------------------------------
-        */
-        // TODO: find a way to place beforeRendering, rendering, afterRendering
-        var placement = constraints.placement;
-
-        if(a.isArray(placement)) {
-            // TODO: apply algorithm to place properties at the right order
-        } else {
-            // TODO: apply block creation...
-            a.each(propertiesRendering, function(element) {
-                form.append(element);
-            });
-        }
-    }
-
     return {
         /**
-         * Allow to skip HTML5 form-novalidate tag or not (boolean)
+         * Allow to skip HTML5 form-novalidate tag or not (boolean).
+         * This help to avoid browser HTML5 validation to keep only AppStorm
+         * one.
          *
          * @property skipNoValidate
          * @type Boolean
@@ -8365,9 +8784,7 @@ a.form = (function() {
         /**
          * Get the list of element stored into given form.
          *
-         * @method get
-         *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Object}                 The list of input tags existing
@@ -8422,7 +8839,7 @@ a.form = (function() {
         },
 
         /**
-         * Validate a form
+         * Validate a form.
          * Note : multiple tester (email, file) is not supported
          * Note : date field (date, datetime, datetime-local,
          * month, time, week) are not supported
@@ -8430,7 +8847,7 @@ a.form = (function() {
          *
          * @method validate
          *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Array}                  An array with all errors listed
@@ -8578,9 +8995,7 @@ a.form = (function() {
         /**
          * Validate and get the form content.
          *
-         * @method validateAndGet
-         *
-         * @param dom {Object}              The dom element to search inside
+         * @param {Object} dom              The dom element to search inside
          *                                  - It has to be a valid a.dom.el
          *                                  input
          * @return {Object}                 An object with error (boolean),
@@ -8597,47 +9012,12 @@ a.form = (function() {
                 obj.error = true;
             }
             return obj;
-        },
-
-        /**
-         * Insert model content into form regarding the given data-model
-         * submitted.
-         * Note: you should avoid as much as possible to use this function
-         * and let appstorm do it for you threw state...
-         *
-         * @method model
-         *
-         * @param dom {Object}              The dom element to search inside.
-         *                                  You should submit a list of 'form'
-         *                                  elements which may have data-model
-         *                                  tag.
-        */
-        model: function(dom) {
-            dom = a.dom.el(dom);
-
-            // Searching for data-model tag
-            dom.each(function() {
-                var el = a.dom.el(this),
-                    // May contains: modelname or modeluid
-                    // Use the {{model variable}} to insert it properly
-                    modelIdOrName = el.data('model'),
-                    requestName = el.data('method'),
-                    formName = el.data('form');
-
-                // We found elements using data-model tag
-                if(modelIdOrName && requestName) {
-                    // Will get existing model, or bring a new one...
-                    var model = getModel(modelIdOrName),
-                        request = model.request(requestName),
-                        form = model.form(formName);
-
-                    // Now we use model to populate form inside
-                    applyModelToForm(el, model, form);
-                }
-            });
         }
-    };
 
+        /*!
+         * @private
+        */
+    };
 })();;/* ************************************************************************
 
     License: MIT Licence
@@ -9602,16 +9982,18 @@ a.state = new function() {
   HANDLEBARS HELPERS
 ------------------------------
 */
-(function() {
-    // Get injected elements
-    Handlebars.registerHelper('inject', function(key) {
-        return new Handlebars.SafeString(a.state._inject[key] || null);
-    });
+Handlebars.registerHelper('inject', function(key) {
+    return new Handlebars.SafeString(a.state._inject[key] || null);
+});
 
-    a.parameter.addParameterType('inject',  function(key) {
-        return a.state._inject[key] || null;
-    });
-})();;/* ************************************************************************
+/*
+------------------------------
+  PARAMETERS HELPERS
+------------------------------
+*/
+a.parameter.addParameterType('inject',  function(key) {
+    return a.state._inject[key] || null;
+});;/* ************************************************************************
 
     License: MIT Licence
 
@@ -11026,15 +11408,6 @@ a.state.protocol = new function() {
         }
 
         return hash;
-    }, false);
-
-    // Get the url from the given model element
-    // You must provide 'model://name:uri' where name is the model name
-    // and uri the resources url you're trying to use...
-    a.state.protocol.add('model', function(state, index) {
-        // TODO: make model instance by using a.model.manager
-        // From that model, get the request
-        // As the user has to submit model://name:uri
     }, false);
 })();;/**
  * Create a binding system between HTML dom elements.
@@ -13216,5 +13589,305 @@ a.template = {
             chain.next();
         }
     }, true);
-})();;// Final script, appstorm is ready
+})();;/*! ***********************************************************************
+
+    License: MIT Licence
+
+    Description:
+        Live is a live data binding inside HTML element. Allowing to
+        quickly create dynamic elements in your application.
+
+************************************************************************ */
+
+(function(a) {
+    // Test there is or not position inside
+    var regIsLive = /\u200c\u200c([^\u200c]+)\u200c\u200c/i,
+        regExtractLive = /\u200c\u200c([^\u200c]+)\u200c\u200c/gi;
+
+    // Interpreter is the main elements for changing "a + b"
+    // into actual a + b compute.
+    var interpreter = a.jsep.interpreter('app.live', true, true, true);
+
+    /**
+     * Increase the internal counter.
+     * The internal counter is used to know what are the variables in use
+     * in this system.
+     *
+     * @param internal The internal object.
+     * @param name The property name to store.
+    */
+    function increaseInternal(internal, name) {
+        if (internal.hasOwnProperty(name)) {
+            internal[name]++;
+        } else {
+            internal[name] = 1;
+        }
+    }
+
+    // We need to change one method from interpreter
+    // We need to know every variables involved, no matter if they
+    // exist or not, compare to official solution which matters.
+    interpreter.expressions.identifierExpression = function (data, internal,
+            scope) {
+        // No matter is the element is found in the scope or
+        // not, it's counted as inside the scope.
+        increaseInternal(internal, data.name);
+
+        if (scope.hasOwnProperty(data.name)) {
+            return scope[data.name];
+        }
+
+        return data.name;
+    };
+
+    // Will store all last bindings found
+    var store = a.mem.getInstance('app.live.local');
+
+    /**
+     * The given element can change element.
+     *
+     * @private
+     *
+     * @param {DOMElement} el               The element to check.
+    */
+    function isEmitter(el) {
+        var tag = el.tagName;
+        return (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
+    }
+
+    /**
+     * The element accept full replace data binding.
+     *
+     * @private
+     *
+     * @param {DOMElement} el               The element to check.
+    */
+    function isLiveGlobal(el) {
+        var data = el.getAttribute('data-live');
+        return !a.isNone(data);
+    }
+
+    /**
+     * The element implements some live position.
+     *
+     * @private
+     *
+     * @param {DOMElement} el               The element to check.
+    */
+    function isLiveLocal(el) {
+        regIsLive.lastIndex = 0;
+        var text = a.dom.el(el).text(false);
+        return regIsLive.test(text);
+    }
+
+    /**
+     * Search for local bindings, and create the final data-live-local tag
+     *
+     * @private
+     *
+     * @param {DOMElement} el               The element to check
+    */
+    function createLiveLocal(el) {
+        var text  = a.dom.el(el).text(false),
+            local = [],
+            match = null;
+
+        regExtractLive.lastIndex = 0;
+
+        // For every \u200C\u200C something \u200C\u200C tag found,
+        // We append to local
+
+        while ((match = regExtractLive.exec(text)) !== null) {
+            local.push(match[1]);
+        }
+
+        // Publishing local
+        el.setAttribute('data-live-local', local.join(','));
+    }
+
+    /**
+     * Perform change on other elements
+     *
+     * @method applyChange
+     * @private
+     *
+     * @param name {String}                 The binding name
+     * @param value {String}                The binding value to apply
+    */
+    function applyChange(el, name, value) {
+        // Updating data
+        el = this || el;
+        // TODO: change that for el => data-live
+        name = el.getAttribute('data-live') || name;
+        value = value || el.value;
+
+        var nameTree = a.jsep.parse(name),
+            nameOutput = interpreter.evaluate(nameTree);
+
+        // Storing every variables
+        for (var i = 0, l = nameOutput.variables.length; i < l; ++i) {
+            store.set(nameOutput.variables[i], value);
+        }
+
+        // Getting the store list
+        var list = store.list();
+
+        // Searching data-bind elements tags
+        a.dom.attr('data-live').each(function() {
+            if (el && this === el) {
+                return;
+            }
+
+            var resultTree = a.jsep.parse(this.getAttribute('data-live')),
+                resultOutput = interpreter.evaluate(resultTree, list);
+
+            if (isEmitter(this)) {
+                this.value = resultOutput.result;
+            } else {
+                this.innerHTML = resultOutput.result;
+            }
+        });
+
+        // Search live elements tag
+        a.dom.attr('data-live-local').each(function() {
+            if (el && this === el) {
+                return;
+            }
+
+            var resultTree = a.jsep.parse(this.getAttribute('data-live-local')),
+                resultOutput = interpreter.evaluate(resultTree, list);
+
+            // The most simple case, data-live-local is a single element
+            if (!a.isArray(resultOutput.result)) {
+                resultOutput.result = [resultOutput.result];
+            }
+
+            var found = 0,
+                max = resultOutput.result.length;
+
+            for(var i = 0, l = this.childNodes.length; i < l && found < max;
+                    ++i) {
+                var node = this.childNodes[i];
+                if(node.nodeType === 3) {
+                    var str   = node.nodeValue,
+                        start = str.indexOf('\u200c\u200c'),
+                        end   = str.indexOf('\u200c\u200c', start + 1);
+
+                    if (start > 0 && end > 0 && start < end) {
+                        offset = end + 1;
+                        node.nodeValue = str.substr(0, start + 2) +
+                            resultOutput.result[found] +
+                            str.substr(end, str.length - 1);
+                        found++;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Tiny binder between the applyChange function and event related.
+     *
+     * @private
+     *
+     * @param {Object} evt                  The input event.
+    */
+    function eventApplyChange(e) {
+        applyChange.call(e.target);
+    }
+
+    a.live = {
+        /**
+         * The global store where everything is stored for usage.
+         *
+         * @property store
+        */
+        store: a.mem.getInstance('app.live.global'),
+
+        /**
+         * Bind every elements using tag live.
+         * NOTE: this concern only emitters, like input, textarea... Other
+         * elements are always affacted.
+         *
+         * @param {DOMElement | Null} root  The element to start binding from
+         * @return {Array}                  All the HTML elements binded
+        */
+        bind: function(root) {
+            var elements = [];
+
+            // We get elements subject to binding
+            a.dom.el(root || document).each(function() {
+                // We try to catch every sub elements
+                a.dom.el(this).children().each(function() {
+                    var tmpElements = a.live.bind(this);
+                    elements.concat(tmpElements);
+                });
+
+                var liveGlobal = isLiveGlobal(this);
+
+                // We bind elements who emit data
+                if (isEmitter(this) && liveGlobal) {
+                    elements.push(this);
+                    // On change apply binding
+                    a.dom.el(this).bind('change input keydown',
+                            eventApplyChange);
+                    // Start first time
+                    applyChange.call(this);
+
+                // In this case we have elements binding inside the text
+                } else if (isLiveLocal(this) && !liveGlobal) {
+                    createLiveLocal(this);
+                }
+            });
+
+            return elements;
+        },
+
+        /**
+         * Remove binded elements which are using tag live.
+         * NOTE: this concern only emitters, like input, textarea... Other
+         * elements are always affacted.
+         *
+         * @param {DOMElement | Null} root The element to start unbind from
+         * @return {Array}                 All the html elements binded
+        */
+        unbind: function(root) {
+            var elements = [];
+
+            // We get elements subject to binding
+            a.dom.el(root || document).each(function() {
+                // We try to catch every sub elements
+                a.dom.el(this).children().each(function() {
+                    var tmpElements = a.live.bind(this);
+                    elements.concat(tmpElements);
+                });
+
+                if (!isEmitter(this) || !isLiveGlobal(this)) {
+                    return;
+                }
+
+                elements.push(this);
+
+                // On change apply binding
+                a.dom.el(this).unbind('change input keydown',
+                        eventApplyChange);
+            });
+
+            return elements;
+        }
+    };
+})(window.appstorm);
+
+
+/*
+------------------------------
+  HANDLEBARS HELPERS
+------------------------------
+*/
+Handlebars.registerHelper('live', function(expression) {
+    // The \u200c unicode char is written:
+    //    &#x200c; in HTML (hex)
+    //    &#8204;  in HTML (dec)
+    return '&#8204;&#8204;' + expression + '&#8204;&#8204;';
+});;// Final script, appstorm is ready
 a.message.dispatch('ready');
