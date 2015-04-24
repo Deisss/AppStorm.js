@@ -38,6 +38,7 @@ var appstormFiles = [
   'appstorm/plugin/model.pooler.js',
   'appstorm/plugin/model.template.js',
   'appstorm/plugin/template.js',
+  'appstorm/plugin/live.js',
 
 
   // Last loaded - ready event
@@ -91,12 +92,12 @@ module.exports = function(grunt) {
           'appstorm/vendor/watch/watch.js',
           'appstorm/vendor/jsep/build/jsep.js'
         ].concat(appstormFiles),
-        dest: './appstorm.concat.js',
+        dest: './dist/appstorm.concat.js',
         nonull: true,
       },
       withoutDependencies: {
         src: appstormFiles,
-        dest: './appstorm-without-dependencies.concat.js'
+        dest: './dist/appstorm-without-dependencies.concat.js'
       }
     },
 
@@ -106,8 +107,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          './appstorm.min.js': ['<%= concat.withDependencies.dest %>'],
-          './appstorm-without-dependencies.min.js': ['<%= concat.withoutDependencies.dest %>']
+          './dist/appstorm.min.js': ['<%= concat.withDependencies.dest %>'],
+          './dist/appstorm-without-dependencies.min.js': ['<%= concat.withoutDependencies.dest %>']
         }
       }
     },
