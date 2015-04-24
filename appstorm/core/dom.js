@@ -1201,6 +1201,48 @@ a.dom.children.prototype = {
     },
 
     /**
+     * Get the text content of every elements included. If the parameter is
+     * set to false, children are not included, if the parameter is set on
+     * true, children are included.
+     *
+     * @param {Boolean} includeChildren     True, the children are included
+     *                                      False, they are not
+     * @return {String  | Array}            If the array contains one element
+     *                                      the direct string is returned, in
+     *                                      other cases, the array is returned
+    */
+    text: function(includeChildren) {
+        // If not defined, we set on true by default
+        if (includeChildren !== false) {
+            includeChildren = true;
+        }
+
+        var results = [];
+
+        this.each(function() {
+            if (includeChildren) {
+                results.push(this.textContent);
+            } else {
+                var content = '';
+                for(var i = 0, l = this.childNodes.length; i < l; ++i) {
+                    var node = this.childNodes[i];
+                    if(node.nodeType === 3) {
+                        content += node.nodeValue;
+                    }
+                }
+                results.push(content);
+            }
+        });
+
+        if(results.length === 0) {
+            return '';
+        } else if(results.length === 1) {
+            return results[0];
+        }
+        return results;
+    },
+
+    /**
      * Apply on each elements the given function.
      *
      * @chainable
