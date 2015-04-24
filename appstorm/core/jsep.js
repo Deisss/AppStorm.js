@@ -1,5 +1,8 @@
 /**
- * Helper to use JSEP inside AppStorm.JS
+ * Helper to use JSEP inside AppStorm.JS.
+ *
+ * This system provide an interpreter for JSEP parser, allowing to compute
+ * a value from a JSEP parsing output.
 */
 a.jsep = {
     /**
@@ -16,10 +19,66 @@ a.jsep = {
      * @return {Object}                     A JSEP tree map.
     */
     parse: function (str) {
-        if(a.jsep.jsep === null) {
+        if (a.jsep.jsep === null) {
             return {};
         }
         return a.jsep.jsep(str);
+    },
+
+    /**
+     * Internal is an object used to count variables when dealing with
+     * interpreter. It's usefull to know what variables are used in a given
+     * sentence.
+     * Note: you probably don't need to deal with it...
+    */
+    internal: function () {
+        if (!(this instanceof a.jsep.internal)) {
+            return new a.jsep.internal();
+        }
+
+        var data = {};
+
+        /**
+         * Increase variable.
+         *
+         * @private
+         *
+         * @param {String} name             The variable name to count
+        */
+        this.increaseVar = function (name) {
+            if (data.hasOwnProperty(name)) {
+                data[name]++;
+            } else {
+                data[name] = 1;
+            }
+        };
+
+        /**
+         * Decrease variable.
+         *
+         * @private
+         *
+         * @param {String} name             The variable name to count
+        */
+        this.decreaseVar = function (name) {
+            if (data.hasOwnProperty(name)) {
+                data[name]--;
+                if (data[name] <= 0) {
+                    delete data[name];
+                }
+            }
+        };
+
+        /**
+         * Get the current variable list.
+         *
+         * @private
+         *
+         * @return {Object}                 List of variables in use
+        */
+        this.getListVar = function () {
+            return data;
+        };
     },
 
     /**
@@ -43,7 +102,7 @@ a.jsep = {
     */
     interpreter: function (name, useDefaultBinaryOperators,
             useDefaultLogicalOperators, useDefaultUnaryOperators) {
-        if(a.jsep.jsep === null) {
+        if (a.jsep.jsep === null) {
             return {};
         }
 
@@ -70,12 +129,12 @@ a.jsep = {
          *                              list of variables from scope used.
         */
         this.evaluate = function (data, scope) {
-            var internal = {};
+            var internal = a.jsep.internal();
             scope = scope || {};
             var result = this.expressions.parse(data, internal, scope);
 
             return {
-                variables: a.keys(internal),
+                variables: a.keys(internal.getListVar()),
                 result: result
             };
         };
@@ -138,44 +197,10 @@ a.jsep = {
             uo.set('+', function (left) {  return +left;  });
         }
 
-        /**
-         * Increase the internal counter.
-         * The internal counter is used to know what are the variables in use
-         * in this system.
-         *
-         * @param internal The internal object.
-         * @param name The property name to store.
+        /*!
+         * @private
         */
-        function increaseInternal(internal, name) {
-            if (internal.hasOwnProperty(name)) {
-                internal[name]++;
-            } else {
-                internal[name] = 1;
-            }
-        }
 
-        /**
-         * Decrease the internal counter.
-         * The internal counter is used to know what are the variables in use
-         * in this system.
-         *
-         * @param internal The internal object.
-         * @param name The property name to store.
-        */
-        function decreaseInternal(internal, name) {
-            if (internal.hasOwnProperty(name)) {
-                internal[name]--;
-                if (internal[name] <= 0) {
-                    delete internal[name];
-                }
-            }
-        }
-
-        /**
-          ------------------------
-            EXPRESSIONS
-          ------------------------
-        */
         /**
          * List of functions actually doing parsing...
          * You can modify those functions in case of specific parsing
@@ -185,6 +210,12 @@ a.jsep = {
             /**
              * Found literal (constant) value, like 1, or
              * 'hello'. This function simply returns it's value.
+             *
+             * @param {Object} data         The literal object
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The javascript value of current
+             *                              literal expression
             */
             literalExpression: function (data, internal, scope) {
                 return data.value;
@@ -192,6 +223,11 @@ a.jsep = {
 
             /**
              * Found 'this' keyword. This function simply returns scope.
+             *
+             * @param {Object} data         The this object
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Object}             The scope
             */
             thisExpression: function (data, internal, scope) {
                 return scope;
@@ -201,10 +237,11 @@ a.jsep = {
              * Found member of a given object. A member is a property from
              * an object, like a.b or a[b] in js.
              *
-             * @param data The data with member expression inside
-             * @param internal Unused
-             * @param scope The scope associated
-             * @return The object propery values
+             * @param {Object} data         The data with member expression
+             *                              inside
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The scope associated
+             * @return {Object | Null}      The object propery values
             */
             memberExpression: function (data, internal, scope) {
                 var obj = this.parse(data.object, internal, scope),
@@ -228,15 +265,16 @@ a.jsep = {
              * Found an identifier. An identifier is basically a variable.
              * Like a + b, a and b are identifiers taken from scope.
              *
-             * @param data The identifier expression inside
-             * @param internal Variable in use for the current parsing
-             * @param global If the system can search in global scope
-             * @param scope The scope associated
-             * @return The object propery values
+             * @param {Object} data         The identifier expression inside
+             * @param {Object} internal     The object with variables currently
+             *                              in use
+             * @param {Object} scope        The scope in use
+             * @return {Object | String}    The object propery values, or the
+             *                              property string if not found.
             */
             identifierExpression: function (data, internal, scope) {
                 if (scope.hasOwnProperty(data.name)) {
-                    increaseInternal(internal, data.name);
+                    internal.increaseVar(data.name);
                     return scope[data.name];
                 }
 
@@ -247,6 +285,11 @@ a.jsep = {
              * Found an array expression. This function will convert it
              * to true JS array.
              * Note: this function can have pretty bad side effect...
+             *
+             * @param {Object} data         The array structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Array}              A javascript version of array
             */
             arrayExpression: function (data, internal, scope) {
                 var arr = [];
@@ -265,16 +308,20 @@ a.jsep = {
              * Found a function call. The function will be searched inside
              * the scope.
              *
-             * @param data The function calling arguments and name
-             * @param internal Unused
-             * @param scope The current scope in use
+             * @param {Object} data         The function calling arguments
+             *                              and name
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed | Null}       The result of function call, or
+             *                              null if function is not found in
+             *                              scope
             */
             callExpression: function (data, internal, scope) {
                 var fct = this.parse(data.callee, internal, scope),
                     args = [];
 
                 if (a.isFunction(fct)) {
-                    decreaseInternal(internal, data.callee.name);
+                    internal.decreaseVar(data.callee.name);
 
                     for (var i in data.arguments) {
                         if (data.arguments.hasOwnProperty(i)) {
@@ -295,6 +342,11 @@ a.jsep = {
             /**
              * Found a conditional expression (a ? b : c). This is the
              * only type of 'if' supported.
+             *
+             * @param {Object} data         The conditional structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The result of the if selector
             */
             conditionalExpression: function (data, internal, scope) {
                 var test = this.parse(data.test, internal, scope),
@@ -309,9 +361,15 @@ a.jsep = {
             /**
              * Found more than one expression. This function will create
              * an array with every result in every case.
+             *
+             * @param {Object} data         The compound structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Array}              An array of values
             */
             compoundExpression: function (data, internal, scope) {
                 var arr = [];
+
                 for (var i in data.body) {
                     if (data.body.hasOwnProperty(i)) {
                         arr.push(this.parse(data.body[i], internal,
@@ -328,9 +386,10 @@ a.jsep = {
              * This function will rely on 'unaryOperators' store to find
              * a related function to apply the operation.
              *
-             * @param data The unary structure
-             * @param internal Unused
-             * @param scope The current scope in use
+             * @param {Object} data         The unary structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The unary result
             */
             unaryExpression: function (data, internal, scope) {
                 var result = this.parse(data.argument, internal, scope),
@@ -351,9 +410,10 @@ a.jsep = {
              * Probably the most common, which are basic manipulations
              * in both number and string areas.
              *
-             * @param data The binary structure
-             * @param internal Unused
-             * @param scope The current scope in use
+             * @param {Object} data         The binary structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The binary result
             */
             binaryExpression: function (data, internal, scope) {
                 var left = this.parse(data.left, internal, scope),
@@ -372,11 +432,12 @@ a.jsep = {
             },
 
             /**
-             * Logical operators like "||" or "&&"
+             * Logical operators like "||" or "&&".
              *
-             * @param data The logical structure
-             * @param internal Unused
-             * @param scope The current scope in use
+             * @param {Object} data         The logical structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed}              The logical result
             */
             logicalExpression: function (data, internal, scope) {
                 var left = this.parse(data.left, internal, scope),
@@ -399,9 +460,11 @@ a.jsep = {
              * to what we need. You probably don't need to touch at all
              * this function.
              *
-             * @param data The data structure
-             * @param internal Unused
-             * @param scope The current scope in use
+             * @param {Object} data         The data structure
+             * @param {Object} internal     Unused
+             * @param {Object} scope        The current scope in use
+             * @return {Mixed | Null}       The parsed result, or null in case
+             *                              of problem
             */
             parse: function (data, internal, scope) {
                 if (data && data.type) {
@@ -448,6 +511,10 @@ a.jsep = {
                 }
                 return null;
             }
+
+            /*!
+             * @private
+            */
         };
     }
 };
