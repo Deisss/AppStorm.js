@@ -11,7 +11,7 @@ QUnit.module('core/dom.js');
 
 
 // Testing dom id search
-QUnit.test('a.dom.id', function(assert) {
+QUnit.test('a.dom.id', function (assert) {
     assert.expect(7);
 
     // Test find one id
@@ -40,7 +40,7 @@ QUnit.test('a.dom.id', function(assert) {
 
 
 // Testing dom class search
-QUnit.test('a.dom.cls', function(assert) {
+QUnit.test('a.dom.cls', function (assert) {
     assert.expect(6);
 
     // Test default search
@@ -62,7 +62,7 @@ QUnit.test('a.dom.cls', function(assert) {
 
 
 // Testing searching by tag name
-QUnit.test('a.dom.tag', function(assert) {
+QUnit.test('a.dom.tag', function (assert) {
     assert.expect(4);
 
     // First easy test
@@ -86,7 +86,7 @@ QUnit.test('a.dom.tag', function(assert) {
 
 
 // Testing searching by attribute
-QUnit.test('a.dom.attr', function(assert) {
+QUnit.test('a.dom.attr', function (assert) {
     assert.expect(5);
 
     // Simple attribute check
@@ -112,7 +112,7 @@ QUnit.test('a.dom.attr', function(assert) {
 
 
 // Testing converting element to a.dom
-QUnit.test('a.dom.el', function(assert) {
+QUnit.test('a.dom.el', function (assert) {
     assert.expect(1);
 
     var doc = document.createElement('div');
@@ -129,7 +129,7 @@ QUnit.test('a.dom.el', function(assert) {
 -------------------------------------------
 */
 // Test getting single element
-QUnit.test('a.dom.children.get', function(assert) {
+QUnit.test('a.dom.children.get', function (assert) {
     assert.expect(2);
 
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag']);
@@ -140,7 +140,7 @@ QUnit.test('a.dom.children.get', function(assert) {
 });
 
 // Test getting stored elements
-QUnit.test('a.dom.children.getElements', function(assert) {
+QUnit.test('a.dom.children.getElements', function (assert) {
     assert.expect(3);
 
     var elements = a.dom.id(['a.dom.testtag', 'a.dom.secondtesttag'])
@@ -152,7 +152,7 @@ QUnit.test('a.dom.children.getElements', function(assert) {
 });
 
 // Test getting specific id from element
-QUnit.test('a.dom.children.id', function(assert) {
+QUnit.test('a.dom.children.id', function (assert) {
     assert.expect(2);
 
     var sub = a.dom.tag('div').id('a.dom.secondtesttag').getElements();
@@ -173,7 +173,7 @@ QUnit.test('a.dom.children.cls', function(assert) {
 });
 
 // Test setting or getting CSS attribute
-QUnit.test('a.dom.children.css', function(assert) {
+QUnit.test('a.dom.children.css', function (assert) {
     assert.expect(3);
 
     // Test setter
@@ -195,7 +195,7 @@ QUnit.test('a.dom.children.css', function(assert) {
 });
 
 // Test adding class to system
-QUnit.test('a.dom.children.addClass', function(assert) {
+QUnit.test('a.dom.children.addClass', function (assert) {
     assert.expect(2);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
@@ -212,7 +212,7 @@ QUnit.test('a.dom.children.addClass', function(assert) {
 });
 
 // Test checking class existence
-QUnit.test('a.dom.children.hasClass', function(assert) {
+QUnit.test('a.dom.children.hasClass', function (assert) {
     assert.expect(3);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass');
@@ -241,7 +241,7 @@ QUnit.test('a.dom.children.hasClass', function(assert) {
 });
 
 // Test remove class
-QUnit.test('a.dom.children.removeClass', function(assert) {
+QUnit.test('a.dom.children.removeClass', function (assert) {
     assert.expect(2);
 
     a.dom.id(['a.dom.testtag', 'a.dom.testid']).addClass('a.dom.testaddclass')
@@ -269,7 +269,7 @@ QUnit.test('a.dom.children.removeClass', function(assert) {
 });
 
 // Test toggle class
-QUnit.test('a.dom.children.toggleClass', function(assert) {
+QUnit.test('a.dom.children.toggleClass', function (assert) {
     assert.expect(4);
 
     // We set one class, and not the other
@@ -294,7 +294,7 @@ QUnit.test('a.dom.children.toggleClass', function(assert) {
 });
 
 // Test click system
-QUnit.asyncTest('a.dom.children.bind', function(assert) {
+QUnit.asyncTest('a.dom.children.bind', function (assert) {
     assert.expect(1);
 
     // Internal function to fire click event
@@ -323,7 +323,7 @@ QUnit.asyncTest('a.dom.children.bind', function(assert) {
 });
 
 // Test click system with binding
-QUnit.asyncTest('a.dom.children.bindWithScope', function(assert) {
+QUnit.asyncTest('a.dom.children.bindWithScope', function (assert) {
     assert.expect(2);
 
     // Internal function to fire click event
@@ -357,7 +357,7 @@ QUnit.asyncTest('a.dom.children.bindWithScope', function(assert) {
 });
 
 // Test unbinding does work
-QUnit.asyncTest('a.dom.children.unbind', function(assert) {
+QUnit.asyncTest('a.dom.children.unbind', function (assert) {
     assert.expect(1);
 
     // Internal function to fire click event
@@ -388,7 +388,7 @@ QUnit.asyncTest('a.dom.children.unbind', function(assert) {
 });
 
 // Test getting sub element by tag
-QUnit.test('a.dom.children.tag', function(assert) {
+QUnit.test('a.dom.children.tag', function (assert) {
     assert.expect(5);
 
     var sub = a.dom.id('a.dom.testtag').tag('a').getElements();
@@ -405,7 +405,7 @@ QUnit.test('a.dom.children.tag', function(assert) {
 });
 
 // Test selecting threw attribute
-QUnit.test('a.dom.children.attr', function(assert) {
+QUnit.test('a.dom.children.attr', function (assert) {
     assert.expect(2);
 
     var attr1 = a.dom.id('a.dom.testidattr')
@@ -419,7 +419,7 @@ QUnit.test('a.dom.children.attr', function(assert) {
 });
 
 // Test selecting attribute tag elements
-QUnit.test('a.dom.children.attribute', function(assert) {
+QUnit.test('a.dom.children.attribute', function (assert) {
     assert.expect(3);
 
     // Getter test
@@ -443,7 +443,7 @@ QUnit.test('a.dom.children.attribute', function(assert) {
 });
 
 // Quite the same as attribute, but with (data- used always before)
-QUnit.test('a.dom.children.data', function(assert) {
+QUnit.test('a.dom.children.data', function (assert) {
     assert.expect(3);
 
     // Simple element
@@ -465,7 +465,7 @@ QUnit.test('a.dom.children.data', function(assert) {
 });
 
 // Multi attribute check (data-'attribute', a-'attribute', 'attribute')
-QUnit.test('a.dom.children.appstorm', function(assert) {
+QUnit.test('a.dom.children.appstorm', function (assert) {
     assert.expect(2);
 
     // Getter
@@ -483,7 +483,7 @@ QUnit.test('a.dom.children.appstorm', function(assert) {
 });
 
 // Test going to parent element
-QUnit.test('a.dom.children.parent', function(assert) {
+QUnit.test('a.dom.children.parent', function (assert) {
     assert.expect(4);
 
     // Point to same element id 'a.dom.secondtesttag'
@@ -501,7 +501,7 @@ QUnit.test('a.dom.children.parent', function(assert) {
 });
 
 // Test selecting direct children
-QUnit.test('a.dom.children.children', function(assert) {
+QUnit.test('a.dom.children.children', function (assert) {
     assert.expect(9);
 
     // First 'easy' test
@@ -524,7 +524,7 @@ QUnit.test('a.dom.children.children', function(assert) {
 });
 
 // Testing selecting all sub children
-QUnit.test('a.dom.children.all', function(assert) {
+QUnit.test('a.dom.children.all', function (assert) {
     assert.expect(7);
 
     var all = a.dom.id('a.dom.testtag').all().getElements();
@@ -542,7 +542,7 @@ QUnit.test('a.dom.children.all', function(assert) {
 });
 
 // Test insertBefore elements
-QUnit.test('a.dom.children.insertBefore', function(assert) {
+QUnit.test('a.dom.children.insertBefore', function (assert) {
     assert.expect(3);
 
     var div = document.createElement('div');
@@ -563,7 +563,7 @@ QUnit.test('a.dom.children.insertBefore', function(assert) {
 });
 
 // Test insertAfter elements
-QUnit.test('a.dom.children.insertAfter', function(assert) {
+QUnit.test('a.dom.children.insertAfter', function (assert) {
     assert.expect(3);
 
     var div = document.createElement('div');
@@ -584,7 +584,7 @@ QUnit.test('a.dom.children.insertAfter', function(assert) {
 });
 
 // Test clearing content
-QUnit.test('a.dom.children.empty', function(assert) {
+QUnit.test('a.dom.children.empty', function (assert) {
     assert.expect(1);
 
     var clear = a.dom.id('a.dom.children.empty').empty()
@@ -593,7 +593,7 @@ QUnit.test('a.dom.children.empty', function(assert) {
 });
 
 // Testing remove element
-QUnit.test('a.dom.children.remove', function(assert) {
+QUnit.test('a.dom.children.remove', function (assert) {
     assert.expect(2);
 
     var append  = document.createElement('div');
@@ -616,7 +616,7 @@ QUnit.test('a.dom.children.remove', function(assert) {
 });
 
 // Test appending element
-QUnit.test('a.dom.children.append', function(assert) {
+QUnit.test('a.dom.children.append', function (assert) {
     assert.expect(2);
 
     var div = document.createElement('div');
@@ -634,7 +634,7 @@ QUnit.test('a.dom.children.append', function(assert) {
 });
 
 // Testing replace method
-QUnit.test('a.dom.children.replace', function(assert) {
+QUnit.test('a.dom.children.replace', function (assert) {
     assert.expect(2);
 
     var div = document.createElement('div');
@@ -655,14 +655,14 @@ QUnit.test('a.dom.children.replace', function(assert) {
 });
 
 // Test data each
-QUnit.asyncTest('a.dom.children.each', function(assert) {
+QUnit.asyncTest('a.dom.children.each', function (assert) {
     assert.expect(8);
 
     // Test parameters
     a.dom.id([
             'a.dom.secondtesttag',
             'a.dom.children.parenttest'
-    ]).each(function(a, b, c) {
+    ]).each(function (a, b, c) {
         if(this.id == 'a.dom.secondtesttag') {
             assert.strictEqual(this.id, 'a.dom.secondtesttag', 'Test id');
         } else {
@@ -677,7 +677,7 @@ QUnit.asyncTest('a.dom.children.each', function(assert) {
 });
 
 // Test event binding and prevent-default
-QUnit.asyncTest('a.dom.event-prevent', function(assert) {
+QUnit.asyncTest('a.dom.event-prevent', function (assert) {
     assert.expect(1);
 
     // Internal function to fire click event
@@ -709,7 +709,7 @@ QUnit.asyncTest('a.dom.event-prevent', function(assert) {
 });
 
 // Testing basic html get/set
-QUnit.test('a.dom.html', function(assert) {
+QUnit.test('a.dom.html', function (assert) {
     assert.expect(3);
 
     var currentHtml = a.dom.id('a.dom.testid').html();
@@ -728,7 +728,7 @@ QUnit.test('a.dom.html', function(assert) {
 });
 
 // Testing complex html get/set
-QUnit.test('a.dom.html-complex', function(assert) {
+QUnit.test('a.dom.html-complex', function (assert) {
     assert.expect(10);
 
     var children = a.dom.id('a.dom.html-test').children();
@@ -765,4 +765,36 @@ QUnit.test('a.dom.html-complex', function(assert) {
     assert.strictEqual(child1.innerHTML, '', 'Test a tag empty');
     assert.strictEqual(child2.innerHTML, '', 'Test span tag empty');
     assert.strictEqual(child3.innerHTML, '', 'Test div tag empty');
+});
+
+
+// Basic text check
+QUnit.test('a.dom.text', function (assert) {
+    assert.expect(1);
+
+    var id = document.getElementById('a.dom.testid'),
+        text = a.dom.el(id).text(false);
+
+    assert.strictEqual(text, 'a.dom.testid');
+});
+
+// More complex text check
+QUnit.test('a.dom.text-with-children', function (assert) {
+    assert.expect(4);
+
+    var main = document.getElementById('a.dom.text'),
+        sub  = document.getElementById('a.dom.sub-text');
+
+    var mainText = a.dom.el(main).text(false),
+        mainTextWithChildren = a.dom.el(main).text(true),
+        subText = a.dom.el(sub).text(false),
+        subTextWithChildren = a.dom.el(sub).text(true);
+
+    assert.strictEqual(mainText, 'This is some text content  or without.',
+            'Test text');
+    assert.strictEqual(mainTextWithChildren, 'This is some text content with '+
+            'children or without. This can go deeper of course', 'Test text');
+    assert.strictEqual(subText, ' This can go deeper ', 'Test text');
+    assert.strictEqual(subTextWithChildren, ' This can go deeper of course',
+            'Test text');
 });
