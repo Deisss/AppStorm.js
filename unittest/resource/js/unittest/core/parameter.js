@@ -212,7 +212,7 @@ QUnit.test('a.parameter.extract-old-unittest', function(assert) {
         param3 = 
         'The last {{one : \\w+}} but not least {{invalidate : [^a-fA-F]+  }}',
         param4 = 
-'But this one don\'t work {{worknot}} and also this one too {{oups : @ok}}';
+'But this one don\'t work {{worknot}} but this one does {{oups : @ok}}';
 
     // Now we test extract system does work as expected
     var extracted1 = a.parameter.extract(param1),
@@ -224,7 +224,7 @@ QUnit.test('a.parameter.extract-old-unittest', function(assert) {
     assert.strictEqual(extracted1.length, 2, 'Test length');
     assert.strictEqual(extracted2.length, 2, 'Test length');
     assert.strictEqual(extracted3.length, 2, 'Test length');
-    assert.strictEqual(extracted4.length, 0, 'Test length');
+    assert.strictEqual(extracted4.length, 1, 'Test length');
 
     // Test content (name)
     assert.strictEqual(extracted1[0]['name'], 'type', 'Test name');
@@ -274,7 +274,7 @@ QUnit.test('a.parameter.replace-old-unittest', function(assert) {
         param3 =
     'The last {{one : \\w+}} but not least {{invalidate : [^a-fA-F]+  }}',
         param4 = 
-'But this one don\'t work {{worknot}} and also this one too {{oups : @ok}}';
+'But this one don\'t work {{worknot}} but this one does {{oups : @ok}}';
 
     // For second unit test series
     var e1 = param1, e2 = param2, e3 = param3, e4 = param4;
@@ -303,7 +303,7 @@ QUnit.test('a.parameter.replace-old-unittest', function(assert) {
     l = extracted4.length;
     while(l--) {param4 = a.parameter.replace(param4, extracted4[l]);}
     assert.strictEqual(param4, 
-    'But this one don\'t work {{worknot}} and also this one too {{oups : @ok}}'
+    'But this one don\'t work {{worknot}} but this one does (@ok)'
     , 'Test replace');
 
     // Now we test with replacer
@@ -322,7 +322,7 @@ QUnit.test('a.parameter.replace-old-unittest', function(assert) {
     l = extracted4.length;
     while(l--) {e4 = a.parameter.replace(e4, extracted4[l], 'a');}
     assert.strictEqual(e4, 
-    'But this one don\'t work {{worknot}} and also this one too {{oups : @ok}}'
+    'But this one don\'t work {{worknot}} but this one does a'
     , 'Test replace');
 });
 

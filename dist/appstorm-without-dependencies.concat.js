@@ -4811,7 +4811,8 @@ a.parameter = {
         // and of course () and \ and /
         // var regexParameterExtracter =
         //     /\{\{(\s*[a-zA-Z0-9-_-\-]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi,
-        var regexParameterExtracter = /\{\{(\s*[a-zA-Z0-9-\--_]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi;
+        //var regexParameterExtracter = /\{\{(\s*[a-zA-Z0-9-\--_]+\s*:\s*[a-z0-9_\-\[\]\(\)\^.\|\+\*\?\\\/]+\s*)\}\}/gmi;
+        var regexParameterExtracter = /\{\{(\s*[^\{\}]+\s*:\s*[^\{\}]+\s*)\}\}/gmi;
 
         var ex = !a.isNone(customRegex);
         if(ex) {
