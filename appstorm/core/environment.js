@@ -21,7 +21,7 @@ a.environment = a.mem.getInstance('app.environment');
 // The application state, debug/production
 a.environment.set('app.debug', false);
 // The console verbosity (from 1 to 3, 3 most verbose, 1 less verbose)
-a.environment.set('console.verbose', 2);
+a.environment.set('console.verbose', 3);
 // The console minimum log level (from log to error)
 a.environment.set('console.minimum', 'log');
 // The ajax cache system
