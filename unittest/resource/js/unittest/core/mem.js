@@ -18,7 +18,7 @@ QUnit.module('core/mem.js', {
 
 
 // Test mem system
-QUnit.test('a.mem.default', function(assert) {
+QUnit.test('a.mem.default', function (assert) {
     assert.expect(3);
 
     a.mem.set('some-test', 'hello');
@@ -32,7 +32,7 @@ QUnit.test('a.mem.default', function(assert) {
 });
 
 // Test mem duplicate system
-QUnit.test('a.mem.instance', function(assert) {
+QUnit.test('a.mem.instance', function (assert) {
     assert.expect(6);
 
     var instance = a.mem.getInstance('some.test');
@@ -52,7 +52,7 @@ QUnit.test('a.mem.instance', function(assert) {
 
 
 // Testing list function
-QUnit.test('a.mem.list', function(assert) {
+QUnit.test('a.mem.list', function (assert) {
     assert.expect(4);
 
     a.mem.set('tempList', 'ok');
@@ -72,4 +72,22 @@ QUnit.test('a.mem.list', function(assert) {
     // Cleaning elements
     instance.remove('t');
     a.mem.remove('tempList');
+});
+
+
+// Dual instance does not create any bug
+QUnit.test('a.mem.dual-instance', function (assert) {
+    assert.expect(2);
+
+    var instance1 = a.mem.getInstance('qunit.t1'),
+        instance2 = a.mem.getInstance('qunit.t2');
+
+    instance1.set('val1', 'val1');
+    instance2.set('val2', 'val2');
+
+    var list1 = instance1.list(),
+        list2 = instance2.list();
+
+    assert.strictEqual(list1.val1, 'val1', 'Test value 1');
+    assert.strictEqual(list2.val2, 'val2', 'Test value 2');
 });
