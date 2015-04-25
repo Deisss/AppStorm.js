@@ -1335,11 +1335,15 @@ a.dom.children.prototype = {
             fct           = argumentArray[0],
             args          = argumentArray.slice(1);
 
-        fct = a.isFunction(fct) ? fct : function() {};
-        a.each(list, function(element) {
-            // Calling element with this as element currently selected
-            fct.apply(element, args);
-        });
+        fct = a.isFunction(fct) ? fct : null;
+
+        if (!a.isNone(fct)) {
+            a.each(list, function(element) {
+                // Calling element with this as element currently selected
+                fct.apply(element, args);
+            });
+        }
+
         return this;
     }
     /*!
