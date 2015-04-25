@@ -16985,7 +16985,7 @@ a.environment = a.mem.getInstance('app.environment');
 // The application state, debug/production
 a.environment.set('app.debug', false);
 // The console verbosity (from 1 to 3, 3 most verbose, 1 less verbose)
-a.environment.set('console.verbose', 2);
+a.environment.set('console.verbose', 3);
 // The console minimum log level (from log to error)
 a.environment.set('console.minimum', 'log');
 // The ajax cache system
@@ -17879,9 +17879,16 @@ a.message = a.eventEmitter('a.message');
   GLOBAL
 ------------------------------
 */
+/*!
+ * @private
+*/
 (function() {
     var ready = false,
         tmp = [];
+
+    /*!
+     * @private
+    */
 
     /**
      * Internal function to call function regarding it's scope.
@@ -17936,6 +17943,10 @@ a.message = a.eventEmitter('a.message');
             a.message.bind(name, func, scope);
         }
     };
+
+    /*!
+     * @private
+    */
 })();;/*! ***********************************************************************
 
     License: MIT Licence
@@ -18294,9 +18305,9 @@ if(document.all && ! ('querySelectorAll' in document) && !window.jQuery) {
 
 /**
  * Provide a really basic dom manipulation plugin.
- * This helps to use appstorm by itself without any jQuery or others.
- * It really not the best, but it does work well, and already pretty 
- * usefull!
+ * This helps to use appstorm by itself without any other framework.
+ * It does work well, and already pretty usefull! But there is better dom
+ * manipulation out there...
  *
  * @constructor
 */
@@ -18312,15 +18323,22 @@ a.dom = {
     query: function(check, dom) {
         dom = a.dom.el(dom).get(0) || document;
 
-        if(!dom.querySelectorAll && window.jQuery) {
+        // If jQuery is defined, rely on it instead of querySelectorAll...
+        if(window.jQuery) {
             return this.el(jQuery(check));
         }
 
-        return this.el(dom.querySelectorAll(check)); 
+        // Nothing found, we go for QuerySelectorAll
+        try {
+            return this.el(dom.querySelectorAll(check));
+        } catch (e) {
+            // Return empty set if a problem is found...
+            return this.el([]);
+        }
     },
 
     /**
-     * Embed a dom element into a.dom system.
+     * Embed a javascript dom element into **a.dom** system.
      *
      * @param {DOMElement} element          A dom element to work with
      * @return {a.dom.children}             A chainable object
@@ -18611,6 +18629,10 @@ a.dom = {
 
         return a.dom.children(domList);
     }
+
+    /*!
+     * @private
+    */
 };
 
 
@@ -18685,7 +18707,11 @@ a.dom.event.prototype = {
     }
 };
 
-
+/*
+------------------------------
+  EVENT BINDER
+------------------------------
+*/
 /**
  * Generic function to use for converting event to appstorm event type.
  *
@@ -18710,6 +18736,11 @@ a.dom.eventBinder = function(fn, scope) {
 };
 
 
+/*
+------------------------------
+  EVENT LISTENER
+------------------------------
+*/
 /**
  * Abstract layer for binding event with DOM.
 */
@@ -18719,8 +18750,16 @@ a.dom.eventListener = (function() {
         unbind = null;
 
     /**
-     * Add binder between true event and function catch
+     * Add binder between true event and function catch.
+     *
      * @private
+     *
+     * @param {DOMElement} el               The element binded
+     * @param {String} type                 The event type
+     * @param {Function} fn                 The function called when event
+     *                                      occurs
+     * @param {Object} scope                The associated scope
+     * @return {Object}                     The binder
     */
     function addListener(el, type, fn, scope) {
         var binder = a.dom.eventBinder(fn, scope || null);
@@ -18734,8 +18773,14 @@ a.dom.eventListener = (function() {
     }
 
     /**
-     * Destroy stored binder reference
+     * Destroy stored event reference.
+     *
      * @private
+     *
+     * @param {DOMElement} el               The element to unbind event from
+     * @param {String} type                 The event type to unbind
+     * @param {Function} fn                 The event associated function
+     * @return {Object}                     The binder
     */
     function removeListener(el, type, fn) {
         var s = store,
@@ -18752,7 +18797,11 @@ a.dom.eventListener = (function() {
         return binder;
     }
 
-    // New browser
+    /*!
+     * -------------------
+     *   NEW BROWER
+     * -------------------
+    */
     /**
      * @private
     */
@@ -18766,7 +18815,11 @@ a.dom.eventListener = (function() {
         el.removeEventListener(type, removeListener(el, type, fn), false);
     }
 
-    // IE
+    /*!
+     * -------------------
+     *   INTERNET EXPLORER
+     * -------------------
+    */
     /**
      * @private
     */
@@ -18780,7 +18833,11 @@ a.dom.eventListener = (function() {
         el.detachEvent('on' + type, removeListener(el, type, fn));
     }
 
-    // Old Browsers
+    /*!
+     * -------------------
+     *   OLD BROWSER
+     * -------------------
+    */
     /**
      * @private
     */
@@ -18807,8 +18864,28 @@ a.dom.eventListener = (function() {
     }
 
     return {
+        /**
+         * Bind event to DOM.
+         *
+         * @param {DOMElement} el           The element to bind
+         * @param {String} type             The event name to bind
+         * @param {Function} fn             The associated function
+         * @param {Object} scope            The function scope to apply
+        */
         bind: bind,
+
+        /**
+         * Unbind event previously attached to DOM.
+         *
+         * @param {DOMElement} el           The element to unbind
+         * @param {String} type             The event name to unbind
+         * @param {Function} fn             The function to unbind
+        */
         unbind: unbind
+
+        /*!
+         * @private
+        */
     };
 })();
 
@@ -19242,9 +19319,22 @@ a.dom.children.prototype = {
      * @param {String} value                The value to get
     */
     appstorm: function(attribute, value) {
-        // TODO: attribute does not handle ',' and array delimiter
-        return this.attribute('data-' + attribute + ',a-'   + attribute +
-                ',' + attribute, value);
+        var sequence   = [],
+            tmp        = '',
+            attributes = 
+            a.isString(attribute) ?   attribute.replace(/ /g,'').split(',')
+                                  :   attribute;
+
+        for (var i = 0, l = attributes.length; i < l; ++i) {
+            tmp = attributes[i];
+            sequence.push('data-' + tmp);
+            sequence.push('a-' + tmp);
+            sequence.push(tmp);
+        }
+
+        // Removing duplicates
+        sequence = a.uniq(sequence);
+        return this.attribute(sequence.join(','), value);
     },
 
     /**
@@ -19524,11 +19614,15 @@ a.dom.children.prototype = {
             fct           = argumentArray[0],
             args          = argumentArray.slice(1);
 
-        fct = a.isFunction(fct) ? fct : function() {};
-        a.each(list, function(element) {
-            // Calling element with this as element currently selected
-            fct.apply(element, args);
-        });
+        fct = a.isFunction(fct) ? fct : null;
+
+        if (!a.isNone(fct)) {
+            a.each(list, function(element) {
+                // Calling element with this as element currently selected
+                fct.apply(element, args);
+            });
+        }
+
         return this;
     }
     /*!
@@ -21625,15 +21719,6 @@ a.mock = {
     _mock: [],
 
     /**
-     * Rollback to default content (nothing).
-     *
-     * @method clear
-    */
-    clear: function() {
-        a.mock._mock = [];
-    },
-
-    /**
      * Add a new mock to system
      *
      * @param {String} method               The HTTP method (GET/POST/PUT/...)
@@ -21678,6 +21763,15 @@ a.mock = {
             }
         }
         return null;
+    },
+
+    /**
+     * Rollback to default content (nothing).
+     *
+     * @method clear
+    */
+    clear: function() {
+        a.mock._mock = [];
     },
 
     /**
@@ -21792,6 +21886,10 @@ a.mock = {
 
         return result;
     }
+
+    /*!
+     * @private
+    */
 };;/**
  * Helper to use JSEP inside AppStorm.JS.
  *
