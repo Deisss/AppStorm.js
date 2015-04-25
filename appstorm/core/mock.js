@@ -26,15 +26,6 @@ a.mock = {
     _mock: [],
 
     /**
-     * Rollback to default content (nothing).
-     *
-     * @method clear
-    */
-    clear: function() {
-        a.mock._mock = [];
-    },
-
-    /**
      * Add a new mock to system
      *
      * @param {String} method               The HTTP method (GET/POST/PUT/...)
@@ -79,6 +70,15 @@ a.mock = {
             }
         }
         return null;
+    },
+
+    /**
+     * Rollback to default content (nothing).
+     *
+     * @method clear
+    */
+    clear: function() {
+        a.mock._mock = [];
     },
 
     /**
@@ -193,4 +193,8 @@ a.mock = {
 
         return result;
     }
+
+    /*!
+     * @private
+    */
 };
