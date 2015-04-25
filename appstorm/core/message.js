@@ -231,9 +231,16 @@ a.message = a.eventEmitter('a.message');
   GLOBAL
 ------------------------------
 */
+/*!
+ * @private
+*/
 (function() {
     var ready = false,
         tmp = [];
+
+    /*!
+     * @private
+    */
 
     /**
      * Internal function to call function regarding it's scope.
@@ -288,4 +295,8 @@ a.message = a.eventEmitter('a.message');
             a.message.bind(name, func, scope);
         }
     };
+
+    /*!
+     * @private
+    */
 })();
