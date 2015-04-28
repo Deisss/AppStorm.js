@@ -91,7 +91,7 @@ a.isNone = function(obj) {
  *                                          it's a null value, or not an object
 */
 a.isTrueObject = function(obj) {
-    return (typeof(obj) == 'object' && !a.isNone(obj));
+    return (typeof(obj) === 'object' && !a.isNone(obj));
 };
 
 
