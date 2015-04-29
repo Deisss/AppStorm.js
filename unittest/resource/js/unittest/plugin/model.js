@@ -12,7 +12,7 @@ QUnit.module('plugin/model.js', {
 });
 
 // Test nullable properties
-QUnit.test('a.model.property-nullable', function(assert) {
+QUnit.test('a.model.property-nullable', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-nullable', {
@@ -36,7 +36,7 @@ QUnit.test('a.model.property-nullable', function(assert) {
 });
 
 // Test init properties
-QUnit.test('a.model.property-init', function(assert) {
+QUnit.test('a.model.property-init', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-prop-init', {
@@ -60,7 +60,7 @@ QUnit.test('a.model.property-init', function(assert) {
 
 
 // Test property needed
-QUnit.test('a.model.property-needed', function(assert) {
+QUnit.test('a.model.property-needed', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-needed', {
@@ -85,7 +85,7 @@ QUnit.test('a.model.property-needed', function(assert) {
 });
 
 // Test property check
-QUnit.test('a.model.property-check', function(assert) {
+QUnit.test('a.model.property-check', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-check', {
@@ -107,7 +107,7 @@ QUnit.test('a.model.property-check', function(assert) {
 });
 
 // Test property check, for a model (a model include a model)
-QUnit.test('a.model.property-check-model', function(assert) {
+QUnit.test('a.model.property-check-model', function (assert) {
     assert.expect(1);
 
     var child = a.model('unittest-check-child', {
@@ -138,7 +138,7 @@ QUnit.test('a.model.property-check-model', function(assert) {
 });
 
 // Test property check, for a list of values
-QUnit.test('a.model.property-check-array', function(assert) {
+QUnit.test('a.model.property-check-array', function (assert) {
     assert.expect(6);
 
     var unittest = a.model('unittest-check-array', {
@@ -169,7 +169,7 @@ QUnit.test('a.model.property-check-array', function(assert) {
 });
 
 // Test property check, for a list of values
-QUnit.test('a.model.property-check-object', function(assert) {
+QUnit.test('a.model.property-check-object', function (assert) {
     assert.expect(6);
 
     var unittest = a.model('unittest-check-object', {
@@ -204,7 +204,7 @@ QUnit.test('a.model.property-check-object', function(assert) {
 });
 
 // Test property validate
-QUnit.test('a.model.property-validate', function(assert) {
+QUnit.test('a.model.property-validate', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-validate', {
@@ -230,7 +230,7 @@ QUnit.test('a.model.property-validate', function(assert) {
 });
 
 // Test property pattern
-QUnit.test('a.model.property-pattern', function(assert) {
+QUnit.test('a.model.property-pattern', function (assert) {
     assert.expect(4);
 
     var test = a.model('unittest-pattern', {
@@ -259,7 +259,7 @@ QUnit.test('a.model.property-pattern', function(assert) {
 });
 
 // Test property transform
-QUnit.test('a.model.property-transform', function(assert) {
+QUnit.test('a.model.property-transform', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-transform', {
@@ -283,7 +283,7 @@ QUnit.test('a.model.property-transform', function(assert) {
 });
 
 // Test property event
-QUnit.asyncTest('a.model.property-event', function(assert) {
+QUnit.asyncTest('a.model.property-event', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-event', {
@@ -314,7 +314,7 @@ QUnit.asyncTest('a.model.property-event', function(assert) {
 });
 
 // Test property apply
-QUnit.asyncTest('a.model.property-apply', function(assert) {
+QUnit.asyncTest('a.model.property-apply', function (assert) {
     assert.expect(1);
 
     var unittest = a.model('unittest-apply', {
@@ -336,7 +336,7 @@ QUnit.asyncTest('a.model.property-apply', function(assert) {
 
 
 // Test list function
-QUnit.test('a.model.list', function(assert) {
+QUnit.test('a.model.list', function (assert) {
     assert.expect(1);
 
     var unittest = a.model('unittest-list', {
@@ -355,7 +355,7 @@ QUnit.test('a.model.list', function(assert) {
 });
 
 // Test has function
-QUnit.test('a.model.has', function(assert) {
+QUnit.test('a.model.has', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-has', {
@@ -375,7 +375,7 @@ QUnit.test('a.model.has', function(assert) {
 });
 
 // Test primary function
-QUnit.test('a.model.primary', function(assert) {
+QUnit.test('a.model.primary', function (assert) {
     assert.expect(3);
 
     a.model('unittest-primary', {
@@ -400,7 +400,7 @@ QUnit.test('a.model.primary', function(assert) {
 });
 
 // Test init function
-QUnit.test('a.model.init', function(assert) {
+QUnit.test('a.model.init', function (assert) {
     assert.expect(9);
 
     var unittest = a.model('unittest-init', {
@@ -442,7 +442,7 @@ QUnit.test('a.model.init', function(assert) {
 });
 
 // Test jsons function
-QUnit.test('a.model.json', function(assert) {
+QUnit.test('a.model.json', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-json', {
@@ -469,7 +469,7 @@ QUnit.test('a.model.json', function(assert) {
 });
 
 // Test Object output
-QUnit.test('a.model.object', function(assert) {
+QUnit.test('a.model.object', function (assert) {
     assert.expect(4);
 
     var unittest = a.model('unittest-object', {
@@ -499,7 +499,7 @@ QUnit.test('a.model.object', function(assert) {
 });
 
 // Test model clone
-QUnit.test('a.model.clone', function(assert) {
+QUnit.test('a.model.clone', function (assert) {
     assert.expect(6);
 
     var unittest = a.model('unittest-clone', {
@@ -528,7 +528,7 @@ QUnit.test('a.model.clone', function(assert) {
 });
 
 // Test snapshot function
-QUnit.test('a.model.snapshot', function(assert) {
+QUnit.test('a.model.snapshot', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-snapshot', {
@@ -560,7 +560,7 @@ QUnit.test('a.model.snapshot', function(assert) {
 });
 
 // Test model manager
-QUnit.test('a.model.manager', function(assert) {
+QUnit.test('a.model.manager', function (assert) {
     assert.expect(7);
 
     var model = a.model('model.managertest', {}, null);
@@ -595,7 +595,7 @@ QUnit.test('a.model.manager', function(assert) {
 
 
 // Unit test multiple model management
-QUnit.asyncTest('a.model.model-multiple', function(assert) {
+QUnit.asyncTest('a.model.model-multiple', function (assert) {
     assert.expect(4);
 
     var unittest = a.model('unittest-multiple', {
@@ -624,7 +624,7 @@ QUnit.asyncTest('a.model.model-multiple', function(assert) {
 
 
 // Test model.manager searchInstance function
-QUnit.test('a.model.searchInstance', function(assert) {
+QUnit.test('a.model.searchInstance', function (assert) {
     assert.expect(2);
 
     var unittest = a.model('unittest-searchInstance', {
@@ -665,7 +665,7 @@ QUnit.test('a.model.searchInstance', function(assert) {
 
 
 // Test search instance in a more complex element
-QUnit.test('a.model.searchInstance-no-name', function(assert) {
+QUnit.test('a.model.searchInstance-no-name', function (assert) {
     assert.expect(7);
 
     var unittest = a.model('unittest-searchInstance-no-name', {
@@ -705,7 +705,7 @@ QUnit.test('a.model.searchInstance-no-name', function(assert) {
 });
 
 
-QUnit.test('a.model.validate', function(assert) {
+QUnit.test('a.model.validate', function (assert) {
     assert.expect(3);
 
     var unittest = a.model('unittest-validate', {
@@ -737,7 +737,7 @@ QUnit.test('a.model.validate', function(assert) {
 
 
 // Allow string regex as a test
-QUnit.test('a.model.validate-string', function(assert) {
+QUnit.test('a.model.validate-string', function (assert) {
     assert.expect(5);
 
     var unittest = a.model('a.model.validate-string', {
@@ -770,7 +770,7 @@ QUnit.test('a.model.validate-string', function(assert) {
 
 
 // Test model direct value
-QUnit.test('a.model.direct-property', function(assert) {
+QUnit.test('a.model.direct-property', function (assert) {
     assert.expect(4);
 
     var test = a.model('a.model.direct-property', {
@@ -790,4 +790,19 @@ QUnit.test('a.model.direct-property', function(assert) {
     assert.strictEqual(z.supertest, 25, 'Test direct supertest');
     assert.strictEqual(z.get('name'), 'hello', 'Indirect test name');
     assert.strictEqual(z.get('supertest'), 25, 'Indirect test supertest');
+});
+
+
+// Test setting some false values as init (bug)
+QUnit.test('a.model.init-false', function (assert) {
+    assert.expect(1);
+
+    var test = a.model('a.model.init-false', {
+        completed: {
+            init: false
+        }
+    });
+
+    var z = test();
+    assert.strictEqual(z.toJSON(), '{"completed":false}', 'Test false values');
 });
