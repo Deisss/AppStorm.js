@@ -442,6 +442,18 @@ QUnit.test('a.dom.children.attribute', function (assert) {
     assert.strictEqual(set, 'ok', 'Test setter');
 });
 
+QUnit.test('a.dom.children.value', function (assert) {
+    assert.expect(2);
+
+    var input = a.dom.id('a.dom.val');
+
+    assert.strictEqual(input.val(), 'hello', 'Test val getter');
+
+    input.val('something');
+
+    assert.strictEqual(input.val(), 'something', 'Test val setter');
+});
+
 // Quite the same as attribute, but with (data- used always before)
 QUnit.test('a.dom.children.data', function (assert) {
     assert.expect(3);
