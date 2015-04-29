@@ -735,7 +735,12 @@ a.state = new function() {
         // and replace all elements found in extendState into the state copy,
         // exactly what we want !
         if(state) {
-            this.add(a.extend(a.deepClone(state), extendState));
+            // We remove the parent to avoid recursive clone of parents too...
+            var parent = state.parent;
+            delete state.parent;
+            var clone = a.deepClone(state);
+            clone.parent = state.parent = parent;
+            this.add(a.extend(clone, extendState));
         }
     };
 
@@ -892,12 +897,21 @@ a.state = new function() {
     /**
      * Mostly for testing purpose, but this return the currently
      * loaded states (all of them).
-     * NOTE: you should avoid using it in production site, may be changed
-     * without any notice
      *
-     * @return The array with all loaded states.
+     * @param {String | Null} id            The specific state id you want
+     *                                      to retrieve
+     * @return {Array}                      The array with all loaded states.
     */
-    this.__loaded = function() {
+    this.loaded = function(id) {
+        if (id) {
+            var results = [];
+            for (var i = 0, l = loaded.length; i < l; ++i) {
+                if (loaded[i].id === id) {
+                    results.push(loaded[i]);
+                }
+            }
+            return results;
+        }
         return loaded;
     };
 
