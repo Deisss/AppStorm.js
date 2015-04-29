@@ -1028,6 +1028,30 @@ QUnit.test('a.state.use', function(assert) {
 });
 
 
+// Bug found: a use with a state containing parent make
+// system goes in infinite duplicate loop due to parent property
+QUnit.test('a.state.use-parent', function (assert) {
+    assert.expect(1);
+
+    a.state.add({
+        id: 'hello',
+    });
+
+    a.state.add({
+        id: 'subhello',
+        parent: 'hello',
+        good: 'ok'
+    });
+
+    a.state.use('subhello', {
+        id: 'something'
+    });
+
+    var something = a.state.get('something');
+
+    assert.strictEqual(something.good, 'ok', 'Test property');
+});
+
 
 // Test system allow bind/unbind event
 QUnit.asyncTest('a.state.load-bind', function(assert) {
