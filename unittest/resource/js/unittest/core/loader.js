@@ -159,7 +159,7 @@ QUnit.asyncTest('a.loader.flash', function(assert) {
         var el = document.getElementById(data.id);
         assert.strictEqual(el.testData(), true, 'Test system is loaded');
         QUnit.start();
-    }, data);
+    }, null, data);
 });
 
 
@@ -191,5 +191,5 @@ QUnit.asyncTest('a.loader.silverlight', function(assert) {
         var el = document.getElementById(data.id);
         assert.strictEqual(el.Content.store.testData(), true,'Test system is loaded');
         QUnit.start();
-    }, data);
+    }, null, data);
 });
