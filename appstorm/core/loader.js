@@ -16,135 +16,99 @@
 a.loader = (function() {
     'use strict';
 
-    // Store some cache here
-    var internalCache = [],
-        // Store the number of css files currently loading threw timer hack...
-        nCSS          = 0,
-        nJS           = 0,
-        htmlMethods   = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
+    // The store, curently setted on document and document.body.
+    // Can also be setted to something like:
+    //   var doc = document.createElement('div');
+    //   var doc = document.body;
+    // if you want the dom remains empty of appstorm scripts.
+    var doc = document.getElementsByTagName('head')[0];
 
     /**
-     * Check the cache, and launch callback if uri is already listed in cache.
+     * Create a script html tag element.
      *
      * @private
-     * @async
      *
-     * @param {String} uri                  The path to access data
-     * @param {Function | Null} callback    The callback to apply after loader
-     * @return {Boolean}                    True if it's already inside cache,
-     *                                      and false in other case
+     * @param {String} type                 The script type, should be
+     *                                      text/javascript by default
+     * @param {String} src                  The source of the script
+     * @param {String} data                 Any data to append to script tag
+     * @return {DOMElement}                 The element created
     */
-    function checkInternalCache(uri, callback) {
-        // Search in cache
-        if(a.isNone(uri)) {
-            return false;
-        }
+    function createScriptElement(type, src, data) {
+        var el = document.createElement('script');
 
-        for(var i=0, l=internalCache.length; i<l; ++i) {
-            if(internalCache[i] === uri) {
-                // This exist in cache, we directly call callback
-                if(a.isFunction(callback)) {
-                    callback();
-                }
-                return true;
-            }
-        }
+        el.setAttribute('type', type);
+        el.setAttribute('data-src', src);
+        el.text = data;
 
-        return false;
+        return el;
     }
 
     /**
-     * Insert into cache if needed the uri.
+     * Create a style html tag element.
      *
      * @private
      *
-     * @param {String} uri                  The path to access data
-     * @param {Object} args                 The arguments to check if cache
-     *                                      is specified and policy to use
+     * @param {String} data                 The data to append to style tag.
+     * @return {DOMElement}                 The element created
     */
-    function populateInternalCache(uri, args) {
-        // By default, we cache
-        if(!a.isNone(args) && args.cache === false) {
-            return;
-        }
-        internalCache.push(uri);
-    }
+    function createStyleElement(data) {
+        var el = document.createElement('style');
+        el.setAttribute('type', 'text/css');
 
-    /**
-     * Append to header the given tag, used by JS and CSS loader especially.
-     *
-     * @private
-     * @async
-     *
-     * @param {DOMElement} el               A createElement type result
-     * @param {Object} options              HTML Options to add to link
-     *                                      appended
-     * @param {Function | Null} callback    The callback to apply after loader
-     * @param {String} uri                  The path to access data
-     * @param {Object | Null} args          The arguments to check if cache
-     *                                      is specified and policy to use
-     * @param {Function | Null} error       The callback to raise in case
-     *                                      of problem (never used)
-    */
-    function appendElementToHeader(el, options, callback, uri, args, error) {
-        for(var i in options) {
-            el.setAttribute(i, options[i]);
-        }
-
-        if(!a.isNone(args) && args.id) {
-            el.setAttribute('id', args.id);
-        }
-
-        // Handle if system already trigger or not callback
-
-        var trigger = false;
-        // The common callback for both onload and readystatechange
-        var cb = function(e) {
-            if(trigger) {
-                return;
-            }
-
-            trigger = true;
-            if(a.isFunction(callback)) {
-                callback(el);
-            }
-            populateInternalCache(uri, args);
-        };
-
-        if(el.addEventListener) {
-            el.addEventListener('load', cb, false);
-        } else if(el.readyState) {
-            el.onreadystatechange = function() {
-                if (this.readyState == 'complete' ||
-                        this.readyState == 'loaded') {
-                    cb();
-                }
-            };
+        // IE
+        if (el.styleSheet && !el.sheet) {
+            el.styleSheet.cssText = data;
         } else {
-            el.onload = cb;
+            el.appendChild(document.createTextNode(data));
         }
 
-        // Hack for old Firefox/webkit browsers
-        // (who does not have onload on link elements)
-        //
-        // Note : using 'onload' in document.createElement('link')
-        // is not always enough
-        //
-        // By default, too many browser got this bug, so we always activate it
-        if(options.type === 'text/css') {
-            var currentCSS = document.styleSheets.length;
-            nCSS++;
-            var cssLoad = a.timer.add(function() {
-                if (document.styleSheets.length > (currentCSS + nCSS-1)) {
-                    nCSS--;
-                    a.timer.remove(cssLoad);
-                    cb();
-                }   
-            }, null, 50);
+        return el;
+    }
+
+    /**
+     * Create an HTML script containing data loaded. This helps to avoid
+     * loading twice the same resource.
+     *
+     * @private
+     *
+     * @param {String} type                 The element type, could be usually
+     *                                      css, js, html or translate/json
+     * @param {String} src                  The source related to this data
+     * @param {String} data                 The associated data
+    */
+    function createHtmlCache(type, src, data) {
+        var el = createScriptElement('appstorm/' + type.toLowerCase(),
+                a.sanitize(src), data);
+
+        doc.appendChild(el);
+    }
+
+    /**
+     * Search for an existing data stored in HTML cache.
+     *
+     * @private
+     *
+     * @param {String} type                 The type to search (like css, js)
+     * @param {String} src                  The source related to data
+     * @return {String | Null}              Any string stored, or null if
+     *                                      no matching tag where found...
+    */
+    function searchHtmlCache(type, src) {
+        var scripts  = doc.getElementsByTagName('script'),
+            sanitize = a.sanitize(src);
+
+        type = type.toLowerCase();
+
+        for (var i = 0, l = scripts.length; i < l; ++i) {
+            if (scripts[i].getAttribute('type') === 'appstorm/' + type && 
+                    scripts[i].getAttribute('data-src') === sanitize) {
+                return scripts[i].text;
+            }
         }
 
-        // Inserting document into header
-        document.getElementsByTagName('head')[0].appendChild(el);
+        // Nothing found
+        return null;
     }
 
     /**
@@ -154,16 +118,27 @@ a.loader = (function() {
      * @async
      *
      * @param {String} uri                  The data path
-     * @param {Function | Null} callback    The callback to apply in
+     * @param {Function | Null} success    The callback to apply in
      *                                      case of success
+     * @param {Function | Null} error       The callback to apply
+     *                                      in case of error
      * @param {Object | Null} args          An ajax argument object,
      *                                      not all of them are used
      *                                      (some are automatically generated
      *                                      and cannot be changed)
-     * @param {Function | Null} error       The callback to apply
-     *                                      in case of error
     */
-    function performAjaxLoading(uri, callback, args, error) {
+    function ajaxLoad(uri, success, error, args) {
+        // Searching existing content
+        if (a.isTrueObject(args) && args.cacheType) {
+            var search = searchHtmlCache(args.cacheType, uri);
+            if (search !== null) {
+                if (a.isFunction(success)) {
+                    success(search, -10);
+                }
+                return;
+            }
+        }
+
         var options = {
             url    : uri,   //Allowed type : any URL
             method : 'GET', //Allowed type : 'GET', 'POST'
@@ -178,11 +153,11 @@ a.loader = (function() {
                 'Loading resource from url ```' + uri + '```', 3);
 
         if(!a.isNone(args)) {
-            if(a.contains(htmlMethods, args.method) ) {
+            if(a.isString(args.method)) {
                 options.method = args.method;
             }
             if(!a.isNone(args.type) &&
-                    (args.type == 'json' || args.type == 'xml') ) {
+                    (args.type === 'json' || args.type === 'xml') ) {
                 options.type = args.type;
             }
             if(a.isTrueObject(args.data)) {
@@ -198,15 +173,56 @@ a.loader = (function() {
 
         // The real callback handling response
         var handlerCallback = function(content, status) {
-            if(a.isFunction(callback)) {
-                callback(content, status);
+            if(a.isFunction(success)) {
+                success(content, status);
             }
-            populateInternalCache(uri, args);
+            if (a.isTrueObject(args) && args.cacheType) {
+                createHtmlCache(args.cacheType, uri, content);
+            }
         };
 
         // Loading data
         var er = (a.isFunction(error)) ? error : function(){};
         a.ajax(options, handlerCallback, er).send();
+    }
+
+    function appendElementToHeader(type, uri, success, error, args) {
+        // Exiting if type is unknow
+        if (type !== 'script' && type !== 'style') {
+            a.console.storm('error', 'a.loader', 'Unknow type ```' + type +
+                    '```', 1);
+            if (a.isFunction(error)) {
+                error();
+            }
+            return;
+        }
+
+        ajaxLoad(uri, function(data, status) {
+            // It's loaded from cache...
+            // Which means we got nothing to do
+            if (status === -10) {
+                if (a.isFunction(success)) {
+                    success(data);
+                }
+                return;
+            }
+
+            var el = null;
+
+            if (type === 'script') {
+                el = createScriptElement(args.tagType, uri, data);
+            } else if (type === 'style') {
+                el = createStyleElement(data);
+            }
+
+            // Append element to dom
+            document.getElementsByTagName('head')[0].appendChild(el);
+
+            // Now we can call back success
+            if (a.isFunction(success)) {
+                success(data);
+            }
+        }, error, args || {});
     }
 
     return {
@@ -216,19 +232,25 @@ a.loader = (function() {
          * @async
          *
          * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        js: function(uri, callback, args, error) {
-            if(checkInternalCache(uri, callback)) {
-                return;
+        js: function(uri, success, error, args) {
+            if (!a.isTrueObject(args)) {
+                args = {};
             }
 
-            this.jsonp(uri, callback, args, error);
+            // TODO: for IE only, for others use application/javascript
+            args.tagType = 'text/javascript';
+            args.cacheType = 'js';
+
+            appendElementToHeader('script', uri, success, error, args);
         },
 
         /**
@@ -237,25 +259,24 @@ a.loader = (function() {
          * @async
          *
          * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        jsonp: function(uri, callback, args, error){
-            var type = (a.isTrueObject(args) && args.type) ? args.type
-                        : 'text/javascript';
+        jsonp: function(uri, success, error, args) {
+            if (!a.isTrueObject(args)) {
+                args = {};
+            }
 
-            a.console.storm('log', 'a.loader',
-                    'Loading resource from url ```' + uri + '```', 3);
+            // TODO: for IE only, for others use application/javascript
+            args.tagType = 'text/javascript';
 
-            appendElementToHeader(document.createElement('script'), {
-                    type : type,
-                    src : uri
-                }, callback, uri, args, error
-            );
+            appendElementToHeader('script', uri, success, error, args);
         },
 
         /**
@@ -264,27 +285,29 @@ a.loader = (function() {
          * @async
          *
          * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        json: function(uri, callback, args, error) {
-            // Setting type
-            if(!a.isTrueObject(args)) {
+        json: function(uri, success, error, args) {
+            if (!a.isTrueObject(args)) {
                 args = {};
             }
-            args.type = 'json';
 
             // Setting the accepted return type
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
+
+            args.type = 'json';
             args.header.accept = 'application/json, text/javascript';
 
-            performAjaxLoading(uri, callback, args, error);
+            ajaxLoad(uri, success, error, args);
         },
 
         /**
@@ -293,14 +316,16 @@ a.loader = (function() {
          * @async
          *
          * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        xml: function(uri, callback, args, error) {
+        xml: function(uri, success, error, args) {
             // Setting the type
             if(!a.isTrueObject(args)) {
                 args = {};
@@ -313,7 +338,7 @@ a.loader = (function() {
             }
             args.header.accept = 'application/xml, text/xml';
 
-            performAjaxLoading(uri, callback, args, error);
+            ajaxLoad(uri, success, error, args);
         },
 
         /**
@@ -324,51 +349,47 @@ a.loader = (function() {
          * @param {String} uri               The path to access content
          * @param {Function | Null} callback The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        css: function(uri, callback, args, error) {
-            if(checkInternalCache(uri, callback)) {
-                return;
+        css: function(uri, success, error, args) {
+            if (!a.isTrueObject(args)) {
+                args = {};
             }
 
-            a.console.storm('log', 'a.loader',
-                    'Loading resource from url ```' + uri + '```', 3);
+            args.tagType = 'text/css';
+            args.cacheType = 'css';
 
-            appendElementToHeader(document.createElement('link'), {
-                    rel  : 'stylesheet',
-                    type : 'text/css',
-                    href : uri
-                }, callback, uri, args, error
-            );
+            appendElementToHeader('style', uri, success, error, args);
         },
 
         /**
          * HTML loader.
-         * NOTE : only valid XHTML is accepted !
          *
          * @async
          *
          * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An ajax argument object,
          *                                   not all of them are used
          *                                   (some are automatically generated
          *                                   and cannot be changed)
         */
-        html: function(uri, callback, args, error) {
-            if(checkInternalCache(uri, callback)) {
-                return;
-            }
-
+        html: function(uri, success, error, args) {
             // Setting type
             if(!a.isTrueObject(args)) {
                 args = {};
             }
-            args.type = 'raw';
+
+            args.tagType = 'text/html';
+            args.cacheType = 'html';
 
             // In debug mode, we disallow cache
             if(a.environment.get('app.debug') === true) {
@@ -379,8 +400,10 @@ a.loader = (function() {
             if(!a.isTrueObject(args.header)) {
                 args.header = {};
             }
+
             args.header.accept = 'text/html';
-            performAjaxLoading(uri, callback, args, error);
+
+            appendElementToHeader('script', uri, success, error, args);
         },
 
         /**
@@ -390,8 +413,10 @@ a.loader = (function() {
          *
          * @param {String} uri               The path for given jar files to
          *                                   load
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An object to set property for
          *                                   javaFX (like javascript name...),
          *                                   we need : args.code (the main to
@@ -399,7 +424,7 @@ a.loader = (function() {
          *                                   project). args.width and height
          *                                   are optional
         */
-        javafx: function (uri, callback, args, error) {
+        javafx: function (uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
                 var errorStr =  'The system need args.code ';
                     errorStr += 'and args.name setted to be able to load any ';
@@ -410,7 +435,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(checkInternalCache(uri, callback)) {
+            if(checkInternalCache(uri, success)) {
                 return;
             }
 
@@ -435,8 +460,8 @@ a.loader = (function() {
                 if(max-- > 0 && !a.isNone(
                         document.getElementById(args.id).Packages)) {
                     a.timer.remove(timer);
-                    if(a.isFunction(callback)) {
-                        callback();
+                    if(a.isFunction(success)) {
+                        success();
                     }
                 } else if(max <= 0 && a.isFunction(error)) {
                     error(uri, 408);
@@ -451,12 +476,14 @@ a.loader = (function() {
          *
          * @param {String} uri               The path for given swf files to
          *                                   load
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An object to set property for
          *                                   Flash
         */
-        flash: function (uri, callback, args, error) {
+        flash: function (uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 var errorStr =  'The system need args ';
                     errorStr +='parameters: rootId and id, setted to be able ';
@@ -467,7 +494,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(checkInternalCache(uri, callback)) {
+            if(checkInternalCache(uri, success)) {
                 return;
             }
 
@@ -488,8 +515,8 @@ a.loader = (function() {
                     // the success event is not really ready
                     if(e.success === false && a.isFunction(error)) {
                         error(uri, 408);
-                    }else if(e.success === true && a.isFunction(callback)) {
-                        setTimeout(callback, 500);
+                    }else if(e.success === true && a.isFunction(success)) {
+                        setTimeout(success, 500);
                     }
                 });
             });
@@ -502,14 +529,16 @@ a.loader = (function() {
          *
          * @param {String} uri               The path for given xap files to
          *                                   load
-         * @param {Function | Null} callback The callback to call after
+         * @param {Function | Null} success  The callback to call after
          *                                   loading success (NOTE: silverlight
          *                                   is not able to fire load event,
          *                                   so it's not true here...)
+         * @param {Function | Null} error    The callback to call after
+         *                                   loading error
          * @param {Object} args              An object to set property for
          *                                   Silverlight
         */
-        silverlight: function(uri, callback, args, error) {
+        silverlight: function(uri, success, args, error) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 var errorStr =  'The system need args ';
                     errorStr += 'parameters: rootId, id, setted to be able ';
@@ -520,7 +549,7 @@ a.loader = (function() {
                 return;
             }
 
-            if(checkInternalCache(uri, callback)) {
+            if(checkInternalCache(uri, success)) {
                 return;
             }
 
@@ -556,7 +585,9 @@ a.loader = (function() {
                         !a.isNone(document.getElementById(args.id).Content)) {
 
                     a.timer.remove(timer);
-                    callback();
+                    if (a.isFunction(success)) {
+                        success();
+                    }
                 } else if(max <= 0 && a.isFunction(error)) {
                     error(uri, 408);
                 }
