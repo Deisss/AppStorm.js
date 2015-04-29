@@ -24,7 +24,7 @@ QUnit.module('plugin/state.js', {
 
 
 // Start to check a single check hash change
-QUnit.asyncTest('a.state.hash-single-state', function(assert) {
+QUnit.asyncTest('a.state.hash-single-state', function (assert) {
     expect(2);
 
     var main1 = {
@@ -61,7 +61,7 @@ QUnit.asyncTest('a.state.hash-single-state', function(assert) {
 });
 
 // Test hashexists
-QUnit.test('a.state.hashExists', function(assert) {
+QUnit.test('a.state.hashExists', function (assert) {
     expect(4);
     // We add one existing hash
     var child1 = {
@@ -98,7 +98,7 @@ QUnit.test('a.state.hashExists', function(assert) {
 
 // State manager test
 // Testing add to function : testing parent add, children add
-QUnit.test('a.state.add', function(assert) {
+QUnit.test('a.state.add', function (assert) {
     expect(10);
     var testSingleChildren = {
         id : 'root',
@@ -181,7 +181,7 @@ QUnit.test('a.state.add', function(assert) {
 
 // TODO: REACTIVATE
 // Test a load and unload, with a state in common (a parent)
-QUnit.asyncTest('a.state-path', function(assert) {
+QUnit.asyncTest('a.state-path', function (assert) {
     // We expect 3 : one from parent1, and 2 from sub child, this is
     // because parent1 will be loaded only
     // at first time, because it is shared between main1, and main2 !
@@ -230,7 +230,7 @@ QUnit.asyncTest('a.state-path', function(assert) {
 
 
 // Test full load chain process
-QUnit.asyncTest('a.state-load', function(assert) {
+QUnit.asyncTest('a.state-load', function (assert) {
     // We expect the 6 : 3 from parent, 3 from children
     expect(6);
 
@@ -286,7 +286,7 @@ QUnit.asyncTest('a.state-load', function(assert) {
 
 
 // Test full unload chain process
-QUnit.asyncTest('a.state-unload', function(assert) {
+QUnit.asyncTest('a.state-unload', function (assert) {
     // We expect the 6 : 1, loading, then unloading: 3 from parent, 3 from children
     expect(7);
 
@@ -349,7 +349,7 @@ QUnit.asyncTest('a.state-unload', function(assert) {
 
 
 // Testing both some load, and some unload
-QUnit.asyncTest('a.state-load-unload', function(assert) {
+QUnit.asyncTest('a.state-load-unload', function (assert) {
     // We expect the 7 : 2 from parent at load, 2 from children at load,
     // 3 from parent and children on unload
     expect(7);
@@ -417,7 +417,7 @@ QUnit.asyncTest('a.state-load-unload', function(assert) {
 
 
 // Test hashtag not fired if state is not linked to this hashtag
-QUnit.asyncTest('a.state-notfired', function(assert) {
+QUnit.asyncTest('a.state-notfired', function (assert) {
     expect(1);
 
     var main1 = {
@@ -463,7 +463,7 @@ QUnit.asyncTest('a.state-notfired', function(assert) {
 
 // TODO : be able to test translate, css, and html loaded
 // Test loading HTML, CSS, JS, and translate
-QUnit.asyncTest('a.state-loader', function(assert) {
+QUnit.asyncTest('a.state-loader', function (assert) {
     // Many test are done to check everything was loaded as expected
     expect(7);
 
@@ -540,7 +540,7 @@ QUnit.asyncTest('a.state-loader', function(assert) {
 
 
 // Test loading multiple data and send that to html as expected
-QUnit.asyncTest('a.state-multiData', function(assert) {
+QUnit.asyncTest('a.state-multiData', function (assert) {
     expect(7);
 
     var tree = {
@@ -623,7 +623,7 @@ QUnit.asyncTest('a.state-multiData', function(assert) {
 
 
 // Test event begin and end before and after loading a state
-QUnit.asyncTest('a.state.begin-end', function(assert) {
+QUnit.asyncTest('a.state.begin-end', function (assert) {
     expect(2);
 
     a.message.bind('a.state.begin', function(data) {
@@ -658,7 +658,7 @@ QUnit.asyncTest('a.state.begin-end', function(assert) {
 
 
 // Test to send parameter into html loading
-QUnit.asyncTest('a.state.html-parameter', function(assert) {
+QUnit.asyncTest('a.state.html-parameter', function (assert) {
     expect(1);
 
     var htmlParameter = {
@@ -696,7 +696,7 @@ QUnit.asyncTest('a.state.html-parameter', function(assert) {
 
 
 // Test adding parameter inside data url
-QUnit.asyncTest('a.state.data-parameter', function(assert) {
+QUnit.asyncTest('a.state.data-parameter', function (assert) {
     expect(1);
 
     var htmlParameter = {
@@ -725,7 +725,7 @@ QUnit.asyncTest('a.state.data-parameter', function(assert) {
 
 
 // Test converter function behaviour on no data loaded
-QUnit.asyncTest('a.state.data-converter-nodata', function(assert) {
+QUnit.asyncTest('a.state.data-converter-nodata', function (assert) {
     expect(1);
 
     var test = {
@@ -766,7 +766,7 @@ QUnit.asyncTest('a.state.data-converter-nodata', function(assert) {
 
 
 // Test converter function behaviour with loaded data
-QUnit.asyncTest('a.state.data-converter-append', function(assert) {
+QUnit.asyncTest('a.state.data-converter-append', function (assert) {
     expect(2);
 
     var test = {
@@ -813,7 +813,7 @@ QUnit.asyncTest('a.state.data-converter-append', function(assert) {
 
 
 // Test binding parameters to data
-QUnit.asyncTest('a.state.data-cross-parameter', function(assert) {
+QUnit.asyncTest('a.state.data-cross-parameter', function (assert) {
     expect(4);
 
     var test = {
@@ -885,7 +885,7 @@ QUnit.asyncTest('a.state.data-cross-parameter', function(assert) {
 
 
 // Test title with hashtag parameters
-QUnit.asyncTest('a.state.title', function(assert) {
+QUnit.asyncTest('a.state.title', function (assert) {
     expect(1);
 
     var previous = document.title;
@@ -915,7 +915,7 @@ QUnit.asyncTest('a.state.title', function(assert) {
 
 // Two hashtag : one in the parent, one in the children
 // Only the children is correctly parsed (speed gain)
-QUnit.asyncTest('a.state.underhash', function(assert) {
+QUnit.asyncTest('a.state.underhash', function (assert) {
     expect(2);
 
     var tree = {
@@ -953,7 +953,7 @@ QUnit.asyncTest('a.state.underhash', function(assert) {
 
 
 // Test options url
-QUnit.asyncTest('a.state.options-parameter', function(assert) {
+QUnit.asyncTest('a.state.options-parameter', function (assert) {
     expect(1);
 
     var tree = {
@@ -988,7 +988,7 @@ QUnit.asyncTest('a.state.options-parameter', function(assert) {
 
 
 // Test the 'use' extend system
-QUnit.test('a.state.use', function(assert) {
+QUnit.test('a.state.use', function (assert) {
     assert.expect(8);
 
     var initialState = {
@@ -1054,7 +1054,7 @@ QUnit.test('a.state.use-parent', function (assert) {
 
 
 // Test system allow bind/unbind event
-QUnit.asyncTest('a.state.load-bind', function(assert) {
+QUnit.asyncTest('a.state.load-bind', function (assert) {
     // We create a binding
     // Test binding is working
     // Unload state
@@ -1136,7 +1136,7 @@ QUnit.asyncTest('a.state.load-bind', function(assert) {
 
 
 // Test system allow bind/unbind event ON the entry directly
-QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
+QUnit.asyncTest('a.state.load-bind-entry', function (assert) {
     // We create a binding
     // Test binding is working
     // Unload state
@@ -1198,7 +1198,7 @@ QUnit.asyncTest('a.state.load-bind-entry', function(assert) {
 
 
 // Test the async parameter
-QUnit.asyncTest('a.state.async-boolean', function(assert) {
+QUnit.asyncTest('a.state.async-boolean', function (assert) {
     assert.expect(4);
 
     var asyncFalse = {
@@ -1246,7 +1246,7 @@ QUnit.asyncTest('a.state.async-boolean', function(assert) {
 
 
 // Test async on a single string
-QUnit.asyncTest('a.state.async-string', function(assert) {
+QUnit.asyncTest('a.state.async-string', function (assert) {
     assert.expect(6);
 
     var asyncString1 = {
@@ -1301,7 +1301,7 @@ QUnit.asyncTest('a.state.async-string', function(assert) {
 });
 
 
-QUnit.asyncTest('a.state.async-array', function(assert) {
+QUnit.asyncTest('a.state.async-array', function (assert) {
     assert.expect(6);
 
     var asyncArray1 = {
@@ -1359,7 +1359,7 @@ QUnit.asyncTest('a.state.async-array', function(assert) {
 
 
 // Test how the state react regarding acl changes
-QUnit.asyncTest('a.state.acl-change', function(assert) {
+QUnit.asyncTest('a.state.acl-change', function (assert) {
     assert.expect(3);
 
     var state = {
@@ -1406,7 +1406,7 @@ QUnit.asyncTest('a.state.acl-change', function(assert) {
 
 
 // Setup a minimum role for acl
-QUnit.asyncTest('a.state.acl-minimum', function(assert) {
+QUnit.asyncTest('a.state.acl-minimum', function (assert) {
     assert.expect(1);
 
     var state = {
@@ -1446,7 +1446,7 @@ QUnit.asyncTest('a.state.acl-minimum', function(assert) {
 });
 
 // Define a maximum step
-QUnit.asyncTest('a.state.acl-maximum', function(assert) {
+QUnit.asyncTest('a.state.acl-maximum', function (assert) {
     assert.expect(1);
 
     var state = {
@@ -1484,7 +1484,7 @@ QUnit.asyncTest('a.state.acl-maximum', function(assert) {
 });
 
 // Any element is accepted, except the one defined in refused
-QUnit.asyncTest('a.state.acl-refused', function(assert) {
+QUnit.asyncTest('a.state.acl-refused', function (assert) {
     assert.expect(2);
 
     var state = {
@@ -1544,7 +1544,7 @@ QUnit.asyncTest('a.state.acl-refused', function(assert) {
 
 
 // Test the inject parameters system
-QUnit.asyncTest('a.state.inject', function(assert) {
+QUnit.asyncTest('a.state.inject', function (assert) {
     assert.expect(1);
 
     a.state.add({
@@ -1570,7 +1570,7 @@ QUnit.asyncTest('a.state.inject', function(assert) {
 
 
 // Testing to loadAfter functionnality
-QUnit.asyncTest('a.state.load-after', function(assert) {
+QUnit.asyncTest('a.state.load-after', function (assert) {
     assert.expect(2);
 
     var parent = {
@@ -1602,7 +1602,7 @@ QUnit.asyncTest('a.state.load-after', function(assert) {
 });
 
 // Unit test the raw mock support for faking server with not-parsed requests
-QUnit.asyncTest('a.state.data-mock', function(assert) {
+QUnit.asyncTest('a.state.data-mock', function (assert) {
     assert.expect(2);
 
     a.mock.add('GET', 'something/{{important}}', {
@@ -1639,7 +1639,7 @@ QUnit.asyncTest('a.state.data-mock', function(assert) {
 
 
 // Test the new capacities for entry/el/dom to use a function instead of a string
-QUnit.asyncTest('a.state.entry-function', function(assert) {
+QUnit.asyncTest('a.state.entry-function', function (assert) {
     assert.expect(2);
 
     var state = {
@@ -1672,7 +1672,7 @@ QUnit.asyncTest('a.state.entry-function', function(assert) {
 
 
 // Test data as a function instead of string/object
-QUnit.asyncTest('a.state.data-function', function(assert) {
+QUnit.asyncTest('a.state.data-function', function (assert) {
     assert.expect(1);
 
     a.state.add({
@@ -1699,7 +1699,7 @@ QUnit.asyncTest('a.state.data-function', function(assert) {
 });
 
 // Little bit more complex data test
-QUnit.asyncTest('a.state.data-function2', function(assert) {
+QUnit.asyncTest('a.state.data-function2', function (assert) {
     assert.expect(1);
 
     a.state.add({
@@ -1732,7 +1732,7 @@ QUnit.asyncTest('a.state.data-function2', function(assert) {
 });
 
 // More complex data structure, mixing many things at a time
-QUnit.asyncTest('a.state.data-function3', function(assert) {
+QUnit.asyncTest('a.state.data-function3', function (assert) {
     assert.expect(2);
 
     a.storage.memory.set('something', 'other ok');
@@ -1777,7 +1777,7 @@ QUnit.asyncTest('a.state.data-function3', function(assert) {
 });
 
 // Testing usage parameters
-QUnit.asyncTest('a.state.parameters', function(assert) {
+QUnit.asyncTest('a.state.parameters', function (assert) {
     assert.expect(2);
 
     a.state.add({
@@ -1800,7 +1800,7 @@ QUnit.asyncTest('a.state.parameters', function(assert) {
 });
 
 // Keyboard test
-QUnit.asyncTest('a.state.keyboard-bindings', function(assert) {
+QUnit.asyncTest('a.state.keyboard-bindings', function (assert) {
     assert.expect(6);
 
     a.state.add({
@@ -1857,7 +1857,7 @@ QUnit.asyncTest('a.state.keyboard-bindings', function(assert) {
 
 
 // Testing multiple hash response
-QUnit.asyncTest('a.state.multiple-hash', function(assert) {
+QUnit.asyncTest('a.state.multiple-hash', function (assert) {
     assert.expect(4);
 
     a.state.add({
@@ -1900,7 +1900,7 @@ QUnit.asyncTest('a.state.multiple-hash', function(assert) {
 
 
 // Test the flash property inside the state
-QUnit.asyncTest('a.state.flash-simple', function(assert) {
+QUnit.asyncTest('a.state.flash-simple', function (assert) {
     assert.expect(3);
 
     a.state.add({
@@ -1943,7 +1943,7 @@ QUnit.asyncTest('a.state.flash-simple', function(assert) {
 });
 
 // Test the flash property inside the parent state
-QUnit.asyncTest('a.state.flash-parent', function(assert) {
+QUnit.asyncTest('a.state.flash-parent', function (assert) {
     assert.expect(2);
 
     a.state.add({
@@ -1984,7 +1984,7 @@ QUnit.asyncTest('a.state.flash-parent', function(assert) {
 });
 
 // We also allow function raise
-QUnit.asyncTest('a.state.flash-function', function(assert) {
+QUnit.asyncTest('a.state.flash-function', function (assert) {
     assert.expect(2);
 
     a.state.add({
@@ -2011,7 +2011,7 @@ QUnit.asyncTest('a.state.flash-function', function(assert) {
 
 
 // We can handle the success directly inside data element now
-QUnit.asyncTest('a.state.data-handling-success', function(assert) {
+QUnit.asyncTest('a.state.data-handling-success', function (assert) {
     assert.expect(2);
 
     a.state.add({
@@ -2040,4 +2040,41 @@ QUnit.asyncTest('a.state.data-handling-success', function(assert) {
         hash: 'a.state.data-handling-success',
         expect: 2
     });
+});
+
+
+// Unit test new a.state.loaded function
+QUnit.asyncTest('a.state.loaded', function (assert) {
+    assert.expect(3);
+
+    a.state.add({
+        id: 'fake-loaded',
+        postLoad: function() {
+            QAppStorm.pop();
+        }
+    });
+
+    a.state.add({
+        id: 'loaded-test',
+        postLoad: function() {
+            QAppStorm.pop();
+        }
+    });
+
+    QAppStorm.chain({
+            hash: 'a.state.loaded-tester',
+            expect: 3,
+            callback: function(chain) {
+                var loaded = a.state.loaded('loaded-test');
+                assert.strictEqual(loaded.length, 2, 'Test loaded size');
+                assert.strictEqual(loaded[0].id, 'loaded-test', 'Test ID 1');
+                assert.strictEqual(loaded[1].id, 'loaded-test', 'Test ID 2');
+                chain.next();
+            }
+        }
+    );
+
+    a.state.load('fake-loaded');
+    a.state.load('loaded-test');
+    a.state.load('loaded-test');
 });
