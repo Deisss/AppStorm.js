@@ -171,21 +171,29 @@ a.loader = (function() {
             }
         }
 
-        // The real callback handling response
-        var handlerCallback = function(content, status) {
+        // Loading data
+        var er = (a.isFunction(error)) ? error : function(){};
+        a.ajax(options, function (content, status) {
             if(a.isFunction(success)) {
                 success(content, status);
             }
             if (a.isTrueObject(args) && args.cacheType) {
                 createHtmlCache(args.cacheType, uri, content);
             }
-        };
-
-        // Loading data
-        var er = (a.isFunction(error)) ? error : function(){};
-        a.ajax(options, handlerCallback, er).send();
+        }, er).send();
     }
 
+    /**
+     * Append element to head of page.
+     *
+     * @private
+     *
+     * @param {String} type                 script or style
+     * @param {String} uri                  The url for this script/style
+     * @param {Function | Null} success     The success function
+     * @param {Function | Null} error       The error function
+     * @param {Object} args                 Any revelant arguments passed to
+    */
     function appendElementToHeader(type, uri, success, error, args) {
         // Exiting if type is unknow
         if (type !== 'script' && type !== 'style') {
