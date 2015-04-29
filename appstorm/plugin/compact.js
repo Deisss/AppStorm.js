@@ -57,62 +57,6 @@ a.compact = {
     },
 
     /**
-     * Sanitize an url. Really basic one...
-     * FROM: http://jsperf.com/normalize-path
-     *
-     * @private
-    */
-    sanitize: function (url) {
-        var parts       = url.split('/'),
-            directories = [],
-            prev;
-
-        for (var i = 0, l = parts.length - 1; i <= l; i++) {
-            var directory = parts[i];
-      
-            // if it's blank, but it's not the first thing, and not the
-            // last thing, skip it.
-            if (directory === '' && i !== 0 && i !== l) {
-                continue;
-            }
-      
-            // if it's a dot, and there was some previous dir already, then
-            // skip it.
-            if (directory === '.' && typeof prev !== 'undefined') {
-                continue;
-            }
-      
-            // if it starts with "", and is a . or .., then skip it.
-            if (directories.length === 1 && directories[0] === '' &&
-                    (directory === '.' || directory === '..')) {
-                continue;
-            }
-      
-            if (directory === '..' && directories.length && prev !== '..' &&
-                    prev !== '.' && typeof prev !== 'undefined' &&
-                    prev !== '') {
-                directories.pop();
-                prev = directories.slice(-1)[0]
-            } else {
-                if (prev === '.') {
-                    directories.pop();
-                }
-                directories.push(directory);
-                prev = directory;
-            }
-        }
-
-        var result = directories.join('/');
-
-        // It may contains a first char '/'
-        if (result.length > 0 && result[0] === '/') {
-            result = result.substr(1);
-        }
-
-        return result;
-    },
-
-    /**
      * When a.compact.active is set on true, this function is used to get
      * related content.
      *
@@ -123,7 +67,7 @@ a.compact = {
     */
     get: function(type, url) {
         if (this.active && this.content !== null) {
-            var sanitize = this.sanitize(url),
+            var sanitize = a.sanitize(url),
                 element  = null;
             for (var i = 0, l = this.content.length; i < l; ++i) {
                 element = this.content[i];
