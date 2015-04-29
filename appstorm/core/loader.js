@@ -21,7 +21,8 @@ a.loader = (function() {
     //   var doc = document.createElement('div');
     //   var doc = document.body;
     // if you want the dom remains empty of appstorm scripts.
-    var doc = document.getElementsByTagName('head')[0];
+    var doc = document.getElementsByTagName('head')[0],
+        store = a.mem.getInstance('a.loader');
 
     /**
      * Create a script html tag element.
@@ -78,8 +79,19 @@ a.loader = (function() {
      * @param {String} data                 The associated data
     */
     function createHtmlCache(type, src, data) {
-        var el = createScriptElement('appstorm/' + type.toLowerCase(),
-                a.sanitize(src), data);
+        type = type.toLowerCase();
+
+        var sanitize = a.sanitize(src),
+            el = createScriptElement('appstorm/' + type, sanitize, data),
+            st = store.get(type);
+
+        if (!a.isArray(st)) {
+            st = [sanitize];
+            store.set(type, st);
+        } else {
+            st.push(sanitize);
+            st = a.uniq(st);
+        }
 
         doc.appendChild(el);
     }
@@ -443,10 +455,6 @@ a.loader = (function() {
                 return;
             }
 
-            if(checkInternalCache(uri, success)) {
-                return;
-            }
-
             // Load (if needed) javaFX javascript include helper
             var version = (args.version) ? args.version : '1.3';
             this.js('http://dl.javafx.com/' +version+ '/dtfx.js', function() {
@@ -502,11 +510,8 @@ a.loader = (function() {
                 return;
             }
 
-            if(checkInternalCache(uri, success)) {
-                return;
-            }
-
             // Load (if needed) the swfobject.js to load flash from that
+            console.log(a.url + 'vendor/storage/flash/swfobject.js');
             this.js(a.url + 'vendor/storage/flash/swfobject.js', function() {
                 swfobject.embedSWF(
                         uri,
@@ -527,7 +532,10 @@ a.loader = (function() {
                         setTimeout(success, 500);
                     }
                 });
-            });
+            }), function() {
+                a.console.storm('error', 'a.loader.flash', 'Unable to load ' +
+                        '```' + uri + '``` resource', 1);
+            };
         },
 
         /**
@@ -546,7 +554,7 @@ a.loader = (function() {
          * @param {Object} args              An object to set property for
          *                                   Silverlight
         */
-        silverlight: function(uri, success, args, error) {
+        silverlight: function(uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
                 var errorStr =  'The system need args ';
                     errorStr += 'parameters: rootId, id, setted to be able ';
@@ -556,13 +564,6 @@ a.loader = (function() {
                 a.console.storm('warn', 'a.loader.silverlight', errorStr, 2);
                 return;
             }
-
-            if(checkInternalCache(uri, success)) {
-                return;
-            }
-
-            a.console.storm('log', 'a.loader',
-                    'Loading resource from url ```' + uri + '```', 3);
 
             var obj  = document.createElement('object');
             obj.id   = args.id;
@@ -603,12 +604,24 @@ a.loader = (function() {
         },
 
         /**
-         * Get the cache trace loaded.
+         * Get the currently url loaded and cached.
          *
-         * @return {Array}                  The cache trace
+         * @param {String} type              The type to get, like 'js', 'css'
+         * @return {Object | Array | Null}   The cache trace, object if type is
+         *                                   empty/null, array in other cases.
+         *                                   Null if the element does not exist
+         *                                   / does not have anything cached
+         *                                   yet
         */
-        trace: function() {
-            return internalCache;
+        trace: function(type) {
+            if (type) {
+                return store.get(type);
+            }
+            return store.list();
         }
+
+        /*!
+         * @private
+        */
     };
 }());
