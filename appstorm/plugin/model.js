@@ -151,7 +151,7 @@ a.modelInstance.prototype = {
     */
     get: function(key) {
         var p = this.properties[key];
-        return p ? p['value'] : null;
+        return p ? p.value : null;
     },
 
     /**
@@ -168,16 +168,16 @@ a.modelInstance.prototype = {
             return 'text';
         }
 
-        if(p['type']) {
-            return p['type'];
+        if(p.type) {
+            return p.type;
 
         // Now we try to guess
-        } else if(p['primary'] === true) {
+        } else if(p.primary === true) {
             return 'hidden';
-        } else if(a.isArray(p['check'])) {
+        } else if(a.isArray(p.check)) {
             return 'select';
-        } else if(p['check']) {
-            var content = p['check'].toLowerCase();
+        } else if(p.check) {
+            var content = p.check.toLowerCase();
             if(content === 'boolean') {
                 return 'checkbox';
             } else if(content === 'number' || content === 'float' || 
@@ -218,14 +218,14 @@ a.modelInstance.prototype = {
 
         // If the property is setted, we can use it
         if(property) {
-            var check     = property['check'],
-                apply     = property['apply'],
-                eventName = property['event'],
-                pattern   = property['pattern'],
-                transform = property['transform'],
-                validate  = property['validate'],
-                many      = property['many'] || false,
-                old       = property['value'];
+            var check     = property.check,
+                apply     = property.apply,
+                eventName = property.event,
+                pattern   = property.pattern,
+                transform = property.transform,
+                validate  = property.validate,
+                many      = property.many || false,
+                old       = property.value;
 
 
             // TRANSFORM
@@ -300,7 +300,7 @@ a.modelInstance.prototype = {
             }
 
             // We can apply property value now
-            property['value'] = value;
+            property.value = value;
 
             // If it's possible, we also update the 'direct' value
             if(!a.contains(this.originalContent, key)) {
@@ -331,7 +331,7 @@ a.modelInstance.prototype = {
     */
     watch: function(key, fct) {
         if(a.isString(key) && a.isFunction(fct)) {
-            a.watch.call(this, this.properties[key]['value'], fct);
+            a.watch.call(this, this.properties[key].value, fct);
         } else {
             a.console.storm('error', 'a.model.watch', 'Unable to watch the ' +
                 'property ```' + key + '``` for model ```' + this.modelName +
@@ -349,7 +349,7 @@ a.modelInstance.prototype = {
     */
     unwatch: function(key, fct) {
         if(a.isString(key) && a.isFunction(fct)) {
-            a.unwatch.call(this, this.properties[key]['value'], fct);
+            a.unwatch.call(this, this.properties[key].value, fct);
         } else {
             a.console.storm('error', 'a.model.unwatch', 'Unable to unwatch ' +
                 'the property ```' + key + '``` for model ```' +
@@ -375,8 +375,12 @@ a.modelInstance.prototype = {
     */
     init: function() {
         for(var property in this.properties) {
-            this.properties[property]['value'] = 
-                    this.properties[property]['init'] || null;
+            if (this.properties[property].hasOwnProperty('init')) {
+                this.properties[property].value =
+                        this.properties[property].init;
+            } else {
+                this.properties[property].value = null;
+            }
 
             // Now we push data into directly the model itself
             if(!a.contains(this.originalContent, property)) {
@@ -452,7 +456,7 @@ a.modelInstance.prototype = {
     fromObject: function(data) {
         for(var property in this.properties) {
             if(property in data) {
-                this.properties[property]['value'] = data[property];
+                this.properties[property].value = data[property];
             }
         }
     },
@@ -532,12 +536,12 @@ a.modelInstance.prototype = {
 
         for(var key in snapshot) {
             var snapValue    = snapshot[key],
-                currentValue = properties[key]['value'];
+                currentValue = properties[key].value;
 
             // Validate on value change, or needed stuff
             if(
                     currentValue !== snapValue
-                ||  properties[key]['needed'] === true
+                ||  properties[key].needed === true
             ) {
                 if(onlyCurrentValues) {
                     difference[key] = currentValue;
