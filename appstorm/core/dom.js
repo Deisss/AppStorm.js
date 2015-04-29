@@ -975,7 +975,7 @@ a.dom.children.prototype = {
      * @chainable
      *
      * @param {String} attribute            The attribute to set
-     * @param {String} value                The value to get
+     * @param {String | Null} value         The value to set
     */
     attribute: function(attribute, value) {
         var attributes = 
@@ -1020,12 +1020,23 @@ a.dom.children.prototype = {
     },
 
     /**
+     * Get or set the input/textarea value.
+     *
+     * @chainable
+     *
+     * @param {String | Null} value         The value to set
+    */
+    val: function(value) {
+        return this.attribute('value', value);
+    },
+
+    /**
      * Same as attribute, but for data- HTML5 tag.
      *
      * @chainable
      *
      * @param {String} attribute            The attribute to set
-     * @param {String} value                The value to get
+     * @param {String | Null} value         The value to get
     */
     data: function(attribute, value) {
         return this.attribute('data-' + attribute, value);
