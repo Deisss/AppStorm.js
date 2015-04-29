@@ -26,6 +26,7 @@ a.template = {
     /**
      * Store cached partials
      * @property _part
+     * @private
      * @type Object
      * @default {}
     */
@@ -34,6 +35,7 @@ a.template = {
     /**
      * Store cached template
      * @property _tmpl
+     * @private
      * @type Object
      * @default {}
     */
