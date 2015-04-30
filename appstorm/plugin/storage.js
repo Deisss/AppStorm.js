@@ -791,7 +791,7 @@ a.storage.type.flash = new function() {
                 if(support === true && a.isFunction(callback)) {
                     callback(support);
                 }
-            }, data);
+            }, null, data);
         } else if(support === true && a.isFunction(callback)) {
             callback(support);
         }
@@ -942,7 +942,7 @@ a.storage.type.silverlight = new function() {
                 if(support === true && a.isFunction(callback)) {
                     callback(support);
                 }
-            }, data);
+            }, null, data);
         } else if(support === true && a.isFunction(callback)) {
             callback(support);
         }
