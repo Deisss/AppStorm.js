@@ -4245,6 +4245,7 @@ a.loader = (function() {
         } else {
             st.push(sanitize);
             st = a.uniq(st);
+            store.set(type, st);
         }
 
         doc.appendChild(el);
@@ -4284,7 +4285,7 @@ a.loader = (function() {
      * @async
      *
      * @param {String} uri                  The data path
-     * @param {Function | Null} success    The callback to apply in
+     * @param {Function | Null} success     The callback to apply in
      *                                      case of success
      * @param {Function | Null} error       The callback to apply
      *                                      in case of error
@@ -4354,7 +4355,7 @@ a.loader = (function() {
      *
      * @private
      *
-     * @param {String} type                 script or style
+     * @param {String} type                 Script or style
      * @param {String} uri                  The url for this script/style
      * @param {Function | Null} success     The success function
      * @param {Function | Null} error       The error function
@@ -4383,14 +4384,16 @@ a.loader = (function() {
 
             var el = null;
 
-            if (type === 'script') {
+            if (type === 'script' && args.tagType) {
                 el = createScriptElement(args.tagType, uri, data);
             } else if (type === 'style') {
                 el = createStyleElement(data);
             }
 
             // Append element to dom
-            document.getElementsByTagName('head')[0].appendChild(el);
+            if (el !== null) {
+                document.getElementsByTagName('head')[0].appendChild(el);
+            }
 
             // Now we can call back success
             if (a.isFunction(success)) {
@@ -4405,15 +4408,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         js: function(uri, success, error, args) {
             if (!a.isTrueObject(args)) {
@@ -4432,15 +4435,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         jsonp: function(uri, success, error, args) {
             if (!a.isTrueObject(args)) {
@@ -4458,15 +4461,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         json: function(uri, success, error, args) {
             if (!a.isTrueObject(args)) {
@@ -4489,15 +4492,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         xml: function(uri, success, error, args) {
             // Setting the type
@@ -4520,15 +4523,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} callback The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         css: function(uri, success, error, args) {
             if (!a.isTrueObject(args)) {
@@ -4546,15 +4549,15 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path to access content
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An ajax argument object,
-         *                                   not all of them are used
-         *                                   (some are automatically generated
-         *                                   and cannot be changed)
+         * @param {String} uri              The path to access content
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An ajax argument object,
+         *                                  not all of them are used
+         *                                  (some are automatically generated
+         *                                  and cannot be changed)
         */
         html: function(uri, success, error, args) {
             // Setting type
@@ -4562,7 +4565,6 @@ a.loader = (function() {
                 args = {};
             }
 
-            args.tagType = 'text/html';
             args.cacheType = 'html';
 
             // In debug mode, we disallow cache
@@ -4585,18 +4587,18 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path for given jar files to
-         *                                   load
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An object to set property for
-         *                                   javaFX (like javascript name...),
-         *                                   we need : args.code (the main to
-         *                                   start), args.id (the id of
-         *                                   project). args.width and height
-         *                                   are optional
+         * @param {String} uri              The path for given jar files to
+         *                                  load
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An object to set property for
+         *                                  javaFX (like javascript name...),
+         *                                  we need : args.code (the main to
+         *                                  start), args.id (the id of
+         *                                  project). args.width and height
+         *                                  are optional
         */
         javafx: function (uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.code) || a.isNone(args.id)) {
@@ -4644,14 +4646,14 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path for given swf files to
-         *                                   load
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An object to set property for
-         *                                   Flash
+         * @param {String} uri              The path for given swf files to
+         *                                  load
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An object to set property for
+         *                                  Flash
         */
         flash: function (uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
@@ -4697,16 +4699,16 @@ a.loader = (function() {
          *
          * @async
          *
-         * @param {String} uri               The path for given xap files to
-         *                                   load
-         * @param {Function | Null} success  The callback to call after
-         *                                   loading success (NOTE: silverlight
-         *                                   is not able to fire load event,
-         *                                   so it's not true here...)
-         * @param {Function | Null} error    The callback to call after
-         *                                   loading error
-         * @param {Object} args              An object to set property for
-         *                                   Silverlight
+         * @param {String} uri              The path for given xap files to
+         *                                  load
+         * @param {Function | Null} success The callback to call after
+         *                                  loading success (NOTE: silverlight
+         *                                  is not able to fire load event,
+         *                                  so it's not true here...)
+         * @param {Function | Null} error   The callback to call after
+         *                                  loading error
+         * @param {Object} args             An object to set property for
+         *                                  Silverlight
         */
         silverlight: function(uri, success, error, args) {
             if(a.isNone(args) || a.isNone(args.rootId) || a.isNone(args.id)) {
@@ -4758,14 +4760,26 @@ a.loader = (function() {
         },
 
         /**
+         * Manually register element to cache.
+         *
+         * @private
+         *
+         * @param {String} type             The element type, could be usually
+         *                                  css, js, html or translate/json
+         * @param {String} src              The source related to this data
+         * @param {String} data             The associated data
+        */
+        manuallyAddCache: createHtmlCache,
+
+        /**
          * Get the currently url loaded and cached.
          *
-         * @param {String} type              The type to get, like 'js', 'css'
-         * @return {Object | Array | Null}   The cache trace, object if type is
-         *                                   empty/null, array in other cases.
-         *                                   Null if the element does not exist
-         *                                   / does not have anything cached
-         *                                   yet
+         * @param {String} type             The type to get, like 'js', 'css'
+         * @return {Object | Array | Null}  The cache trace, object if type is
+         *                                  empty/null, array in other cases.
+         *                                  Null if the element does not exist
+         *                                  / does not have anything cached
+         *                                  yet
         */
         trace: function(type) {
             if (type) {
@@ -13727,7 +13741,72 @@ a.template = {
             chain.next();
         }
     }, true);
-})();;/*! ***********************************************************************
+})();;/**
+ * Compact is a tiny object used when switching an AppStorm.JS project into
+ * production. It aims to load the appstorm.compact.html file with ease and
+ * be ready to use it inside every state who need it...
+ *
+ * @constructor
+*/
+a.compact = {
+    /**
+     * The url to load when system needs it.
+     *
+     * @property url
+     * @default ./appstorm.compact.html
+    */
+    url: './appstorm.compact.html',
+
+    /**
+     * If the compact element is active or not.
+     *
+     * @property active
+     * @default false
+    */
+    active: false,
+
+    /**
+     * Load the appstorm compact data.
+     * Should be called right after application start.
+     *
+     * @param {Function | Null} callback    Any callback to call after loading.
+     *                                      First parameter is error or not,
+     *                                      second is html if no error
+    */
+    load: function (callback) {
+        var that = this;
+
+        a.loader.html(this.url, function (content) {
+            a.console.storm('log', 'a.compact', 'URL ```' + that.url +
+                '``` loaded with success', 3);
+
+            var dom = a.template.htmlToDom(content),
+                el  = null;
+            for (var i = 0, l = dom.length; i < l; ++i) {
+                el = dom[i];
+                if (el.tagName === 'SCRIPT') {
+                    var type = el.getAttribute('type'),
+                        src  = el.getAttribute('data-src'),
+                        text = el.text;
+
+                    // We remove "appstorm/" on type
+                    a.loader.manuallyAddCache(type.substr(9), src, text);
+                }
+            }
+
+            if (a.isFunction(callback)) {
+                callback(false, content);
+            }
+        }, function() {
+            a.console.storm('error', 'a.compact', 'Unable to load ```' +
+                that.url + '```, compact will not be used...', 1);
+            that.active = false;
+            if (a.isFunction(callback)) {
+                callback(true, null);
+            }
+        });
+    }
+};;/*! ***********************************************************************
 
     License: MIT Licence
 

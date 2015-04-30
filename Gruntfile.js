@@ -38,6 +38,7 @@ var appstormFiles = [
   'appstorm/plugin/model.pooler.js',
   'appstorm/plugin/model.template.js',
   'appstorm/plugin/template.js',
+  'appstorm/plugin/compact.js',
   'appstorm/plugin/live.js',
 
 
@@ -269,6 +270,6 @@ module.exports = function(grunt) {
   grunt.registerTask('without', ['bower', 'concat:withoutDependencies', 'uglify']);
 
   // Since complete is not ready to be used yet, define simpler default
-  grunt.registerTask('default', ['bower', 'concat:withDependencies', 'uglify']);
+  grunt.registerTask('default', ['bower', 'concat:withDependencies', 'concat:withoutDependencies', 'uglify']);
 };
 
