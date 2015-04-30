@@ -183,6 +183,10 @@ a.keyboard = (function(mt) {
              * Reset all bindings.
             */
             clear: clearAllKeyboardEvents
+
+            /*!
+             * @private
+            */
         };
     }
 }(window.Mousetrap));
