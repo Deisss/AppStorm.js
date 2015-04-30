@@ -165,34 +165,16 @@ a.template = {
     },
 
     /**
-     * Empty a dom element.
-     *
-     * @async
-     *
-     * @param {DOMElement} el               The element to remove everything
-     *                                      inside
-     * @param {Function | Null} callback    The function to raise when job is
-     *                                      done
-    */
-    remove: function(el, callback) {
-        a.dom.el(el).empty();
-        if(a.isFunction(callback)) {
-            callback();
-        }
-    },
-
-    /**
      * Append to the given element (given a DOM element here not a jQuery one).
+     * The advantage over a.dom version, is the auto-translate system.
      *
      * @async
      *
      * @param {DOMElement} el               Any dom element to append to
      * @param {String} content              The html content (in string)
      *                                      to replace
-     * @param {Function | Null} callback    The callback to apply when
-     *                                      template finish loading
     */
-    append: function(el, content, callback) {
+    append: function(el, content) {
         el = a.dom.el(el);
         var h = this.htmlToDom(content);
 
@@ -202,26 +184,21 @@ a.template = {
         a.each(el.getElements(), function(element) {
             a.translate.translate(element);
         });
-        if(a.isFunction(callback)) {
-            callback(content);
-        }
     },
 
     /**
      * Same as append, just replace instead of append to element.
+     * The advantage over a.dom version, is the auto-translate system.
      *
      * @async
      *
      * @param {DOMElement} el               Any dom element to append to
      * @param {String} content              The html content (in string) to
      *                                      replace
-     * @param {Function} callback           The callback to apply when
-     *                                      template finish loading
     */
-    replace: function(el, content, callback) {
-        this.remove(el, function() {
-            a.template.append(el, content, callback);
-        });
+    replace: function(el, content) {
+        a.dom.el(el).empty();
+        a.template.append(el, content);
     }
 
     /*!
@@ -239,11 +216,10 @@ a.template = {
     // Replace type
     a.state.type.add('replace', function replace(entry, content, chain) {
         if(content) {
-            a.template.replace(entry, content, function() {
-                if(chain) {
-                    chain.next();    
-                }
-            });
+            a.template.replace(entry, content);
+            if(chain) {
+                chain.next();    
+            }
         }
     }, function(entry, chain) {
         if(chain) {
@@ -254,11 +230,10 @@ a.template = {
     // Append type
     a.state.type.add('append', function append(entry, content, chain) {
         if(content) {
-            a.template.append(entry, content, function() {
-                if(chain) {
-                    chain.next();
-                }
-            });
+            a.template.append(entry, content);
+            if(chain) {
+                chain.next();
+            }
         }
     }, function(entry, chain) {
         if(chain) {
