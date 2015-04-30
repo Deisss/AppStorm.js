@@ -153,11 +153,11 @@ QUnit.asyncTest('a.template.replace-working', function(assert) {
     // Now we load resource
     a.template.get('./resource/data/page.template/tmpl1.html', {},
         function(content) {
-            a.template.replace(result, content, function() {
-                assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
-                    'ok', 'Test content replaced');
-                QUnit.start();
-            });
+            a.template.replace(result, content);
+
+            assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
+                'ok', 'Test content replaced');
+            QUnit.start();
     });
 });
 
@@ -183,15 +183,15 @@ QUnit.asyncTest('a.template.replace-translation', function(assert) {
 
     a.template.get('./resource/data/page.template/tmpl-translation.html', {},
         function(content) {
-            a.template.replace(result, content, function() {
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                    'The welcome page', 'Test basic template loading');
-                // Going back to default
-                a.translate.setLanguage(userLanguage);
+            a.template.replace(result, content);
 
-                QUnit.start();
-            });
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+                'The welcome page', 'Test basic template loading');
+            // Going back to default
+            a.translate.setLanguage(userLanguage);
+
+            QUnit.start();
     });
 });
 
@@ -227,32 +227,32 @@ QUnit.asyncTest('a.template.replace-complex', function(assert) {
 
     a.template.get('./resource/data/page.template/tmpl-complex.html', data,
         function(content) {
-            a.template.replace(result, content, function() {
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                'One of the member was Moe', 'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
-                    .nodeValue,
-                'One of the member was Larry', 'Test basic template loading');
+            a.template.replace(result, content);
 
-                a.translate.setLanguage('unittest2', false);
-                // Manually translate because element is not existing in DOM,
-                // only in memory
-                a.translate.translate();
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+            'One of the member was Moe', 'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                .nodeValue,
+            'One of the member was Larry', 'Test basic template loading');
 
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                    'Other language said it was Moe',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
-                    .nodeValue,
-                    'Other language said it was Larry',
-                    'Test basic template loading');
+            a.translate.setLanguage('unittest2', false);
+            // Manually translate because element is not existing in DOM,
+            // only in memory
+            a.translate.translate();
 
-                // Going back to default
-                a.translate.setLanguage(userLanguage);
-                QUnit.start();
-            });
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+                'Other language said it was Moe',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                .nodeValue,
+                'Other language said it was Larry',
+                'Test basic template loading');
+
+            // Going back to default
+            a.translate.setLanguage(userLanguage);
+            QUnit.start();
     });
 });
 
@@ -269,15 +269,15 @@ QUnit.asyncTest('a.template.append-working', function(assert) {
 
     a.template.get('./resource/data/page.template/tmpl-append.html', {},
         function(content) {
-            a.template.append(result, content, function() {
-                // Test from working
-                assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
-                    'ok', 'Test content append');
-                // New test
-                assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
-                    'append', 'Test content append');
-                QUnit.start();
-            });
+            a.template.append(result, content);
+
+            // Test from working
+            assert.strictEqual(result.getElementsByTagName('a')[0].innerHTML,
+                'ok', 'Test content append');
+            // New test
+            assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
+                'append', 'Test content append');
+            QUnit.start();
     });
 });
 
@@ -299,21 +299,21 @@ QUnit.asyncTest('a.template.append-translation', function(assert) {
 
     a.template.get('./resource/data/page.template/tmpl-append.html', {},
         function(content) {
-            a.template.append(result, content, function() {
-                // Test from translation
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                    'The welcome page', 'Test basic template loading');
-                // New test
-                // (no need to change : the data is not translated here)
-                assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
-                    'append', 'Test content append');
+            a.template.append(result, content);
 
-                // Going back to default
-                a.translate.setLanguage(userLanguage);
+            // Test from translation
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+                'The welcome page', 'Test basic template loading');
+            // New test
+            // (no need to change : the data is not translated here)
+            assert.strictEqual(result.getElementsByTagName('span')[0].innerHTML,
+                'append', 'Test content append');
 
-                QUnit.start();
-            });
+            // Going back to default
+            a.translate.setLanguage(userLanguage);
+
+            QUnit.start();
     });
 });
 
@@ -346,47 +346,47 @@ QUnit.asyncTest('a.template.append-complex', function(assert) {
 
     a.template.get('./resource/data/page.template/tmpl-append-complex.html',
         data, function(content) {
-            a.template.append(result, content, function() {
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                    'One of the member was Moe',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
-                    .nodeValue,
-                    'One of the member was Larry',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('span')[0]
-                    .childNodes[0].nodeValue, 'He study in Physics',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('span')[1]
-                    .childNodes[0].nodeValue, 'He study in Math',
-                    'Test basic template loading');
+            a.template.append(result, content);
 
-                a.translate.setLanguage('unittest2');
-                // Manually translate because element is not existing in DOM,
-                // only in memory
-                a.translate.translate();
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+                'One of the member was Moe',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                .nodeValue,
+                'One of the member was Larry',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('span')[0]
+                .childNodes[0].nodeValue, 'He study in Physics',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('span')[1]
+                .childNodes[0].nodeValue, 'He study in Math',
+                'Test basic template loading');
 
-                assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
-                    .nodeValue,
-                    'Other language said it was Moe',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
-                    .nodeValue,
-                    'Other language said it was Larry',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('span')[0]
-                    .childNodes[0].nodeValue, 'Another stydy in Physics',
-                    'Test basic template loading');
-                assert.strictEqual(result.getElementsByTagName('span')[1]
-                    .childNodes[0].nodeValue, 'Another stydy in Math',
-                    'Test basic template loading');
+            a.translate.setLanguage('unittest2');
+            // Manually translate because element is not existing in DOM,
+            // only in memory
+            a.translate.translate();
 
-                // Going back to default
-                a.translate.setLanguage(userLanguage);
+            assert.strictEqual(result.getElementsByTagName('a')[0].childNodes[0]
+                .nodeValue,
+                'Other language said it was Moe',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('a')[1].childNodes[0]
+                .nodeValue,
+                'Other language said it was Larry',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('span')[0]
+                .childNodes[0].nodeValue, 'Another stydy in Physics',
+                'Test basic template loading');
+            assert.strictEqual(result.getElementsByTagName('span')[1]
+                .childNodes[0].nodeValue, 'Another stydy in Math',
+                'Test basic template loading');
 
-                QUnit.start();
-            });
+            // Going back to default
+            a.translate.setLanguage(userLanguage);
+
+            QUnit.start();
     });
 });
 
