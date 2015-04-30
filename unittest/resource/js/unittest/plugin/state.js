@@ -520,9 +520,10 @@ QUnit.asyncTest('a.state-loader', function (assert) {
 
             // Test HTML (test mustache got the file loaded)
             var uriHTML = './resource/data/state/test.html';
-            var hash = 'a_tmpl_' + uriHTML.replace(/[^a-zA-Z0-9]/g, '_');
-            assert.strictEqual(typeof(a.template._tmpl[hash]), 'string',
-                'Test the template has been registred as available template');
+            var hash = a.sanitize(uriHTML);
+            var elements = a.loader.trace('html');
+            assert.strictEqual(a.contains(elements, hash), true, 'Test' +
+                    'the template has been added to available cache');
             QAppStorm.pop();
             chain.next();
         }
