@@ -56,7 +56,8 @@ a.model.pooler.createTemporaryInstance = function(name) {
     var model = a.extend(
             new a.modelInstance(
                 name,
-                a.clone(instanceType.properties)
+                a.clone(instanceType.properties),
+                instanceType.functions
             ),
             a.eventEmitter('a.model')
         );
@@ -139,7 +140,7 @@ a.model.pooler.getPrimary = function(name) {
 
     for(var key in properties) {
         var property = properties[key];
-        if(('primary' in property) && property['primary'] === true) {
+        if(property.primary === true) {
             results.push(key);
         }
     }

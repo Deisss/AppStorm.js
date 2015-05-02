@@ -806,3 +806,29 @@ QUnit.test('a.model.init-false', function (assert) {
     var z = test();
     assert.strictEqual(z.toJSON(), '{"completed":false}', 'Test false values');
 });
+
+
+// Test with some function inside the model
+QUnit.test('a.model.functions', function (assert) {
+    assert.expect(3);
+
+    var test = a.model('a.model.functions', {
+        id: {
+            init: 'ok'
+        },
+
+
+        calc: function(a, b) {
+            return a + b;
+        },
+        superId: function(a) {
+            return this.get('id') + a;
+        }
+    });
+
+    var z = test();
+
+    assert.strictEqual(z.get('id'), 'ok');
+    assert.strictEqual(z.calc(1, 2), 3);
+    assert.strictEqual(z.superId('g'), 'okg');
+});

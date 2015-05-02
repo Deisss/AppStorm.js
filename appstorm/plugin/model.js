@@ -45,9 +45,18 @@ a.model = function(name, properties) {
     // model definition)
     if(a.isString(name)) {
         if(!a.model.pooler.get(name)) {
+            // Remove functions from object
+            var functions = {};
+            for (var el in properties) {
+                if (properties.hasOwnProperty(el) && a.isFunction(properties[el])) {
+                    functions[el] = properties[el];
+                    delete properties[el];
+                }
+            }
             // Register model into pooler
             a.model.pooler.set(name, {
-                properties: properties
+                properties: properties,
+                functions: functions
             });
 
             // Register model into ajax
@@ -109,15 +118,15 @@ a.model = function(name, properties) {
  * A model instance generator to manage multiple instance from a main model.
  * NEVER USE BY ITSELF, you should always go threw a.model before.
  *
- * @class modelInstance
- * @namespace a
  * @constructor
  *
  * @param name {String}                     The model name to create
  * @param properties {Object}               The properties associated to the
- *                                          model.
+ *                                          model
+ * @param functions {Object}                The functions associated to the
+ *                                          model
 */
-a.modelInstance = function(name, properties) {
+a.modelInstance = function(name, properties, functions) {
     this.modelName  = name || '';
     this.properties = {};
     this.snapshot   = {};
@@ -129,12 +138,23 @@ a.modelInstance = function(name, properties) {
     this.uid = a.uniqueId();
     this.nid = name + '-' + this.uid;
 
-    if(a.isTrueObject(properties)) {
+    if (a.isTrueObject(properties)) {
         this.properties = a.deepClone(properties);
     }
 
-    for(var key in this) {
+    for (var key in this) {
         this.originalContent.push(key);
+    }
+
+    // Applying functions
+    if (a.isTrueObject(functions)) {
+        for (var key in functions) {
+            if(!a.contains(this.originalContent, key)) {
+                this[key] = functions[key];
+                // We also add it to original content
+                this.originalContent.push(key);
+            }
+        }
     }
 };
 
