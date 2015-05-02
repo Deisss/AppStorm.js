@@ -25,7 +25,7 @@ QUnit.test('a.mock.add', function (assert) {
 });
 
 QUnit.test('a.mock.add-parameter', function (assert) {
-    assert.expect(2);
+    assert.expect(4);
 
     a.mock.add('GET', 'user/{{id: [0-9]+}}', {
         test: 'ok'
@@ -33,6 +33,18 @@ QUnit.test('a.mock.add-parameter', function (assert) {
 
     assert.strictEqual(a.mock.get('GET', 'user/2').test, 'ok');
     assert.strictEqual(a.mock.get('GET', 'user/a'), null);
+
+    a.mock.add('POST', 'project/{{id: [a-fA-F0-9]+}}/{{sub: [0-9]+}}',
+            function (id, sub) {
+        return {
+            id: id,
+            sub: sub
+        };
+    });
+
+    var result = a.mock.get('POST', 'project/12bF/2');
+    assert.strictEqual(result.id, '12bF');
+    assert.strictEqual(result.sub, '2');
 });
 
 QUnit.test('a.mock.get', function (assert) {
