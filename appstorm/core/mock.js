@@ -7,194 +7,224 @@
         client creation. It provide a simple emulation of server side.
 
 ************************************************************************ */
-
-/**
- * The object is faking a server behavior to skip server creation during
- * client creation. It provide a simple emulation of server side.
- *
- * @constructor
-*/
-a.mock = {
+(function (a) {
     /**
-     * Store the existing mock to use with application
-     *
      * @private
-     * @property _mock
-     * @type Array
-     * @default []
     */
-    _mock: [],
+    var store = a.mem.getInstance('app.mock');
 
     /**
-     * Add a new mock to system
-     *
-     * @param {String} method               The HTTP method (GET/POST/PUT/...)
-     * @param {String} url                  The url to catch
-     * @param {Object | Function} result    The attempted result
-     * @param {String | null} model         The model linked to the answer. Use
-     *                                      's' at the end if it's a list of...
+     * @private
     */
-    add: function(method, url, result, model) {
-        var mocks = a.mock._mock;
+    function getMethod(method) {
+        return (!a.isString(method) || !method) ? 'get' : method.toLowerCase();
+    }
 
-        if(!method) {
-            method = 'get';
+    /**
+     * @private
+    */
+    function appendToStore(method, data) {
+        method = getMethod(method);
+        var mocks = store.get(method) || [];
+
+        // many tag
+        data.many = false;
+        if (a.isTrueObject(data.model)) {
+            data.many  = data.model.many;
+            data.model = data.model.model;
         }
 
-        mocks.push({
-            method: method.toLowerCase(),
-            url:    url,
-            result: result || {},
-            model:  model || null
-        });
-    },
+
+        if(data.url.indexOf('{{') >= 0 && data.url.indexOf('}}') >= 0) {
+            data.regex   = true;
+            data.extract = data.url;
+            var reg      = a.parameter.convert(data.url);
+            data.url     = new RegExp('^' + reg + '$', 'g');
+        } else {
+            data.regex   = false;
+            data.extract = data.url;
+        }
+
+        mocks.push(data);
+        store.set(method, mocks);
+    }
+
+    function typeToString(el) {
+        if(a.isString(el)) {
+            return 'string';
+        } else if(a.isBoolean(el)) {
+            return 'boolean';
+        } else if(a.isNumber(el) && !a.isNaN(el)) {
+            return 'number';
+        } else if(a.isArray(el)) {
+            return 'array';
+        } else if(a.isTrueObject(el)) {
+            return 'object';
+        } else {
+            return 'UNKNOW';
+        }
+    }
 
     /**
-     * Get an existing result from model
+     * The object is faking a server behavior to skip server creation during
+     * client creation. It provide a simple emulation of server side.
      *
-     * @param {String} method               The HTTP method (GET/POST/PUT/...)
-     * @param {String} url                  The url to catch
-     * @return {Object | Null}              The result associated to mock
+     * @constructor
     */
-    get: function(method, url) {
-        var mocks = a.mock._mock,
-            i = mocks.length;
+    a.mock = {
+        add: function (method, url, result, model) {
+            appendToStore(method, {
+                url: url || '',
+                result: result || {},
+                model: model || null
+            });
+        },
 
-        while(i--) {
-            var mock = mocks[i];
-            if(mock.method === method.toLowerCase() && mock.url === url) {
-                if(a.isFunction(mock.result)) {
-                    return mock.result();
+        set: function (method, url, result, model) {
+            appendToStore(method, {
+                url: url || '',
+                result: result || {},
+                model: model || null
+            });
+        },
+
+        get: function (method, url) {
+            method    = getMethod(method);
+            var mocks = store.get(method) || [],
+                mock  = null,
+                i     = mocks.length;
+
+            while(i--) {
+                mock = mocks[i];
+
+                if (mock.regex === true) {
+                    mock.url.lastIndex = 0;
+                    if (mock.url.test(url) === true) {
+                        var extrapolate = a.parameter.extract(mock.extract),
+                            variables   = a.parameter.getValues(url,
+                                    mock.extract, extrapolate);
+
+                        if(a.isFunction(mock.result)) {
+                            // The variables contains name and value
+                            // The pluck create an array containing
+                            // only value parameter
+                            return mock.result.apply(this,
+                                    a.pluck(variables, 'value'));
+                        }
+                        return mock.result;
+                    }
+
+                } else if (mock.url === url) {
+                    if(a.isFunction(mock.result)) {
+                        return mock.result();
+                    }
+                    return mock.result;
                 }
-                return mock.result;
             }
-        }
-        return null;
-    },
+            return null;
+        },
 
-    /**
-     * Rollback to default content (nothing).
-     *
-     * @method clear
-    */
-    clear: function() {
-        a.mock._mock = [];
-    },
+        clear: function() {
+            store.clear();
+        },
 
-    /**
-     * Get all mock related to model, and merge their content (= get a unique
-     * object containing ALL properties found).
-     *
-     * @param {String} model                The model name to search
-     * @return {Object}                     The merge realise, or an empty
-     *                                      object if trouble
-    */
-    merge: function(model) {
-        if(!model) {
-            return {};
-        }
+        /**
+         * Print a given model structure
+        */
+        model: function(model) {
+            if(!a.isString(model) || !model) {
+                return {};
+            }
 
-        var result = {},
-            mocks = a.mock._mock,
-            i = mocks.length;
+            var data   = [],
+                types  = store.list(),
+                mocks  = null,
+                mock   = null;
 
-        // Creating a final object containings all properties found
-        while(i--) {
-            var mock = mocks[i],
-                part = null;
+            for (var method in types) {
+                if (types.hasOwnProperty(method)) {
+                    mocks = types[method];
 
-            if(mock.model) {
-                // Single model
-                if(mock.model === model) {
-                    part = a.isFunction(mock.result) ? mock.result() :
-                                                                mock.result;
-                    result = a.assign(result, part);
-
-                // Multiple model
-                } else if(mock.model === model + 's') {
-                    part = a.isFunction(mock.result) ? mock.result() :
-                                                                mock.result,
-                        j = part.length;
-                    while(j--) {
-                        result = a.assign(result, part[j]);
+                    for (var j = 0, l = mocks.length; j < l; ++j) {
+                        mock = mocks[j];
+                        if (mock.model === model && mock.many === true) {
+                            if (a.isFunction(mock.result)) {
+                                data = data.concat(mock.result());
+                            } else {
+                                data = data.concat(mock.result);
+                            }
+                        } else if (mock.model === model) {
+                            if (a.isFunction(mock.result)) {
+                                data.push(mock.result());
+                            } else {
+                                data.push(mock.result);
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        // Try to (ONLY TRY) to find properties type
-        // ONLY Try because it can easily fail by overwriting properties
-        // can skip some type for given elements
-        for(var j in result) {
-            var property = result[j];
+            // Now printing result
+            var result   = {},
+                property = null,
+                line     = null;
+            for (var i = 0, l = data.length; i < l; ++i) {
+                line = data[i];
+                for (property in line) {
+                    if (line.hasOwnProperty(property)) {
+                        if (!result[property]) {
+                            result[property] = [];
+                        }
 
-            if(a.isString(property)) {
-                result[j] = 'string';
-            } else if(a.isBoolean(property)) {
-                result[j] = 'boolean';
-            } else if(a.isNumber(property) && !a.isNaN(property)) {
-                result[j] = 'number';
-            } else if(a.isArray(property)) {
-                result[j] = 'array';
-            } else if(a.isTrueObject(property)) {
-                result[j] = 'object';
-            } else {
-                result[j] = 'UNKNOW';
+                        result[property].push(typeToString(line[property]));
+                    }
+                }
             }
-        }
 
-        return result;
-    },
-
-    /**
-     * Generate a simple map of all urls/method couple you are currently using.
-     * It is sorted by model type... If the model type is using a 's', for
-     * now it still linked like this, as it was with a 's', we keep that for
-     * saying 'those url returns array'.
-     *
-     * @return {Object}                     A related object
-    */
-    map: function() {
-        var result = {},
-            mocks = a.mock._mock,
-            i = mocks.length;
-
-        while(i--) {
-            var mock = mocks[i];
-            // Check model
-            if(mock.model) {
-                var model = mock.model,
-                    method = mock.method;
-
-                if(!result[model]) {
-                    result[model] = {};
+            // Now we clean result
+            for (property in result) {
+                result[property] = a.uniq(result[property]);
+                if (result[property].length === 1) {
+                    result[property] = result[property][0];
                 }
-
-                if(!result[model][method]) {
-                    result[model][method] = [];
-                }
-
-                result[model][method].push(mock.url);
-
-            // We are in 'unknow' mode
-            } else {
-                var unknow = 'unknow';
-                if(!result[unknow]) {
-                    result[unknow] = {};
-                }
-
-                if(!result[unknow][method]) {
-                    result[unknow][method] = [];
-                }
-
-                result[unknow][method].push(mock.url);
             }
+
+            return result;
+        },
+
+        api: function() {
+            var result = {},
+                types  = store.list(),
+                mocks  = null,
+                mock   = null,
+                model  = null;
+
+            for (var method in types) {
+                if (types.hasOwnProperty(method)) {
+                    mocks = types[method];
+
+                    for (var j = 0, l = mocks.length; j < l; ++j) {
+                        mock  = mocks[j];
+                        model = mock.model || 'unknow';
+
+                        if (!result[model]) {
+                            result[model] = {};
+                        }
+
+                        if (!result[model][method]) {
+                            result[model][method] = [];
+                        }
+
+                        result[model][method].push(mock.extract);
+                    }
+                }
+            }
+
+            return result;
         }
 
-        return result;
-    }
-
-    /*!
-     * @private
-    */
-};
+        /*!
+         * @private
+        */
+    };
+})(window.appstorm);
