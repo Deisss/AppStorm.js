@@ -3636,7 +3636,25 @@ a.hash = a.extend(new a.hash(), a.eventEmitter('a.hash'));;/*! *****************
             }
             return null;
         }
+        /*!
+         * @private
+        */
     };
+
+    // Ajax status store function to detect which status is consider
+    // as valid, and which is not
+    a.ajaxStatus = [];
+    a.mem.set('app.ajax.status', a.ajaxStatus);
+
+    // Default one
+    a.ajaxStatus.push(function (method, url, status) {
+        if (status >= 200 && status <= 400) {
+            return 'success';
+        } else {
+            return 'error';
+        }
+    });
+
 
     /**
      * Help to get a new model, or update an existing one, regarding
@@ -4030,16 +4048,27 @@ a.hash = a.extend(new a.hash(), a.eventEmitter('a.hash'));;/*! *****************
                 if(requestScope.request.readyState === 4) {
                     var great = (status >= 200 && status < 400);
 
-                    if(great) {
-                        // Everything went fine
-                        requestScope.success(
-                            requestScope.parseResult(requestScope.params,
-                                                        requestScope.request),
-                            status
-                        );
-                    } else {
-                        // An error occurs
-                        requestScope.error(url, status);
+                    // Parsing all possible ajax status handler
+                    var great = false,
+                        tmpSt = null,
+                        u     = a.ajaxStatus.length;
+                    while (u--) {
+                        tmpSt = a.ajaxStatus[u].call(this, requestScope.method,
+                                requestScope.params.url, status);
+                        if (tmpSt === 'success') {
+                            great = true;
+                            // Everything went fine
+                            requestScope.success(
+                                requestScope.parseResult(requestScope.params,
+                                        requestScope.request),
+                                status
+                            );
+                            break;
+                        } else if (tmpSt === 'error') {
+                            // An error occurs
+                            requestScope.error(url, status);
+                            break;
+                        }
                     }
 
                     // We send a result
