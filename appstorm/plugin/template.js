@@ -131,7 +131,7 @@ a.template = {
                     }
                 }
             }
-        }, {}, error);
+        }, error);
     },
 
     /**
