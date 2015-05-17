@@ -477,6 +477,10 @@ a.modelInstance.prototype = {
         for(var property in this.properties) {
             if(property in data) {
                 this.properties[property].value = data[property];
+                // If it's possible, we also update the 'direct' value
+                if(!a.contains(this.originalContent, property)) {
+                    this[property] = data[property];
+                }
             }
         }
     },
