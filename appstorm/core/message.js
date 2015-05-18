@@ -211,6 +211,11 @@ a.eventEmitter.prototype = {
                 })(dispatcher[i].fct, dispatcher[i].scope);
             }
         }
+
+        // The global event catcher
+        if (type !== '*') {
+            this.dispatch.call(this, '*', data);
+        }
     }
 };
 
