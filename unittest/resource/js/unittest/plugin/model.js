@@ -832,3 +832,63 @@ QUnit.test('a.model.functions', function (assert) {
     assert.strictEqual(z.calc(1, 2), 3);
     assert.strictEqual(z.superId('g'), 'okg');
 });
+
+// Testing event system on fromObject
+QUnit.asyncTest('a.model.bind-fromObject', function (assert) {
+    assert.expect(2);
+
+    var test = a.model('a.model.bind-fromObject', {
+        id: {
+            init: 'ok',
+            event: 'changeId'
+        }
+    });
+
+    var z = new test();
+
+    z.bind('changeId', function (data) {
+        assert.strictEqual(data.value, 'hello');
+        assert.strictEqual(data.old, 'ok');
+        QUnit.start();
+    });
+
+    z.fromObject({
+        id: 'hello'
+    });
+});
+
+// Unit test for binding every event from model
+QUnit.asyncTest('a.model.bind-all', function (assert) {
+    assert.expect(4);
+
+    var test = a.model('a.model.bind-all', {
+        id: {
+            init: 'ok',
+            event: 'changeId'
+        },
+        name: {
+            init: 'hi',
+            event: 'changeName'
+        }
+    });
+
+    var z = new test();
+
+    z.bind('*', function (data) {
+        if (data.value) {
+            if (data.value === 'hello') {
+                assert.strictEqual(data.value, 'hello', 'Test 1');
+                assert.strictEqual(data.old, 'ok', 'Test 2');
+            } else {
+                assert.strictEqual(data.value, 'something', 'Test 3');
+                assert.strictEqual(data.old, 'hi', 'Test 4');
+                QUnit.start();
+            }
+        }
+    });
+
+    z.fromObject({
+        id: 'hello',
+        name: 'something'
+    });
+});
