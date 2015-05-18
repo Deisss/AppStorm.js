@@ -337,6 +337,13 @@ a.modelInstance.prototype = {
                     value: value,
                     old: old
                 });
+
+            // if no event, we raise a default 'change%Key%'
+            } else {
+                this.dispatch(a.firstLetterUppercase(key, 'change'), {
+                    value: value,
+                    old: old
+                });
             }
         }
     },
