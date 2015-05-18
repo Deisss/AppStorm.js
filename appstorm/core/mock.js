@@ -136,14 +136,14 @@
                             // The pluck create an array containing
                             // only value parameter
                             return mock.result.apply(this,
-                                    a.pluck(variables, 'value'), data);
+                                    a.pluck(variables,'value').concat([data]));
                         }
                         return mock.result;
                     }
 
                 } else if (mock.url === url) {
                     if(a.isFunction(mock.result)) {
-                        return mock.result.apply(this, data);
+                        return mock.result.call(this, data);
                     }
                     return mock.result;
                 }

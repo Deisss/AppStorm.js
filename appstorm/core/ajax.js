@@ -387,7 +387,7 @@
         var method = this.params.method.toUpperCase();
 
         // Skip request in some case, due to mock object (first test)
-        var mockResult = a.mock.get(method, this.params.url);
+        var mockResult = a.mock.get(method, this.params.url, this.params.data);
         if(mockResult !== null) {
             var params = this.params;
 
