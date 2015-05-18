@@ -72,6 +72,14 @@
      * @constructor
     */
     a.mock = {
+        /**
+         * Add a new mock to existing mock collection.
+         *
+         * @param {String} method            The HTTP method, like GET, POST...
+         * @param {String} url               The binded url
+         * @param {Object | Function} result The result to call/use when needed
+         * @param {String} model             The related model.
+        */
         add: function (method, url, result, model) {
             appendToStore(method, {
                 url: url || '',
@@ -80,6 +88,15 @@
             });
         },
 
+        /**
+         * Alias of add.
+         * @see add
+         *
+         * @param {String} method            The HTTP method, like GET, POST...
+         * @param {String} url               The binded url
+         * @param {Object | Function} result The result to call/use when needed
+         * @param {String} model             The related model.
+        */
         set: function (method, url, result, model) {
             appendToStore(method, {
                 url: url || '',
@@ -88,7 +105,17 @@
             });
         },
 
-        get: function (method, url) {
+        /**
+         * Get a mock element, you probably don't need to use it at all, as
+         * the **a.ajax** object already take care of that for you.
+         *
+         * @param {String} method           The method to call, like GET, POST.
+         * @param {String} url              The url. Must be a real url, not
+         *                                  with parameters.
+         * @param {Object} data             Any data request should handle
+         *                                  by default
+        */
+        get: function (method, url, data) {
             method    = getMethod(method);
             var mocks = store.get(method) || [],
                 mock  = null,
@@ -109,14 +136,14 @@
                             // The pluck create an array containing
                             // only value parameter
                             return mock.result.apply(this,
-                                    a.pluck(variables, 'value'));
+                                    a.pluck(variables, 'value'), data);
                         }
                         return mock.result;
                     }
 
                 } else if (mock.url === url) {
                     if(a.isFunction(mock.result)) {
-                        return mock.result();
+                        return mock.result.apply(this, data);
                     }
                     return mock.result;
                 }
@@ -124,12 +151,19 @@
             return null;
         },
 
+        /**
+         * Clear all the mock objects.
+        */
         clear: function() {
             store.clear();
         },
 
         /**
-         * Print a given model structure
+         * Print a given model structure.
+         *
+         * @param {String} model            The model to print
+         * @return {Object}                 The result object, describing
+         *                                  the model structure
         */
         model: function(model) {
             if(!a.isString(model) || !model) {
@@ -192,6 +226,11 @@
             return result;
         },
 
+        /**
+         * Get the API of all mock map.
+         *
+         * @return {Object}                 An object describing the API.
+        */
         api: function() {
             var result = {},
                 types  = store.list(),
