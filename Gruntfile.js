@@ -40,6 +40,7 @@ var appstormFiles = [
   'appstorm/plugin/template.js',
   'appstorm/plugin/compact.js',
   'appstorm/plugin/live.js',
+  'appstorm/plugin/rest.js',
 
 
   // Last loaded - ready event
