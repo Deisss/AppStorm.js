@@ -106,7 +106,6 @@ QUnit.test('a.mock.model', function (assert) {
 
     // Try to find the final model content
     var model = a.mock.model('user');
-    console.log(model);
     assert.strictEqual(model.id, 'number');
     assert.strictEqual(model.forgotten, 'boolean');
     assert.strictEqual(model.login, 'string');
@@ -156,6 +155,22 @@ QUnit.test('a.mock.api', function (assert) {
     assert.strictEqual(result.user.get[0], 'user');
 });
 
+// Testing data send
+QUnit.test('a.mock.data', function (assert) {
+    assert.expect(2);
+
+    a.mock.add('POST', 'sometest', function (data) {
+        assert.strictEqual(data.ok, 'ok', 'Test 1');
+        assert.strictEqual(data.something, 'hi', 'Test 2');
+    });
+
+    a.mock.get('POST', 'sometest', {
+        ok: 'ok',
+        something: 'hi'
+    });
+});
+
+// Testing relationship with ajax object
 QUnit.asyncTest('a.mock.ajax', function (assert) {
     assert.expect(3);
 
@@ -178,5 +193,27 @@ QUnit.asyncTest('a.mock.ajax', function (assert) {
     });
 
     // Starting system
+    request.send();
+});
+
+// TODO: in this test we create two things: an url with parameters, and some data inside the request
+// in POST for example
+QUnit.asyncTest('a.mock.ajax-data', function (assert) {
+    assert.expect(2);
+
+    a.mock.add('POST', 'sometest/{{id: [0-9]+}}', function (id, data) {
+        assert.strictEqual(id, "12", 'Test id');
+        assert.strictEqual(data.ok, 'ok', 'Test data');
+        QUnit.start();
+    });
+
+    var request = a.ajax({
+            url: 'sometest/12',
+            data: {
+                ok: 'ok'
+            },
+            template: ['POST', 'json']
+    });
+    
     request.send();
 });
